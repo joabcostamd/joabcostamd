@@ -1,48 +1,54 @@
-# 👋 Olá! Eu sou o João Costa
+# 👋 Olá! Eu sou Joab Costa
 
-> **Transformando ideias em jogos — sem escrever uma linha de código.**
+> **Software & Game Developer | Medical Doctor | AI-Powered Creation**
 
 ---
 
-## 🎮 Meu projeto principal: MCP CREATOR
+## 🎮 O que eu faço
 
-**[`MCP-CREATOR`](https://github.com/joabcostamd/MCP-CREATOR)** é um servidor MCP que permite criar jogos completos no **Godot 4.7** conversando em **linguagem natural** com **DeepSeek V4**.
+Sou médico oftalmologista e desenvolvedor de software e jogos. Uso **inteligência artificial** (DeepSeek V4 Pro) para criar ferramentas e jogos profissionais — unindo saúde, tecnologia e criatividade.
 
-```
-"Quero um jogo de nave que atira em asteroides"  →  🎮 Jogo jogável
-```
+---
 
-### ⚡ Destaques
+## 🚀 Projetos em Destaque
+
+### 🎮 MCP Godot Agent
+Servidor MCP com **193 ferramentas** para criar jogos completos no **Godot 4.7** via linguagem natural.
+
+![Python](https://img.shields.io/badge/Python-3.12+-3776AB?logo=python&logoColor=white)
+![Godot](https://img.shields.io/badge/Godot-4.7-478CBF?logo=godot-engine&logoColor=white)
+![MCP](https://img.shields.io/badge/MCP-Spec_2025--11--25-6366F1)
+![DeepSeek](https://img.shields.io/badge/IA-DeepSeek_V4_Pro-4B32C3)
+![Status](https://img.shields.io/badge/Status-v3.4.0-success)
 
 | Métrica | Valor |
-|---------|-------|
-| **Ferramentas MCP** | 44 tools |
-| **Fases concluídas** | 3 de 5 |
-| **Linguagem** | Python 3.11+ |
-| **Engine** | Godot 4.7 |
-| **IA Alvo** | DeepSeek V4 Flash/Pro |
-| **Público** | Não-programadores |
+|---|---|
+| **Ferramentas MCP** | 193 tools · 193 handlers |
+| **Módulos** | 74 módulos Python |
+| **Rollups de domínio** | 30 `_manage` |
+| **Fases de desenvolvimento** | 6 (IDEIA → PRONTO_PARA_LANCAR) |
+| **Bridges** | WebSocket :9082 + TCP :8790 |
+| **Pipeline** | Verificação, Sandbox GDScript, ClassDB, Runtime Bridge |
 
-### 🛠️ Stack
+### 🩺 Assistente Oftalmológico
+Ferramenta com IA para apoio em diagnósticos e condutas oftalmológicas.
 
-![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)
+### 🎵 MCP Ableton 12
+Servidor MCP para criação musical — produção de áudio via linguagem natural integrado ao Ableton Live 12.
+
+---
+
+## 🛠️ Stack & Ferramentas
+
+![Python](https://img.shields.io/badge/Python-3.12+-3776AB?logo=python&logoColor=white)
 ![Godot](https://img.shields.io/badge/Godot-4.7-478CBF?logo=godot-engine&logoColor=white)
-![MCP](https://img.shields.io/badge/MCP-stdio-6366F1)
+![GDScript](https://img.shields.io/badge/GDScript-2.0-478CBF?logo=godot-engine&logoColor=white)
+![MCP](https://img.shields.io/badge/MCP-stdio--JSON--RPC_2.0-6366F1)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)
+![HTML5](https://img.shields.io/badge/Canvas-HTML5-E34F26?logo=html5&logoColor=white)
 ![DeepSeek](https://img.shields.io/badge/IA-DeepSeek_V4-4B32C3)
-![Jinja2](https://img.shields.io/badge/Templates-Jinja2-B41717)
-![Status](https://img.shields.io/badge/Status-Fase_3-success)
-
-### 🚀 O que já faz
-
-- ✅ Cria projetos Godot do zero
-- ✅ Manipula cenas, nós, propriedades
-- ✅ Gera scripts GDScript via templates
-- ✅ Configura física, colisões, input
-- ✅ Importa assets (texturas, áudio)
-- ✅ Roda e para o jogo
-- ✅ Editor ao vivo com screenshots
-- ⬜ Tilemap, animação, UI
-- ⬜ Export, undo, docs finais
+![VS Code](https://img.shields.io/badge/Editor-VS_Code-007ACC?logo=visualstudiocode&logoColor=white)
+![GitHub](https://img.shields.io/badge/DevOps-GitHub_Actions-2088FF?logo=githubactions&logoColor=white)
 
 ---
 
@@ -52,12 +58,11 @@
 
 ---
 
-## 🔗 Links
+## 📫 Contato & Links
 
-- 🎮 [MCP CREATOR](https://github.com/joabcostamd/MCP-CREATOR) — Meu projeto principal
-- 🛠️ [Godot Engine](https://godotengine.org) — A engine que uso
-- 🤖 [DeepSeek](https://deepseek.com) — A IA que potencializa tudo
+- 🎮 **MCP Godot Agent** — [github.com/joabcostamd/mcp-godot-desenvolvimento](https://github.com/joabcostamd/mcp-godot-desenvolvimento)
+- 🌐 **GitHub** — [github.com/joabcostamd](https://github.com/joabcostamd)
 
 ---
 
-<sub>✨ *"A melhor ferramenta é aquela que some — e deixa só a criação."*</sub>
+<sub>✨ *"A melhor ferramenta é aquela que desaparece — e deixa só a criação."*</sub>
