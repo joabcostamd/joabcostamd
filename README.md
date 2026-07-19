@@ -1,12 +1,12 @@
 # 👋 Olá! Eu sou Joab Costa
 
-> **Software & Game Developer | Medical Doctor | AI-Powered Creation**
+> **Software & Game Developer | Ophthalmologist MD | Tech House DJ | AI-Powered Creation**
 
 ---
 
 ## 🎮 O que eu faço
 
-Sou médico oftalmologista e desenvolvedor de software e jogos. Uso **inteligência artificial** (DeepSeek V4 Pro) para criar ferramentas e jogos profissionais — unindo saúde, tecnologia e criatividade.
+Sou médico oftalmologista, DJ de Tech House e desenvolvedor de software e jogos. Uso **inteligência artificial** (DeepSeek V4 Pro) para criar ferramentas e jogos profissionais — unindo saúde, música, tecnologia e criatividade.
 
 ---
 
