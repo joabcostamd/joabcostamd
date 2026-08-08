@@ -30,6 +30,24 @@ Servidor MCP com **193 ferramentas** para criar jogos completos no **Godot 4.7**
 | **Bridges** | WebSocket :9082 + TCP :8790 |
 | **Pipeline** | Verificação, Sandbox GDScript, ClassDB, Runtime Bridge |
 
+### 📱 Registro de Plantões
+App Flutter para trabalhadores de plantão — **69 features em 14 fases**, CLT completa (19 regras), múltiplos empregos, templates de escala, gamificação e freemium.
+
+![Flutter](https://img.shields.io/badge/Flutter-3.44-02569B?logo=flutter&logoColor=white)
+![Dart](https://img.shields.io/badge/Dart-3.12-0175C2?logo=dart&logoColor=white)
+![Isar](https://img.shields.io/badge/Isar-v3.1-00C7B7)
+![Firebase](https://img.shields.io/badge/Cloud-Firestore-FFCA28?logo=firebase&logoColor=black)
+![RevenueCat](https://img.shields.io/badge/IAP-RevenueCat-8A2BE2)
+![Status](https://img.shields.io/badge/Status-100%25-success)
+
+| Métrica | Valor |
+|---|---|
+| **Features** | 69 (14 fases) |
+| **Regras CLT** | 19 (noturno, HE50/HE100, DSR, INSS, FGTS, 13º, férias) |
+| **Testes** | 17/17 passando |
+| **Modelo** | Freemium (RevenueCat) |
+| **Arquitetura** | Offline-first (Isar) + Cloud Sync (Firestore) |
+
 ### 🩺 Assistente Oftalmológico
 Ferramenta com IA para apoio em diagnósticos e condutas oftalmológicas.
 
@@ -43,6 +61,8 @@ Servidor MCP para criação musical — produção de áudio via linguagem natur
 ![Python](https://img.shields.io/badge/Python-3.12+-3776AB?logo=python&logoColor=white)
 ![Godot](https://img.shields.io/badge/Godot-4.7-478CBF?logo=godot-engine&logoColor=white)
 ![GDScript](https://img.shields.io/badge/GDScript-2.0-478CBF?logo=godot-engine&logoColor=white)
+![Flutter](https://img.shields.io/badge/Flutter-3.44-02569B?logo=flutter&logoColor=white)
+![Dart](https://img.shields.io/badge/Dart-3.12-0175C2?logo=dart&logoColor=white)
 ![MCP](https://img.shields.io/badge/MCP-stdio--JSON--RPC_2.0-6366F1)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)
 ![HTML5](https://img.shields.io/badge/Canvas-HTML5-E34F26?logo=html5&logoColor=white)
@@ -61,6 +81,7 @@ Servidor MCP para criação musical — produção de áudio via linguagem natur
 ## 📫 Contato & Links
 
 - 🎮 **MCP Godot Agent** — [github.com/joabcostamd/mcp-godot-desenvolvimento](https://github.com/joabcostamd/mcp-godot-desenvolvimento)
+- 📱 **Registro de Plantões** — [github.com/joabcostamd/aplicativo-registro-de-plant-es](https://github.com/joabcostamd/aplicativo-registro-de-plant-es)
 - 🌐 **GitHub** — [github.com/joabcostamd](https://github.com/joabcostamd)
 
 ---
