@@ -13,7 +13,7 @@ Sou médico oftalmologista, DJ de Tech House e desenvolvedor de software e jogos
 ## 🚀 Projetos em Destaque
 
 ### 🎮 MCP Godot Agent
-Servidor MCP com **193 ferramentas** para criar jogos completos no **Godot 4.7** via linguagem natural.
+Servidor MCP com **287 ferramentas** para criar jogos completos no **Godot 4.7** via linguagem natural.
 
 ![Python](https://img.shields.io/badge/Python-3.12+-3776AB?logo=python&logoColor=white)
 ![Godot](https://img.shields.io/badge/Godot-4.7-478CBF?logo=godot-engine&logoColor=white)
@@ -23,7 +23,7 @@ Servidor MCP com **193 ferramentas** para criar jogos completos no **Godot 4.7**
 
 | Métrica | Valor |
 |---|---|
-| **Ferramentas MCP** | 193 tools · 193 handlers |
+| **Ferramentas MCP** | 287 tools · 287 handlers |
 | **Módulos** | 74 módulos Python |
 | **Rollups de domínio** | 30 `_manage` |
 | **Fases de desenvolvimento** | 6 (IDEIA → PRONTO_PARA_LANCAR) |
@@ -81,7 +81,7 @@ Servidor MCP para criação musical — produção de áudio via linguagem natur
 ## 📫 Contato & Links
 
 - 🎮 **MCP Godot Agent** — [github.com/joabcostamd/mcp-godot-desenvolvimento](https://github.com/joabcostamd/mcp-godot-desenvolvimento)
-- 📱 **Registro de Plantões** — [github.com/joabcostamd/aplicativo-registro-de-plant-es](https://github.com/joabcostamd/aplicativo-registro-de-plant-es)
+- 📱 **Registro de Plantões** — [github.com/joabcostamd/app-registro-de-plant-es](https://github.com/joabcostamd/app-registro-de-plant-es)
 - 🌐 **GitHub** — [github.com/joabcostamd](https://github.com/joabcostamd)
 
 ---
