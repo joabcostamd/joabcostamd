@@ -19,6 +19,10 @@ var perdeu := false
 var usou_dica := false
 var modo_relaxado := false
 
+## Células onde o jogador pintou errado. Só elas podem aparecer em vermelho:
+## marcar X é anotação livre e não pode entregar a solução de graça.
+var celulas_erradas := {}
+
 var _historico: Array = []   # [x, y, marca_anterior]
 
 func _init(novo_puzzle: Puzzle, relaxado := false) -> void:
@@ -46,6 +50,7 @@ func pintar(x: int, y: int) -> Jogada:
         return Jogada.ACERTO
     # Errou: a célula vira anotação de vazia, como manda o gênero.
     marcas[y][x] = Marca.CRUZ
+    celulas_erradas[Vector2i(x, y)] = true
     erros += 1
     if not modo_relaxado:
         vidas -= 1
@@ -72,6 +77,7 @@ func desfazer() -> bool:
     if marcas[y][x] == Marca.PINTADA and passo[2] != Marca.PINTADA:
         pintadas_corretas -= 1
     marcas[y][x] = passo[2]
+    celulas_erradas.erase(Vector2i(x, y))
     return true
 
 ## Revela uma célula cheia ainda não pintada. Abre mão das 3 estrelas.

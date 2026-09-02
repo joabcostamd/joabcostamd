@@ -124,3 +124,26 @@ Cada etapa só fecha depois de auditada:
 | 4. Telas | captura de tela de cada uma, conferida |
 | 5. Fluxo completo | partida simulada do menu à galeria |
 | 6. Final | suíte inteira + capturas + revisão do código |
+
+## 11. Decisões tomadas durante a produção
+
+Registradas aqui porque mudaram o projeto:
+
+- **A interface é montada por código**, não por cenas desenhadas no editor.
+  Cada tela é um `Control` com um script; o visual todo sai de `Estilo`.
+  Vantagem: um só lugar define a aparência, e as telas aparecem inteiras no
+  diff. Custo: o layout não é editável arrastando no editor.
+- **Padrão alternado denso é proibido nos desenhos.** Um xadrez grande sempre
+  aceita duas leituras. Descoberto ao validar o primeiro bloco de arte.
+- **Erro pinta a célula como vazia.** É o comportamento clássico do gênero e
+  mantém a condição de vitória simples: venceu quem pintou todas as cheias.
+- **Capítulo abre faltando duas fases do anterior**, para que uma fase difícil
+  não tranque o jogador. A regra de desbloqueio das fases teve de ser alinhada
+  a isso: a primeira fase de um capítulo depende do capítulo, não da fase
+  anterior. Um teste trava esse contrato.
+- **Música sintetizada** entrou depois: havia controle de volume nas opções
+  sem música nenhuma por trás.
+- **Só a célula pintada por engano fica vermelha.** Na primeira versão, marcar
+  X sobre uma célula cheia acendia vermelho — e como marcar X não custa nada,
+  dava para descobrir o desenho inteiro sem punição. A partida agora guarda
+  quais células o jogador errou ao pintar, e só essas ganham cor.

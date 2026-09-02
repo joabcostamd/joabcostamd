@@ -9,3 +9,6 @@ echo
 echo "── núcleo do jogo ──"
 godot --headless --import >/dev/null 2>&1 || true
 godot --headless res://cenas/testes.tscn
+echo
+echo "── fluxo das telas ──"
+godot --headless res://cenas/fluxo.tscn

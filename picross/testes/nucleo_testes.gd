@@ -21,6 +21,8 @@ func _rodar() -> void:
         print("NÚCLEO OK — %d/%d testes" % [_total, _total])
     else:
         print("NÚCLEO FALHOU: %d de %d" % [_falhas, _total])
+    Audio.parar_tudo()
+    await get_tree().create_timer(0.15).timeout
     get_tree().quit(1 if _falhas > 0 else 0)
 
 func _dados() -> void:
@@ -119,6 +121,16 @@ func _regras() -> void:
     _ok("anotação não custa vida nem conta erro",
         anotando.vidas == Partida.VIDAS_INICIAIS and anotando.erros == 0)
 
+    # A marca X não pode entregar a solução: se ela ficasse vermelha sobre uma
+    # célula cheia, dava para achar o desenho inteiro sem nunca ser punido.
+    var espiando := Partida.new(p)
+    espiando.alternar_cruz(celula_cheia.x, celula_cheia.y)
+    _ok("anotar X sobre célula cheia não marca como erro",
+        not espiando.celulas_erradas.has(celula_cheia))
+    espiando.pintar(celula_vazia.x, celula_vazia.y)
+    _ok("pintar errado sim marca a célula como errada",
+        espiando.celulas_erradas.has(celula_vazia))
+
 func _estrelas() -> void:
     var p := Catalogo.fase(1)
 
@@ -175,6 +187,24 @@ func _progresso() -> void:
     Progresso.registrar(1, 1, 20.0)
     _ok("uma repetição pior não rebaixa as estrelas", Progresso.estrelas_de(1) == 3)
     _ok("mas guarda o tempo melhor", is_equal_approx(Progresso.tempo_de(1), 20.0))
+
+    # Contrato entre as duas regras: não adianta abrir um capítulo se a
+    # primeira fase dele continuar trancada.
+    Progresso.fases.clear()
+    var capitulo_um: Array = Catalogo.capitulos[0]["fases"]
+    for i in capitulo_um.size() - 2:
+        Progresso.fases[str(int(capitulo_um[i]))] = {"estrelas": 1, "tempo": 10.0}
+    _ok("faltando duas fases, o capítulo seguinte abre", Progresso.capitulo_aberto(1))
+    var primeira_do_dois: int = int(Catalogo.capitulos[1]["fases"][0])
+    _ok("e a primeira fase dele fica jogável", Progresso.desbloqueada(primeira_do_dois))
+
+    var coerente := true
+    for indice in Catalogo.capitulos.size():
+        if Progresso.capitulo_aberto(indice):
+            var primeira: int = int(Catalogo.capitulos[indice]["fases"][0])
+            if not Progresso.desbloqueada(primeira):
+                coerente = false
+    _ok("todo capítulo aberto tem a primeira fase liberada", coerente)
 
     Progresso.apagar_tudo()
     _ok("apagar tudo zera o progresso", Progresso.total_resolvidas() == 0)

@@ -27,6 +27,47 @@ func _ready() -> void:
     _cortina.set_anchors_preset(Control.PRESET_FULL_RECT)
     camada.add_child(_cortina)
 
+    _talvez_capturar()
+
+## Ferramenta de desenvolvimento: abre uma tela, salva um PNG e sai. Permite
+## conferir o visual de todas as telas sem um monitor.
+##   godot -- --capturar menu [--demo]
+func _talvez_capturar() -> void:
+    var args := OS.get_cmdline_user_args()
+    var indice := args.find("--capturar")
+    if indice < 0 or indice + 1 >= args.size():
+        return
+    var tela: String = args[indice + 1]
+    if "--demo" in args:
+        _preencher_progresso_demo()
+    await get_tree().process_frame
+    var parametros_da_tela := {}
+    match tela:
+        "fases": parametros_da_tela = {"capitulo": 1}
+        "jogo": parametros_da_tela = {"fase": 26}
+        "revelacao": parametros_da_tela = {"fase": 26, "tempo": 214.0, "estrelas": 3}
+    ir_para(tela, parametros_da_tela)
+    await get_tree().create_timer(2.0).timeout
+    await RenderingServer.frame_post_draw
+    var destino: String = OS.get_environment("CAPTURA_DESTINO")
+    if destino == "":
+        destino = "user://%s.png" % tela
+    get_viewport().get_texture().get_image().save_png(destino)
+    print("captura: ", destino)
+    get_tree().quit()
+
+func _preencher_progresso_demo() -> void:
+    var estrelas := [3, 2, 3, 1, 3, 3, 2, 3, 3, 2, 3, 1, 2, 3, 3, 2, 3, 3, 1, 2,
+                     3, 2, 3, 3, 1, 2, 3]
+    for i in estrelas.size():
+        var fase := Catalogo.fase(i + 1)
+        if fase == null:
+            continue
+        Progresso.fases[str(i + 1)] = {
+            "estrelas": estrelas[i],
+            "tempo": fase.tempo_alvo * (0.6 + 0.02 * i),
+        }
+
 func ir_para(tela: String, novos_parametros := {}) -> void:
     if _trocando or not TELAS.has(tela):
         return

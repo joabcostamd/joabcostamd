@@ -27,10 +27,13 @@ func fase(id: int) -> Puzzle:
             return p
     return null
 
+## Compara convertendo para inteiro: o JSON entrega os ids como número de
+## ponto flutuante, e aí um "id in lista" direto não encontra nada.
 func capitulo_da_fase(id: int) -> int:
     for i in capitulos.size():
-        if id in capitulos[i]["fases"]:
-            return i
+        for numero in capitulos[i]["fases"]:
+            if int(numero) == id:
+                return i
     return 0
 
 func proxima_fase(id: int) -> int:

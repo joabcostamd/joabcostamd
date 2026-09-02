@@ -4,7 +4,7 @@
 
 | # | Fase | Grade | Dificuldade | Densidade | 3 estrelas |
 |---|---|---|---|---|---|
-| 1 | Taça | 5×5 | 22.8 | 80% | 1min16 |
+| 1 | Vaso | 5×5 | 22.8 | 80% | 1min16 |
 | 2 | Cruz | 5×5 | 26.6 | 36% | 1min23 |
 | 3 | Coração | 5×5 | 31.6 | 64% | 1min33 |
 | 4 | Barco | 5×5 | 32.6 | 60% | 1min35 |

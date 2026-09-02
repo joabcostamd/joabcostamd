@@ -62,24 +62,33 @@ func estrelas_de(id: int) -> int:
 func tempo_de(id: int) -> float:
     return float(fases.get(str(id), {}).get("tempo", 0.0))
 
-## Fase 1 sempre aberta; as outras abrem ao concluir a anterior.
+## Dentro de um capítulo o caminho é linear: cada fase abre a seguinte.
+## A primeira fase de um capítulo depende do capítulo estar aberto.
 func desbloqueada(id: int) -> bool:
-    return id <= 1 or resolvida(id - 1)
+    if id <= 1:
+        return true
+    var indice := Catalogo.capitulo_da_fase(id)
+    var do_capitulo: Array = Catalogo.capitulos[indice]["fases"]
+    if not do_capitulo.is_empty() and int(do_capitulo[0]) == id:
+        return capitulo_aberto(indice)
+    return resolvida(id - 1)
 
 func resolvidas_do_capitulo(indice: int) -> int:
     if indice < 0 or indice >= Catalogo.capitulos.size():
         return 0
     var total := 0
-    for id in Catalogo.capitulos[indice]["fases"]:
-        if resolvida(int(id)):
+    for numero in Catalogo.capitulos[indice]["fases"]:
+        if resolvida(int(numero)):
             total += 1
     return total
 
+## Um capítulo abre quando faltam no máximo duas fases do anterior — assim
+## uma fase difícil não tranca o jogador, mas ainda exige quase terminar.
 func capitulo_aberto(indice: int) -> bool:
-    if indice == 0:
+    if indice <= 0:
         return true
     var anterior: Array = Catalogo.capitulos[indice - 1]["fases"]
-    return resolvida(int(anterior[anterior.size() - 1])) or resolvidas_do_capitulo(indice - 1) >= anterior.size() - 2
+    return resolvidas_do_capitulo(indice - 1) >= maxi(1, anterior.size() - 2)
 
 func total_estrelas() -> int:
     var soma := 0

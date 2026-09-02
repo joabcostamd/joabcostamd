@@ -46,7 +46,7 @@ desenho("Casa", "Um teto e uma porta.", "#e0a458", [
     "#.#.#",
 ])
 
-desenho("Taça", "Para brindar a primeira fase.", "#c9a0dc", [
+desenho("Vaso", "Para começar com o pé direito.", "#c9a0dc", [
     "#...#",
     "#####",
     "#####",
