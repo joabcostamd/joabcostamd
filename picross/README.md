@@ -76,6 +76,20 @@ NÚCLEO OK — 46/46 testes
 FLUXO OK — 24/24 verificações
 ```
 
+## Gravar o jogo em vídeo
+
+O jogo sabe se jogar sozinho, do início à revelação, e o Godot grava isso:
+
+```bash
+xvfb-run -a godot --resolution 1280x720 \
+  --write-movie demo.avi --fixed-fps 30 -- --demonstracao
+ffmpeg -i demo.avi -c:v libx264 -crf 24 -pix_fmt yuv420p demonstracao.mp4
+```
+
+O resultado está em `capturas/demonstracao.mp4`. Com `--fixed-fps` o tempo do
+jogo não depende da velocidade da gravação, então o vídeo sai no ritmo certo
+mesmo levando mais tempo para ser escrito.
+
 ## Ver as telas sem monitor
 
 ```bash

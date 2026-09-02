@@ -2,7 +2,7 @@ extends Control
 ## A tela onde se joga. HUD em cima, tabuleiro no meio, ferramentas embaixo.
 
 var partida: Partida
-var _grade: GradeJogo
+var grade: GradeJogo
 var _rotulo_tempo: Label
 var _rotulo_vidas: Label
 var _rotulo_progresso: Label
@@ -32,14 +32,14 @@ func _ready() -> void:
 
     coluna.add_child(_montar_hud(puzzle))
 
-    _grade = GradeJogo.new()
-    _grade.size_flags_vertical = Control.SIZE_EXPAND_FILL
-    _grade.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-    _grade.mostrar_erros = bool(Progresso.opcoes["marcar_erro_automatico"])
-    _grade.jogada_feita.connect(_ao_jogar)
-    _grade.linha_fechada.connect(_ao_fechar_linha)
-    coluna.add_child(_grade)
-    _grade.definir_partida(partida)
+    grade = GradeJogo.new()
+    grade.size_flags_vertical = Control.SIZE_EXPAND_FILL
+    grade.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    grade.mostrar_erros = bool(Progresso.opcoes["marcar_erro_automatico"])
+    grade.jogada_feita.connect(_ao_jogar)
+    grade.linha_fechada.connect(_ao_fechar_linha)
+    coluna.add_child(grade)
+    grade.definir_partida(partida)
 
     coluna.add_child(_montar_ferramentas())
 
@@ -66,7 +66,7 @@ func _preencher_demo() -> void:
             elif (x * 7 + y * 3) % 11 == 0:
                 partida.alternar_cruz(x, y)
     partida.tempo = 128.0
-    _grade.queue_redraw()
+    grade.queue_redraw()
 
 func _montar_hud(puzzle: Puzzle) -> Control:
     var barra := HBoxContainer.new()
@@ -152,11 +152,11 @@ func _ao_jogar(tipo: int, _celula: Vector2i) -> void:
     match tipo:
         Partida.Jogada.ACERTO:
             # Cada acerto seguido sobe meio tom: a sequência vira uma escada.
-            var passo: int = mini(_grade.sequencia(), 12)
+            var passo: int = mini(grade.sequencia(), 12)
             Audio.tocar("pintar", 1.0 + passo * 0.045)
         Partida.Jogada.ERRO:
             Audio.tocar("erro")
-            Juice.tremer(_grade, 11.0, 0.32)
+            Juice.tremer(grade, 11.0, 0.32)
             Juice.clarao(self, Estilo.ERRO, 0.16, 0.35)
             Juice.pulsar(_rotulo_vidas, 1.45, 0.35)
         Partida.Jogada.ANOTACAO:
@@ -186,14 +186,14 @@ func _atualizar_hud() -> void:
 func _desfazer() -> void:
     if partida.desfazer():
         Audio.tocar("cruz")
-        _grade.queue_redraw()
+        grade.queue_redraw()
         _atualizar_hud()
 
 func _dica() -> void:
     var celula := partida.pedir_dica()
     if celula.x >= 0:
         Audio.tocar("estrela")
-        _grade.queue_redraw()
+        grade.queue_redraw()
         _atualizar_hud()
         if partida.concluida:
             _vencer()

@@ -117,6 +117,12 @@ func _gui_input(evento: InputEvent) -> void:
                 destino.x = _celula_inicial.x
             _aplicar(destino)
 
+## Aplica uma jogada como se viesse do mouse — é por aqui que o modo de
+## demonstração joga, para passar pelos mesmos efeitos que o jogador vê.
+func aplicar_em(celula: Vector2i, botao := MOUSE_BUTTON_LEFT) -> void:
+    _botao_arraste = botao
+    _aplicar(celula)
+
 func _aplicar(celula: Vector2i) -> void:
     if celula.x < 0 or partida == null:
         return

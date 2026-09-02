@@ -28,6 +28,8 @@ func _ready() -> void:
     camada.add_child(_cortina)
 
     _talvez_capturar()
+    if "--demonstracao" in OS.get_cmdline_user_args():
+        add_child(load("res://testes/demonstracao.gd").new())
 
 ## Ferramenta de desenvolvimento: abre uma tela, salva um PNG e sai. Permite
 ## conferir o visual de todas as telas sem um monitor.
