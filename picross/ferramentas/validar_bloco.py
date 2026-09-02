@@ -1,7 +1,8 @@
 """Auditoria de um bloco de desenhos: forma correta e solução única."""
 import sys
 import solucionador as S
-from arte import DESENHOS
+from catalogo_arte import DESENHOS
+import arte_cap1, arte_cap2, arte_cap3, arte_cap4, arte_cap5  # noqa: F401
 
 problemas = 0
 for i, d in enumerate(DESENHOS):

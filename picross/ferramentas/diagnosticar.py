@@ -1,7 +1,8 @@
 """Mostra onde a dedução trava num desenho: '?' são as células ambíguas."""
 import sys
 import solucionador as S
-from arte import DESENHOS
+from catalogo_arte import DESENHOS
+import arte_cap1, arte_cap2, arte_cap3, arte_cap4, arte_cap5  # noqa: F401
 
 alvos = sys.argv[1:]
 for d in DESENHOS:

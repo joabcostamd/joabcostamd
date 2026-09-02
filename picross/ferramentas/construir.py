@@ -9,13 +9,15 @@ import os
 import sys
 
 import solucionador as S
-from arte import DESENHOS
+from catalogo_arte import DESENHOS
+import arte_cap1, arte_cap2, arte_cap3, arte_cap4, arte_cap5  # noqa: F401  (registram os desenhos)
 
 CAPITULOS = [
     (5, "Primeiros traços", "Cinco por cinco. Aprendendo a ler os números."),
     (10, "Objetos", "Coisas do dia a dia, em dez por dez."),
-    (15, "Criaturas", "Bichos e figuras maiores."),
-    (20, "Obra maior", "Vinte por vinte. O capítulo final."),
+    (15, "Criaturas", "Bichos e figuras, em quinze por quinze."),
+    (20, "Cenas", "Vinte por vinte, com mais detalhe."),
+    (25, "Obras", "Vinte e cinco por vinte e cinco. O capítulo final."),
 ]
 
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
