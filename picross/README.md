@@ -19,6 +19,9 @@ godot                 # abre o editor / joga
   pausa, derrota, revelação, galeria, imagem ampliada, opções e créditos
 - **Progresso salvo** em `user://progresso.save`, com estrelas e melhor tempo
 - **Áudio sintetizado por código** — nenhum arquivo de som no repositório
+- **Resposta em tudo**: botões que reagem ao toque, células que estalam ao
+  serem pintadas, faíscas quando uma linha fecha, confete na revelação e um
+  fundo com brilho e poeira em movimento
 
 ## A regra que sustenta o jogo
 
@@ -70,7 +73,7 @@ SOLUCIONADOR OK              12 testes
 ── núcleo do jogo ──
 NÚCLEO OK — 46/46 testes
 ── fluxo das telas ──
-FLUXO OK — 17/17 verificações
+FLUXO OK — 24/24 verificações
 ```
 
 ## Ver as telas sem monitor
@@ -79,7 +82,9 @@ FLUXO OK — 17/17 verificações
 CAPTURA_DESTINO=/tmp/menu.png xvfb-run -a godot --resolution 1280x720 -- --capturar menu --demo
 ```
 
-As capturas de todas as telas estão em `capturas/`.
+As capturas de todas as telas estão em `capturas/`, e a folha com os 50
+desenhos em `capturas/folha_de_arte.png` — gerada por
+`python3 ferramentas/folha_contato.py`, que é como a arte é auditada de uma vez.
 
 ## Acrescentar uma fase
 

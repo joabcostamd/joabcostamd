@@ -43,6 +43,7 @@ func _ready() -> void:
     linha.alignment = BoxContainer.ALIGNMENT_CENTER
     linha.add_child(voltar)
     coluna.add_child(linha)
+    Juice.entrada(coluna)
 
 func _moldura(puzzle: Puzzle) -> Control:
     var resolvida := Progresso.resolvida(puzzle.id)
@@ -93,6 +94,8 @@ func _ampliar(puzzle: Puzzle) -> void:
     imagem.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
     imagem.definir(puzzle)
     coluna.add_child(imagem)
+    imagem.animar(0.7)
+    Audio.tocar("revelar", 1.1)
     coluna.add_child(Estilo.legenda(puzzle.legenda, 19))
     coluna.add_child(Estilo.legenda("fase %d  ·  %d×%d  ·  %s  ·  melhor tempo %s" % [
         puzzle.id, puzzle.lado, puzzle.lado,
@@ -110,3 +113,4 @@ func _ampliar(puzzle: Puzzle) -> void:
     coluna.add_child(linha)
 
     coluna.position = (size - coluna.get_combined_minimum_size()) * 0.5
+    Juice.entrada(_ampliada)

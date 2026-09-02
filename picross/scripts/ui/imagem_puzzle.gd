@@ -57,10 +57,18 @@ func _draw() -> void:
                 continue
             var surgindo := clampf(limite - distancia, 0.0, 1.0)
             var cor := puzzle.cor
+            # halo enquanto a célula está chegando
+            if surgindo < 0.999:
+                var halo := celula * 0.9 * (1.0 - surgindo)
+                draw_rect(Rect2(canto + Vector2(x, y) * celula - Vector2(halo, halo) * 0.5,
+                                Vector2(celula + halo, celula + halo)),
+                          Color(Estilo.DESTAQUE, 0.30 * (1.0 - surgindo)))
             # Variação de tom bem leve para a imagem não ficar chapada.
             # Por linha, e não por diagonal: em diagonal virava um xadrez.
             cor = cor.lerp(Color.WHITE, 0.035 * (y % 3))
             cor = cor.lerp(Estilo.DESTAQUE, (1.0 - surgindo) * 0.8)
-            var recuo := celula * 0.5 * (1.0 - surgindo)
+            # passa um pouco do tamanho final antes de assentar
+            var exagero := sin(surgindo * PI) * 0.16
+            var recuo := celula * (0.5 * (1.0 - surgindo) - exagero)
             draw_rect(Rect2(canto + Vector2(x, y) * celula + Vector2(recuo, recuo),
                             Vector2(celula - recuo * 2, celula - recuo * 2)), cor)

@@ -23,6 +23,9 @@ func _ready() -> void:
     _sons["derrota"] = _tom([392.0, 311.0, 233.0], 0.6, 0.32)
     _sons["clique"] = _tom([880.0], 0.04, 0.2)
     _sons["estrela"] = _tom([1046.0, 1318.0], 0.22, 0.25)
+    _sons["passar"] = _tom([1174.0], 0.03, 0.10)
+    _sons["linha"] = _tom([784.0, 1046.0], 0.20, 0.24)
+    _sons["revelar"] = _tom([523.0, 659.0, 784.0, 1046.0, 1318.0], 0.9, 0.26)
 
     _musica.stream = _trilha()
     _atualizar_volume_musica()
@@ -83,13 +86,19 @@ func _trilha() -> AudioStreamWAV:
     fluxo.data = dados
     return fluxo
 
-func tocar(nome: String) -> void:
+## `tom` acima de 1 deixa o som mais agudo: é assim que a sequência de acertos
+## vira uma escada sonora, cada célula um passo acima da anterior.
+func tocar(nome: String, tom := 1.0) -> void:
     if not _sons.has(nome):
+        return
+    var volume := float(Progresso.opcoes["volume_efeitos"])
+    if volume <= 0.001:
         return
     var tocador := _tocadores[_proximo]
     _proximo = (_proximo + 1) % _tocadores.size()
     tocador.stream = _sons[nome]
-    tocador.volume_db = linear_to_db(maxf(float(Progresso.opcoes["volume_efeitos"]), 0.0001))
+    tocador.pitch_scale = clampf(tom, 0.5, 2.5)
+    tocador.volume_db = linear_to_db(volume)
     tocador.play()
 
 ## Sequência de notas com ataque e queda suaves, para não estalar.

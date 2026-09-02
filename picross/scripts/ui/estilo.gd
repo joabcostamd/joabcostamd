@@ -68,16 +68,22 @@ static func _caixa(fundo: Color, borda: Color) -> StyleBoxFlat:
 
 static func aplicar(raiz: Control) -> void:
     raiz.theme = tema()
+
     # O fundo vai numa camada própria atrás de tudo. Como filho comum ele
     # cobriria o _draw() da própria tela, que o Godot pinta antes dos filhos.
-    var camada := CanvasLayer.new()
-    camada.layer = -10
-    var fundo := ColorRect.new()
-    fundo.color = FUNDO
-    fundo.set_anchors_preset(Control.PRESET_FULL_RECT)
-    fundo.mouse_filter = Control.MOUSE_FILTER_IGNORE
-    camada.add_child(fundo)
-    raiz.add_child(camada)
+    var atras := CanvasLayer.new()
+    atras.layer = -10
+    var fundo := FundoAnimado.new()
+    atras.add_child(fundo)
+    raiz.add_child(atras)
+
+    # E as partículas vão numa camada na frente de tudo.
+    var frente := CanvasLayer.new()
+    frente.layer = 50
+    frente.add_child(CamadaParticulas.new())
+    raiz.add_child(frente)
+
+    Juice.observar(raiz)
 
 static func titulo(texto: String, tamanho := 44, cor := TEXTO) -> Label:
     var rotulo := Label.new()

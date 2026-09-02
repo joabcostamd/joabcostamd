@@ -34,6 +34,7 @@ func _ready() -> void:
     coluna.add_child(voltar)
 
     coluna.position = (size - coluna.get_combined_minimum_size()) * 0.5
+    Juice.entrada(coluna)
 
 func _espaco(altura: int) -> Control:
     var vazio := Control.new()

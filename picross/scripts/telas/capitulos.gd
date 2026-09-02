@@ -28,6 +28,7 @@ func _ready() -> void:
     linha.alignment = BoxContainer.ALIGNMENT_CENTER
     linha.add_child(voltar)
     coluna.add_child(linha)
+    Juice.entrada(coluna)
 
 func _cartao(indice: int) -> Control:
     var capitulo: Dictionary = Catalogo.capitulos[indice]
@@ -69,4 +70,26 @@ func _cartao(indice: int) -> Control:
     direita.add_child(contagem)
     direita.add_child(grade)
     conteudo.add_child(direita)
+
+    # Barra de progresso do capítulo: dá a medida do avanço num relance.
+    var barra := ProgressBar.new()
+    barra.custom_minimum_size = Vector2(0, 6)
+    barra.show_percentage = false
+    barra.max_value = maxf(float(total), 1.0)
+    barra.value = float(resolvidas)
+    var vazia := StyleBoxFlat.new()
+    vazia.bg_color = Estilo.CELULA_VAZIA
+    vazia.set_corner_radius_all(3)
+    var cheia := StyleBoxFlat.new()
+    cheia.bg_color = Estilo.SUCESSO if resolvidas == total else Estilo.ACENTO
+    cheia.set_corner_radius_all(3)
+    barra.add_theme_stylebox_override("background", vazia)
+    barra.add_theme_stylebox_override("fill", cheia)
+    barra.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
+    barra.offset_left = 26
+    barra.offset_right = -26
+    barra.offset_top = -14
+    barra.offset_bottom = -8
+    barra.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    botao.add_child(barra)
     return botao

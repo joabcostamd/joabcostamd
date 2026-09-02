@@ -47,7 +47,11 @@ func _talvez_capturar() -> void:
         "jogo": parametros_da_tela = {"fase": 26}
         "revelacao": parametros_da_tela = {"fase": 26, "tempo": 214.0, "estrelas": 3}
     ir_para(tela, parametros_da_tela)
-    await get_tree().create_timer(2.0).timeout
+    var espera := 2.0
+    var quando := args.find("--espera")
+    if quando >= 0 and quando + 1 < args.size():
+        espera = float(args[quando + 1])
+    await get_tree().create_timer(espera).timeout
     await RenderingServer.frame_post_draw
     var destino: String = OS.get_environment("CAPTURA_DESTINO")
     if destino == "":
@@ -73,6 +77,7 @@ func ir_para(tela: String, novos_parametros := {}) -> void:
         return
     _trocando = true
     parametros = novos_parametros
+    Audio.tocar("passar", 0.7)
     var animacao := create_tween()
     animacao.tween_property(_cortina, "color:a", 1.0, 0.16)
     await animacao.finished

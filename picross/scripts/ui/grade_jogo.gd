@@ -6,6 +6,7 @@ class_name GradeJogo
 ## 400 células, e cada uma como nó seria desperdício.
 
 signal jogada_feita(tipo: int, celula: Vector2i)
+signal linha_fechada(indice: int, horizontal: bool)
 
 const PROPORCAO_PISTA := 0.62   # tamanho da coluna de pistas em relação à célula
 
@@ -19,6 +20,8 @@ var _max_pistas_linha := 1
 var _max_pistas_coluna := 1
 var _celula_sob_mouse := Vector2i(-1, -1)
 var _brilho := {}                    # Vector2i -> intensidade que decai
+var _sequencia := 0                  # acertos seguidos, para a escada sonora
+var _prontas := {}                   # linhas e colunas já comemoradas
 var _arrastando := false
 var _botao_arraste := 0
 var _celula_inicial := Vector2i(-1, -1)
@@ -26,6 +29,8 @@ var _eixo_travado := -1              # 0 horizontal, 1 vertical
 
 func definir_partida(nova: Partida) -> void:
     partida = nova
+    _prontas.clear()
+    _sequencia = 0
     _max_pistas_linha = 1
     _max_pistas_coluna = 1
     for pistas in partida.puzzle.pistas_linhas:
@@ -125,10 +130,51 @@ func _aplicar(celula: Vector2i) -> void:
         if _arrastando and _eixo_travado >= 0 and anterior == Partida.Marca.CRUZ:
             return
         resultado = partida.alternar_cruz(celula.x, celula.y)
-    if resultado != Partida.Jogada.NADA:
-        _brilho[celula] = 1.0
-        jogada_feita.emit(resultado, celula)
-        queue_redraw()
+    if resultado == Partida.Jogada.NADA:
+        return
+    _brilho[celula] = 1.0
+    var centro := _canto + (Vector2(celula) + Vector2(0.5, 0.5)) * _lado_celula
+    match resultado:
+        Partida.Jogada.ACERTO:
+            _sequencia += 1
+            Juice.faiscas(self, centro + global_position, Estilo.DESTAQUE, 6, 90.0)
+        Partida.Jogada.ERRO:
+            _sequencia = 0
+            Juice.faiscas(self, centro + global_position, Estilo.ERRO, 14, 190.0)
+        _:
+            _sequencia = 0
+    jogada_feita.emit(resultado, celula)
+    if resultado == Partida.Jogada.ACERTO:
+        _conferir_fechamento(celula)
+    queue_redraw()
+
+## Avisa quando a linha ou a coluna da jogada acabou de fechar — é o momento
+## que mais dá satisfação num picross, e antes passava em branco.
+func _conferir_fechamento(celula: Vector2i) -> void:
+    var camada := Juice.camada_particulas(self)
+    for par in [[celula.y, true], [celula.x, false]]:
+        var indice: int = par[0]
+        var horizontal: bool = par[1]
+        var chave := "%s%d" % ["l" if horizontal else "c", indice]
+        if _prontas.has(chave) or not _linha_pronta(indice, horizontal):
+            continue
+        _prontas[chave] = true
+        if camada != null:
+            var lado: int = partida.puzzle.lado
+            var inicio := _canto + global_position
+            var fim := inicio
+            if horizontal:
+                inicio.y += (indice + 0.5) * _lado_celula
+                fim = inicio + Vector2(lado * _lado_celula, 0)
+            else:
+                inicio.x += (indice + 0.5) * _lado_celula
+                fim = inicio + Vector2(0, lado * _lado_celula)
+            camada.varrer(inicio, fim, Estilo.SUCESSO, 16)
+        linha_fechada.emit(indice, horizontal)
+
+## Quantos acertos seguidos, para quem quiser reagir à sequência.
+func sequencia() -> int:
+    return _sequencia
 
 # ─────────────────────────────── desenho ───────────────────────────────
 
@@ -139,6 +185,18 @@ func _draw() -> void:
     var fonte := get_theme_default_font()
     var corpo := Rect2(_canto, Vector2(_lado_celula * lado, _lado_celula * lado))
 
+    # Moldura própria: separa o tabuleiro do fundo animado e dá foco.
+    # As pistas ficam só à esquerda e acima, então a folga não é igual nos
+    # quatro lados — daí o retângulo ser montado à mão.
+    var folga := 10.0
+    var recuo_esquerda := _unidade_pista * _max_pistas_linha + folga
+    var recuo_topo := _unidade_pista * _max_pistas_coluna + folga
+    var moldura := Rect2(
+        corpo.position - Vector2(recuo_esquerda, recuo_topo),
+        corpo.size + Vector2(recuo_esquerda + folga, recuo_topo + folga))
+    draw_rect(moldura, Color(Estilo.PAINEL, 0.55))
+    draw_rect(moldura, Color(Estilo.BORDA, 0.8), false, 2.0)
+
     draw_rect(corpo, Estilo.CELULA_VAZIA)
     _desenhar_destaque(lado)
     _desenhar_celulas(lado)
@@ -148,11 +206,15 @@ func _draw() -> void:
 func _desenhar_destaque(lado: int) -> void:
     if _celula_sob_mouse.x < 0:
         return
-    var cor := Color(Estilo.ACENTO, 0.10)
+    var cor := Color(Estilo.ACENTO, 0.13)
     draw_rect(Rect2(_canto + Vector2(0, _celula_sob_mouse.y * _lado_celula),
                     Vector2(_lado_celula * lado, _lado_celula)), cor)
     draw_rect(Rect2(_canto + Vector2(_celula_sob_mouse.x * _lado_celula, 0),
                     Vector2(_lado_celula, _lado_celula * lado)), cor)
+    # a célula sob o cursor ganha um contorno, para o alvo ficar claro
+    draw_rect(Rect2(_canto + Vector2(_celula_sob_mouse) * _lado_celula,
+                    Vector2(_lado_celula, _lado_celula)),
+              Color(Estilo.DESTAQUE, 0.55), false, 2.0)
 
 func _desenhar_celulas(lado: int) -> void:
     var margem := maxf(_lado_celula * 0.06, 1.0)
@@ -166,8 +228,16 @@ func _desenhar_celulas(lado: int) -> void:
             if marca == Partida.Marca.PINTADA:
                 var cor := Estilo.CELULA_CHEIA
                 if _brilho.has(chave):
-                    cor = cor.lerp(Estilo.DESTAQUE, _brilho[chave])
+                    var forca: float = _brilho[chave]
+                    cor = cor.lerp(Estilo.DESTAQUE, forca)
+                    # a célula nasce um pouco maior e assenta: dá o "pop"
+                    var crescer := forca * _lado_celula * 0.16
+                    area = area.grow(crescer)
+                    draw_rect(area.grow(crescer * 1.6), Color(Estilo.DESTAQUE, forca * 0.35))
                 draw_rect(area, cor)
+                # faixa clara no topo: dá volume, em vez de um branco chapado
+                draw_rect(Rect2(area.position, Vector2(area.size.x, area.size.y * 0.28)),
+                          Color(Color.WHITE, 0.35))
             elif marca == Partida.Marca.CRUZ:
                 var errada: bool = mostrar_erros and partida.celulas_erradas.has(chave)
                 var cor_x := Estilo.ERRO if errada else Estilo.TEXTO_SUAVE

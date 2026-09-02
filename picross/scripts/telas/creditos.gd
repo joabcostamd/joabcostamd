@@ -36,6 +36,7 @@ func _ready() -> void:
     coluna.add_child(linha)
 
     coluna.position = (size - coluna.get_combined_minimum_size()) * 0.5
+    Juice.entrada(coluna)
 
 func _linha(altura: int) -> Control:
     var vazio := Control.new()

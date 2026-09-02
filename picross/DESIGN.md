@@ -124,6 +124,20 @@ Cada etapa só fecha depois de auditada:
 | 4. Telas | captura de tela de cada uma, conferida |
 | 5. Fluxo completo | partida simulada do menu à galeria |
 | 6. Final | suíte inteira + capturas + revisão do código |
+| 7. Juice | testes que travam fundo, partículas e botões equipados |
+
+### O que dá vida ao jogo
+
+| Onde | O que acontece |
+|---|---|
+| Botões | crescem ao passar o mouse, afundam ao apertar, com um som curto |
+| Célula pintada | nasce maior e assenta, solta faíscas e sobe meio tom no som |
+| Sequência de acertos | cada acerto seguido é mais agudo que o anterior |
+| Erro | a grade treme, a tela pisca em vermelho e as vidas pulsam |
+| Linha ou coluna fechada | uma onda de faíscas percorre a linha, com som próprio |
+| Vitória | clarão dourado e confete |
+| Revelação | a imagem se forma na diagonal, clarão, confete e as estrelas caem uma a uma |
+| Fundo | brilho suave que respira, poeira flutuando e vinheta nas bordas |
 
 ## 11. Decisões tomadas durante a produção
 
@@ -143,6 +157,15 @@ Registradas aqui porque mudaram o projeto:
   anterior. Um teste trava esse contrato.
 - **Música sintetizada** entrou depois: havia controle de volume nas opções
   sem música nenhuma por trás.
+- **A resposta ao toque é automática.** Um nó auxiliar em cada tela equipa
+  todo botão que aparece — inclusive os criados depois, como os da pausa.
+  Ele é um nó, e não uma conexão solta de sinal, para morrer junto com a tela.
+- **Controles dentro de CanvasLayer não herdam o tamanho da tela.** Sem um pai
+  Control, os anchors não têm a que se ancorar e o nó fica com tamanho zero.
+  O fundo e a camada de partículas copiam o tamanho do viewport.
+- **A animação de entrada não mexe na posição.** Containers só posicionam os
+  filhos no fim do quadro; animar a posição a partir do valor lido antes disso
+  atira o conteúdo para o canto da tela.
 - **Só a célula pintada por engano fica vermelha.** Na primeira versão, marcar
   X sobre uma célula cheia acendia vermelho — e como marcar X não custa nada,
   dava para descobrir o desenho inteiro sem punição. A partida agora guarda

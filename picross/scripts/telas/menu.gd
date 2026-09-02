@@ -44,6 +44,7 @@ func _ready() -> void:
 
     # Centraliza a coluna inteira sem depender de âncoras frágeis.
     coluna.position = (size - coluna.get_combined_minimum_size()) * 0.5
+    Juice.entrada(coluna)
 
 ## Primeira fase aberta que ainda não foi resolvida.
 func _primeira_pendente() -> int:

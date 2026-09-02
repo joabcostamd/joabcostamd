@@ -8,6 +8,7 @@ var _rotulo_vidas: Label
 var _rotulo_progresso: Label
 var _pausa: Control
 var _derrota: Control
+var _barra: ProgressBar
 
 func _ready() -> void:
     Estilo.aplicar(self)
@@ -36,6 +37,7 @@ func _ready() -> void:
     _grade.size_flags_horizontal = Control.SIZE_EXPAND_FILL
     _grade.mostrar_erros = bool(Progresso.opcoes["marcar_erro_automatico"])
     _grade.jogada_feita.connect(_ao_jogar)
+    _grade.linha_fechada.connect(_ao_fechar_linha)
     coluna.add_child(_grade)
     _grade.definir_partida(partida)
 
@@ -78,6 +80,24 @@ func _montar_hud(puzzle: Puzzle) -> Control:
 
     _rotulo_progresso = Estilo.legenda("", 20)
     barra.add_child(_rotulo_progresso)
+
+    _barra = ProgressBar.new()
+    _barra.custom_minimum_size = Vector2(180, 12)
+    _barra.show_percentage = false
+    _barra.max_value = 1.0
+    _barra.value = 0.0
+    var fundo_barra := StyleBoxFlat.new()
+    fundo_barra.bg_color = Estilo.CELULA_VAZIA
+    fundo_barra.set_corner_radius_all(6)
+    var cheia_barra := StyleBoxFlat.new()
+    cheia_barra.bg_color = Estilo.ACENTO
+    cheia_barra.set_corner_radius_all(6)
+    _barra.add_theme_stylebox_override("background", fundo_barra)
+    _barra.add_theme_stylebox_override("fill", cheia_barra)
+    var caixa_barra := VBoxContainer.new()
+    caixa_barra.alignment = BoxContainer.ALIGNMENT_CENTER
+    caixa_barra.add_child(_barra)
+    barra.add_child(caixa_barra)
 
     _rotulo_vidas = Estilo.titulo("", 22, Estilo.ERRO)
     barra.add_child(_rotulo_vidas)
@@ -130,17 +150,33 @@ func _unhandled_key_input(evento: InputEvent) -> void:
 
 func _ao_jogar(tipo: int, _celula: Vector2i) -> void:
     match tipo:
-        Partida.Jogada.ACERTO: Audio.tocar("pintar")
-        Partida.Jogada.ERRO: Audio.tocar("erro")
-        Partida.Jogada.ANOTACAO: Audio.tocar("cruz")
+        Partida.Jogada.ACERTO:
+            # Cada acerto seguido sobe meio tom: a sequência vira uma escada.
+            var passo: int = mini(_grade.sequencia(), 12)
+            Audio.tocar("pintar", 1.0 + passo * 0.045)
+        Partida.Jogada.ERRO:
+            Audio.tocar("erro")
+            Juice.tremer(_grade, 11.0, 0.32)
+            Juice.clarao(self, Estilo.ERRO, 0.16, 0.35)
+            Juice.pulsar(_rotulo_vidas, 1.45, 0.35)
+        Partida.Jogada.ANOTACAO:
+            Audio.tocar("cruz")
     _atualizar_hud()
     if partida.concluida:
         _vencer()
     elif partida.perdeu:
         _perder()
 
+## Chamada quando uma linha ou coluna fecha por inteiro.
+func _ao_fechar_linha(_indice: int, _horizontal: bool) -> void:
+    Audio.tocar("linha", randf_range(0.97, 1.06))
+
 func _atualizar_hud() -> void:
     _rotulo_progresso.text = "%d%%" % int(partida.progresso() * 100.0)
+    if _barra != null:
+        var animacao := create_tween()
+        animacao.tween_property(_barra, "value", partida.progresso(), 0.22) \
+            .set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
     if partida.modo_relaxado:
         _rotulo_vidas.text = "modo relaxado"
         _rotulo_vidas.add_theme_color_override("font_color", Estilo.SUCESSO)
@@ -164,6 +200,11 @@ func _dica() -> void:
 
 func _vencer() -> void:
     Audio.tocar("vitoria")
+    Juice.clarao(self, Estilo.DESTAQUE, 0.42, 0.6)
+    var camada := Juice.camada_particulas(self)
+    if camada != null:
+        camada.confete(size.x, [Estilo.DESTAQUE, Estilo.ACENTO, Estilo.SUCESSO,
+                                partida.puzzle.cor], 70)
     Progresso.registrar(partida.puzzle.id, partida.estrelas(), partida.tempo)
     await get_tree().create_timer(0.45).timeout
     Navegacao.ir_para("revelacao", {
@@ -180,6 +221,7 @@ func _perder() -> void:
 func _abrir_pausa() -> void:
     Audio.tocar("clique")
     _pausa.visible = true
+    Juice.entrada(_pausa, 0.0, 14.0)
 
 func _fechar_pausa() -> void:
     Audio.tocar("clique")

@@ -43,6 +43,7 @@ func _ready() -> void:
     linha.alignment = BoxContainer.ALIGNMENT_CENTER
     linha.add_child(voltar)
     coluna.add_child(linha)
+    Juice.entrada(coluna)
 
 func _cartao(id: int) -> Control:
     var puzzle := Catalogo.fase(id)
@@ -50,7 +51,7 @@ func _cartao(id: int) -> Control:
     var resolvida := Progresso.resolvida(id)
 
     var botao := Button.new()
-    botao.custom_minimum_size = Vector2(158, 132)
+    botao.custom_minimum_size = Vector2(158, 146)
     botao.disabled = not aberta
     botao.tooltip_text = puzzle.nome if resolvida else "Ainda não revelada"
     botao.pressed.connect(func():
@@ -63,14 +64,23 @@ func _cartao(id: int) -> Control:
     conteudo.mouse_filter = Control.MOUSE_FILTER_IGNORE
     botao.add_child(conteudo)
 
-    conteudo.add_child(Estilo.titulo(str(id), 30,
+    conteudo.add_child(Estilo.titulo(str(id), 26,
         Estilo.TEXTO if aberta else Estilo.TEXTO_SUAVE))
 
     if resolvida:
-        conteudo.add_child(Estilo.legenda(puzzle.nome, 16, Estilo.TEXTO))
+        # Mostra a imagem conquistada: o cartão vira lembrança, não só um número.
+        var miniatura := ImagemPuzzle.new()
+        miniatura.custom_minimum_size = Vector2(46, 46)
+        miniatura.mostrar_moldura = false
+        miniatura.definir(puzzle)
+        var centralizar := HBoxContainer.new()
+        centralizar.alignment = BoxContainer.ALIGNMENT_CENTER
+        centralizar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+        centralizar.add_child(miniatura)
+        conteudo.add_child(centralizar)
+        conteudo.add_child(Estilo.legenda(puzzle.nome, 15, Estilo.TEXTO))
         conteudo.add_child(Estilo.titulo(Estilo.estrelas_texto(Progresso.estrelas_de(id)),
-            20, Estilo.DESTAQUE))
-        conteudo.add_child(Estilo.legenda(Estilo.tempo_texto(Progresso.tempo_de(id)), 14))
+            18, Estilo.DESTAQUE))
     elif aberta:
         conteudo.add_child(Estilo.legenda("%d×%d" % [puzzle.lado, puzzle.lado], 16))
         conteudo.add_child(Estilo.titulo("☆☆☆", 20, Estilo.TEXTO_SUAVE))
