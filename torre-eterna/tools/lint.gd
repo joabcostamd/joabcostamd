@@ -201,27 +201,65 @@ func _checar_entrada(caminho: String) -> void:
 	f.close()
 	if not texto.begins_with("extends SceneTree"):
 		return
-	# `bootstrap`, `build_scene` e `probe` mexem em ProjectSettings/cenas e não
-	# tocam na simulação: para eles a regra não faz sentido.
-	for isento in ["bootstrap.gd", "build_scene.gd", "probe.gd", "test_big.gd"]:
+	# `bootstrap` e `build_scene` mexem em ProjectSettings e cenas, não tocam na
+	# simulação: para eles a regra não faz sentido.
+	for isento in ["bootstrap.gd", "build_scene.gd"]:
 		if caminho.ends_with(isento):
 			return
+	var limpo := _sem_comentarios(texto)
 	var citadas: Array = []
-	for classe in CLASSES_DO_JOGO:
+	for classe in _classes_contaminadas():
 		var re := RegEx.create_from_string("(?<![\\w.\"])" + classe + "(?![\\w\"])")
-		if re.search(_sem_comentarios(texto)) != null and not citadas.has(classe):
+		if re.search(limpo) != null and not citadas.has(classe):
 			citadas.append(classe)
 	if not citadas.is_empty():
-		erros.append("%s é entrada `-s` e cita classe do jogo (%s): mova o corpo para tools/suites/" % [
+		citadas.sort()
+		erros.append("%s é entrada `-s` e cita classe que depende de autoload (%s): mova o corpo para tools/suites/" % [
 			caminho, ", ".join(citadas)])
 
-## Tudo que depende de autoload em tempo de parse, direta ou indiretamente.
-const CLASSES_DO_JOGO := [
-	"Jogo", "Bus", "Cfg", "SaveSys", "Audio",
-	"Economia", "Combate", "EnemyAI", "TorreSim", "Diretor", "Saque", "Progresso",
-	"Mecanicas", "Eventos", "Habilidades", "Offline", "Modificadores", "Estado",
-	"Arena", "StatEngine", "Prestigio",
-]
+## Nomes dos autoloads, lidos do próprio project.godot — lista escrita à mão
+## apodrece.
+func _autoloads() -> Array:
+	var out: Array = []
+	for chave in ProjectSettings.get_property_list():
+		var nome := str(chave.get("name", ""))
+		if nome.begins_with("autoload/"):
+			out.append(nome.substr(9))
+	return out
+
+## Todo script com `class_name` que cite um autoload em tempo de parse. É esta
+## a lista que importa, e ela é DERIVADA: quando alguém renomeia uma classe ou
+## cria outra, a regra continua certa sozinha. A versão anterior era uma lista
+## fixa que já tinha dois nomes mortos ("Modificadores", "Estado") e faltava
+## "Mods" e "GameState" — ou seja, protegia menos do que parecia.
+func _classes_contaminadas() -> Array:
+	if not _cache_contaminadas.is_empty():
+		return _cache_contaminadas
+	var autos := _autoloads()
+	var re_nome := RegEx.create_from_string("(?m)^class_name\\s+(\\w+)")
+	for caminho in _todos_gd():
+		if caminho.begins_with("res://tools"):
+			continue
+		var f := FileAccess.open(caminho, FileAccess.READ)
+		if f == null:
+			continue
+		var texto := f.get_as_text()
+		f.close()
+		var m := re_nome.search(texto)
+		if m == null:
+			continue
+		var limpo := _sem_comentarios(texto)
+		for a in autos:
+			var re_uso := RegEx.create_from_string("(?<![\\w.\"])" + str(a) + "\\.")
+			if re_uso.search(limpo) != null:
+				_cache_contaminadas.append(m.get_string(1))
+				break
+	# os próprios autoloads também não podem aparecer na entrada
+	for a in autos:
+		_cache_contaminadas.append(str(a))
+	return _cache_contaminadas
+
+var _cache_contaminadas: Array = []
 
 func _sem_comentarios(texto: String) -> String:
 	var out := ""
@@ -236,7 +274,9 @@ func _sem_comentarios(texto: String) -> String:
 ## crua na tela (é assim que o Txt sinaliza chave perdida) e ninguém percebe
 ## até um jogador tirar print.
 func _checar_i18n() -> void:
-	var re := RegEx.create_from_string('Txt\\.[tf]\\("([a-z0-9_]+)"')
+	# `Txt.t("m_" + chave)` monta a chave em tempo de execução: o pedaço literal
+	# não é uma chave e não dá para verificar aqui. O `(?!\\s*\\+)` deixa passar.
+	var re := RegEx.create_from_string('Txt\\.[tf]\\("([a-z0-9_]+)"(?!\\s*\\+)')
 	for caminho in _todos_gd():
 		var f := FileAccess.open(caminho, FileAccess.READ)
 		if f == null:
