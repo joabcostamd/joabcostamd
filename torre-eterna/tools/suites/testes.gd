@@ -144,6 +144,15 @@ func t_modificadores() -> void:
 	ok("especiais padrao", float(r2["especiais"]["slotsCartas"]) >= 3.0)
 	ok("desbloqueios e dicionario", r2["especiais"]["desbloqueios"] is Dictionary)
 
+	# "+20% de bonus de combo por nivel" e multiplicativo, nao +0,2 absoluto.
+	# Somando, dez niveis levavam o bonus por ponto de combo de 0,006 a 2,006.
+	var s_cb := GameState.novo()
+	s_cb["prestigio"]["arvore_fragmentos"]["af_combo"] = 10
+	var r_cb := Mods.recalcular(s_cb, m)
+	var cb := float(r_cb["especiais"]["comboBonus"])
+	ok("combo multiplica, nao soma", cb < 0.05, str(cb))
+	ok("combo cresce mesmo assim", cb > Bal.COMBO_BONUS_POR * 5.0, str(cb))
+
 	# talento com passiva
 	s["talentos"]["f_sede"] = 1
 	s["combo"]["atual"] = 10

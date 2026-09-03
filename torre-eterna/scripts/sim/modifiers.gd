@@ -39,6 +39,12 @@ static func aplicar_efeitos(m: StatEngine, efeitos, n: int, fonte: String, esp: 
 					esp["desbloqueios"][str(v)] = true
 				"hpInimigo", "ganhoNucleos":
 					esp[chave] = float(esp.get(chave, 1.0)) * pow(float(v), float(n))
+				"comboBonus":
+					# "+20% de bônus de combo por nível" é MULTIPLICATIVO. Somando
+					# 0,2 por nível o bônus por ponto de combo saía 0,006 -> 2,006
+					# (334x o descrito): com o teto de combo em 650, o dano do
+					# combo passava de 1300x. Aqui 10 níveis dão 1,2^10 = 6,2x.
+					esp[chave] = float(esp.get(chave, Bal.COMBO_BONUS_POR)) * pow(1.0 + float(v), float(n))
 				_:
 					if v is float or v is int:
 						esp[chave] = float(esp.get(chave, 0.0)) + float(v) * float(n)
