@@ -18,7 +18,7 @@
    "unidade": "/s"
   },
   "alcance": {
-   "base": 210,
+   "base": 260.0,
    "tipo": "num",
    "nome": "Alcance",
    "nomeEn": "Range",

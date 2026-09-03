@@ -181,6 +181,7 @@ func simular(dt: float) -> void:
 	Economia.atualizar_coletaveis(dt, self)
 	Habilidades.atualizar(dt, self)
 	diretor.atualizar(dt)
+	Eventos.atualizar(dt, self)
 
 	parasitas = 0
 	for e in arena.inimigos:

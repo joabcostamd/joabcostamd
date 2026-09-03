@@ -179,6 +179,16 @@ func _montar() -> void:
 	raiz_ui.add_child(gerente)
 	gerente.raiz = raiz_ui
 	hud.painel_pedido.connect(func(nome): gerente.alternar(nome))
+
+	# --- tutorial: balões que aparecem na hora certa e somem sozinhos ---
+	var tutorial := Control.new()
+	tutorial.name = "Tutorial"
+	tutorial.theme = UI.tema()
+	tutorial.set_script(load("res://scripts/ui/tutorial.gd"))
+	camada_ui.add_child(tutorial)
+	tutorial.hud = hud
+	tutorial.gerente = gerente
+
 	Bus.prestigio_feito.connect(_ao_prestigio)
 
 func _ao_redimensionar() -> void:

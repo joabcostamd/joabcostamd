@@ -1,0 +1,289 @@
+class_name Musica
+extends RefCounted
+
+## Trilha adaptativa gerada em tempo real. Não existe faixa gravada: existe um
+## relógio de compasso, a escala da era atual e um punhado de instrumentos
+## sintetizados uma única vez e transpostos por `pitch_scale`.
+##
+## Camadas (entram conforme a intensidade sobe):
+##   0 baixo · 1 percussão · 2 arpejo · 3 pad · 4 contracanto
+## Em luta de chefe o modo muda: mais rápido, mais grave, com um trítono fixo
+## rondando o baixo. É de propósito que incomode.
+
+const VOZES_PAD := 3
+const VOZES_LIVRES := 7
+const REF_BAIXO := 36.0
+const REF_PAD := 48.0
+const REF_ARPEJO := 72.0
+const TIMBRES := ["senoide", "quadrada", "dente", "triangulo"]
+
+var host: Node
+var bancos: Dictionary = {}          # nome -> AudioStreamWAV
+var tocando := false
+
+var _vozes: Array[AudioStreamPlayer] = []
+var _prox_livre := 0
+var _t := 0.0
+var _passo := 0
+var _rng := RandomNumberGenerator.new()
+
+# --- era corrente (o que o relógio realmente usa) ---
+var _era_idx := -1
+var _escala: Array = [0, 3, 5, 7, 10]
+var _bpm := 76.0
+var _timbre := "quadrada"
+var _camadas_max := 2
+var _raiz := 36
+
+# --- transição / mistura ---
+var _ganho := 0.0
+var _ganho_alvo := 1.0
+var _era_pendente := -1
+var _intensidade := 0.0
+var _chefe := false
+
+func _init(no_host: Node) -> void:
+	host = no_host
+	_rng.seed = 90210
+
+## ------------------------------------------------------------ instrumentos
+
+## Nomes dos bancos, na ordem de geração (o essencial primeiro).
+func nomes_banco() -> Array:
+	var out: Array = ["perc", "hat", "pad"]
+	for t in TIMBRES:
+		out.append("baixo_" + str(t))
+		out.append("arpejo_" + str(t))
+	return out
+
+## Gera um banco. Chamado aos poucos pelo motor, nunca em bloco.
+func gerar_banco(nome: String) -> void:
+	if bancos.has(nome):
+		return
+	bancos[nome] = _receita_banco(nome)
+
+func _receita_banco(nome: String) -> AudioStreamWAV:
+	if nome == "perc":
+		return Synth.som([
+			{"onda": "senoide", "f0": 150.0, "f1": 46.0, "curva": 0.5, "dur": 0.24,
+			 "atk": 0.001, "dec": 0.18, "rel": 0.05, "sat": 0.35, "vol": 0.9},
+			{"onda": "ruido", "dur": 0.045, "atk": 0.0005, "dec": 0.035, "rel": 0.008,
+			 "lp0": 3200.0, "lp1": 800.0, "vol": 0.3},
+		], 0.9)
+	if nome == "hat":
+		return Synth.som([
+			{"onda": "ruido", "dur": 0.05, "atk": 0.0008, "dec": 0.038, "rel": 0.01,
+			 "lp0": 13000.0, "lp1": 6000.0, "vol": 0.5},
+		], 0.6)
+	if nome == "pad":
+		return Synth.som([
+			{"onda": "triangulo", "f0": Synth.freq(REF_PAD), "dur": 3.0, "vozes": 3,
+			 "detune": 0.17, "atk": 0.8, "dec": 0.7, "sus": 0.55, "rel": 1.3,
+			 "lp0": 900.0, "lp1": 1800.0, "vol": 0.6},
+			{"onda": "senoide", "f0": Synth.freq(REF_PAD + 12.0), "dur": 3.0,
+			 "atk": 1.1, "dec": 0.6, "sus": 0.3, "rel": 1.3, "vol": 0.25},
+		], 0.75)
+
+	var partes: PackedStringArray = nome.split("_")
+	var papel := str(partes[0])
+	var timbre: String = str(partes[1]) if partes.size() > 1 else "senoide"
+	if papel == "baixo":
+		return Synth.som([
+			{"onda": timbre, "f0": Synth.freq(REF_BAIXO), "dur": 0.55, "vozes": 2,
+			 "detune": 0.09, "atk": 0.006, "dec": 0.3, "sus": 0.35, "rel": 0.2,
+			 "lp0": 1100.0, "lp1": 380.0, "sat": 0.35, "vol": 0.85},
+			{"onda": "senoide", "f0": Synth.freq(REF_BAIXO - 12.0), "dur": 0.5,
+			 "atk": 0.004, "dec": 0.28, "sus": 0.25, "rel": 0.18, "vol": 0.5},
+		], 0.85)
+	return Synth.som([
+		{"onda": timbre, "f0": Synth.freq(REF_ARPEJO), "dur": 0.32, "atk": 0.003,
+		 "dec": 0.2, "sus": 0.1, "rel": 0.11, "lp0": 5200.0, "lp1": 2600.0, "vol": 0.6},
+	], 0.7)
+
+func pronta() -> bool:
+	return bancos.has("perc") and bancos.has("pad") and bancos.has("baixo_" + _timbre)
+
+## ------------------------------------------------------------------ vozes
+
+func iniciar() -> void:
+	if tocando or host == null:
+		return
+	for i in VOZES_PAD + VOZES_LIVRES:
+		var p := AudioStreamPlayer.new()
+		p.bus = "Musica"
+		p.name = "Musica%d" % i
+		host.add_child(p)
+		_vozes.append(p)
+	tocando = true
+	_ganho = 0.0
+	_ganho_alvo = 1.0
+
+func parar() -> void:
+	for p in _vozes:
+		p.stop()
+	tocando = false
+
+## ------------------------------------------------------------------ relógio
+
+## `ctx`: {onda, inimigos, chefe, vida (0..1), ativo}
+func atualizar(dt: float, ctx: Dictionary) -> void:
+	if not tocando or not pronta():
+		return
+
+	_aplicar_contexto(ctx)
+
+	var alvo: float = _ganho_alvo if bool(ctx.get("ativo", true)) else _ganho_alvo * 0.45
+	_ganho = move_toward(_ganho, alvo, dt * 1.4)
+	if _era_pendente >= 0 and _ganho <= 0.06:
+		_trocar_era(_era_pendente)
+		_era_pendente = -1
+		_ganho_alvo = 1.0
+
+	var dur_passo := 30.0 / maxf(20.0, _bpm * (1.15 if _chefe else 1.0))
+	_t += dt
+	var guarda := 0
+	while _t >= dur_passo and guarda < 8:
+		_t -= dur_passo
+		guarda += 1
+		_tocar_passo(_passo)
+		_passo += 1
+
+func _aplicar_contexto(ctx: Dictionary) -> void:
+	var onda: int = int(ctx.get("onda", 1))
+	var idx: int = Dados.era_da_onda(onda)
+	if idx != _era_idx and _era_pendente < 0:
+		if _era_idx < 0:
+			_trocar_era(idx)            # primeira era: entra direto
+		else:
+			_era_pendente = idx         # some devagar e volta na era nova
+			_ganho_alvo = 0.0
+
+	_chefe = bool(ctx.get("chefe", false))
+	var inimigos: float = float(ctx.get("inimigos", 0))
+	var vida: float = clampf(float(ctx.get("vida", 1.0)), 0.0, 1.0)
+	var bruta := clampf(inimigos / 16.0, 0.0, 1.0) * 0.55
+	if _chefe:
+		bruta += 0.32
+	if vida < 0.35:
+		bruta += 0.18
+	_intensidade = lerpf(_intensidade, clampf(bruta, 0.0, 1.0), 0.06)
+
+func _trocar_era(idx: int) -> void:
+	_era_idx = idx
+	var era: Dictionary = Dados.eras[idx] if idx >= 0 and idx < Dados.eras.size() else {}
+	var m: Dictionary = era.get("musica", {})
+	var esc: Array = m.get("escala", [0, 3, 5, 7, 10])
+	_escala = esc if not esc.is_empty() else [0, 3, 5, 7, 10]
+	_bpm = float(m.get("bpm", 76))
+	_timbre = str(m.get("timbre", "quadrada"))
+	if not TIMBRES.has(_timbre):
+		_timbre = "quadrada"
+	_camadas_max = clampi(int(m.get("camadas", 2)), 1, 5)
+	_raiz = 33 + (idx * 5) % 12
+	_passo = 0
+	_t = 0.0
+
+## Quantas camadas estão no ar agora.
+func camadas_ativas() -> int:
+	var extra := int(round(_intensidade * float(_camadas_max - 1)))
+	return clampi(1 + extra, 1, _camadas_max)
+
+## ----------------------------------------------------------------- compasso
+
+func _tocar_passo(p: int) -> void:
+	if _ganho <= 0.02:
+		return
+	var no_compasso := p % 16
+	var compasso := int(p / 16)
+	var camadas := camadas_ativas()
+	_rng.seed = 7717 * (compasso + 1) + _era_idx * 131
+
+	# --- baixo: a fundação, sempre presente ---
+	var bate_baixo := no_compasso % 8 == 0
+	if _chefe:
+		bate_baixo = no_compasso % 4 == 0
+	if bate_baixo:
+		var grau: int = 0 if no_compasso == 0 else int(_escala[(compasso + no_compasso / 8) % _escala.size()])
+		_nota("baixo_" + _timbre, REF_BAIXO, float(_raiz + grau), -9.0, 1.0)
+		if _chefe and no_compasso == 8:
+			# trítono do baixo: a dissonância que avisa que hoje é diferente
+			_nota("baixo_" + _timbre, REF_BAIXO, float(_raiz + 6), -14.0, 1.0)
+
+	# --- percussão ---
+	if camadas >= 2:
+		if no_compasso % 8 == 0 or (_chefe and no_compasso % 4 == 0):
+			_nota("perc", 0.0, 0.0, -11.0, 1.0)
+		if no_compasso % 2 == 1:
+			_nota("hat", 0.0, 0.0, -24.0 + (2.0 if _chefe else 0.0), _rng.randf_range(0.92, 1.1))
+
+	# --- arpejo ---
+	if camadas >= 3:
+		var passa := no_compasso % 2 == 0 or _intensidade > 0.5
+		if passa:
+			var i: int = (no_compasso + compasso) % _escala.size()
+			var oitava: int = 12 if (no_compasso % 8) == 6 else 0
+			_nota("arpejo_" + _timbre, REF_ARPEJO, float(_raiz + 24 + int(_escala[i]) + oitava), -17.0, 1.0)
+
+	# --- pad: um acorde por compasso ---
+	if camadas >= 4 and no_compasso == 0:
+		var terca: int = int(_escala[mini(1, _escala.size() - 1)])
+		var quinta: int = int(_escala[mini(3, _escala.size() - 1)])
+		_pad(float(_raiz + 12), -19.0)
+		_pad(float(_raiz + 12 + terca), -22.0)
+		_pad(float(_raiz + 12 + (6 if _chefe else quinta)), -22.0)
+
+	# --- contracanto: só quando o campo está cheio ---
+	if camadas >= 5 and (no_compasso == 4 or no_compasso == 11) and _rng.randf() < 0.7:
+		var g: int = int(_escala[_rng.randi() % _escala.size()])
+		_nota("arpejo_" + _timbre, REF_ARPEJO, float(_raiz + 36 + g), -21.0, 1.0)
+
+func _nota(banco: String, ref_midi: float, midi: float, db: float, tempero: float) -> void:
+	var fluxo: AudioStreamWAV = bancos.get(banco, null)
+	if fluxo == null:
+		return
+	var p := _voz_livre()
+	if p == null:
+		return
+	p.stream = fluxo
+	p.pitch_scale = clampf(pow(2.0, (midi - ref_midi) / 12.0) * tempero, 0.05, 4.0) if ref_midi > 0.0 else clampf(tempero, 0.05, 4.0)
+	p.volume_db = db + linear_to_db(clampf(_ganho, 0.001, 1.0))
+	p.play()
+
+func _pad(midi: float, db: float) -> void:
+	var fluxo: AudioStreamWAV = bancos.get("pad", null)
+	if fluxo == null:
+		return
+	var p: AudioStreamPlayer = _vozes[_prox_pad()]
+	p.stream = fluxo
+	p.pitch_scale = clampf(pow(2.0, (midi - REF_PAD) / 12.0), 0.1, 3.0)
+	p.volume_db = db + linear_to_db(clampf(_ganho, 0.001, 1.0))
+	p.play()
+
+var _pad_i := 0
+
+func _prox_pad() -> int:
+	_pad_i = (_pad_i + 1) % VOZES_PAD
+	return _pad_i
+
+func _voz_livre() -> AudioStreamPlayer:
+	if _vozes.size() <= VOZES_PAD:
+		return null
+	for i in VOZES_LIVRES:
+		var idx := VOZES_PAD + (_prox_livre + i) % VOZES_LIVRES
+		var p: AudioStreamPlayer = _vozes[idx]
+		if not p.playing:
+			_prox_livre = (idx - VOZES_PAD + 1) % VOZES_LIVRES
+			return p
+	var q: AudioStreamPlayer = _vozes[VOZES_PAD + _prox_livre]
+	_prox_livre = (_prox_livre + 1) % VOZES_LIVRES
+	return q
+
+## Descrição curta do que está tocando — útil para depuração e para o painel.
+func descricao() -> String:
+	if not tocando:
+		return "silêncio"
+	var nome := "?"
+	if _era_idx >= 0 and _era_idx < Dados.eras.size():
+		nome = str(Dados.eras[_era_idx].get("nome", "?"))
+	return "%s · %d BPM · %s · %d camada(s)%s" % [
+		nome, int(_bpm), _timbre, camadas_ativas(), " · CHEFE" if _chefe else ""]

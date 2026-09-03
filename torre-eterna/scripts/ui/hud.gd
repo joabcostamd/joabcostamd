@@ -44,6 +44,9 @@ func _ready() -> void:
 	Bus.habilidade_pronta.connect(_ao_hab_pronta)
 	Bus.ui_atualizar.connect(func(_c): _reconstruir_habilidades())
 	Bus.onda_iniciou.connect(_ao_onda)
+	Bus.jogo_pronto.connect(func(): _reconstruir_habilidades())
+	if jogo != null and jogo.iniciado:
+		_reconstruir_habilidades()
 
 ## ------------------------------------------------------------ construção
 

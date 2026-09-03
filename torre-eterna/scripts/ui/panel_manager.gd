@@ -8,6 +8,7 @@ var atual := ""
 var painel_atual: Control
 var fundo_escuro: ColorRect
 var caixa_toast: VBoxContainer
+var dialogo: Control          # janela de evento (vive fora do ciclo dos painéis)
 var jogo: Node
 
 const PAINEIS := {
@@ -31,6 +32,12 @@ func _ready() -> void:
 	_montar_overlay()
 	Bus.aviso.connect(_toast)
 	Bus.relatorio_offline.connect(_relatorio_offline)
+	Bus.evento_sorteado.connect(abrir_evento)
+	# fechou o jogo com um evento na tela? ele continua esperando resposta.
+	if jogo != null:
+		var pendente := Eventos.pendente(jogo.s)
+		if not pendente.is_empty():
+			abrir_evento(pendente)
 
 func _montar_overlay() -> void:
 	fundo_escuro = ColorRect.new()
@@ -64,6 +71,10 @@ func alternar(nome: String) -> void:
 		abrir(nome)
 
 func abrir(nome: String) -> void:
+	# atalho de captura/depuração: --painel=evento abre a janela de evento
+	if nome == "evento":
+		abrir_evento(Eventos.sortear(jogo))
+		return
 	if not PAINEIS.has(nome):
 		return
 	fechar()
@@ -99,6 +110,25 @@ func fechar_ou_pausar() -> void:
 		fechar()
 	else:
 		abrir("config")
+
+## ------------------------------------------------------- janela de evento
+
+## O jogo NÃO pausa: a janela sobe por cima e a torre continua trabalhando.
+func abrir_evento(def: Dictionary) -> void:
+	if def.is_empty():
+		return
+	if dialogo != null and is_instance_valid(dialogo):
+		return
+	var script := load("res://scripts/ui/dialogo_evento.gd")
+	if script == null:
+		return
+	dialogo = Control.new()
+	dialogo.name = "DialogoEvento"
+	dialogo.set_script(script)
+	dialogo.evento = def
+	raiz.add_child(dialogo)
+	dialogo.move_to_front()
+	caixa_toast.move_to_front()
 
 ## ------------------------------------------------------------- toasts
 

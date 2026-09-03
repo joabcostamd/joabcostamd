@@ -35,8 +35,11 @@ static func eh_chefe(w: int) -> bool:
 static func eh_super_chefe(w: int) -> bool:
 	return w % 50 == 0
 
+## Velocidade calibrada pelo TEMPO MORTO: com 26 px/s o jogador olhava para
+## uma tela vazia por 11 s antes do primeiro tiro. Agora o combate começa em
+## ~5 s e cada inimigo passa ~6 s dentro do alcance.
 static func velocidade_inimigo(w: int) -> float:
-	return 26.0 + minf(26.0, float(w) * 0.16)
+	return 44.0 + minf(30.0, float(w) * 0.16)
 
 static func intervalo_spawn(w: int) -> float:
 	return maxf(0.22, 1.15 - log(float(w) + 1.0) / 2.302585 * 0.28)
@@ -70,7 +73,7 @@ static func pontos_por_nivel(n: int) -> int:
 # ============================================================= COMBATE ====
 const DANO_BASE := 4.0
 const CADENCIA_BASE := 1.6
-const ALCANCE_BASE := 210.0
+const ALCANCE_BASE := 260.0
 const CRIT_BASE := 0.05
 const CRIT_MULT_BASE := 2.0
 const VEL_PROJETIL := 460.0
