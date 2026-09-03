@@ -80,7 +80,7 @@ func rodar(cena: SceneTree) -> void:
 		"Acessibilidade": 11, "Alcancavel": 8, "Big": 12,
 		"Chaves dinamicas": 3, "Combate": 9, "Defesa": 27,
 		"Dicas": 5, "Economia": 9, "Elites": 11,
-		"Eventos": 12, "Feedback": 2, "Ferramentas": 3, "Daltonismo": 9, "Tempo": 5, "Conteudo lido": 20, "Fmt": 6,
+		"Eventos": 12, "Feedback": 2, "Ferramentas": 3, "Daltonismo": 9, "Tempo": 5, "Conteudo lido": 21, "Fmt": 6,
 		"Habilidades": 17, "Icones": 2, "Integridade": 9,
 		"Longo prazo": 7, "Mecânicas": 61, "Mira": 6,
 		"Mods": 19, "Numeros de dano": 2, "Offline": 6,
@@ -608,6 +608,26 @@ func t_conteudo_lido() -> void:
 			habs_sem_braco.append("%s -> %s" % [str(e_def.get("id", "")), h])
 	ok("toda habilidade de inimigo tem braco na simulacao",
 		habs_sem_braco.is_empty(), str(habs_sem_braco))
+
+	# NINGUEM ATIRA NA TORRE DE FORA DO ALCANCE DELA.
+	#
+	# O `atirador` declara `alcance: 260` e o alcance BASE da torre e 260 — os
+	# dois exatamente iguais. Quando o `cuspir` foi implementado, ele passou a
+	# parar no proprio alcance de tiro, e um pixel de arredondamento o deixava a
+	# 260,1 px: fora do alcance da torre, atirando impunemente para sempre. A
+	# onda nunca fechava e o jogo travava por volta da onda 100 sem que nada na
+	# tela explicasse. Empate assim nao pode voltar por descuido de dado.
+	var alc_torre := float(Dados.stat_defs.get("alcance", {}).get("base", 260.0))
+	var atiradores_intocaveis: Array = []
+	for e_def2 in Dados.inimigos:
+		if str(e_def2.get("hab", "")) != "cuspir":
+			continue
+		var alc_dele := float(e_def2.get("alcance", 260.0)) * EnemyAI.CUSPIR_PARADA
+		if alc_dele >= alc_torre:
+			atiradores_intocaveis.append("%s para a %.0f px, torre alcanca %.0f" % [
+				str(e_def2.get("id", "")), alc_dele, alc_torre])
+	ok("nenhum atirador para fora do alcance base da torre",
+		atiradores_intocaveis.is_empty(), str(atiradores_intocaveis))
 
 	# `ondaMax`: doze dos catorze desafios declaram a linha de chegada, o painel
 	# anuncia esse numero como a meta, e `encerrar_desafio(true)` nao tinha UM

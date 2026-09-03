@@ -98,6 +98,10 @@ static func criar(def: Dictionary, onda: int, j, opt: Dictionary = {}) -> Inimig
 	return e
 
 ## Quanto tempo o `fantasmal` passa sólido e quanto passa intocável.
+## Fracao do alcance declarado em que o atirador para. Menor que 1 de proposito:
+## no alcance cheio ele empata com o alcance base da torre e fica intocavel.
+const CUSPIR_PARADA := 0.8
+
 const FANTASMA_CICLO := 3.0
 const FANTASMA_SOME := 1.0
 
@@ -298,7 +302,7 @@ static func habilidade(e: Inimigo, dt: float, j) -> void:
 				return
 			e.cd = maxf(1.6, float(e.def.get("recarga", 2.4)))
 			var dist_c := e.pos.distance_to(j.arena.centro)
-			if dist_c <= float(e.def.get("alcance", 420.0)):
+			if dist_c <= float(e.def.get("alcance", 260.0)) * CUSPIR_PARADA:
 				j.projetil_inimigo(e)
 				Bus.particulas.emit("faisca", e.pos, {"cor": e.cor, "qtd": 4})
 		"curar":
@@ -418,8 +422,20 @@ static func atualizar(dt: float, j) -> void:
 		# morta nao pode significar somar o dano novo em cima de todo o antigo.
 		# Quem atira de longe nao encosta; e por isso que atirador e uma ameaca
 		# diferente de um bruto, e nao um bruto que tambem atira.
-		if e.hab == "cuspir" and e.pos.distance_to(j.arena.centro) <= float(e.def.get("alcance", 420.0)):
-			vel = 0.0
+		# O atirador para DENTRO do alcance da torre, nunca na borda.
+		#
+		# Primeira versao: ele parava no proprio alcance de tiro, que nos dados
+		# e 260 — exatamente o alcance BASE da torre. Empate mortal: um pixel de
+		# arredondamento o deixava a 260,1 px, fora do alcance, atirando
+		# impunemente para sempre. A onda nunca fechava, e o jogo travava por
+		# volta da onda 100 sem que nada na tela explicasse por que.
+		#
+		# A fracao garante que ele fique sempre atingivel: 80% de 260 e 208, bem
+		# dentro do alcance da torre mesmo sem nenhuma melhoria comprada.
+		if e.hab == "cuspir":
+			var alc_tiro := float(e.def.get("alcance", 260.0)) * CUSPIR_PARADA
+			if e.pos.distance_to(j.arena.centro) <= alc_tiro:
+				vel = 0.0
 		e.velocidade = vel
 
 		if e.elite_mod == "regenerativo" and Big.lt(e.hp, e.hp_max):
