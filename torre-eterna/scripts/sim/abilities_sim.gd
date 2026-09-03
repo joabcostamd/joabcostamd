@@ -223,19 +223,31 @@ static func auto_usar(j) -> bool:
 	var vivos: int = j.arena.contagem_viva()
 	var em_chefe := bool(s["em_chefe"])
 
-	var ordem := [
-		["reparo", perigo < 0.4],
-		["escudo_absoluto", perigo < 0.25],
-		["julgamento", vivos > 18 or (em_chefe and perigo < 0.5)],
-		["nova", vivos >= 8],
-		["buraco_negro", vivos >= 10],
-		["misseis", em_chefe or vivos >= 6],
-		["tempo", vivos >= 12 or perigo < 0.5],
-		["sobrecarga", vivos >= 4 or em_chefe],
-		["sentinelas", vivos >= 4],
-		["chuva_ouro", vivos >= 6],
-	]
-	for par in ordem:
-		if bool(par[1]) and disponivel(s, str(par[0])):
-			return usar(str(par[0]), j)
+	for id in ORDEM_AUTO:
+		if _vale_a_pena(str(id), perigo, vivos, em_chefe) and disponivel(s, str(id)):
+			return usar(str(id), j)
+	return false
+
+## Ordem de prioridade do uso automático — a primeira que servir é a que sai.
+## Era um Array de Arrays montado a cada chamada, ou seja, onze alocações por
+## quadro; a lista agora é constante e a condição virou função.
+const ORDEM_AUTO := [
+	"reparo", "escudo_absoluto", "julgamento", "nova", "buraco_negro",
+	"misseis", "tempo", "sobrecarga", "sentinelas", "chuva_ouro",
+]
+
+## Quando cada habilidade vale a pena. `perigo` é a fração de vida que sobrou:
+## quanto menor, pior a situação.
+static func _vale_a_pena(id: String, perigo: float, vivos: int, em_chefe: bool) -> bool:
+	match id:
+		"reparo": return perigo < 0.4
+		"escudo_absoluto": return perigo < 0.25
+		"julgamento": return vivos > 18 or (em_chefe and perigo < 0.5)
+		"nova": return vivos >= 8
+		"buraco_negro": return vivos >= 10
+		"misseis": return em_chefe or vivos >= 6
+		"tempo": return vivos >= 12 or perigo < 0.5
+		"sobrecarga": return vivos >= 4 or em_chefe
+		"sentinelas": return vivos >= 4
+		"chuva_ouro": return vivos >= 6
 	return false

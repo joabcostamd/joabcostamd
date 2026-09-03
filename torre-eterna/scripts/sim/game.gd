@@ -27,6 +27,7 @@ var parasitas := 0
 var coleta_instantanea := false
 var fenix_usada := false
 var tempo_autosave := 0.0
+var tempo_autohab := 0.0
 var tempo_autocompra := 0.0
 var tempo_amostra := 0.0
 var tempo_evento := 0.0
@@ -197,8 +198,13 @@ func simular(dt: float) -> void:
 		if tempo_autocompra <= 0.0:
 			tempo_autocompra = Bal.INTERVALO_AUTOCOMPRA
 			auto_comprar()
+	# Quatro vezes por segundo basta: habilidades tem recarga de segundos, e a
+	# checagem rodava a 60 Hz para quase sempre nao fazer nada.
 	if bool(s["auto"]["habilidades"]) and esp["desbloqueios"].has("autoHabilidade"):
-		Habilidades.auto_usar(self)
+		tempo_autohab -= dt
+		if tempo_autohab <= 0.0:
+			tempo_autohab = 0.25
+			Habilidades.auto_usar(self)
 	if bool(s["prestigio"]["auto_ascender"]) and esp["desbloqueios"].has("autoAscensao"):
 		if int(s["onda_maxima"]) >= int(s["prestigio"]["auto_ascender_onda"]) and Prestigio.pode_ascender(s):
 			ascender(true)

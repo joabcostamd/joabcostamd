@@ -15,6 +15,21 @@ var orbes_extra := 0
 
 const MODOS_MIRA := ["proximo", "avancado", "forte", "fraco", "chefe", "longe"]
 
+## Chaves de atributo dos elementos, prontas. Eram montadas com `capitalize()`
+## a cada projetil criado — cinco strings novas por tiro, dentro do passo de
+## fisica.
+const CHAVES_ELEMENTO := {
+	"fogo": "danoFogo", "gelo": "danoGelo", "raio": "danoRaio",
+	"veneno": "danoVeneno", "vazio": "danoVazio",
+}
+
+# Pesos dos elementos: mudam só quando os atributos são recalculados, e não a
+# cada tiro. Guardamos junto o contador de recálculos para saber quando o cache
+# venceu.
+var _pesos_elem: Array = []
+var _pesos_total := 0.0
+var _pesos_versao := -1
+
 func _init(jogo) -> void:
 	j = jogo
 
@@ -82,15 +97,20 @@ func disparar(alvo: Inimigo) -> void:
 	var base := (alvo.pos - centro_b).angle()
 	var alcance: float = j.stats.n("alcance")
 
+	# `arena.alvo` varre a lista inteira de inimigos. Chamar dentro do laco fazia
+	# uma varredura por projetil extra para receber SEMPRE a mesma resposta —
+	# com 8 projeteis eram 7 varreduras jogadas fora por disparo, e os projeteis
+	# ja eram 46% do custo do passo de simulacao. Uma vez basta.
+	var alvo_extra: Inimigo = alvo
+	if n > 1:
+		var outro: Inimigo = j.arena.alvo(centro_b, alcance, "proximo")
+		if outro != null:
+			alvo_extra = outro
+
 	for i in n:
 		var t := 0.0 if n == 1 else (float(i) / float(n - 1) - 0.5) * 2.0
 		var ang := base + t * espalhamento
-		var alvo_p := alvo
-		if i > 0:
-			var outro: Inimigo = j.arena.alvo(centro_b, alcance, "proximo")
-			if outro != null:
-				alvo_p = outro
-		_criar_projetil(ang, alvo_p)
+		_criar_projetil(ang, alvo if i == 0 else alvo_extra)
 
 	# passiva Eco Balístico: chance de repetir a salva
 	if j.pas.has("eco"):
@@ -130,23 +150,26 @@ func _criar_projetil(ang: float, alvo: Inimigo) -> void:
 	p.tipo = "morteiro" if p.area > 0.0 else "bala"
 
 func _sortear_elemento() -> String:
-	var pesos: Array = []
-	var total := 0.0
-	for chave in ["fogo", "gelo", "raio", "veneno", "vazio"]:
-		var v: float = j.stats.n("dano" + chave.capitalize())
-		if v > 0.0:
-			pesos.append([chave, v])
-			total += v
-	if pesos.is_empty():
+	var versao: int = j.stats.recalculos
+	if versao != _pesos_versao:
+		_pesos_versao = versao
+		_pesos_elem = []
+		_pesos_total = 0.0
+		for chave in CHAVES_ELEMENTO.keys():
+			var v: float = j.stats.n(str(CHAVES_ELEMENTO[chave]))
+			if v > 0.0:
+				_pesos_elem.append([chave, v])
+				_pesos_total += v
+	if _pesos_elem.is_empty():
 		return ""
-	if not j.rng.chance(minf(0.95, total)):
+	if not j.rng.chance(minf(0.95, _pesos_total)):
 		return ""
-	var r: float = float(j.rng.f()) * total
-	for par in pesos:
+	var r: float = float(j.rng.f()) * _pesos_total
+	for par in _pesos_elem:
 		r -= float(par[1])
 		if r <= 0.0:
 			return str(par[0])
-	return str(pesos[0][0])
+	return str(_pesos_elem[0][0])
 
 ## ---------------------------------------------------------- projéteis
 
