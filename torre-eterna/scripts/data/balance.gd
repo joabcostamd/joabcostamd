@@ -173,30 +173,57 @@ static func mul_contato(e, onda: int, mult: float, vida_max_log: float = Big.ZER
 ## O teto agora acompanha o recorde. Como o custo cresce geométrico, os níveis
 ## além do teto original custam muito mais — o sink continua aberto sem que
 ## nada fique barato. Abaixo da onda 50 nada muda: o começo do jogo é o mesmo.
-## Eu subi este número de 0,006 para 0,02 dizendo que 0,006 deixava o catálogo
-## esvaziar cedo demais. Medido nos três valores, com semente fixa:
 ##
-##   0,006 -> catalogo esvazia na onda 264 | p90 a 160 vivos: 3387 us
-##   0,010 -> catalogo esvazia na onda 261 | p90 a 160 vivos: 3633 us
-##   0,020 -> catalogo esvazia na onda 266 | p90 a 160 vivos: 8532 us
+## Este numero ja foi 0,006, 0,01 e 0,02, e a medicao antiga dizia que subir nao
+## entregava nada e custava 2,3x de CPU (p90 de 3.633 us em 0,01 contra 8.532 us
+## em 0,02, o bastante para reprovar o portao de desempenho). A conclusao estava
+## certa sobre o SINTOMA e errada sobre a CAUSA, e as duas coisas ja foram
+## consertadas:
 ##
-## Ou seja: o teto NÃO controla quando o catálogo esvazia — os três valores dão
-## a mesma onda dentro do ruído, porque o ouro cresce rápido demais para que
-## 2% de teto por onda facam diferenca. A subida para 0,02 nao entregou nada do
-## que prometia e custou 2,3x de CPU, o bastante para reprovar o portao de
-## desempenho. Fica em 0,01: passa nos dois portoes e da um pouco mais de teto
-## que o valor original, sem pagar por uma promessa que o parametro nao cumpre.
-##
-## Esvaziar o catalogo mais tarde continua sendo trabalho em aberto, e a solucao
-## nao esta aqui: esta na curva de custo, nao no teto.
+##  - A CPU nao explodia por causa do teto em si. Explodia porque quatro
+##    melhorias transformam NIVEL em ENTIDADE: multishot da +1 projetil, orbe
+##    da +1 orbe, perfuracao e ricochete dao +1 corpo por tiro. Com o teto
+##    crescendo, a onda 200 pedia 1.190 projeteis por disparo num pool de 800.
+##    Essas quatro agora tem `tetoFixo` no JSON e nao crescem; as outras 29,
+##    que so mexem em numero, crescem sem custo de quadro.
+##  - O catalogo tambem nao esvaziava por causa do teto. Esvaziava porque o
+##    jogador PARAVA na onda ~85 e o teto e funcao do recorde: sem recorde, sem
+##    teto novo. E ele parava porque reflexo e espinho devolviam uma fracao do
+##    dano DELE sem teto nenhum (ver REFLEXO_TETO_VIDA). Corrigido isso, o
+##    recorde volta a subir e o teto sobe junto.
 const TETO_ONDA_LIVRE := 50
-const TETO_CRESCE_POR_ONDA := 0.01
+const TETO_CRESCE_POR_ONDA := 0.03
 
-static func teto_upgrade(teto_base: int, recorde: int) -> int:
+## O teto cresce GEOMETRICO com o recorde, nao linear.
+##
+## Era linear: `base * 0,01 * (recorde - 50)`. O ouro cresce exponencial, entao
+## nenhum crescimento linear acompanha a capacidade de compra: medido, o
+## catalogo esvaziava na onda 64 e dali em diante 33 dos 39 botoes ficavam
+## mortos. Agora e `base * 1,03^(recorde-50)`: onda 100 da 4,4x o teto original,
+## onda 200 da 84x, e o limite volta a ser o CUSTO, que tambem e geometrico.
+## Nada fica barato; o que muda e a tela nao ficar sem decisao.
+## `tetoFixo` no JSON: melhorias cujo NIVEL vira ENTIDADE nao crescem.
+##
+## multishot da +1 projetil por nivel, orbe da +1 orbe, perfuracao e ricochete
+## dao +1 corpo atravessado por tiro. Com o teto geometrico, na onda 200 o teto
+## de multishot seria 14 x 1,03^150 = 1.190 niveis, ou seja 1.191 PROJETEIS por
+## disparo, ate 12 disparos por quadro, num pool de 800. Nao e balanceamento, e
+## um travamento — e o mesmo vale para 850 orbes. Estas quatro ficam no teto de
+## projeto; as outras 29 crescem.
+static func teto_upgrade(teto_base: int, recorde: int, fixo: bool = false) -> int:
 	if teto_base < 0:
 		return -1
-	var extra := float(teto_base) * TETO_CRESCE_POR_ONDA * float(maxi(0, recorde - TETO_ONDA_LIVRE))
-	return teto_base + int(floor(extra))
+	if fixo:
+		return teto_base
+	var ondas := float(maxi(0, recorde - TETO_ONDA_LIVRE))
+	return maxi(teto_base, int(floor(float(teto_base) * pow(1.0 + TETO_CRESCE_POR_ONDA, ondas))))
+
+## Redes de seguranca: por mais que os dados mudem, um quadro nao pode pedir mil
+## projeteis nem duzentos orbes. Nao apertam nenhum build real (o teto de
+## projeto e 15 projeteis e 11 orbes); existem para que um numero errado no JSON
+## vire "menos do que pedi" em vez de "o jogo parou".
+const PROJETEIS_TETO := 48
+const ORBES_TETO := 24
 
 static func fator_armadura(armadura: float, penetracao: float) -> float:
 	var a := maxf(0.0, armadura * (1.0 - minf(0.95, penetracao)))
@@ -277,9 +304,38 @@ const CD_CONTATO := 0.9
 ## solto no codigo da torre, porque ja passou uma vez em unidade errada: o valor
 ## LINEAR foi entregue onde se esperava log10 e a torre morria num tiro.
 const REFLEXO_FRAC := 0.02
+const ESPINHO_FRAC := 0.06
 
-static func dano_refletido(dano_log: float) -> float:
-	return Big.mul_f(dano_log, REFLEXO_FRAC)
+## ...e agora tem TETO, pela mesma razao que o dano de contato tem.
+##
+## Reflexo e espinho eram fracao do DANO DO JOGADOR, que cresce exponencial, sem
+## nenhum limite ligado a torre. Medido numa corrida automatica: na onda 85 o
+## tiro valia 1,1e10 e a torre tinha 1,3e7 de vida, entao 2% do proprio golpe
+## dava 17x a vida MAXIMA da torre — um tiro no Guardiao do Espelho, ou num
+## elite espinhoso, e a torre caia inteira. O relatorio mostrava 23 quedas entre
+## as ondas 58 e 85 com ZERO inimigos chegando na torre: ela se matava sozinha,
+## e o recorde parava ali. Nao era teto de melhoria nem curva de custo; era o
+## jogador sendo punido por ficar mais forte.
+##
+## Com teto, a punicao volta a ser CUSTO: cada golpe devolvido tira no maximo
+## uma parcela da vida maxima, os iframes de 0,35 s limitam a ~3 golpes por
+## segundo, e a regeneracao no investimento maximo (~1,8%/s) segura uma
+## exposicao curta mas nao uma longa. Quem insiste em atirar no refletor ainda
+## morre; quem mata e segue, nao.
+const REFLEXO_TETO_VIDA := 0.08
+const ESPINHO_TETO_VIDA := 0.04
+
+static func dano_refletido(dano_log: float, vida_max_log: float = Big.ZERO) -> float:
+	return _devolvido(dano_log, vida_max_log, REFLEXO_FRAC, REFLEXO_TETO_VIDA)
+
+static func dano_espinho(dano_log: float, vida_max_log: float = Big.ZERO) -> float:
+	return _devolvido(dano_log, vida_max_log, ESPINHO_FRAC, ESPINHO_TETO_VIDA)
+
+static func _devolvido(dano_log: float, vida_max_log: float, frac: float, teto: float) -> float:
+	var base := Big.mul_f(dano_log, frac)
+	if vida_max_log > Big.LIMIAR_ZERO:
+		base = Big.min_b(base, Big.mul_f(vida_max_log, teto))
+	return base
 
 const INTERVALO_AUTOCOMPRA := 0.35
 

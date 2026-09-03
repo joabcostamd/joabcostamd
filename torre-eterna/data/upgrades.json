@@ -187,6 +187,7 @@
    "base": 2400,
    "cresc": 3.1,
    "max": 14,
+   "tetoFixo": true,
    "efeito": [
     {
      "stat": "projeteis",
@@ -210,6 +211,7 @@
    "base": 1700,
    "cresc": 2.5,
    "max": 12,
+   "tetoFixo": true,
    "efeito": [
     {
      "stat": "perfuracao",
@@ -232,6 +234,7 @@
    "base": 2900,
    "cresc": 2.8,
    "max": 10,
+   "tetoFixo": true,
    "efeito": [
     {
      "stat": "ricochete",
@@ -598,6 +601,7 @@
    "base": 6500,
    "cresc": 3.6,
    "max": 10,
+   "tetoFixo": true,
    "efeito": [
     {
      "stat": "orbes",

@@ -110,7 +110,7 @@ func atualizar(dt: float) -> void:
 ## ------------------------------------------------------------ disparo
 
 func disparar(alvo: Inimigo, segundo: Inimigo = null) -> void:
-	var n: int = maxi(1, int(j.stats.n("projeteis")))
+	var n: int = clampi(int(j.stats.n("projeteis")), 1, Bal.PROJETEIS_TETO)
 	var espalhamento: float = minf(0.6, 0.06 * float(n)) if n > 1 else 0.0
 	var centro_b: Vector2 = j.arena.centro
 	var base := (alvo.pos - centro_b).angle()
@@ -284,7 +284,7 @@ func _impacto(p: Projetil, alvo: Inimigo) -> bool:
 	# comum declara `"hab"`. O codigo olhava so `hab`, entao o chefe cujo nome e
 	# a mecanica nunca refletiu nada — e o codex explicava o reflexo dele.
 	if (alvo.hab == "refletir" or str(alvo.def.get("mecanica", "")) == "refletir") and not p.critico:
-		j.dano_na_torre(Bal.dano_refletido(p.dano), alvo, {"reflexo": true})
+		j.dano_na_torre(Bal.dano_refletido(p.dano, j.s["torre"]["vida_max"]), alvo, {"reflexo": true})
 	if bool(alvo.def.get("invisivel", false)):
 		alvo.revelado = true
 
@@ -322,7 +322,7 @@ func _impacto(p: Projetil, alvo: Inimigo) -> bool:
 ## --------------------------------------------------------------- orbes
 
 func atualizar_orbes(dt: float) -> void:
-	var n: int = int(j.stats.n("orbes")) + orbes_extra
+	var n: int = mini(int(j.stats.n("orbes")) + orbes_extra, Bal.ORBES_TETO)
 	var centro_o: Vector2 = j.arena.centro
 	if orbes.size() != n:
 		orbes.clear()

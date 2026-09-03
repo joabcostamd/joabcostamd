@@ -667,7 +667,8 @@ func custo_upgrade(def: Dictionary, nivel: int) -> float:
 
 ## Teto EFETIVO de uma melhoria: o do JSON, esticado pelo recorde global.
 func teto_upgrade(def: Dictionary) -> int:
-	return Bal.teto_upgrade(int(def.get("max", -1)), int(s["onda_maxima_global"]))
+	return Bal.teto_upgrade(int(def.get("max", -1)), int(s["onda_maxima_global"]),
+		bool(def.get("tetoFixo", false)))
 
 func max_upgrade(def: Dictionary, nivel: int) -> int:
 	var maxn := teto_upgrade(def)

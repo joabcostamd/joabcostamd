@@ -98,7 +98,7 @@ func rodar(cena: SceneTree) -> void:
 				if mx < 0:
 					continue
 				teto_tot += 1
-				if int(j.s["upgrades"].get(str(def_u.get("id", "")), 0)) >= Bal.teto_upgrade(mx, int(j.s["onda_maxima_global"])):
+				if int(j.s["upgrades"].get(str(def_u.get("id", "")), 0)) >= j.teto_upgrade(def_u):
 					cheio += 1
 			if teto_tot > 0 and cheio >= teto_tot:
 				onda_catalogo_vazio = int(j.s["onda_maxima"])

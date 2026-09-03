@@ -44,6 +44,7 @@ func rodar(cena: SceneTree) -> void:
 	t_nada_mudo()
 	t_elites()
 	t_mira()
+	t_teto()
 	t_defesa()
 	t_ondas()
 	t_prestigio()
@@ -86,7 +87,7 @@ func rodar(cena: SceneTree) -> void:
 		"Mods": 19, "Numeros de dano": 2, "Offline": 6,
 		"Ondas": 12, "Pista de ouro": 3, "Prestígio": 25,
 		"Progresso": 14, "Saque": 8, "Save": 41,
-		"Sistemas": 6, "StatEngine": 5, "Áudio": 16,
+		"Sistemas": 6, "StatEngine": 5, "Teto": 25, "Áudio": 16,
 	}
 	for nome_g in minimo_por_grupo:
 		var rodou := int(por_grupo.get(nome_g, 0))
@@ -1265,6 +1266,59 @@ func t_mira() -> void:
 	perto_e.intangivel = 0.0
 	arena.limpar_inimigos()
 
+## ------------------------------------------------------------ teto de nivel
+func t_teto() -> void:
+	g("Teto")
+	# O teto cresce com o recorde, geometrico. Antes era linear e nao acompanhava
+	# o ouro (exponencial): o catalogo esvaziava na onda 64 e as 33 melhorias com
+	# teto viravam enfeite pelo resto da partida.
+	ok("antes da onda livre o teto e o de projeto", Bal.teto_upgrade(100, 10) == 100)
+	ok("na onda livre o teto ainda e o de projeto",
+		Bal.teto_upgrade(100, Bal.TETO_ONDA_LIVRE) == 100)
+	ok("depois da onda livre o teto cresce", Bal.teto_upgrade(100, 100) > 100)
+	ok("o teto nunca desce", Bal.teto_upgrade(100, 300) >= Bal.teto_upgrade(100, 200))
+	ok("melhoria sem teto continua sem teto", Bal.teto_upgrade(-1, 400) == -1)
+	# Geometrico de verdade: o ganho entre a onda 200 e a 300 tem que ser MAIOR
+	# que entre a 100 e a 200. Se alguem trocar por linear isto reprova.
+	var d1 := Bal.teto_upgrade(100, 200) - Bal.teto_upgrade(100, 100)
+	var d2 := Bal.teto_upgrade(100, 300) - Bal.teto_upgrade(100, 200)
+	ok("o teto cresce geometrico, nao linear", d2 > d1)
+
+	# `tetoFixo`: nivel que vira ENTIDADE nao cresce, senao a onda 200 pediria
+	# 1.191 projeteis por disparo num pool de 800.
+	ok("teto fixo ignora o recorde", Bal.teto_upgrade(14, 400, true) == 14)
+	var contadores := ["multishot", "perfuracao", "ricochete", "orbe"]
+	for id_c in contadores:
+		var def_c: Dictionary = Dados.upgrade_por_id.get(str(id_c), {})
+		ok("%s existe no catalogo" % id_c, not def_c.is_empty())
+		if def_c.is_empty():
+			continue
+		ok("%s tem tetoFixo no JSON" % id_c, bool(def_c.get("tetoFixo", false)))
+		var antes := int(jogo.s["onda_maxima_global"])
+		jogo.s["onda_maxima_global"] = 400
+		ok("%s nao ganha teto na onda 400" % id_c,
+			jogo.teto_upgrade(def_c) == int(def_c.get("max", -1)))
+		jogo.s["onda_maxima_global"] = antes
+	# ...e quem NAO conta entidade tem que crescer, senao a tela volta a ficar
+	# sem decisao. `cadencia` e o caso testemunha.
+	var def_cad: Dictionary = Dados.upgrade_por_id.get("cadencia", {})
+	ok("cadencia existe", not def_cad.is_empty())
+	if not def_cad.is_empty():
+		var antes_c := int(jogo.s["onda_maxima_global"])
+		jogo.s["onda_maxima_global"] = 400
+		ok("cadencia ganha teto na onda 400",
+			jogo.teto_upgrade(def_cad) > int(def_cad.get("max", -1)))
+		jogo.s["onda_maxima_global"] = antes_c
+
+	# Redes de seguranca em codigo: por mais que o JSON mude, um quadro nao pede
+	# mil projeteis nem duzentos orbes.
+	ok("o teto de projeteis existe e e sensato",
+		Bal.PROJETEIS_TETO >= 16 and Bal.PROJETEIS_TETO <= 128)
+	ok("o teto de orbes existe e e sensato", Bal.ORBES_TETO >= 12 and Bal.ORBES_TETO <= 64)
+	var txt_t := _ler("res://scripts/sim/tower.gd")
+	ok("o disparo usa o teto de projeteis", txt_t.contains("Bal.PROJETEIS_TETO"))
+	ok("os orbes usam o teto de orbes", txt_t.contains("Bal.ORBES_TETO"))
+
 ## ------------------------------------------------------- defesa da torre
 func t_defesa() -> void:
 	g("Defesa")
@@ -1274,6 +1328,44 @@ func t_defesa() -> void:
 	var refletido := Bal.dano_refletido(golpe)
 	ok("reflexo continua em log10", refletido < 19.0 and refletido > 18.0)
 	ok("reflexo e 2%% do golpe", perto(Big.to_f(refletido), 2.0e18, 1.0e12))
+
+	# O TETO do reflexo e do espinho. Sem ele, o jogo se matava sozinho: reflexo
+	# e espinho eram fracao do dano DO JOGADOR, que cresce exponencial, e nada
+	# os ligava a vida da torre. Medido: onda 85, golpe 1,1e10, vida maxima
+	# 1,3e7 — 2% do golpe dava 17x a vida INTEIRA, e o relatorio mostrava 23
+	# quedas entre as ondas 58 e 85 com ZERO inimigos chegando na torre.
+	var vida_max := Big.from(1.0e7)
+	var golpe_alto := Big.from(1.0e20)
+	var ref_teto := Bal.dano_refletido(golpe_alto, vida_max)
+	var esp_teto := Bal.dano_espinho(golpe_alto, vida_max)
+	ok("reflexo nunca passa do teto da vida maxima",
+		Big.lte(ref_teto, Big.mul_f(vida_max, Bal.REFLEXO_TETO_VIDA + 0.0001)))
+	ok("espinho nunca passa do teto da vida maxima",
+		Big.lte(esp_teto, Big.mul_f(vida_max, Bal.ESPINHO_TETO_VIDA + 0.0001)))
+	ok("um golpe devolvido nao mata a torre cheia", Big.lt(ref_teto, vida_max))
+	ok("espinho devolvido nao mata a torre cheia", Big.lt(esp_teto, vida_max))
+	# E abaixo do teto o valor continua sendo a fracao do golpe, como antes: o
+	# teto e um limite, nao um piso que engorda o reflexo no comeco do jogo.
+	var golpe_baixo := Big.from(1000.0)
+	ok("abaixo do teto o reflexo segue 2% do golpe",
+		perto(Big.to_f(Bal.dano_refletido(golpe_baixo, vida_max)), 20.0, 0.01))
+	ok("abaixo do teto o espinho segue 6% do golpe",
+		perto(Big.to_f(Bal.dano_espinho(golpe_baixo, vida_max)), 60.0, 0.01))
+	# Quem chama TEM que passar a vida maxima. Se um dos dois voltar a chamar sem
+	# o segundo argumento, o teto desaparece em silencio e o defeito volta.
+	var fontes := {
+		"res://scripts/sim/tower.gd": "dano_refletido(",
+		"res://scripts/sim/combat.gd": "dano_espinho(",
+	}
+	for caminho in fontes:
+		var txt := _ler(str(caminho))
+		var chamada := str(fontes[caminho])
+		var i := txt.find(chamada)
+		ok("%s chama %s" % [caminho.get_file(), chamada], i >= 0)
+		if i >= 0:
+			var resto := txt.substr(i + chamada.length(), 90)
+			ok("%s passa a vida maxima para %s" % [caminho.get_file(), chamada],
+				resto.contains("vida_max"))
 
 	# A colisao de projetil foi reescrita para sair na PRIMEIRA batida, sem
 	# montar lista de vizinhos: com 800 projeteis vivos (o teto do pool) as duas
@@ -2113,6 +2205,14 @@ func t_sistemas() -> void:
 ## desta funcao apagava strings tambem e reprovou tres elos que estao vivos.
 ## O `#` dentro de uma string nao abre comentario, entao o estado de aspas
 ## precisa ser acompanhado mesmo mantendo o conteudo.
+## Le um script do projeto como texto. Devolve "" se nao abrir — quem chama
+## afirma sobre o conteudo, entao um arquivo faltando reprova de qualquer jeito.
+func _ler(caminho: String) -> String:
+	var f := FileAccess.open(caminho, FileAccess.READ)
+	if f == null:
+		return ""
+	return f.get_as_text()
+
 func _sem_comentario(texto: String) -> String:
 	var saida := ""
 	for linha in texto.split("\n"):
