@@ -26,11 +26,13 @@ const FATOR_MIN := 1.0
 const FATOR_MAX := 3.0
 
 ## Conta fixa e determinística: float, seno, raiz, dicionário e array — a mesma
-## mistura que a simulação faz. Roda três vezes e fica com a melhor: um soluço
-## do escalonador só pode piorar a medida, nunca melhorá-la.
+## mistura que a simulação faz. Cinco medidas e fica com a MEDIANA, não com a
+## melhor: a melhor encontra a brecha ociosa entre duas tarefas vizinhas e diz
+## que a máquina está livre, enquanto o laço de 900 passos come a disputa
+## inteira. Mediana descreve a condição que o jogo de fato encontra.
 static func medir_maquina() -> float:
-	var melhor := 1.0e30
-	for tentativa in 3:
+	var amostras: Array[float] = []
+	for tentativa in 5:
 		var v := PackedFloat32Array()
 		v.resize(4096)
 		var d := {"a": 1.0, "b": 2.0}
@@ -40,8 +42,9 @@ static func medir_maquina() -> float:
 				var x := float(i) * 0.001 + float(rep)
 				var y: float = float(d["a"]) * x + float(d["b"])
 				v[i] = sqrt(y * y + 1.0) * sin(x) + float(v[(i + 1) & 4095]) * 0.5
-		melhor = minf(melhor, float(Time.get_ticks_usec() - t))
-	return melhor
+		amostras.append(float(Time.get_ticks_usec() - t))
+	amostras.sort()
+	return amostras[amostras.size() / 2]
 
 func rodar(cena: SceneTree) -> void:
 	arvore = cena
@@ -87,12 +90,12 @@ func rodar(cena: SceneTree) -> void:
 		var def: Dictionary = pool[i % pool.size()]
 		EnemyAI.criar(def, 200, j, {"elite": i % 5 == 0})
 
-	var ref := medir_maquina()
-	var fator := clampf(ref / REF_US, FATOR_MIN, FATOR_MAX)
-	var orcamento := ORCAMENTO_US * fator
+	# Uma medida só, tirada antes, não vale: a disputa por CPU pode começar
+	# depois. Mede de novo no fim e fica com a PIOR das duas — as duas cercam a
+	# janela inteira em que o jogo foi medido.
+	var ref_antes := medir_maquina()
 
 	print("=== ESTRESSE: %d inimigos, onda %d ===" % [j.arena.inimigos.size(), int(j.s["onda"])])
-	print("maquina: %.0f us na conta de referencia (%.0f esperado) -> fator %.2fx" % [ref, REF_US, fator])
 	print("projeteis/s: %.1f | orbes: %d | elementos ativos: sim" % [j.stats.n("cadencia") * j.stats.n("projeteis"), int(j.stats.n("orbes"))])
 
 	# aquecimento
@@ -129,6 +132,10 @@ func rodar(cena: SceneTree) -> void:
 		pico_p = maxi(pico_p, j.arena.projeteis.size())
 	var total := Time.get_ticks_usec() - t0
 	var por_passo := float(total) / float(passos)
+	var ref := maxf(ref_antes, medir_maquina())
+	var fator := clampf(ref / REF_US, FATOR_MIN, FATOR_MAX)
+	var orcamento := ORCAMENTO_US * fator
+	print("maquina: %.0f us na conta de referencia (%.0f esperado) -> fator %.2fx" % [ref, REF_US, fator])
 	print("--- perfil por subsistema (us/passo) ---")
 	for k in custo.keys():
 		var v := float(custo[k]) / float(passos)
