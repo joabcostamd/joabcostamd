@@ -19,6 +19,9 @@ var barra_vida: ProgressBar
 var lbl_vida: Label
 var barra_escudo: ProgressBar
 var barra_xp: ProgressBar
+var barra_alvo: ProgressBar
+var rotulo_alvo: Label
+var caixa_alvo: Control
 var lbl_nivel: Label
 var lbl_combo: Label
 var lbl_dps: Label
@@ -162,6 +165,29 @@ func _construir() -> void:
 	barra_xp = UI.barra(UI.ACENTO2, 6)
 	barra_xp.custom_minimum_size.x = 230
 	vitais.add_child(barra_xp)
+
+	# A CAMINHO. O jogo tem 85 conquistas e 36 missões e nenhuma delas aparecia
+	# sem abrir painel. Quem joga idle não abre painel para descobrir o que está
+	# perto: ou o jogo mostra, ou o objetivo não existe. Fora a próxima onda, o
+	# jogador não tinha um único alvo visível — e alvo visível a poucos por cento
+	# de distância é o que faz "mais um minuto" virar mais uma hora.
+	var lalvo := UI.vbox(1)
+	var lh := UI.hbox(4)
+	var ica := Control.new()
+	ica.set_script(load("res://scripts/ui/icone_control.gd"))
+	lh.add_child(ica)
+	ica.configurar("trofeu", UI.OURO, 11)
+	rotulo_alvo = UI.rotulo("", 11, UI.TEXTO2)
+	lh.add_child(rotulo_alvo)
+	lalvo.add_child(lh)
+	barra_alvo = UI.barra(UI.OURO, 4)
+	barra_alvo.custom_minimum_size.x = 230
+	lalvo.add_child(barra_alvo)
+	caixa_alvo = lalvo
+	caixa_alvo.visible = false
+	caixa_alvo.tooltip_text = Txt.t("hud_proximo_dica")
+	caixa_alvo.mouse_filter = Control.MOUSE_FILTER_STOP
+	vitais.add_child(lalvo)
 
 	var hv := UI.hbox(6)
 	var ic_v := UI.icone("coracao", UI.VERMELHO, 14)
@@ -445,7 +471,25 @@ func _atualizar_rapido() -> void:
 		b.disabled = not pronto
 		b.modulate = Color.WHITE if pronto else Color(0.55, 0.6, 0.7)
 
+## O alvo mais perto, atualizado no ritmo lento: ele muda em segundos, não em
+## quadros, e recalcular 85 condições a 60 Hz seria desperdício puro.
+func _atualizar_alvo() -> void:
+	if caixa_alvo == null or not is_instance_valid(caixa_alvo):
+		return
+	var prox := Progresso.proxima_conquista(jogo.s)
+	if prox.is_empty():
+		caixa_alvo.visible = false
+		return
+	caixa_alvo.visible = true
+	var def: Dictionary = prox["def"]
+	var frac := float(prox["frac"])
+	rotulo_alvo.text = "%s · %s" % [Txt.t("hud_proximo_alvo"), Ux.txt(def, "nome", Cfg.ingles())]
+	barra_alvo.value = frac * 100.0
+	# Perto de cair, a barra esquenta: o jogador vê que falta pouco sem ler nada.
+	barra_alvo.modulate = Color(1.0, 1.0, 1.0) if frac < 0.85 else Color(1.25, 1.15, 0.7)
+
 func _atualizar_lento() -> void:
+	_atualizar_alvo()
 	if jogo == null or not jogo.iniciado:
 		return
 	var s: Dictionary = jogo.s

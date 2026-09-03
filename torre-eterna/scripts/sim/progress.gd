@@ -109,6 +109,40 @@ static func cond_atendida(s: Dictionary, cond: Dictionary) -> bool:
 	var atual := valor_cond(s, str(cond.get("tipo", "")), str(cond.get("chave", "")))
 	return atual >= float(cond.get("valor", 0))
 
+## A conquista mais perto de cair, com o quanto falta.
+##
+## O jogo tinha 85 conquistas e 36 missoes e NENHUMA delas aparecia sem o
+## jogador abrir um painel para procurar. Quem joga idle nao abre painel para
+## descobrir o que esta perto: ou o jogo mostra, ou o objetivo nao existe. Sem
+## isso o unico alvo visivel era a proxima onda, e o resto do progresso era
+## invisivel ate cair do ceu.
+##
+## Devolve {} quando nao ha nada mensuravel a caminho (tudo desbloqueado, ou a
+## proxima conquista depende de uma condicao sem numero).
+static func proxima_conquista(s: Dictionary) -> Dictionary:
+	var melhor: Dictionary = {}
+	var melhor_frac := -1.0
+	for def in Dados.conquistas:
+		var id := str(def.get("id", ""))
+		if s["conquistas"].has(id):
+			continue
+		var cond: Dictionary = def.get("cond", {})
+		if cond.is_empty():
+			continue
+		var alvo := float(cond.get("valor", 0))
+		if alvo <= 0.0:
+			continue
+		var atual := valor_cond(s, str(cond.get("tipo", "")), str(cond.get("chave", "")))
+		if atual <= 0.0:
+			continue
+		var frac := clampf(atual / alvo, 0.0, 0.999)
+		# So interessa o que ja comecou: uma conquista em 0% nao e "proxima",
+		# e mostrar a de 0,1% seria ruido em vez de alvo.
+		if frac > melhor_frac:
+			melhor_frac = frac
+			melhor = {"def": def, "frac": frac, "atual": atual, "alvo": alvo}
+	return melhor
+
 ## Verifica conquistas novas. Devolve a lista de ids desbloqueados agora.
 static func checar_conquistas(j) -> Array:
 	var s: Dictionary = j.s
