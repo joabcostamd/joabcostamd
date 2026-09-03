@@ -150,7 +150,10 @@ static func usar(id: String, j) -> bool:
 				if e3.chefe:
 					Combate.aplicar_dano(e3, Big.mul_f(dano_base, mult), j, {"crit": true, "penetracao": 1.0})
 				else:
-					Combate.aplicar_dano(e3, Big.mul_f(e3.hp, 10.0), j, {"puro": true})
+					# "converte cada abate em ouro dobrado" — a segunda metade do
+					# texto não existia no código, e o inglês tinha apagado a
+					# promessa em vez de cumpri-la.
+					Combate.aplicar_dano(e3, Big.mul_f(e3.hp, 10.0), j, {"puro": true, "ouro_mult": 2.0})
 			Bus.particulas.emit("julgamento", centro, {})
 			j.tremor(34.0, 0.9)
 			j.hitstop_ms(160.0)

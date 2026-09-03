@@ -44,7 +44,10 @@ static func criar(def: Dictionary, onda: int, j, opt: Dictionary = {}) -> Inimig
 		m_esc *= float(mod.get("esc", 1.0)) * float(Bal.ELITE["escala"])
 		m_vel *= float(mod.get("vel", 1.0))
 	if e.dourado:
-		m_hp *= float(Bal.DOURADO["hp"]); m_ouro *= float(Bal.DOURADO["ouro"])
+		m_hp *= float(Bal.DOURADO["hp"])
+		# `ouroDourado` vem do talento Toque de Midas ("dobra ... o ouro que eles
+		# soltam"), que só dobrava a chance.
+		m_ouro *= float(Bal.DOURADO["ouro"]) * float(j.esp.get("ouroDourado", 1.0))
 		m_xp *= float(Bal.DOURADO["xp"]); m_esc *= float(Bal.DOURADO["escala"])
 		# "nunca fogem da tela": o dourado corre a 1,9× e some antes de a torre
 		# alcançar. Com a Coleira ele anda no ritmo dos outros.

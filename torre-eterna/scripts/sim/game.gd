@@ -281,13 +281,26 @@ func ganhar_xp(valor: float) -> void:
 ## `v_log` em log10.
 func curar_torre(v_log: float) -> void:
 	var t: Dictionary = s["torre"]
+	var antes := Big.frac(t["vida"], t["vida_max"])
 	t["vida"] = Big.min_b(t["vida_max"], Big.add(t["vida"], v_log))
+	# subir de novo acima de 30% também tem que desligar a Última Chama na hora
+	if pas.has("ultima_chama") and (antes >= 0.3) != (Big.frac(t["vida"], t["vida_max"]) >= 0.3):
+		marcar_sujo()
 
 ## `dano_log` em log10.
 func dano_na_torre(dano_log: float, fonte, opt: Dictionary = {}) -> float:
 	if invulneravel > 0.0:
 		return Big.ZERO
-	return torre.levar_dano(dano_log, fonte, opt)
+	var antes := Big.frac(s["torre"]["vida"], s["torre"]["vida_max"])
+	var r := torre.levar_dano(dano_log, fonte, opt)
+	# Última Chama dobra o dano abaixo de 30% de vida, mas só era aplicada no
+	# próximo recálculo de atributos — que acontece por outros motivos, em outra
+	# hora. Cruzar o limiar (nos dois sentidos) agora força o recálculo na hora.
+	if pas.has("ultima_chama"):
+		var depois := Big.frac(s["torre"]["vida"], s["torre"]["vida_max"])
+		if (antes >= 0.3) != (depois >= 0.3):
+			marcar_sujo()
+	return r
 
 func reviver_torre() -> void:
 	var t: Dictionary = s["torre"]

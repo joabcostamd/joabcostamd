@@ -1,275 +1,275 @@
 {
- "habilidades": [
-  {
-   "id": "nova",
-   "nome": "Nova Aniquiladora",
-   "nomeEn": "Annihilating Nova",
-   "icone": "💥",
-   "cor": "#f87171",
-   "tecla": "1",
-   "desc": "Explosão que causa {dano}× o seu dano a TODOS os inimigos na tela.",
-   "descEn": "Blast dealing {dano}× your damage to ALL enemies on screen.",
-   "cd": 40,
-   "dur": 0,
-   "requer": {
-    "onda": 1
-   },
-   "custoBase": 15,
-   "escala": {
-    "dano": [
-     45,
-     12
-    ]
-   },
-   "tipo": "instantanea"
-  },
-  {
-   "id": "sobrecarga",
-   "nome": "Sobrecarga",
-   "nomeEn": "Overdrive",
-   "icone": "⚡",
-   "cor": "#fbbf24",
-   "tecla": "2",
-   "desc": "Por {dur}s: +{cad}% de cadência e +{dano}% de dano.",
-   "descEn": "For {dur}s: +{cad}% fire rate and +{dano}% damage.",
-   "cd": 55,
-   "dur": 8,
-   "requer": {
-    "onda": 5
-   },
-   "custoBase": 20,
-   "escala": {
-    "cad": [
-     180,
-     25
-    ],
-    "dano": [
-     50,
-     12
-    ]
-   },
-   "tipo": "buff",
-   "buffs": [
+  "habilidades": [
     {
-     "stat": "cadencia",
-     "tipo": "pct",
-     "chave": "cad",
-     "escala": 0.01
+      "id": "nova",
+      "nome": "Nova Aniquiladora",
+      "nomeEn": "Annihilating Nova",
+      "icone": "💥",
+      "cor": "#f87171",
+      "tecla": "1",
+      "desc": "Explosão que causa {dano}× o seu dano a TODOS os inimigos na tela.",
+      "descEn": "Blast dealing {dano}× your damage to ALL enemies on screen.",
+      "cd": 40,
+      "dur": 0,
+      "requer": {
+        "onda": 1
+      },
+      "custoBase": 15,
+      "escala": {
+        "dano": [
+          45,
+          12
+        ]
+      },
+      "tipo": "instantanea"
     },
     {
-     "stat": "dano",
-     "tipo": "pct",
-     "chave": "dano",
-     "escala": 0.01
-    }
-   ]
-  },
-  {
-   "id": "tempo",
-   "nome": "Distorção Temporal",
-   "nomeEn": "Time Warp",
-   "icone": "⏳",
-   "cor": "#67e8f9",
-   "tecla": "3",
-   "desc": "Congela todos os inimigos por {dur}s. Eles ainda recebem dano.",
-   "descEn": "Freezes all enemies for {dur}s. They still take damage.",
-   "cd": 85,
-   "dur": 5,
-   "requer": {
-    "onda": 15
-   },
-   "custoBase": 30,
-   "escala": {
-    "dur": [
-     5,
-     0.6
-    ]
-   },
-   "tipo": "congelar"
-  },
-  {
-   "id": "chuva_ouro",
-   "nome": "Chuva Dourada",
-   "nomeEn": "Golden Rain",
-   "icone": "🌟",
-   "cor": "#facc15",
-   "tecla": "4",
-   "desc": "Por {dur}s todo ouro é multiplicado por {mult}×.",
-   "descEn": "For {dur}s all gold is multiplied by {mult}×.",
-   "cd": 110,
-   "dur": 12,
-   "requer": {
-    "onda": 20
-   },
-   "custoBase": 25,
-   "escala": {
-    "mult": [
-     5,
-     1
-    ]
-   },
-   "tipo": "buff",
-   "buffs": [
+      "id": "sobrecarga",
+      "nome": "Sobrecarga",
+      "nomeEn": "Overdrive",
+      "icone": "⚡",
+      "cor": "#fbbf24",
+      "tecla": "2",
+      "desc": "Por {dur}s: +{cad}% de cadência e +{dano}% de dano.",
+      "descEn": "For {dur}s: +{cad}% fire rate and +{dano}% damage.",
+      "cd": 55,
+      "dur": 8,
+      "requer": {
+        "onda": 5
+      },
+      "custoBase": 20,
+      "escala": {
+        "cad": [
+          180,
+          25
+        ],
+        "dano": [
+          50,
+          12
+        ]
+      },
+      "tipo": "buff",
+      "buffs": [
+        {
+          "stat": "cadencia",
+          "tipo": "pct",
+          "chave": "cad",
+          "escala": 0.01
+        },
+        {
+          "stat": "dano",
+          "tipo": "pct",
+          "chave": "dano",
+          "escala": 0.01
+        }
+      ]
+    },
     {
-     "stat": "ganhoOuro",
-     "tipo": "multChave",
-     "chave": "mult"
-    }
-   ]
-  },
-  {
-   "id": "escudo_absoluto",
-   "nome": "Escudo Absoluto",
-   "nomeEn": "Absolute Shield",
-   "icone": "🛡️",
-   "cor": "#60a5fa",
-   "tecla": "5",
-   "desc": "Invulnerabilidade total por {dur}s.",
-   "descEn": "Total invulnerability for {dur}s.",
-   "cd": 95,
-   "dur": 6,
-   "requer": {
-    "onda": 25
-   },
-   "custoBase": 30,
-   "escala": {
-    "dur": [
-     6,
-     0.7
-    ]
-   },
-   "tipo": "invulneravel"
-  },
-  {
-   "id": "sentinelas",
-   "nome": "Sentinelas",
-   "nomeEn": "Sentinels",
-   "icone": "🔮",
-   "cor": "#a78bfa",
-   "tecla": "6",
-   "desc": "Invoca {qtd} orbes extras por {dur}s.",
-   "descEn": "Summons {qtd} extra orbs for {dur}s.",
-   "cd": 75,
-   "dur": 16,
-   "requer": {
-    "onda": 30
-   },
-   "custoBase": 35,
-   "escala": {
-    "qtd": [
-     6,
-     1
-    ]
-   },
-   "tipo": "buff",
-   "buffs": [
+      "id": "tempo",
+      "nome": "Distorção Temporal",
+      "nomeEn": "Time Warp",
+      "icone": "⏳",
+      "cor": "#67e8f9",
+      "tecla": "3",
+      "desc": "Congela todos os inimigos por {dur}s. Eles ainda recebem dano.",
+      "descEn": "Freezes all enemies for {dur}s. They still take damage.",
+      "cd": 85,
+      "dur": 5,
+      "requer": {
+        "onda": 15
+      },
+      "custoBase": 30,
+      "escala": {
+        "dur": [
+          5,
+          0.6
+        ]
+      },
+      "tipo": "congelar"
+    },
     {
-     "stat": "orbes",
-     "tipo": "flatChave",
-     "chave": "qtd"
+      "id": "chuva_ouro",
+      "nome": "Chuva Dourada",
+      "nomeEn": "Golden Rain",
+      "icone": "🌟",
+      "cor": "#facc15",
+      "tecla": "4",
+      "desc": "Por {dur}s todo ouro é multiplicado por {mult}×.",
+      "descEn": "For {dur}s all gold is multiplied by {mult}×.",
+      "cd": 110,
+      "dur": 12,
+      "requer": {
+        "onda": 20
+      },
+      "custoBase": 25,
+      "escala": {
+        "mult": [
+          5,
+          1
+        ]
+      },
+      "tipo": "buff",
+      "buffs": [
+        {
+          "stat": "ganhoOuro",
+          "tipo": "multChave",
+          "chave": "mult"
+        }
+      ]
+    },
+    {
+      "id": "escudo_absoluto",
+      "nome": "Escudo Absoluto",
+      "nomeEn": "Absolute Shield",
+      "icone": "🛡️",
+      "cor": "#60a5fa",
+      "tecla": "5",
+      "desc": "Invulnerabilidade total por {dur}s.",
+      "descEn": "Total invulnerability for {dur}s.",
+      "cd": 95,
+      "dur": 6,
+      "requer": {
+        "onda": 25
+      },
+      "custoBase": 30,
+      "escala": {
+        "dur": [
+          6,
+          0.7
+        ]
+      },
+      "tipo": "invulneravel"
+    },
+    {
+      "id": "sentinelas",
+      "nome": "Sentinelas",
+      "nomeEn": "Sentinels",
+      "icone": "🔮",
+      "cor": "#a78bfa",
+      "tecla": "6",
+      "desc": "Invoca {qtd} orbes extras por {dur}s.",
+      "descEn": "Summons {qtd} extra orbs for {dur}s.",
+      "cd": 75,
+      "dur": 16,
+      "requer": {
+        "onda": 30
+      },
+      "custoBase": 35,
+      "escala": {
+        "qtd": [
+          6,
+          1
+        ]
+      },
+      "tipo": "buff",
+      "buffs": [
+        {
+          "stat": "orbes",
+          "tipo": "flatChave",
+          "chave": "qtd"
+        }
+      ]
+    },
+    {
+      "id": "misseis",
+      "nome": "Salva de Mísseis",
+      "nomeEn": "Missile Barrage",
+      "icone": "🚀",
+      "cor": "#fb923c",
+      "tecla": "7",
+      "desc": "Lança {qtd} mísseis teleguiados de {dano}× dano nos alvos mais fortes.",
+      "descEn": "Launches {qtd} homing missiles of {dano}× damage.",
+      "cd": 65,
+      "dur": 2.5,
+      "requer": {
+        "onda": 35
+      },
+      "custoBase": 40,
+      "escala": {
+        "qtd": [
+          20,
+          4
+        ],
+        "dano": [
+          8,
+          2
+        ]
+      },
+      "tipo": "misseis"
+    },
+    {
+      "id": "buraco_negro",
+      "nome": "Buraco Negro",
+      "nomeEn": "Black Hole",
+      "icone": "🕳️",
+      "cor": "#a855f7",
+      "tecla": "8",
+      "desc": "Puxa os inimigos e causa {dano}× dano por segundo durante {dur}s.",
+      "descEn": "Pulls enemies and deals {dano}× damage per second for {dur}s.",
+      "cd": 120,
+      "dur": 6,
+      "requer": {
+        "onda": 45
+      },
+      "custoBase": 50,
+      "escala": {
+        "dano": [
+          6,
+          1.5
+        ],
+        "dur": [
+          6,
+          0.5
+        ]
+      },
+      "tipo": "buraco_negro"
+    },
+    {
+      "id": "reparo",
+      "nome": "Reparo de Emergência",
+      "nomeEn": "Emergency Repair",
+      "icone": "💚",
+      "cor": "#4ade80",
+      "tecla": "9",
+      "desc": "Restaura {cura}% da vida e concede escudo equivalente.",
+      "descEn": "Restores {cura}% HP and grants an equal shield.",
+      "cd": 90,
+      "dur": 0,
+      "requer": {
+        "onda": 12
+      },
+      "custoBase": 20,
+      "escala": {
+        "cura": [
+          45,
+          5
+        ]
+      },
+      "tipo": "cura"
+    },
+    {
+      "id": "julgamento",
+      "nome": "Julgamento",
+      "nomeEn": "Judgment",
+      "icone": "⚖️",
+      "cor": "#f43f5e",
+      "tecla": "0",
+      "desc": "Elimina todos os inimigos comuns na tela e converte cada abate em ouro dobrado. Chefes recebem {dano}× dano.",
+      "descEn": "Wipes all normal enemies, turning every kill into double gold. Bosses take {dano}× damage.",
+      "cd": 300,
+      "dur": 0,
+      "requer": {
+        "onda": 60
+      },
+      "custoBase": 120,
+      "escala": {
+        "dano": [
+          300,
+          90
+        ]
+      },
+      "tipo": "julgamento"
     }
-   ]
-  },
-  {
-   "id": "misseis",
-   "nome": "Salva de Mísseis",
-   "nomeEn": "Missile Barrage",
-   "icone": "🚀",
-   "cor": "#fb923c",
-   "tecla": "7",
-   "desc": "Lança {qtd} mísseis teleguiados de {dano}× dano nos alvos mais fortes.",
-   "descEn": "Launches {qtd} homing missiles of {dano}× damage.",
-   "cd": 65,
-   "dur": 2.5,
-   "requer": {
-    "onda": 35
-   },
-   "custoBase": 40,
-   "escala": {
-    "qtd": [
-     20,
-     4
-    ],
-    "dano": [
-     8,
-     2
-    ]
-   },
-   "tipo": "misseis"
-  },
-  {
-   "id": "buraco_negro",
-   "nome": "Buraco Negro",
-   "nomeEn": "Black Hole",
-   "icone": "🕳️",
-   "cor": "#a855f7",
-   "tecla": "8",
-   "desc": "Puxa os inimigos e causa {dano}× dano por segundo durante {dur}s.",
-   "descEn": "Pulls enemies and deals {dano}× damage per second for {dur}s.",
-   "cd": 120,
-   "dur": 6,
-   "requer": {
-    "onda": 45
-   },
-   "custoBase": 50,
-   "escala": {
-    "dano": [
-     6,
-     1.5
-    ],
-    "dur": [
-     6,
-     0.5
-    ]
-   },
-   "tipo": "buraco_negro"
-  },
-  {
-   "id": "reparo",
-   "nome": "Reparo de Emergência",
-   "nomeEn": "Emergency Repair",
-   "icone": "💚",
-   "cor": "#4ade80",
-   "tecla": "9",
-   "desc": "Restaura {cura}% da vida e concede escudo equivalente.",
-   "descEn": "Restores {cura}% HP and grants an equal shield.",
-   "cd": 90,
-   "dur": 0,
-   "requer": {
-    "onda": 12
-   },
-   "custoBase": 20,
-   "escala": {
-    "cura": [
-     45,
-     5
-    ]
-   },
-   "tipo": "cura"
-  },
-  {
-   "id": "julgamento",
-   "nome": "Julgamento",
-   "nomeEn": "Judgment",
-   "icone": "⚖️",
-   "cor": "#f43f5e",
-   "tecla": "0",
-   "desc": "Elimina todos os inimigos comuns na tela e converte cada abate em ouro dobrado. Chefes recebem {dano}× dano.",
-   "descEn": "Wipes all normal enemies and deals {dano}× damage to bosses.",
-   "cd": 300,
-   "dur": 0,
-   "requer": {
-    "onda": 60
-   },
-   "custoBase": 120,
-   "escala": {
-    "dano": [
-     300,
-     90
-    ]
-   },
-   "tipo": "julgamento"
-  }
- ],
- "nivelMax": 15
+  ],
+  "nivelMax": 15
 }

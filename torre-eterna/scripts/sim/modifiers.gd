@@ -18,6 +18,7 @@ static func especiais_padrao() -> Dictionary:
 		"velocidadeMax": 1.0,
 		"ganhoNucleos": 1.0,
 		"hpInimigo": 1.0,
+		"ouroDourado": 1.0,
 		"revives": 0.0,
 		"slotsHabilidade": 0.0,
 		"rerolls": 0.0,
@@ -270,7 +271,10 @@ static func recalcular(s: Dictionary, m: StatEngine) -> Dictionary:
 	if pas.has("combo_estendido"):
 		esp["comboBonus"] = float(esp["comboBonus"]) * (1.0 + 0.5 * float(pas["combo_estendido"]))
 	if pas.has("midas"):
+		# "Dobra a chance de inimigos dourados E O OURO QUE ELES SOLTAM". A
+		# segunda metade da promessa não existia: só a sorte era dobrada.
 		m.add_mult("sorte", 2.0, "Toque de Midas")
+		esp["ouroDourado"] = float(esp.get("ouroDourado", 1.0)) * 2.0
 	if pas.has("juros_dobrados"):
 		m.add_mult("jurosOuro", 2.0, "Juros Compostos")
 

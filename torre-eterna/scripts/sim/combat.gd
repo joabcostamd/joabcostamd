@@ -61,7 +61,7 @@ static func aplicar_dano(e: Inimigo, dano: float, j, opt: Dictionary = {}) -> Di
 		var overkill := Big.ZERO
 		if Big.gt(dmg, hp_antes):
 			overkill = Big.min_b(Big.sub(dmg, hp_antes), Big.mul_f(hp_antes, Bal.OVERKILL_TETO))
-		matar(e, j, overkill, bool(opt.get("crit", false)))
+		matar(e, j, overkill, bool(opt.get("crit", false)), float(opt.get("ouro_mult", 1.0)))
 		return {"morreu": true, "dano": dmg, "overkill": overkill, "absorvido": absorvido}
 	return {"morreu": false, "dano": dmg, "overkill": Big.ZERO, "absorvido": absorvido}
 
@@ -162,7 +162,10 @@ static func atualizar_status(dt: float, j) -> void:
 			e.tremor -= dt * 2.5
 
 ## Mata o inimigo e distribui recompensas.
-static func matar(e: Inimigo, j, overkill: float = Big.ZERO, critico: bool = false) -> void:
+## `ouro_mult` multiplica o ouro deste abate. Existe para o Julgamento, que
+## promete "converte cada abate em ouro dobrado" — promessa que estava só no
+## texto da habilidade.
+static func matar(e: Inimigo, j, overkill: float = Big.ZERO, critico: bool = false, ouro_mult: float = 1.0) -> void:
 	if e.morrendo > 0.0:
 		return
 	e.morrendo = 0.28
@@ -195,7 +198,7 @@ static func matar(e: Inimigo, j, overkill: float = Big.ZERO, critico: bool = fal
 	var bonus_combo := 1.0 + float(s["combo"]["atual"]) * float(j.esp.get("comboBonus", Bal.COMBO_BONUS_POR))
 	# Aglomeração: o teto de entidades vira economia — tela cheia rende mais.
 	var aglom := Mecanicas.fator_aglomeracao(j.arena.contagem_viva())
-	var ouro := Big.mul_f(e.ouro, bonus_combo * aglom)
+	var ouro := Big.mul_f(e.ouro, bonus_combo * aglom * maxf(1.0, ouro_mult))
 	if not Big.is_zero(overkill):
 		var frac := minf(Bal.OVERKILL_TETO, Big.to_f(Big.div(overkill, e.hp_max)))
 		ouro = Big.mul_f(ouro, 1.0 + frac)
