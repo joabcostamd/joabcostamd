@@ -5,6 +5,9 @@ extends Node
 
 var raiz: Control
 var atual := ""
+## Segundos que ainda faltam do banner cinematográfico. Enquanto for maior que
+## zero, os avisos ficam no rodapé e em número reduzido.
+var _banner_ate := 0.0
 var painel_atual: Control
 var fundo_escuro: ColorRect
 var caixa_toast: VBoxContainer
@@ -47,6 +50,10 @@ func _ready() -> void:
 	# reconstruir, o painel aberto continuava com a largura da escala anterior:
 	# acima de 1,05 o conteúdo saía pela direita e levava junto o botão de
 	# fechar. Mesmo tratamento que o idioma já tinha, e pela mesma razão.
+	# Enquanto o banner ocupa o meio da tela, os avisos vão para o rodapé.
+	Bus.banner_cinematico.connect(func(seg: float):
+		_banner_ate = maxf(_banner_ate, float(seg))
+		_posicionar_toasts())
 	Bus.config_mudou.connect(func(chave, _v):
 		var c := str(chave)
 		if (c == "idioma" or c == "escala_ui" or c == "fonte_grande") and atual != "":
@@ -112,14 +119,21 @@ func _montar_overlay() -> void:
 ## card e escondia justamente o que o jogador tinha ido ler. Com o painel
 ## fechado essa posição é a melhor que existe; com painel aberto, a única faixa
 ## que sobra é o rodapé. Então a caixa se muda.
-## Quantos avisos cabem sem atrapalhar. Com painel aberto, dois.
+## Quantos avisos cabem sem atrapalhar. Com painel aberto, dois; durante o
+## banner de chefe, dois também — cinco avisos empilhados enterravam o nome do
+## chefe, que é o momento mais cinematográfico do jogo.
 func _teto_toasts() -> int:
-	return 2 if atual != "" else 5
+	return 2 if (atual != "" or _banner_ate > 0.0) else 5
 
 func _posicionar_toasts() -> void:
 	if caixa_toast == null:
 		return
-	var aberto := atual != ""
+	# O banner cinematográfico desenha no meio da tela, na MESMA faixa em que os
+	# avisos se empilham. Os avisos já tinham aprendido a fugir de um painel
+	# aberto; ninguém os ensinou a fugir do banner, e o nome do chefe saía
+	# ilegível por baixo de cinco avisos de conquista. Mesma saída: a caixa se
+	# muda para o rodapé enquanto o banner estiver na tela.
+	var aberto := atual != "" or _banner_ate > 0.0
 	caixa_toast.anchor_top = 1.0 if aberto else 0.0
 	caixa_toast.anchor_bottom = 1.0 if aberto else 0.0
 	# No rodapé a caixa cresce PARA CIMA (senão os últimos avisos saem da tela) e
@@ -331,3 +345,11 @@ func _linha_ganho(icone: String, cor: Color, texto: String, tamanho: int) -> HBo
 	h.add_child(ic)
 	h.add_child(UI.rotulo(texto, tamanho, cor))
 	return h
+
+func _process(delta: float) -> void:
+	if _banner_ate <= 0.0:
+		return
+	_banner_ate -= delta
+	if _banner_ate <= 0.0:
+		_banner_ate = 0.0
+		_posicionar_toasts()

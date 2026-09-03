@@ -45,6 +45,8 @@ func rodar(cena: SceneTree) -> void:
 	t_eventos()
 	t_acessibilidade()
 	t_longo_prazo()
+	t_numeros_dano()
+	t_chaves_dinamicas()
 	t_dicas()
 	t_audio()
 	t_save()
@@ -1154,7 +1156,72 @@ func t_dicas() -> void:
 	raiz.free()
 	raiz2.free()
 
-## ----------------------------------------------- promessas de longo prazo
+## Chave montada em tempo de execucao — `Txt.t("m_" + tipo)` — nao da para
+## conferir lendo o codigo, e a regra de i18n do linter pula essas de proposito.
+## O resultado foi que NENHUMA chave `m_*` existia: toda recompensa de missao e
+## de conquista aparecia na tela como "+1 m_stat", "+120 m_fragmentos". O portao
+## que faltava e este: monta a chave com os valores que o CONTEUDO usa e
+## pergunta se ela resolve.
+func t_chaves_dinamicas() -> void:
+	g("Chaves dinamicas")
+	var tipos := {}
+	var visita := func(o, f: Callable):
+		pass
+	# tipos de recompensa que o conteudo declara
+	for grupo in [Dados.missoes_diarias, Dados.missoes_semanais, Dados.conquistas,
+			Dados.desafios, Dados.sequencia_diaria]:
+		for item in grupo:
+			var r = item.get("recompensa", null)
+			if r is Dictionary and r.has("tipo"):
+				tipos[str(r["tipo"])] = true
+	# e as moedas que os paineis nomeiam
+	for moeda in ["ouro", "gemas", "fragmentos", "nucleos", "eter", "poeira"]:
+		tipos[moeda] = true
+	ok("o conteudo declara tipos de recompensa", tipos.size() >= 4, "%d tipos" % tipos.size())
+	var cruas: Array = []
+	for tipo in tipos.keys():
+		var chave := "m_" + str(tipo)
+		if Txt.t(chave) == chave:
+			cruas.append(chave)
+	ok("toda chave m_* resolve", cruas.is_empty(), str(cruas))
+
+	# a mesma pergunta para as outras chaves montadas em tempo de execucao
+	var outras: Array = []
+	for cond in Progresso.TIPOS_COND:
+		var ck := "cqt_meta_" + str(cond)
+		if Txt.t(ck) != ck:
+			continue
+	ok("nenhuma chave de condicao ficou crua", outras.is_empty(), str(outras))
+
+## Numero de dano em cima de numero de dano nao se le: "82" sobre "1.229"
+## aparece como "821.229", que e pior do que nao mostrar nada. Fundir nao cobre
+## o caso — critico nao funde com comum de proposito, e e justo esse par que
+## mais se encontra.
+func t_numeros_dano() -> void:
+	g("Numeros de dano")
+	var nd := NumerosDeDano.new()
+	nd.modo = 0
+	nd.limpar()
+	# Trinta golpes no MESMO ponto SEM valor: sem valor nao ha fusao, entao os
+	# trinta precisam existir ao mesmo tempo. E o caso denso de verdade — o que
+	# aparece quando critico e comum caem juntos e nenhum dos dois funde.
+	for i in 30:
+		nd.adicionar(Vector2(400.0, 300.0), str(i), UI.TEXTO, i % 2 == 0)
+	var vivos: Array = []
+	for pnum in nd.pool:
+		if bool(pnum["ativo"]):
+			vivos.append(pnum["pos"] as Vector2)
+	ok("os numeros existem", vivos.size() >= 2, "%d ativos" % vivos.size())
+	var colados := 0
+	var mais_perto := 1.0e9
+	for i in vivos.size():
+		for j in range(i + 1, vivos.size()):
+			var d: float = (vivos[i] as Vector2).distance_to(vivos[j] as Vector2)
+			mais_perto = minf(mais_perto, d)
+			if d < 12.0:
+				colados += 1
+	ok("nenhum par fica ilegivel de tao perto", colados == 0,
+		"%d pares colados, menor distancia %.1f px" % [colados, mais_perto])
 func t_longo_prazo() -> void:
 	g("Longo prazo")
 	# O grafico do painel Estatisticas lia `stats.historico` e NADA no jogo

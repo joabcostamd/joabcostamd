@@ -8,7 +8,10 @@ extends RefCounted
 ## entre "está batendo forte" e "tem números demais na tela".
 
 const MAX := 160
-const RAIO_FUNDIR := 30.0    ## distância em que um golpe novo entra no número que já está lá
+const RAIO_FUNDIR := 44.0    ## distância em que um golpe novo entra no número que já está lá
+const RAIO_SEPARAR := 30.0   ## abaixo disto dois números viram um borrão ilegível
+const TENTATIVAS_SEPARAR := 16
+const ANGULO_AUREO := 2.39996323   ## espalha sem nunca repetir direção
 const JANELA_FUNDIR := 0.55  ## por quanto tempo um número aceita somar
 
 var pool: Array = []
@@ -45,19 +48,30 @@ func adicionar(pos: Vector2, texto: String, cor: Color, critico: bool = false, e
 			return
 
 	var alvo: Dictionary = {}
-	for p in pool:
+	var slot := 0
+	for i in pool.size():
+		var p: Dictionary = pool[i]
 		if not bool(p["ativo"]):
 			alvo = p
+			slot = i
 			break
 	if alvo.is_empty():
 		alvo = pool[0]
+		slot = 0
+	alvo["slot"] = slot
 	alvo["ativo"] = true
 	alvo["valor"] = valor_log
 	alvo["somas"] = 0
 	alvo["nascido"] = 0.0
 	# Espalha mais na horizontal do que na vertical: os números sobem, então é
-	# na largura que eles deixam de se cobrir.
-	alvo["pos"] = pos + Vector2(randf_range(-26.0, 26.0), randf_range(-6.0, 2.0))
+	# na largura que eles deixam de se cobrir. Só que jitter aleatório não
+	# resolve densidade: com muitos golpes por segundo, dois números caem quase
+	# no mesmo pixel e se leem como um número só — "82" em cima de "1.229" vira
+	# "821.229", que é pior do que não mostrar nada. E fundir não cobre o caso:
+	# crítico não funde com comum de propósito, e é justo esse par que mais se
+	# encontra. Então, depois do jitter, o número é EMPURRADO para longe do
+	# vizinho mais próximo até caber.
+	alvo["pos"] = _posicao_livre(pos, alvo)
 	alvo["vel"] = Vector2(randf_range(-22.0, 22.0), -62.0 - (34.0 if critico else 0.0))
 	alvo["texto"] = texto
 	alvo["cor"] = cor
@@ -85,6 +99,75 @@ func _fundir_em(pos: Vector2, critico: bool) -> Dictionary:
 			melhor_d = d
 			melhor = p
 	return melhor
+
+## Onde colocar mais um número sem que ele cubra os que já estão ali.
+##
+## Empurrar do vizinho mais próximo não basta quando são muitos: o número foge
+## de um e cai em cima de outro. Aqui a vaga é escolhida em espiral — o ângulo
+## áureo espalha pontos sem nunca repetir direção, e o raio cresce com a raiz do
+## número de vizinhos, que é o que mantém a densidade constante em vez de
+## crescer. Depois disso, algumas rodadas de empurrão acertam o que sobrou.
+func _posicao_livre(pos: Vector2, proprio: Dictionary) -> Vector2:
+	var alvo_slot := int(proprio.get("slot", 0))
+	var vizinhos := 0
+	var raio_conta := RAIO_SEPARAR * 3.0
+	for p in pool:
+		if not bool(p["ativo"]) or p == proprio:
+			continue
+		if (pos - (p["pos"] as Vector2)).length() < raio_conta:
+			vizinhos += 1
+	if vizinhos == 0:
+		# Sozinho: jitter, que dá vida sem risco de cobrir ninguém.
+		return pos + Vector2(randf_range(-26.0, 26.0), randf_range(-6.0, 2.0))
+	# Acompanhado: sai da origem por uma direção que depende do SLOT, que é
+	# único entre os números vivos. Contar vizinhos não serve de índice: à
+	# medida que eles se espalham para fora do raio de contagem, o número cai e
+	# a mesma direção é escolhida de novo — foi assim que 45 pares acabaram no
+	# mesmo pixel. O slot não repete enquanto os dois estiverem na tela.
+	var indice := int(alvo_slot)
+	var ang := float(indice) * ANGULO_AUREO
+	var raio := RAIO_SEPARAR * (0.9 + 0.55 * float(indice % 5))
+	pos += Vector2(cos(ang), sin(ang) * 0.62) * raio
+
+	if _vaga_livre(pos, proprio):
+		return pos
+	for tentativa in TENTATIVAS_SEPARAR:
+		var vizinho: Dictionary = {}
+		var pior := RAIO_SEPARAR * RAIO_SEPARAR
+		for p in pool:
+			if not bool(p["ativo"]) or p == proprio:
+				continue
+			var d: float = (pos - (p["pos"] as Vector2)).length_squared()
+			if d < pior:
+				pior = d
+				vizinho = p
+		if vizinho.is_empty():
+			return pos
+		var fuga: Vector2 = pos - (vizinho["pos"] as Vector2)
+		if fuga.length_squared() < 0.01:
+			fuga = Vector2(cos(float(tentativa) * ANGULO_AUREO), sin(float(tentativa) * ANGULO_AUREO))
+		pos = (vizinho["pos"] as Vector2) + fuga.normalized() * RAIO_SEPARAR
+
+	# Empurrar do vizinho MAIS PRÓXIMO pode oscilar entre dois: foge de um,
+	# encosta no outro, volta. Quando isso acontece, a última palavra é uma
+	# busca em espiral por uma vaga que esteja livre de TODO MUNDO — 24
+	# direções, raio crescendo. Determinística e limitada.
+	for passo in 24:
+		var ang2 := float(passo) * ANGULO_AUREO
+		var r2 := RAIO_SEPARAR * (1.0 + 0.35 * float(passo))
+		var cand: Vector2 = pos + Vector2(cos(ang2), sin(ang2) * 0.62) * r2
+		if _vaga_livre(cand, proprio):
+			return cand
+	return pos
+
+## Verdadeiro quando nenhum número ativo está perto o bastante para virar borrão.
+func _vaga_livre(pos: Vector2, proprio: Dictionary) -> bool:
+	for p in pool:
+		if not bool(p["ativo"]) or p == proprio:
+			continue
+		if (pos - (p["pos"] as Vector2)).length() < RAIO_SEPARAR * 0.55:
+			return false
+	return true
 
 func atualizar(dt: float) -> void:
 	for p in pool:

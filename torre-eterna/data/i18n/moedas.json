@@ -1,0 +1,11 @@
+{
+  "m_ouro": {"pt": "ouro", "en": "gold"},
+  "m_gemas": {"pt": "gemas", "en": "gems"},
+  "m_fragmentos": {"pt": "fragmentos", "en": "shards"},
+  "m_nucleos": {"pt": "núcleos", "en": "cores"},
+  "m_eter": {"pt": "éter", "en": "aether"},
+  "m_poeira": {"pt": "poeira", "en": "dust"},
+  "m_pontosTalento": {"pt": "ponto(s) de talento", "en": "talent point(s)"},
+  "m_stat": {"pt": "de bônus permanente", "en": "permanent bonus"},
+  "m_xp": {"pt": "XP", "en": "XP"}
+}

@@ -25,12 +25,14 @@ func _ao_chefe(e) -> void:
 	banner_sub = Ux.txt(e.def, "dica", Cfg.ingles())
 	banner_cor = e.cor
 	banner_t = 3.4
+	Bus.banner_cinematico.emit(banner_t)
 
 func _ao_prestigio(camada: String, ganho: float) -> void:
 	banner_nome = camada.to_upper()
 	banner_sub = "+" + Fmt.big(ganho)
 	banner_cor = Color("#a855f7")
 	banner_t = 2.6
+	Bus.banner_cinematico.emit(banner_t)
 
 func _process(delta: float) -> void:
 	t += delta
