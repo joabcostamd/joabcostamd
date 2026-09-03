@@ -38,6 +38,8 @@ var _celulas_usadas: Array[int] = []
 var _buffer: Array[Inimigo] = []
 var vivos := 0
 var _proximo_id := 1
+## Cursor do anel de reciclagem de projeteis (ver `novo_projetil`).
+var _anel_p := 0
 
 func _init() -> void:
 	for i in 96:
@@ -74,6 +76,10 @@ func novo_inimigo() -> Inimigo:
 		e = Inimigo.new()
 	e.limpar()
 	e.id = _proximo_id
+	# Espalha o tique de dano continuo entre os quadros (ver
+	# `Combate.DOT_INTERVALO`): sem isto todo mundo cobraria no MESMO passo e o
+	# pico que o lote veio evitar voltaria inteiro num quadro so.
+	e.dot_acc = float(_proximo_id % 6) * 0.0166
 	_proximo_id += 1
 	inimigos.append(e)
 	return e
@@ -95,9 +101,14 @@ func novo_projetil() -> Projetil:
 	if not _livres_p.is_empty():
 		p = _livres_p.pop_back()
 	elif projeteis.size() >= max_projeteis:
-		p = projeteis[0]
-		projeteis.remove_at(0)
+		# RECICLA EM ANEL, sem memmove. Era `remove_at(0)` seguido de `append`:
+		# com o pool cheio (800) isso desloca 800 ponteiros por projetil criado,
+		# e a torre chega a criar mais de cem por quadro. O anel reaproveita o
+		# mesmo slot no lugar e nao mexe na lista.
+		_anel_p = (_anel_p + 1) % projeteis.size()
+		p = projeteis[_anel_p]
 		p.limpar()
+		return p
 	else:
 		p = Projetil.new()
 	p.limpar()
@@ -197,6 +208,26 @@ func _chave(p: Vector2) -> int:
 func em_area(p: Vector2, raio: float) -> Array[Inimigo]:
 	_buffer.clear()
 	raio = minf(raio, sqrt(largura * largura + altura * altura))
+	# GRADE SO ENQUANTO A GRADE COMPENSA.
+	#
+	# A varredura por celulas custa (2r/72+1)^2 consultas; a varredura direta
+	# custa uma por inimigo vivo. Com raio grande — e area e uma melhoria que
+	# cartas, talentos e prestigio multiplicam, entao ela FICA grande — a grade
+	# passa a olhar centenas de celulas vazias para achar os mesmos inimigos.
+	# Medido: o subsistema de projeteis custava 6.954 us por passo com 512
+	# projeteis vivos, treze microssegundos por projetil, quase tudo em celula
+	# vazia. Quando o quadrado do raio pede mais celulas do que ha inimigos, a
+	# lista direta e mais barata e da exatamente a mesma resposta.
+	var lado := int(2.0 * raio / CELULA) + 1
+	var r2_lin := raio * raio
+	if lado * lado >= inimigos.size():
+		for item_l in inimigos:
+			var el: Inimigo = item_l
+			if not el.ativo or el.morrendo > 0.0:
+				continue
+			if (el.pos - p).length_squared() <= r2_lin + el.raio * el.raio:
+				_buffer.append(el)
+		return _buffer
 	var c0 := Vector2i(int(floor((p.x - raio) / CELULA)), int(floor((p.y - raio) / CELULA)))
 	var c1 := Vector2i(int(floor((p.x + raio) / CELULA)), int(floor((p.y + raio) / CELULA)))
 	var r2 := raio * raio

@@ -19,6 +19,11 @@ var tiros_para_salva := 0
 
 const MODOS_MIRA := ["proximo", "avancado", "forte", "fraco", "chefe", "longe"]
 
+## Quantos DISPAROS a torre desenha por passo de fisica. O que a cadencia pedir
+## alem disso vira dano por salva (ver `atualizar`): oito salvas em 1/60 s ja
+## sao mais do que o olho separa, e cada uma custa `projeteis` entidades.
+const TIROS_POR_PASSO := 8
+
 ## Chaves de atributo dos elementos, prontas. Eram montadas com `capitalize()`
 ## a cada projetil criado — cinco strings novas por tiro, dentro do passo de
 ## fisica.
@@ -96,12 +101,28 @@ func atualizar(dt: float) -> void:
 		_ids_alvo.clear()
 		_ids_alvo[alvo.id] = true
 		segundo = j.arena.alvo_ids(j.arena.centro, alcance, _ids_alvo)
-	while cd_tiro <= 0.0 and tiros < 12:
-		cd_tiro += 1.0 / cadencia
-		if alvo == null:
-			break
-		disparar(alvo, segundo)
-		tiros += 1
+	# CADENCIA ALEM DO TETO VIRA DANO, NAO PROJETIL.
+	#
+	# O laco disparava ate doze vezes por passo e JOGAVA FORA o resto: quem
+	# comprava cadencia depois disso pagava por nada — a melhoria continuava
+	# vendendo velocidade de tiro e nao entregava mais nenhum tiro. E, no
+	# caminho contrario, cada tiro extra ate o teto custava quinze projeteis no
+	# pool: medido, a onda 209 saturava os 800 projeteis do pool e o subsistema
+	# sozinho custava 4.778 us por passo, mais do que o orcamento inteiro do
+	# quadro.
+	#
+	# Agora a conta e fechada e exata: quantos tiros a cadencia pede neste
+	# passo, quantos cabem (`TIROS_POR_PASSO`), e a razao entre os dois vira
+	# multiplicador de dano da salva. O jogador recebe o dano que comprou, o
+	# quadro nao paga por projetil que ninguem consegue ver, e a conta e O(1) —
+	# nao ha laco que cresca com a cadencia.
+	if alvo != null and cd_tiro <= 0.0:
+		var pedidos := clampi(int(floor(-cd_tiro * cadencia)) + 1, 1, 100000)
+		cd_tiro += float(pedidos) / cadencia
+		tiros = mini(pedidos, TIROS_POR_PASSO)
+		var forca := float(pedidos) / float(tiros)
+		for i in tiros:
+			disparar(alvo, segundo, forca)
 	if cd_tiro < 0.0:
 		cd_tiro = 0.0
 
@@ -109,7 +130,7 @@ func atualizar(dt: float) -> void:
 
 ## ------------------------------------------------------------ disparo
 
-func disparar(alvo: Inimigo, segundo: Inimigo = null) -> void:
+func disparar(alvo: Inimigo, segundo: Inimigo = null, forca: float = 1.0) -> void:
 	var n: int = clampi(int(j.stats.n("projeteis")), 1, Bal.PROJETEIS_TETO)
 	var espalhamento: float = minf(0.6, 0.06 * float(n)) if n > 1 else 0.0
 	var centro_b: Vector2 = j.arena.centro
@@ -123,13 +144,13 @@ func disparar(alvo: Inimigo, segundo: Inimigo = null) -> void:
 	for i in n:
 		var t := 0.0 if n == 1 else (float(i) / float(n - 1) - 0.5) * 2.0
 		var ang := base + t * espalhamento
-		_criar_projetil(ang, alvo if i == 0 else alvo_extra)
+		_criar_projetil(ang, alvo if i == 0 else alvo_extra, forca)
 
 	# passiva Eco Balístico: chance de repetir a salva
 	if j.pas.has("eco"):
 		var chance: float = float(j.pas.get("eco:valor", 0.12)) * float(j.pas["eco"])
 		if j.rng.chance(minf(0.6, chance)):
-			_criar_projetil(base, alvo)
+			_criar_projetil(base, alvo, forca)
 
 	recuo = 1.0
 	j.s["stats"]["tiros"] = int(j.s["stats"]["tiros"]) + 1
@@ -148,14 +169,14 @@ func disparar(alvo: Inimigo, segundo: Inimigo = null) -> void:
 				_criar_projetil(TAU * float(i) / float(quantos), alvo)
 			Bus.particulas.emit("pulso", centro_b, {"raio": 110.0, "cor": "#fcd34d"})
 
-func _criar_projetil(ang: float, alvo: Inimigo) -> void:
+func _criar_projetil(ang: float, alvo: Inimigo, forca: float = 1.0) -> void:
 	var p: Projetil = j.arena.novo_projetil()
 	# `danoTorre` é o dano QUE A TORRE CAUSA — "cada tiro causa 5× de dano",
 	# "Dano ×20" — e estava sendo aplicado no dano que ela RECEBE. O desafio
 	# Ferrugem, anunciado e pintado de verde como bônus, multiplicava por cinco
 	# o dano que o jogador levava. Sinal invertido no lugar mais caro possível.
-	var dano_base := Big.mul_f(Big.mul_f(j.stats.b("dano"), j.stats.n("multiplicador")),
-		float(j.mods_dif.get("danoTorre", 1.0)))
+	var dano_base := Big.mul_f(Big.mul_f(Big.mul_f(j.stats.b("dano"), j.stats.n("multiplicador")),
+		float(j.mods_dif.get("danoTorre", 1.0))), forca)
 	var golpe := Combate.rolar_golpe(dano_base, j, alvo)
 
 	p.ativo = true
@@ -171,7 +192,15 @@ func _criar_projetil(ang: float, alvo: Inimigo) -> void:
 	p.ricochete = int(j.stats.n("ricochete"))
 	p.area = j.stats.n("area")
 	p.raio = 6.0 if p.critico else 4.0
-	p.vida = 3.5
+	# VIDA DO PROJETIL PROPORCIONAL A TRAVESSIA, nao um numero fixo.
+	#
+	# Eram 3,5 s para todo mundo. Com velocidade alta (a melhoria da +26 px/s
+	# por nivel) o projetil cruza a arena inteira em menos de dois segundos e
+	# passa o resto do tempo vivo sem poder acertar nada — mas continua sendo
+	# testado contra a grade a cada quadro. Medido: o pool de 800 ficava
+	# saturado com ~500 projeteis vivos e a colisao sozinha custava 2,9 ms por
+	# passo. Um projetil que nao acertou em uma travessia e meia nao vai acertar.
+	p.vida = clampf(2200.0 / maxf(160.0, p.velocidade), 0.7, 3.5)
 	p.origem = "torre"
 	p.elemento = _sortear_elemento()
 	if p.elemento != "":
@@ -216,6 +245,7 @@ func _sortear_elemento() -> String:
 ## as mesmas — a comparação de distância virou quadrado contra quadrado, que é
 ## a mesma desigualdade sem a raiz. O jogo não mudou; só parou de pagar pedágio.
 func atualizar_projeteis(dt: float) -> void:
+	_atualizar_opt_impacto()
 	var arena = j.arena
 	var lista: Array = arena.projeteis
 	var centro: Vector2 = arena.centro
@@ -271,14 +301,22 @@ func atualizar_projeteis(dt: float) -> void:
 			if _impacto(p, atingido):
 				arena.soltar_projetil(i)
 
+## Reusado a cada impacto. Tres dos cinco campos sao ATRIBUTOS DA TORRE: eles
+## nao mudam dentro do quadro, e montar um Dicionario novo por impacto — com 53
+## impactos por passo na perna cheia — e alocacao pura. Os dois campos que
+## variam por projetil sao escritos antes de cada uso.
+var _opt_impacto := {"crit": false, "penetracao": 0.0, "execucao": 0.0,
+	"roubodeVida": 0.0, "elemento": ""}
+
+func _atualizar_opt_impacto() -> void:
+	_opt_impacto["penetracao"] = j.stats.n("penetracao")
+	_opt_impacto["execucao"] = j.stats.n("execucao")
+	_opt_impacto["roubodeVida"] = j.stats.n("roubodeVida")
+
 func _impacto(p: Projetil, alvo: Inimigo) -> bool:
-	var opt := {
-		"crit": p.critico,
-		"penetracao": j.stats.n("penetracao"),
-		"execucao": j.stats.n("execucao"),
-		"roubodeVida": j.stats.n("roubodeVida"),
-		"elemento": p.elemento,
-	}
+	var opt := _opt_impacto
+	opt["crit"] = p.critico
+	opt["elemento"] = p.elemento
 
 	# O Guardiao do Espelho declara `"mecanica": "refletir"`, e so o refletor
 	# comum declara `"hab"`. O codigo olhava so `hab`, entao o chefe cujo nome e
@@ -292,7 +330,16 @@ func _impacto(p: Projetil, alvo: Inimigo) -> bool:
 	if p.elemento != "":
 		Combate.aplicar_elemento(alvo, p.elemento, p.dano, j)
 
-	if p.area > 0.0:
+	# O MORTEIRO EXPLODE UMA VEZ, nao uma por corpo atravessado.
+	#
+	# `area` e `perfuracao` se multiplicavam: um projetil com estilhaco e doze
+	# perfuracoes soltava DOZE explosoes, cada uma varrendo ~20 inimigos.
+	# Medido na perna de 160 vivos segurados: 48 impactos por passo, 962
+	# chamadas de `aplicar_dano` por passo, 10 ms so em `_impacto` — sozinho,
+	# duas vezes e meia o orcamento do quadro inteiro. Fisicamente tambem nao
+	# fazia sentido: uma carga explode, ela nao explode de novo no proximo osso.
+	if p.area > 0.0 and not p.explodiu:
+		p.explodiu = true
 		Combate.dano_area(p.pos, p.area, Big.mul_f(p.dano, 0.6), j, {
 			"crit": p.critico, "penetracao": opt["penetracao"], "queda": true, "ignorar": [alvo],
 		})

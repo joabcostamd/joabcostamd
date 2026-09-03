@@ -48,6 +48,7 @@ func rodar(cena: SceneTree) -> void:
 	t_celebracao()
 	t_painel_melhorias()
 	t_rodape()
+	t_custo_do_quadro()
 	t_teto()
 	t_defesa()
 	t_ondas()
@@ -82,7 +83,7 @@ func rodar(cena: SceneTree) -> void:
 	# Agora cada grupo tem o proprio minimo. Perder um bloco reprova NOMEANDO o
 	# bloco, e acrescentar teste continua nunca reprovando.
 	var minimo_por_grupo := {
-		"Acessibilidade": 11, "Alcancavel": 8, "Big": 12,
+		"Acessibilidade": 10, "Alcancavel": 8, "Big": 12,
 		"Chaves dinamicas": 3, "Combate": 9, "Defesa": 27,
 		"Dicas": 5, "Economia": 9, "Elites": 11,
 		"Eventos": 12, "Feedback": 2, "Ferramentas": 3, "Daltonismo": 9, "Tempo": 5, "Conteudo lido": 21, "Fmt": 6,
@@ -91,7 +92,7 @@ func rodar(cena: SceneTree) -> void:
 		"Mods": 19, "Numeros de dano": 2, "Offline": 6,
 		"Ondas": 12, "Pista de ouro": 3, "Prestígio": 25,
 		"Progresso": 14, "Saque": 8, "Save": 41,
-		"Celebracao": 25, "Fim de sessao": 25, "Painel de melhorias": 20, "Rodape": 26, "Sistemas": 6, "StatEngine": 5, "Teto": 38, "Áudio": 45,
+		"Celebracao": 25, "Fim de sessao": 25, "Painel de melhorias": 20, "Rodape": 26, "Sistemas": 6, "StatEngine": 5, "Custo do quadro": 12, "Teto": 38, "Áudio": 45,
 	}
 	for nome_g in minimo_por_grupo:
 		var rodou := int(por_grupo.get(nome_g, 0))
@@ -1545,6 +1546,68 @@ func t_rodape() -> void:
 	ok("a deteccao de idioma le o locale do sistema", txt_c.contains("OS.get_locale()"))
 	ok("...e so quando nao ha escolha salva", txt_c.contains('not salvo.has("idioma")'))
 
+## ---------------------------------------------------------- custo do quadro
+func t_custo_do_quadro() -> void:
+	g("Custo do quadro")
+	# Quatro defeitos que so aparecem quando o jogo fica FORTE, e que juntos
+	# custavam 22,6 ms por passo — cinco vezes o orcamento do quadro inteiro.
+	# Cada um tem aqui a assercao que reprova se voltar.
+
+	# 1. O MORTEIRO EXPLODE UMA VEZ, nao uma por corpo atravessado.
+	var p_test := Projetil.new()
+	ok("o projetil nasce sem ter explodido", not p_test.explodiu)
+	p_test.explodiu = true
+	p_test.limpar()
+	ok("reciclar o projetil zera a explosao", not p_test.explodiu)
+	var txt_tw := _ler("res://scripts/sim/tower.gd")
+	ok("a explosao e uma so por projetil",
+		txt_tw.contains("if p.area > 0.0 and not p.explodiu:"))
+
+	# 2. VIDA DO PROJETIL PROPORCIONAL A TRAVESSIA. Fixo em 3,5 s, o pool de 800
+	# vivia saturado com ~500 projeteis que ja nao podiam acertar nada.
+	ok("a vida do projetil sai da velocidade", txt_tw.contains("p.vida = clampf(2200.0"))
+
+	# 3. CADENCIA ALEM DO TETO VIRA DANO. O laco disparava ate doze vezes por
+	# passo e jogava o resto fora: quem comprava cadencia depois disso pagava
+	# por nada.
+	ok("existe teto de disparos por passo", TorreSim.TIROS_POR_PASSO >= 1)
+	ok("o excedente vira forca da salva", txt_tw.contains("var forca := float(pedidos) / float(tiros)"))
+	ok("...e a forca chega ao dano do projetil", txt_tw.contains("float(j.mods_dif.get(\"danoTorre\", 1.0))), forca)"))
+
+	# 4. DANO CONTINUO A 10 Hz, nao a cada quadro. Com 212 inimigos em chamas
+	# eram 424 chamadas de `aplicar_dano` por passo so para dividir o mesmo dano
+	# em sessenta pedacos por segundo em vez de dez.
+	ok("o intervalo do dano continuo e sensato",
+		Combate.DOT_INTERVALO >= 0.05 and Combate.DOT_INTERVALO <= 0.25)
+	ok("a corrente de raio tem espera", Combate.RAIO_ESPERA > 0.0)
+	# E o dano TOTAL nao pode mudar: o acumulador guarda o tempo real decorrido.
+	var alvo_dot = EnemyAI.criar(Dados.inimigo_por_id["grunhido"], 5, jogo, {})
+	ok("criou o alvo do dano continuo", alvo_dot != null)
+	if alvo_dot != null:
+		alvo_dot.hp = Big.from(1.0e12)
+		alvo_dot.hp_max = alvo_dot.hp
+		alvo_dot.queimadura = 1
+		alvo_dot.queimadura_dano = Big.from(1000.0)
+		alvo_dot.queimadura_t = 10.0
+		alvo_dot.dot_acc = 0.0
+		var antes: float = alvo_dot.hp
+		# um segundo inteiro, em passos de 1/60
+		for i in 60:
+			Combate.atualizar_status(1.0 / 60.0, jogo)
+		var levou := Big.to_f(Big.sub(antes, alvo_dot.hp))
+		# 1.000 por segundo por pilha, com uma pilha: ~1.000, com folga para o
+		# resto que o acumulador ainda nao cobrou.
+		ok("o dano continuo entrega o mesmo total por segundo",
+			levou > 800.0 and levou < 1100.0, "%.0f" % levou)
+	jogo.arena.limpar_tudo()
+
+	# 5. A GRADE SO ENQUANTO A GRADE COMPENSA.
+	var txt_ar := _ler("res://scripts/sim/arena.gd")
+	ok("em_area troca a grade pela lista quando o raio e grande",
+		txt_ar.contains("if lado * lado >= inimigos.size():"))
+	ok("o pool de projeteis recicla em anel, sem memmove",
+		txt_ar.contains("_anel_p = (_anel_p + 1)") and not txt_ar.contains("projeteis.remove_at(0)"))
+
 ## ------------------------------------------------------------ teto de nivel
 func t_teto() -> void:
 	g("Teto")
@@ -2382,12 +2445,62 @@ func t_acessibilidade() -> void:
 	# pequeno. O modo de alto contraste nao consertava: ele estica o gama em
 	# torno do meio-cinza, e texto e fundo escuros sobem juntos. Aqui a paleta
 	# e conferida direto, para a regressao nao voltar em silencio.
-	for par in [["TEXTO", UI.TEXTO], ["TEXTO2", UI.TEXTO2], ["TEXTO3", UI.TEXTO3]]:
-		for fundo in [["PAINEL", UI.PAINEL], ["PAINEL2", UI.PAINEL2]]:
-			var r := _contraste(par[1], fundo[1])
-			ok("%s sobre %s passa 4.5:1" % [par[0], fundo[0]], r >= 4.5, "%.2f:1" % r)
+	# O PORTAO COBRIA TRES CORES DE TEXTO DE UMAS DEZOITO, e havia reprovacao
+	# viva que ele nao via: `MOEDA_COR["nucleos"]` (#a855f7) e escrito como TEXTO
+	# em `UI.moeda` e dava 3,98:1 sobre PAINEL2. Agora a matriz e completa.
+	var cores_texto: Array = [
+		["TEXTO", UI.TEXTO], ["TEXTO2", UI.TEXTO2], ["TEXTO3", UI.TEXTO3],
+		["ACENTO", UI.ACENTO], ["ACENTO2", UI.ACENTO2], ["OURO", UI.OURO],
+		["VERDE", UI.VERDE], ["VERMELHO", UI.VERMELHO], ["LARANJA", UI.LARANJA],
+		["ROSA", UI.ROSA],
+	]
+	for chave_m in UI.MOEDA_COR:
+		cores_texto.append(["moeda:" + str(chave_m), UI.MOEDA_COR[chave_m]])
+	for r_def in Dados.raridades:
+		cores_texto.append(["raridade:" + str(r_def.get("id", "?")),
+			Color.html(str(r_def.get("cor", "#ffffff")))])
+	var fundos: Array = [["FUNDO", UI.FUNDO], ["FUNDO2", UI.FUNDO2],
+		["PAINEL", UI.PAINEL], ["PAINEL2", UI.PAINEL2]]
+	var reprovados: Array = []
+	var pares := 0
+	for par in cores_texto:
+		for fundo in fundos:
+			pares += 1
+			if _contraste(par[1], fundo[1]) < 4.5:
+				reprovados.append("%s/%s %.2f:1" % [par[0], fundo[0], _contraste(par[1], fundo[1])])
+	ok("a matriz de contraste cobre a paleta inteira", pares >= 60, "%d pares" % pares)
+	ok("nenhuma cor de texto reprova 4.5:1 em nenhum fundo",
+		reprovados.is_empty(), str(reprovados))
 	ok("hierarquia preservada", _contraste(UI.TEXTO, UI.PAINEL2) > _contraste(UI.TEXTO2, UI.PAINEL2)
 		and _contraste(UI.TEXTO2, UI.PAINEL2) > _contraste(UI.TEXTO3, UI.PAINEL2))
+
+	# FUNDO DESTACADO NAO PODE CLAREAR. Onze lugares pintavam a caixa "completa"
+	# com `PAINEL2.lerp(cor, 0.18)`, mais claro que o painel: cada um derrubava
+	# o contraste de todo texto por cima (TEXTO3 caia de 4,62 para 3,10). Com
+	# `UI.tingir` vale o invariante — o que passa em PAINEL2 passa no destaque.
+	var claros: Array = []
+	for par2 in cores_texto:
+		for forca in [0.10, 0.14, 0.18, 0.28, 0.5]:
+			var tinta: Color = UI.tingir(par2[1], float(forca))
+			if UI.luz_relativa(tinta) > UI.luz_relativa(UI.PAINEL2) + 0.00001:
+				claros.append("%s@%.2f" % [par2[0], forca])
+	ok("tingir() nunca deixa o fundo mais claro que o painel",
+		claros.is_empty(), str(claros))
+	# ...e por consequencia todo texto que passa em PAINEL2 passa no destaque.
+	var reprova_tinta: Array = []
+	for par3 in cores_texto:
+		for tinta_de in [UI.VERDE, UI.OURO, UI.ACENTO, UI.ROSA]:
+			var f2: Color = UI.tingir(tinta_de, 0.18)
+			if _contraste(par3[1], f2) < 4.5:
+				reprova_tinta.append(str(par3[0]))
+	ok("nenhum texto reprova sobre fundo destacado", reprova_tinta.is_empty(), str(reprova_tinta))
+	# E a interface tem que USAR o ajudante, senao o invariante nao vale de nada.
+	var cruas: Array = []
+	for arq_ui in _listar_gd("res://scripts/ui"):
+		var t_ui := _sem_comentario(_ler(str(arq_ui)))
+		if t_ui.contains("PAINEL2.lerp(") and not str(arq_ui).ends_with("ui_kit.gd"):
+			cruas.append(str(arq_ui).get_file())
+	ok("nenhum painel mistura o fundo na mao", cruas.is_empty(), str(cruas))
 
 ## Razao de contraste da WCAG 2.1 entre duas cores opacas.
 func _contraste(a: Color, b: Color) -> float:

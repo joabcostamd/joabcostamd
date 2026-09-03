@@ -113,7 +113,7 @@ func _botao_opcao(op: Dictionary, indice: int) -> Button:
 	var b := UI.botao("", func(): _escolher(indice))
 	b.custom_minimum_size.y = 68
 	b.add_theme_stylebox_override("normal", UI.caixa(UI.PAINEL2.darkened(0.18), 10, 1, UI.BORDA))
-	b.add_theme_stylebox_override("hover", UI.caixa(UI.PAINEL2.lerp(cor, 0.14), 10, 1, cor.darkened(0.2)))
+	b.add_theme_stylebox_override("hover", UI.caixa(UI.tingir(cor, 0.14), 10, 1, cor.darkened(0.2)))
 
 	var h := UI.hbox(12)
 	h.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)

@@ -37,7 +37,9 @@ const RARIDADE_COR := {
 
 const MOEDA_COR := {
 	"ouro": Color("#fbbf24"), "gemas": Color("#f472b6"), "fragmentos": Color("#38bdf8"),
-	"nucleos": Color("#a855f7"), "eter": Color("#fb7185"), "poeira": Color("#94a3b8"),
+	# `#a855f7` reprovava a WCAG COMO TEXTO (3,98:1 sobre PAINEL2): o valor de
+	# nucleos aparece escrito com esta cor em `UI.moeda`, nao so no icone.
+	"nucleos": Color("#c084fc"), "eter": Color("#fb7185"), "poeira": Color("#94a3b8"),
 }
 ## Nome do ícone VETORIAL de cada moeda (ver scripts/ui/icone.gd).
 ## Emoji não entra em texto de interface: a fonte padrão não tem glifo.
@@ -45,6 +47,47 @@ const MOEDA_ICONE := {
 	"ouro": "ouro", "gemas": "gema", "fragmentos": "fragmento",
 	"nucleos": "nucleo", "eter": "eter", "poeira": "poeira",
 }
+
+# --------------------------------------------------------------- contraste
+
+## Luminancia relativa da WCAG 2.1. Vive aqui, e nao so na suite, porque a
+## interface PRECISA dela em tempo de montagem: `tingir` usa para garantir que
+## fundo destacado nunca clareie.
+static func luz_relativa(c: Color) -> float:
+	var canais := [c.r, c.g, c.b]
+	var lin: Array[float] = []
+	for v in canais:
+		var x := float(v)
+		lin.append(x / 12.92 if x <= 0.03928 else pow((x + 0.055) / 1.055, 2.4))
+	return 0.2126 * lin[0] + 0.7152 * lin[1] + 0.0722 * lin[2]
+
+## Razao de contraste da WCAG 2.1 entre duas cores opacas.
+static func contraste(a: Color, b: Color) -> float:
+	var la := luz_relativa(a)
+	var lb := luz_relativa(b)
+	return (maxf(la, lb) + 0.05) / (minf(la, lb) + 0.05)
+
+## FUNDO DESTACADO QUE NAO QUEBRA O CONTRASTE DE NINGUEM.
+##
+## Onze lugares da interface pintavam a caixa "completa"/"selecionada" com
+## `PAINEL2.lerp(cor, 0.18)` — um fundo mais CLARO que o painel normal. Cada um
+## desses fundos derrubava o contraste de todo texto por cima: TEXTO3 caia de
+## 4,62:1 para 3,10:1, e com ele mais de trinta pares texto-fundo passavam a
+## reprovar a WCAG. O portao de contraste nao via nada disso porque so conferia
+## tres cores contra os dois painces lisos.
+##
+## `tingir` da a MESMA leitura visual (a caixa ganha o matiz do acento) sem
+## nunca ficar mais clara que `PAINEL2`: se a mistura clareou, ela e escurecida
+## de volta ate a luminancia do painel. Assim vale um invariante simples e
+## testavel — cor de texto que passa em PAINEL2 passa em qualquer destaque.
+static func tingir(cor: Color, forca: float = 0.28) -> Color:
+	var alvo := PAINEL2.lerp(cor, clampf(forca, 0.0, 1.0))
+	var teto := luz_relativa(PAINEL2)
+	var passo := 0
+	while luz_relativa(alvo) > teto and passo < 24:
+		alvo = alvo.darkened(0.06)
+		passo += 1
+	return alvo
 
 # ------------------------------------------------------------------ escala
 static var escala := 1.0

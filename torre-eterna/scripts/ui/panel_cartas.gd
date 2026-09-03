@@ -970,7 +970,7 @@ func _atualizar_conjuntos() -> void:
 			r["completo"] = completo
 			var cx: PanelContainer = r["caixa"]
 			cx.add_theme_stylebox_override("panel", UI.caixa(
-				UI.PAINEL2.lerp(cor, 0.18) if completo else UI.PAINEL.darkened(0.15), 10, 1,
+				UI.tingir(cor, 0.18) if completo else UI.PAINEL.darkened(0.15), 10, 1,
 				cor if completo else UI.BORDA))
 			if completo:
 				UI.pulsar(cx, cor)
@@ -1078,9 +1078,12 @@ class ArteCarta extends Control:
 					Color(cor_rar.r, cor_rar.g, cor_rar.b, (0.20 - float(i) * 0.055) * g * (0.65 + 0.35 * pulso)), 2.0)
 
 		var pts := _rrect(rc, raio)
-		var topo := UI.PAINEL2.lerp(cor_rar, 0.20 + 0.12 * clampf(brilho, 0.0, 1.4))
-		if hover:
-			topo = topo.lightened(0.10)
+		# `UI.tingir` em vez de `lerp` cru: o topo do cartao ganha o matiz da
+		# raridade sem ficar mais claro que o painel — e o nome da carta, que e
+		# desenhado por cima, mantem o contraste que a paleta promete. O destaque
+		# do hover vira MAIS MATIZ, nao mais luz, pela mesma razao.
+		var forca_topo := 0.20 + 0.12 * clampf(brilho, 0.0, 1.4)
+		var topo := UI.tingir(cor_rar, forca_topo + (0.14 if hover else 0.0))
 		_gradiente(self, pts, rc, topo, UI.FUNDO2.darkened(0.15))
 
 		# vinheta do nicho onde mora a silhueta

@@ -409,7 +409,7 @@ func _marcar_selecao() -> void:
 			continue
 		var cor_b: Color = r["cor"] if bool(r["conhecido"]) else UI.BORDA_FORTE
 		if str(id) == sel_id:
-			cx.add_theme_stylebox_override("panel", UI.caixa(UI.PAINEL2.lerp(cor_b, 0.14), 10, 2, cor_b))
+			cx.add_theme_stylebox_override("panel", UI.caixa(UI.tingir(cor_b, 0.14), 10, 2, cor_b))
 		else:
 			cx.add_theme_stylebox_override("panel", UI.caixa(UI.PAINEL2.darkened(0.16), 10, 1, UI.BORDA))
 
@@ -584,7 +584,7 @@ func _marcar_entrada() -> void:
 			continue
 		var cor: Color = r["cor"]
 		if str(id) == entrada_sel:
-			cx.add_theme_stylebox_override("panel", UI.caixa(UI.PAINEL2.lerp(cor, 0.16), 7, 1, cor))
+			cx.add_theme_stylebox_override("panel", UI.caixa(UI.tingir(cor, 0.16), 7, 1, cor))
 		else:
 			cx.add_theme_stylebox_override("panel", UI.caixa(UI.PAINEL2.darkened(0.3), 7, 0))
 

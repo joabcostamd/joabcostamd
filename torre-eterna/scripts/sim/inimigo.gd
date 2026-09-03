@@ -39,6 +39,11 @@ var fase := 0
 var fase_prox := 0.0
 
 # --- status ---
+## Acumulador do tique de dano contínuo. Ver `Combate.atualizar_status`: a
+## queimadura e o veneno cobram a cada 0,1 s em vez de a cada quadro.
+var dot_acc := 0.0
+## Espera entre correntes de raio partindo deste inimigo. Ver `Combate.corrente`.
+var raio_cd := 0.0
 var queimadura := 0
 var queimadura_dano := 0.0
 var queimadura_t := 0.0
@@ -89,6 +94,8 @@ var mov := "direto"
 var hab := ""
 
 func limpar() -> void:
+	dot_acc = 0.0
+	raio_cd = 0.0
 	ativo = false
 	fantasma_t = 0.0
 	chefe = false

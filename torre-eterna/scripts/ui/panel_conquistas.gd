@@ -244,7 +244,7 @@ func _pintar(reg: Dictionary, feita: bool) -> void:
 	var selo: Label = reg["selo"]
 	var destaque := feita and selo.visible
 	if destaque:
-		caixa.add_theme_stylebox_override("panel", UI.caixa(UI.PAINEL2.lerp(UI.VERDE, 0.1), 10, 2, UI.VERDE))
+		caixa.add_theme_stylebox_override("panel", UI.caixa(UI.tingir(UI.VERDE, 0.1), 10, 2, UI.VERDE))
 	elif feita:
 		caixa.add_theme_stylebox_override("panel", UI.caixa(UI.PAINEL2, 10, 1, cor.darkened(0.4)))
 	else:

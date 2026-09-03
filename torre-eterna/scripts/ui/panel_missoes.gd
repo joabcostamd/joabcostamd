@@ -439,7 +439,7 @@ func _atualizar_missoes() -> void:
 		if coletada:
 			cx.add_theme_stylebox_override("panel", UI.caixa(UI.PAINEL2.darkened(0.35), 10, 1, UI.BORDA.darkened(0.2)))
 		elif pronta:
-			cx.add_theme_stylebox_override("panel", UI.caixa(UI.PAINEL2.lerp(UI.VERDE, 0.1), 10, 2, UI.VERDE))
+			cx.add_theme_stylebox_override("panel", UI.caixa(UI.tingir(UI.VERDE, 0.1), 10, 2, UI.VERDE))
 		else:
 			cx.add_theme_stylebox_override("panel", UI.caixa(UI.PAINEL2.darkened(0.12), 10, 1, cor.darkened(0.45)))
 
@@ -461,7 +461,7 @@ func _atualizar_sequencia() -> void:
 		var rec: Dictionary = reg["recompensa"]
 		var tam: float = 30.0 if bool(reg["destaque"]) else 24.0
 		if d == hoje:
-			cx.add_theme_stylebox_override("panel", UI.caixa(UI.PAINEL2.lerp(UI.OURO, 0.12), 10, 2, UI.OURO))
+			cx.add_theme_stylebox_override("panel", UI.caixa(UI.tingir(UI.OURO, 0.12), 10, 2, UI.OURO))
 			ic.configurar(_icone_recompensa(rec), UI.OURO, tam)
 			lbl_dia.text = Txt.t("mis_hoje")
 			lbl_dia.add_theme_color_override("font_color", UI.OURO)
@@ -522,7 +522,7 @@ func _atualizar_temporada() -> void:
 			b.visible = true
 			b.disabled = false
 			lbl_estado.visible = false
-			cx.add_theme_stylebox_override("panel", UI.caixa(UI.PAINEL2.lerp(UI.OURO, 0.14), 10, 2, UI.OURO))
+			cx.add_theme_stylebox_override("panel", UI.caixa(UI.tingir(UI.OURO, 0.14), 10, 2, UI.OURO))
 			ic.configurar(_icone_recompensa(rec), UI.OURO, tam)
 			lbl_nv.add_theme_color_override("font_color", UI.OURO)
 			lbl_rec.add_theme_color_override("font_color", UI.TEXTO)

@@ -145,26 +145,57 @@ static func aplicar_elemento(e: Inimigo, elemento: String, dano_base_bruto: floa
 			e.fissura = float(d["duracao"])
 			e.fissura_forca = minf(1.2, float(d["ampliacao"]) * (1.0 + float(j.stats.n("danoVazio"))) * f_vazio)
 		"raio":
-			corrente(e, dano_base, int(d["corrente"]), j, {})
+			# A CORRENTE TEM ESPERA. Ela partia a cada acerto: com 53 impactos
+			# por passo e tres saltos cada, sao ate 159 buscas na grade e 159
+			# aplicacoes de dano por passo so em raio — medido, 1,9 ms, quase
+			# metade do orcamento do quadro. Um arco tambem nao reacende no
+			# mesmo corpo no quadro seguinte; ele precisa recarregar.
+			if e.raio_cd <= 0.0:
+				e.raio_cd = RAIO_ESPERA
+				corrente(e, dano_base, int(d["corrente"]), j, {})
 
 ## Tique de status (dano contínuo, lentidão, marcações).
+## O DANO CONTINUO COBRA A CADA 0,1 s, NAO A CADA QUADRO.
+##
+## Queimadura e veneno aplicavam dano em todo passo de fisica: com 212 inimigos
+## em chamas isso da 424 chamadas de `aplicar_dano` por passo — medido, 3,1 ms
+## de um orcamento de 4 ms, so para dividir o mesmo dano em sessenta pedacos
+## por segundo em vez de dez. O total nao muda (o acumulador guarda o tempo
+## real decorrido); o que muda e o numero de chamadas, seis vezes menor.
+##
+## O deslocamento por `id` espalha os tiques entre os quadros: sem ele, todos os
+## inimigos cobrariam no MESMO passo e o pico voltaria inteiro num quadro so.
+const DOT_INTERVALO := 0.1
+## Espera da corrente de raio por inimigo (ver `aplicar_elemento`).
+const RAIO_ESPERA := 0.18
+
 static func atualizar_status(dt: float, j) -> void:
 	var lista: Array = j.arena.inimigos
 	for e in lista:
 		if not e.vivo():
 			continue
+		var cobra := false
+		var janela := 0.0
+		if e.queimadura > 0 or e.veneno > 0:
+			e.dot_acc += dt
+			if e.dot_acc >= DOT_INTERVALO:
+				cobra = true
+				janela = e.dot_acc
+				e.dot_acc = 0.0
 		if e.queimadura > 0:
 			e.queimadura_t -= dt
 			if e.queimadura_t <= 0.0:
 				e.queimadura = 0
-			else:
-				aplicar_dano(e, Big.mul_f(e.queimadura_dano, float(e.queimadura) * dt), j, {"puro": true, "elemento": "fogo", "dot": true})
+			elif cobra:
+				aplicar_dano(e, Big.mul_f(e.queimadura_dano, float(e.queimadura) * janela), j, {"puro": true, "elemento": "fogo", "dot": true})
 		if e.veneno > 0 and e.vivo():
 			e.veneno_t -= dt
 			if e.veneno_t <= 0.0:
 				e.veneno = 0
-			else:
-				aplicar_dano(e, Big.mul_f(e.veneno_dano, float(e.veneno) * dt), j, {"puro": true, "elemento": "veneno", "dot": true})
+			elif cobra:
+				aplicar_dano(e, Big.mul_f(e.veneno_dano, float(e.veneno) * janela), j, {"puro": true, "elemento": "veneno", "dot": true})
+		if e.raio_cd > 0.0:
+			e.raio_cd -= dt
 		if e.gelo > 0.0:
 			e.gelo -= dt
 		if e.fissura > 0.0:
