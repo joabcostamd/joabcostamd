@@ -1,0 +1,38 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Revelar"
+config/description="Resolva o quebra-cabeça e revele a imagem escondida."
+run/main_scene="res://cenas/abertura.tscn"
+config/features=PackedStringArray("4.6", "GL Compatibility")
+
+[autoload]
+
+Catalogo="*res://scripts/autoload/catalogo.gd"
+Progresso="*res://scripts/autoload/progresso.gd"
+Audio="*res://scripts/autoload/audio.gd"
+Navegacao="*res://scripts/autoload/navegacao.gd"
+Avisos="*res://scripts/autoload/avisos.gd"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="canvas_items"
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+
+[internationalization]
+
+locale/translations=PackedStringArray("res://traducoes/textos.pt.translation", "res://traducoes/textos.en.translation", "res://traducoes/textos.es.translation", "res://traducoes/textos.fr.translation", "res://traducoes/textos.de.translation", "res://traducoes/textos.it.translation", "res://traducoes/textos.nl.translation", "res://traducoes/textos.pl.translation", "res://traducoes/textos.sv.translation", "res://traducoes/textos.da.translation", "res://traducoes/textos.nb.translation", "res://traducoes/textos.fi.translation", "res://traducoes/textos.cs.translation", "res://traducoes/textos.hu.translation", "res://traducoes/textos.ro.translation", "res://traducoes/textos.tr.translation", "res://traducoes/textos.ru.translation", "res://traducoes/textos.uk.translation", "res://traducoes/textos.ja.translation", "res://traducoes/textos.ko.translation", "res://traducoes/textos.zh.translation")
