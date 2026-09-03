@@ -465,6 +465,34 @@ func t_defesa() -> void:
 	ok("reflexo continua em log10", refletido < 19.0 and refletido > 18.0)
 	ok("reflexo e 2%% do golpe", perto(Big.to_f(refletido), 2.0e18, 1.0e12))
 
+	# A colisao de projetil foi reescrita para sair na PRIMEIRA batida, sem
+	# montar lista de vizinhos: com 800 projeteis vivos (o teto do pool) as duas
+	# passadas do jeito antigo custavam 39,8 ms so de projeteis no runner do CI,
+	# dez vezes o orcamento do quadro inteiro. Velocidade nao vale nada se a
+	# resposta mudar, entao aqui a pergunta e o COMPORTAMENTO.
+	jogo.arena.limpar_tudo()
+	var alvo_col = EnemyAI.criar(Dados.inimigo_por_id["grunhido"], 10, jogo, {})
+	ok("criou o alvo da colisao", alvo_col != null)
+	if alvo_col != null:
+		alvo_col.pos = Vector2(500.0, 300.0)
+		jogo.arena.reconstruir_grade()
+		var vazio := {}
+		ok("acha quem encosta", jogo.arena.primeiro_colidindo(alvo_col.pos, 4.0, vazio) == alvo_col)
+		ok("nao acha quem esta longe",
+			jogo.arena.primeiro_colidindo(alvo_col.pos + Vector2(400.0, 0.0), 4.0, vazio) == null)
+		var ja := {alvo_col.id: true}
+		ok("respeita a lista de ja atingidos",
+			jogo.arena.primeiro_colidindo(alvo_col.pos, 4.0, ja) == null)
+		alvo_col.intangivel = 1.0
+		ok("ignora intangivel", jogo.arena.primeiro_colidindo(alvo_col.pos, 4.0, vazio) == null)
+		alvo_col.intangivel = 0.0
+		# na borda exata do raio soma: encosta
+		var borda: Vector2 = alvo_col.pos + Vector2(alvo_col.raio + 3.9, 0.0)
+		ok("encosta na borda", jogo.arena.primeiro_colidindo(borda, 4.0, vazio) == alvo_col)
+		var fora: Vector2 = alvo_col.pos + Vector2(alvo_col.raio + 4.2, 0.0)
+		ok("nao encosta logo depois da borda", jogo.arena.primeiro_colidindo(fora, 4.0, vazio) == null)
+	jogo.arena.limpar_tudo()
+
 	# Quem reflete pode declarar `hab` (o refletor comum) ou `mecanica` (o
 	# Guardiao do Espelho, chefe cujo nome E a mecanica). O codigo olhava so
 	# `hab`, entao o chefe nunca refletiu nada — e o codex explicava o reflexo
@@ -1639,6 +1667,27 @@ func t_save() -> void:
 	ok("migracao preserva os campos", int(migrado.get("onda", 0)) == 42)
 	var ja_novo := {"versao": save.VERSAO, "onda": 9}
 	ok("migracao nao mexe em save ja atual", int(save.migrar(ja_novo.duplicate(true))["onda"]) == 9)
+
+	# A escada precisa SUBIR, nao so carimbar: o degrau 1 -> 2 tira a memoria
+	# dos eventos unicos do historico rolante (que e cortado em 60) e poe numa
+	# lista propria. Sem migrar, a correcao "esqueceria" o que a pessoa ja viu.
+	var id_unico := ""
+	for e_def in Dados.eventos:
+		if bool(e_def.get("unico", false)):
+			id_unico = str(e_def.get("id", ""))
+			break
+	ok("existe evento unico para migrar", id_unico != "")
+	if id_unico != "":
+		var v1 := {"versao": 1, "eventos": {"historico": [
+			{"id": id_unico, "onda": 4}, {"id": "outro_qualquer", "onda": 5}]}}
+		var v2: Dictionary = save.migrar(v1)
+		var lista: Array = v2["eventos"].get("unicos_vistos", [])
+		ok("a migracao 1->2 monta a lista de unicos vistos", lista.has(id_unico), str(lista))
+		ok("e nao inventa unico a partir de evento comum", not lista.has("outro_qualquer"))
+		ok("carimba a versao nova", int(v2["versao"]) == save.VERSAO)
+		# rodar de novo nao pode duplicar nem apagar
+		var v3: Dictionary = save.migrar(v2.duplicate(true))
+		ok("migrar duas vezes e igual a migrar uma", v3["eventos"]["unicos_vistos"].size() == lista.size())
 
 ## ------------------------------------------------------------ offline
 ## Le um arquivo inteiro, ou "" se nao der. So para os testes de save.

@@ -3,7 +3,7 @@ extends Node
 ## SaveSys (autoload) — persistência em JSON com versionamento, backup,
 ## exportação em texto e migrações.
 
-const VERSAO := 1
+const VERSAO := 2
 const CAMINHO := "user://torre_eterna.save"
 const CAMINHO_BACKUP := "user://torre_eterna.bak"
 const CAMINHO_CONFIG := "user://torre_eterna_config.json"
@@ -154,17 +154,53 @@ func tamanho_kb() -> float:
 ## ------------------------------------------------------------ migrações
 
 ## Cada função leva o save da versão N para N+1. Nunca remova migrações.
+## Sobe um save antigo até a versão de hoje, um degrau por vez.
+##
+## Esta escada era de um degrau só e não subia nada: carimbava o número e
+## pronto, o que fazia o critério de persistência ser cumprido por uma função
+## que nunca migrou um campo. O degrau 1 -> 2 é uma migração de verdade, e
+## existe porque o jogo precisou dela.
 func migrar(save: Dictionary) -> Dictionary:
 	var v := int(save.get("versao", 0))
 	while v < VERSAO:
 		match v:
 			0:
-				save["versao"] = 1
-			_:
+				# Antes da versão 1 não havia carimbo. Nada a converter: o
+				# `GameState.mesclar` completa os campos que faltarem.
 				pass
+			1:
+				_migrar_1_para_2(save)
 		v += 1
 		save["versao"] = v
 	return save
+
+## 1 -> 2: a memória dos eventos `unico` saiu do histórico rolante.
+##
+## O histórico é cortado em 60 entradas, e era ele que servia de memória do "já
+## vi". Os eventos de lore da torre voltavam ao sorteio assim que saíam dessa
+## janela. Agora há uma lista própria — e o save de quem já jogou precisa ganhar
+## essa lista a partir do que ainda restar no histórico, senão a correção
+## "esquece" o que a pessoa já viu.
+func _migrar_1_para_2(save: Dictionary) -> void:
+	var ev = save.get("eventos", null)
+	if not (ev is Dictionary):
+		return
+	var evd: Dictionary = ev
+	if evd.has("unicos_vistos"):
+		return
+	var vistos: Array = []
+	var hist = evd.get("historico", [])
+	if hist is Array:
+		for item in hist:
+			if not (item is Dictionary):
+				continue
+			var id := str((item as Dictionary).get("id", ""))
+			if id == "" or vistos.has(id):
+				continue
+			var def: Dictionary = Dados.evento_por_id.get(id, {})
+			if bool(def.get("unico", false)):
+				vistos.append(id)
+	evd["unicos_vistos"] = vistos
 
 ## --------------------------------------------------------- exportar/importar
 

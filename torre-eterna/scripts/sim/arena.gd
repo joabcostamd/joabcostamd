@@ -4,6 +4,9 @@ extends RefCounted
 ## O campo de batalha: pools de entidades, grade espacial e seleção de alvos.
 
 const CELULA := 72.0
+## Maior raio de inimigo do conteúdo. Serve para o teste de colisão saber quantas
+## células precisa olhar sem consultar cada inimigo antes.
+const RAIO_INIMIGO_MAX := 34.0
 
 var largura := 1280.0
 var altura := 720.0
@@ -190,6 +193,39 @@ func em_area(p: Vector2, raio: float) -> Array[Inimigo]:
 					_buffer.append(e)
 	return _buffer
 
+## O PRIMEIRO inimigo que colide com um círculo, sem montar lista nenhuma.
+##
+## `em_area` preenche um buffer com TODOS os vizinhos e quem chama percorre de
+## novo para achar o primeiro que encosta — duas passadas e uma medida de
+## distância repetida, por projétil, por quadro. Com 800 projéteis vivos (o teto
+## do pool) isso era o maior custo do jogo: 39,8 ms só de projéteis no runner do
+## CI, dez vezes o orçamento inteiro do quadro. Aqui a resposta sai na primeira
+## colisão e o buffer não é tocado.
+func primeiro_colidindo(pos: Vector2, raio: float, ignorar: Dictionary) -> Inimigo:
+	var alcance := raio + RAIO_INIMIGO_MAX
+	var cx0 := int(floor((pos.x - alcance) / CELULA))
+	var cy0 := int(floor((pos.y - alcance) / CELULA))
+	var cx1 := int(floor((pos.x + alcance) / CELULA))
+	var cy1 := int(floor((pos.y + alcance) / CELULA))
+	var px := pos.x
+	var py := pos.y
+	for cx in range(cx0, cx1 + 1):
+		var base := cx * 4096
+		for cy in range(cy0, cy1 + 1):
+			var k := base + cy
+			if not _grade.has(k):
+				continue
+			for item in _grade[k]:
+				var e: Inimigo = item
+				if e.intangivel > 0.0 or ignorar.has(e.id) or not e.vivo():
+					continue
+				var dx := e.pos.x - px
+				var dy := e.pos.y - py
+				var rr := e.raio + raio
+				if dx * dx + dy * dy <= rr * rr:
+					return e
+	return null
+
 ## ------------------------------------------------------------ seleção
 
 ## modo: "proximo" | "longe" | "forte" | "fraco" | "chefe" | "avancado"
@@ -237,6 +273,31 @@ func alvo(origem: Vector2, alcance: float, modo: String = "proximo", excluir: Ar
 				M_CHEFE: score = (1.0e6 if e.chefe else 0.0) + (1000.0 if e.elite else 0.0) - d2 * 1e-4
 		if score > melhor_score:
 			melhor_score = score
+			melhor = e
+	return melhor
+
+## O inimigo vivo mais próximo DENTRO de um raio, usando a grade.
+##
+## `alvo()` varre a lista inteira, o que é o certo para a torre (o alcance dela
+## cobre boa parte da arena). Para quem tem alcance curto — os orbes, com 150px
+## — varrer 160 inimigos para achar um que está a dois passos é desperdício, e
+## era feito por CADA orbe, TODO quadro: quando não havia ninguém perto, o orbe
+## nem reiniciava o relógio, então repetia a varredura no quadro seguinte. Com
+## 19 orbes eram 19 varreduras completas por quadro sem nenhum efeito.
+func alvo_no_raio(origem: Vector2, raio: float, excluir: Array = []) -> Inimigo:
+	var melhor: Inimigo = null
+	var melhor_d := raio * raio
+	var tem_ex := not excluir.is_empty()
+	for e in em_area(origem, raio):
+		if not e.vivo() or e.intangivel > 0.0:
+			continue
+		if tem_ex and excluir.has(e):
+			continue
+		var dx := e.pos.x - origem.x
+		var dy := e.pos.y - origem.y
+		var d2 := dx * dx + dy * dy
+		if d2 < melhor_d:
+			melhor_d = d2
 			melhor = e
 	return melhor
 

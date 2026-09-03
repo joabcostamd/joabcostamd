@@ -90,6 +90,10 @@ func rodar(cena: SceneTree) -> void:
 	var alvo_estresse := 400
 	if args.size() > 0:
 		alvo_estresse = maxi(20, int(str(args[0])))
+	# `-- 400 rapido` mede SÓ a perna de população segurada. A perna de jogo
+	# real leva minutos (o jogo chega a ondas altas e cada passo custa caro), e
+	# quem está otimizando precisa de um ciclo curto. Não é portão: é bancada.
+	var so_segurado := args.size() > 1 and str(args[1]) == "rapido"
 
 	var save = root.get_node_or_null("SaveSys")
 	var cfg = root.get_node_or_null("Cfg")
@@ -190,9 +194,13 @@ func rodar(cena: SceneTree) -> void:
 
 	print("maquina: %.0f us na conta de referencia (%.0f esperado) -> fator %.2fx" % [ref, REF_US, fator])
 	print("")
-	print("--- PORTAO: 20 min de jogo real (onda %d ao fim, automacao ligada) ---" % int(j.s["onda_maxima"]))
-	_relatar(g, fator)
-	print("  normalizado p90: %.0f us  (orcamento %.0f us = %.0f x %.2f)" % [float(g["p90"]) / fator, orcamento, ORCAMENTO_US, fator])
+	if so_segurado:
+		print("--- BANCADA: so a perna de populacao segurada (nao e portao) ---")
+	else:
+		print("--- PORTAO: 10 min de jogo real (onda %d ao fim, automacao ligada) ---" % int(j.s["onda_maxima"]))
+		_relatar(g, fator)
+	if not so_segurado:
+		print("  normalizado p90: %.0f us  (orcamento %.0f us = %.0f x %.2f)" % [float(g["p90"]) / fator, orcamento, ORCAMENTO_US, fator])
 	print("")
 	print("--- PORTAO 2: %d inimigos vivos SEGURADOS (teto do jogo + 25%%) ---" % alvo)
 	_relatar(e1, fator)
@@ -213,7 +221,7 @@ func rodar(cena: SceneTree) -> void:
 	print("recalculos de atributos: %d" % j.stats.recalculos)
 
 	# O p90 é quem reprova: média esconde engasgo. E as DUAS pernas contam.
-	var ok_real := float(g["p90"]) <= orcamento
+	var ok_real := so_segurado or float(g["p90"]) <= orcamento
 	var ok_cheio := float(e1["p90"]) <= orcamento
 	if not ok_real:
 		print("FALHOU: jogo real p90 %.0f us > orcamento %.0f us" % [float(g["p90"]), orcamento])

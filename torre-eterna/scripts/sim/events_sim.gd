@@ -117,14 +117,9 @@ static func sortear(j) -> Dictionary:
 	var ja_vistos := {}
 	for visto in ev.get("unicos_vistos", []):
 		ja_vistos[str(visto)] = true
-	# Retrocompatibilidade com save antigo, que só tinha o histórico: o que
-	# estiver lá e for `unico` continua contando como visto.
-	for item in hist:
-		var h: Dictionary = item
-		var hid := str(h.get("id", ""))
-		var hdef: Dictionary = Dados.evento_por_id.get(hid, {})
-		if bool(hdef.get("unico", false)):
-			ja_vistos[hid] = true
+	# Save antigo é convertido pela migração 1 -> 2 do `SaveSys`, não aqui: o
+	# sorteio não é lugar de compatibilidade, e ler o histórico toda vez era
+	# refazer, a cada evento, um trabalho que se faz uma vez na abertura.
 	var recentes: Array = []
 	for i in range(maxi(0, hist.size() - MEMORIA), hist.size()):
 		var h2: Dictionary = hist[i]

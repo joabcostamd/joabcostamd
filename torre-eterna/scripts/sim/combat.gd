@@ -90,7 +90,9 @@ static func corrente(origem: Inimigo, dano: float, saltos: int, j, opt: Dictiona
 	var pontos: Array = [origem.pos]
 	var fator := float(Bal.ELEMENTOS["raio"].get("fator", 0.45))
 	for i in saltos:
-		var prox = j.arena.alvo(atual.pos, 190.0, "proximo", visitados)
+		# Pela grade: o salto do raio alcança 190px, e varrer a lista inteira a
+		# cada salto era o mesmo desperdício dos orbes.
+		var prox = j.arena.alvo_no_raio(atual.pos, 190.0, visitados)
 		if prox == null:
 			break
 		visitados.append(prox)

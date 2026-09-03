@@ -12,7 +12,7 @@ cd torre-eterna
 godot --headless --path . -s res://tools/verificar.gd       # todo script compila, dados presentes
 godot --headless --path . -s res://tools/lint.gd            # convenções do projeto
 godot --headless --path . -s res://tools/validar_dados.gd   # conteúdo obedece ao contrato
-godot --headless --path . -s res://tools/testes.gd          # 330 testes da simulação
+godot --headless --path . -s res://tools/testes.gd          # 342 testes da simulação
 godot --headless --path . -s res://tools/perf.gd -- 400      # custo de um passo com a arena cheia
 godot --headless --path . -s res://agent_verify.gd          # verificação estrutural do kit
 
@@ -45,6 +45,12 @@ população. Isto está escrito porque já foi feito errado: a primeira correç�
 desta ferramenta tirou do contrato justamente a perna que falhava, o que é
 afrouxar o portão com outro nome. **Se uma perna estourar, otimize — não mexa
 na régua.**
+
+E **meça com a máquina parada**. A calibração corrige a VELOCIDADE da máquina,
+não a disputa por CPU: sob carga, a simulação piora muito mais do que a conta de
+referência, porque ela mexe em muito mais memória. Medi o mesmo commit com outro
+Godot rodando ao lado e o p90 saiu 11.711 us; sozinho, 4.741. Uma medida tirada
+com outra coisa rodando não vale nada — nem para aprovar, nem para reprovar.
 
 Antes de mexer em balanceamento, tire uma medida de base:
 ```bash

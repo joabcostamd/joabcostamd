@@ -69,8 +69,16 @@ func rodar(cena: SceneTree) -> void:
 			onda_no_terco = int(j.s["onda_maxima"])
 		j.simular(DT)
 		# compra automática básica para simular um jogador ativo
-		if not auto_tudo and i % 20 == 0:
-			_comprar_como_jogador(j)
+		if i % 20 == 0:
+			if auto_tudo:
+				# A automação do JOGO só compra melhoria com ouro. Talento,
+				# carta, nó de prestígio e relíquia continuavam parados mesmo em
+				# modo automático — e é justamente por isso que a faixa do
+				# critério 5 era medida para um jogador que não usa metade dos
+				# sistemas de poder. O agente gasta o resto nos dois modos.
+				_jogar_o_resto(j)
+			else:
+				_comprar_como_jogador(j)
 		pico_inimigos = maxi(pico_inimigos, j.arena.inimigos.size())
 		pico_projeteis = maxi(pico_projeteis, j.arena.projeteis.size())
 
@@ -157,7 +165,62 @@ func rodar(cena: SceneTree) -> void:
 	arvore.quit(0 if falhas.is_empty() else 1)
 
 ## Heurística simples de "jogador": compra o upgrade mais barato disponível.
+## O jogador do simulador gastava SÓ ouro em melhorias.
+##
+## `comprar_talento`, `comprar_no`, `comprar_reliquia` e `Saque.equipar` não
+## tinham um único chamador fora de `scripts/ui/` — ou seja, nenhuma execução
+## sem tela jamais exercitava cinco dos sistemas de poder do jogo, e a faixa do
+## critério 5 era medida para alguém que termina a hora com os pontos de talento
+## na mão e o inventário inteiro desequipado. Agora o agente gasta o que ganha.
+func _jogar_o_resto(j) -> void:
+	# 1. pontos de talento: compra o primeiro que estiver liberado
+	var guarda := 0
+	while int(j.s["pontos_talento"]) > 0 and guarda < 12:
+		guarda += 1
+		var comprou := false
+		for def in Dados.talentos:
+			if j.comprar_talento(str(def.get("id", ""))):
+				comprou = true
+				break
+		if not comprou:
+			break
+
+	# 2. cartas: mantém os slots cheios com o que houver de melhor
+	var slots := int(j.esp.get("slotsCartas", 3))
+	for slot in slots:
+		var equipadas: Array = j.s["cartas"]["equipadas"]
+		if slot < equipadas.size() and str(equipadas[slot]) != "":
+			continue
+		var melhor_uid := ""
+		var melhor_ordem := -1
+		for c in j.s["cartas"]["inventario"]:
+			var uid := str(c["uid"])
+			if equipadas.has(uid):
+				continue
+			var o := Saque._ordem(str(c["raridade"]))
+			if o > melhor_ordem:
+				melhor_ordem = o
+				melhor_uid = uid
+		if melhor_uid != "":
+			Saque.equipar(j, melhor_uid, slot)
+
+	# 3. nós de prestígio: gasta fragmentos no primeiro que couber
+	for camada in ["fragmentos", "nucleos", "eter"]:
+		var achou := false
+		for def in Dados.arvore[camada]:
+			if j.comprar_no(str(def.get("id", "")), 1) > 0:
+				achou = true
+				break
+		if achou:
+			break
+
+	# 4. relíquias: idem, com a moeda que a relíquia pedir
+	for def in Dados.reliquias:
+		if j.comprar_reliquia(str(def.get("id", "")), 1) > 0:
+			break
+
 func _comprar_como_jogador(j) -> void:
+	_jogar_o_resto(j)
 	for k in 6:
 		var melhor := ""
 		var melhor_custo := INF

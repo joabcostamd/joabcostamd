@@ -244,17 +244,7 @@ func atualizar_projeteis(dt: float) -> void:
 				j.arena.soltar_projetil(i)
 
 func _colisao(p: Projetil) -> Inimigo:
-	var perto: Array = j.arena.em_area(p.pos, p.raio + 34.0)
-	for item in perto:
-		var e: Inimigo = item
-		if not e.vivo() or e.intangivel > 0.0:
-			continue
-		if p.atingidos.has(e.id):
-			continue
-		var rr := e.raio + p.raio
-		if p.pos.distance_squared_to(e.pos) <= rr * rr:
-			return e
-	return null
+	return j.arena.primeiro_colidindo(p.pos, p.raio, p.atingidos)
 
 func _impacto(p: Projetil, alvo: Inimigo) -> bool:
 	var opt := {
@@ -329,8 +319,14 @@ func atualizar_orbes(dt: float) -> void:
 		o["cd"] = float(o["cd"]) - dt
 		if float(o["cd"]) <= 0.0:
 			var op: Vector2 = o["pos"]
-			var alvo: Inimigo = j.arena.alvo(op, 150.0, "proximo")
-			if alvo != null:
+			# Pela grade, não pela lista inteira: o orbe só alcança 150px.
+			var alvo: Inimigo = j.arena.alvo_no_raio(op, 150.0)
+			if alvo == null:
+				# Sem ninguém ao alcance, espera um pouco antes de procurar de
+				# novo. Antes o relógio não era reiniciado, então cada orbe
+				# procurava a cada quadro, para sempre, sem achar nada.
+				o["cd"] = 0.08
+			else:
 				o["cd"] = 0.75
 				var golpe := Combate.rolar_golpe(dano_orb, j, alvo)
 				Combate.aplicar_dano(alvo, golpe[0], j, {"crit": golpe[1], "penetracao": j.stats.n("penetracao")})
