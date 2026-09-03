@@ -67,16 +67,29 @@ func _montar_overlay() -> void:
 	caixa_toast = VBoxContainer.new()
 	caixa_toast.anchor_left = 0.5
 	caixa_toast.anchor_right = 0.5
-	caixa_toast.anchor_top = 0.0
-	caixa_toast.anchor_bottom = 0.0
 	caixa_toast.offset_left = -220
 	caixa_toast.offset_right = 220
-	caixa_toast.offset_top = 96
-	caixa_toast.offset_bottom = 300
-	caixa_toast.alignment = BoxContainer.ALIGNMENT_CENTER
 	caixa_toast.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	caixa_toast.add_theme_constant_override("separation", 6)
 	raiz.add_child(caixa_toast)
+	_posicionar_toasts()
+
+## Os avisos fogem do painel aberto.
+##
+## Eles ficavam fixos a 96px do topo — exatamente onde o painel desenha a
+## primeira linha de conteúdo. Com um painel aberto, o aviso caía em cima de um
+## card e escondia justamente o que o jogador tinha ido ler. Com o painel
+## fechado essa posição é a melhor que existe; com painel aberto, a única faixa
+## que sobra é o rodapé. Então a caixa se muda.
+func _posicionar_toasts() -> void:
+	if caixa_toast == null:
+		return
+	var aberto := atual != ""
+	caixa_toast.anchor_top = 1.0 if aberto else 0.0
+	caixa_toast.anchor_bottom = 1.0 if aberto else 0.0
+	caixa_toast.offset_top = -96.0 if aberto else 96.0
+	caixa_toast.offset_bottom = -14.0 if aberto else 300.0
+	caixa_toast.alignment = BoxContainer.ALIGNMENT_END if aberto else BoxContainer.ALIGNMENT_CENTER
 
 func alternar(nome: String) -> void:
 	if atual == nome:
@@ -109,6 +122,7 @@ func abrir(nome: String) -> void:
 	painel_atual.move_to_front()
 	caixa_toast.move_to_front()
 	atual = nome
+	_posicionar_toasts()
 	Bus.painel_aberto.emit(nome)
 
 func fechar() -> void:
@@ -116,6 +130,7 @@ func fechar() -> void:
 		painel_atual.queue_free()
 	painel_atual = null
 	atual = ""
+	_posicionar_toasts()
 	if fundo_escuro:
 		fundo_escuro.visible = false
 

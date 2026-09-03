@@ -109,6 +109,10 @@ func _talvez_capturar() -> void:
 			_celebrar_debug = a.substr(11)
 		elif a == "--en":
 			Cfg.set_v("idioma", "en")
+		elif a.begins_with("--daltonismo="):
+			Cfg.set_v("daltonismo", int(a.substr(13)))
+		elif a == "--contraste":
+			Cfg.set_v("alto_contraste", true)
 	if segundos < 0.0:
 		return
 	if _abrir_debug != "":
