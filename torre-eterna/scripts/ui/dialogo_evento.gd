@@ -35,13 +35,14 @@ func configurar(def: Dictionary) -> void:
 ## ------------------------------------------------------------- montagem
 
 func _montar() -> void:
+	modulate = Color(1, 1, 1, 0)
 	scrim = ColorRect.new()
-	scrim.color = Color(0.02, 0.03, 0.06, 0.0)
+	scrim.color = Color(0.02, 0.03, 0.06, 0.72)
 	scrim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	scrim.mouse_filter = Control.MOUSE_FILTER_STOP
 	add_child(scrim)
-	var tw := scrim.create_tween()
-	tw.tween_property(scrim, "color:a", 0.66, 0.25)
+	var tw := create_tween()
+	tw.tween_property(self, "modulate:a", 1.0, 0.22)
 
 	janela = UI.painel(UI.PAINEL, 16)
 	janela.add_theme_stylebox_override("panel", UI.caixa(UI.PAINEL, 16, 2, cor.darkened(0.25)))
@@ -58,6 +59,9 @@ func _montar() -> void:
 	janela.add_child(corpo)
 	_montar_pergunta()
 	UI.saltar(janela, 1.07)
+	if OS.get_environment("TE_AUTO_EVENTO") != "":
+		await get_tree().create_timer(0.3).timeout
+		_escolher(int(OS.get_environment("TE_AUTO_EVENTO")))
 
 func _montar_pergunta() -> void:
 	_limpar()
@@ -195,10 +199,10 @@ func _montar_resultado(efeito: Dictionary) -> void:
 	var v := UI.vbox(2)
 	v.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	v.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	var manchete := "Correu bem." if sucesso else "Correu mal."
+	var manchete := "correu bem" if sucesso else "correu mal"
 	if not arriscou:
-		manchete = "Feito."
-	v.add_child(UI.rotulo(manchete, 13, UI.TEXTO3))
+		manchete = "feito"
+	v.add_child(UI.rotulo("%s  ·  %s" % [_txt(evento, "nome").to_upper(), manchete], 12, UI.TEXTO3))
 	var l := UI.titulo(str(efeito.get("texto", "")), 23)
 	l.add_theme_color_override("font_color", cor_res)
 	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART

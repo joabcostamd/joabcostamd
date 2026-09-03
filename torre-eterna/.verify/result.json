@@ -1,0 +1,15 @@
+{
+  "contagem": {
+    "cenas": 1,
+    "modelos3d": 0,
+    "recursos": 1,
+    "scripts": 79,
+    "strings_auditadas": 68
+  },
+  "corrigidas": 0,
+  "kit": "1.5.2",
+  "modo": "check",
+  "novas_falhas": 0,
+  "status": "PASS",
+  "total_falhas_conhecidas": 0
+}
