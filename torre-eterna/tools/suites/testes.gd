@@ -3105,6 +3105,13 @@ func _conferir_ci() -> int:
 	# Os argumentos que a rubrica publica tem que ser os que o CI usa: portao
 	# que roda com numero menor no CI e portao afrouxado.
 	var qual := _ler("res://docs/QUALIDADE.md")
+	# O soak tinha TRES duracoes declaradas em quatro lugares: o README manda 3 h,
+	# a rubrica fala em "o soak de 3 h", o CI rodava 1 h e o bloco colado rodava
+	# o padrao. Portao que roda menos tempo no CI do que o documento promete e
+	# portao afrouxado, e era o caso.
+	if not ci.contains("tools/soak.gd -- 3"):
+		print("  FALHOU [doc] o CI nao roda o soak de 3 h que o README e a rubrica prometem")
+		erros += 1
 	for par in [["perf.gd -- ", "tools/perf.gd -- "], ["sim_balance.gd -- ", "tools/sim_balance.gd -- "]]:
 		var re_doc := RegEx.create_from_string(str(par[0]) + "([\\d. a-z]+)`")
 		var m_doc := re_doc.search(qual)
@@ -3916,6 +3923,46 @@ func t_save() -> void:
 		# rodar de novo nao pode duplicar nem apagar
 		var v3: Dictionary = save.migrar(v2.duplicate(true))
 		ok("migrar duas vezes e igual a migrar uma", v3["eventos"]["unicos_vistos"].size() == lista.size())
+
+	# 4. O carimbo de versao vem de um arquivo de texto que qualquer um edita.
+	# Com "versao": -999999999999 a escada rodava um trilhao de degraus e o jogo
+	# congelava no boot, para sempre, sem erro na tela. Nao e um save de outra
+	# versao: e lixo, e lixo vale 0.
+	ok("carimbo negativo vale 0", save._versao_do_arquivo({"versao": -1.0}) == 0)
+	ok("carimbo absurdo vale 0", save._versao_do_arquivo({"versao": -999999999999.0}) == 0)
+	ok("carimbo em texto vale 0", save._versao_do_arquivo({"versao": "dois"}) == 0)
+	ok("carimbo nulo vale 0", save._versao_do_arquivo({"versao": null}) == 0)
+	ok("carimbo ausente vale 0", save._versao_do_arquivo({}) == 0)
+	ok("carimbo nao finito vale 0", save._versao_do_arquivo({"versao": INF}) == 0)
+	ok("carimbo bom passa inteiro", save._versao_do_arquivo({"versao": 1.0}) == 1)
+	# Save de um jogo mais novo: nao da para descer, entao nada roda e os dados
+	# passam como estao. Carimbar por cima seria mentir sobre o formato.
+	var do_futuro: Dictionary = save.migrar({"versao": save.VERSAO + 40, "onda": 7})
+	ok("save do futuro nao e migrado", int(do_futuro["versao"]) == save.VERSAO + 40)
+	ok("save do futuro nao perde campo", int(do_futuro["onda"]) == 7)
+
+	# A prova de que nao trava e o tempo da chamada. Mas so vale rodar a chamada
+	# depois de saber que o carimbo esta preso na faixa: com o defeito de volta
+	# ela nunca retorna, e um portao que trava a suite inteira nao reprova nada,
+	# so parece o computador travado. Entao a pergunta rapida vem antes, e a
+	# lenta so acontece quando a rapida ja disse que e seguro.
+	var preso: bool = save._versao_do_arquivo({"versao": -999999999999.0}) == 0
+	if preso:
+		var t0 := Time.get_ticks_msec()
+		var adulterado: Dictionary = save.migrar({"versao": -999999999999.0, "onda": 11})
+		var gasto := Time.get_ticks_msec() - t0
+		ok("save adulterado nao trava o jogo", gasto < 200, "%d ms" % gasto)
+		ok("save adulterado sobe ate a versao de hoje", int(adulterado["versao"]) == save.VERSAO)
+		ok("save adulterado preserva os campos", int(adulterado["onda"]) == 11)
+	else:
+		ok("save adulterado nao trava o jogo", false, "o carimbo saiu da faixa: migrar travaria")
+		ok("save adulterado sobe ate a versao de hoje", false, "nao chegou a rodar")
+		ok("save adulterado preserva os campos", false, "nao chegou a rodar")
+	# E o laco em si e limitado pelo numero de degraus que existem, nao pelo
+	# numero que veio do arquivo — o portao acima so mede; este garante.
+	var fonte_sv := _ler("res://scripts/core/save_system.gd")
+	ok("o laco da migracao tem limite proprio",
+		fonte_sv.contains("while v < VERSAO and degraus < VERSAO:"))
 
 ## ------------------------------------------------------------ offline
 ## Le um arquivo inteiro, ou "" se nao der. So para os testes de save.

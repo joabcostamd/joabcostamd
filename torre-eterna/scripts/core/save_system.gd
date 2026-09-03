@@ -181,6 +181,30 @@ func tamanho_kb() -> float:
 
 ## ------------------------------------------------------------ migrações
 
+## Lê o carimbo de versão de um arquivo que pode ter sido adulterado.
+##
+## `versao` vem de um arquivo em disco que qualquer pessoa abre num editor de
+## texto. Com `"versao": -999999999999` a escada rodava um trilhão de degraus
+## antes de chegar na versão de hoje: o jogo abria e congelava para sempre —
+## sem erro, sem tela, sem volta. É o pior tipo de falha, porque parece um jogo
+## travado e não um save ruim, e a pessoa não tem como saber que basta apagar
+## o arquivo.
+##
+## Carimbo quebrado (texto, nulo, não finito, negativo) não é save de outra
+## versão, é lixo: vale 0, e o `mesclar`/`sanear` completa o resto. Carimbo
+## acima do que este build conhece é save de um jogo mais novo: não dá para
+## descer, então nenhuma migração roda e os dados passam como estão.
+static func _versao_do_arquivo(save: Dictionary) -> int:
+	var bruto = save.get("versao", 0)
+	if not (bruto is int or bruto is float):
+		return 0
+	var f := float(bruto)
+	if not is_finite(f) or f < 0.0:
+		return 0
+	if f > float(VERSAO):
+		return VERSAO
+	return int(f)
+
 ## Cada função leva o save da versão N para N+1. Nunca remova migrações.
 ## Sobe um save antigo até a versão de hoje, um degrau por vez.
 ##
@@ -189,8 +213,14 @@ func tamanho_kb() -> float:
 ## que nunca migrou um campo. O degrau 1 -> 2 é uma migração de verdade, e
 ## existe porque o jogo precisou dela.
 func migrar(save: Dictionary) -> Dictionary:
-	var v := int(save.get("versao", 0))
-	while v < VERSAO:
+	var v := _versao_do_arquivo(save)
+	# O laço não pode passar do número de degraus que existem. O `v` já vem
+	# preso na faixa, então este contador nunca é o que para o laço — ele é a
+	# garantia de que nenhum jeito futuro de ler o carimbo consiga travar o
+	# jogo aqui, nem se alguém trocar o `_versao_do_arquivo` sem pensar nisso.
+	var degraus := 0
+	while v < VERSAO and degraus < VERSAO:
+		degraus += 1
 		match v:
 			0:
 				# Antes da versão 1 não havia carimbo. Nada a converter: o

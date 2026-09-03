@@ -94,7 +94,7 @@ jobs:
         working-directory: torre-eterna
         run: |
           set -euo pipefail
-          saida=$(godot --headless --path . -s res://tools/soak.gd -- 1 2>&1) || true
+          saida=$(godot --headless --path . -s res://tools/soak.gd -- 3 2>&1) || true
           echo "$saida"
           echo "$saida" | grep -q "===STATUS=== PASS"
 
