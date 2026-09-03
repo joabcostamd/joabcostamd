@@ -362,7 +362,7 @@ func reviver_torre() -> void:
 	Bus.torre_renasceu.emit()
 
 func impacto_na_torre(e: Inimigo) -> void:
-	var dano := Bal.dano_contato(e.hp_max, int(s["onda"]), e.chefe, e.escala)
+	var dano := Bal.dano_contato(e.hp_max, int(s["onda"]), e.chefe, e.escala, s["torre"]["vida_max"])
 	dano_na_torre(dano, e)
 	Bus.inimigo_chegou.emit(e, dano)
 
@@ -409,7 +409,7 @@ func projetil_inimigo(e: Inimigo) -> void:
 	p.cor = Color.html("#fb7185")
 	p.tipo = "acido"
 	p.origem = "inimigo"
-	p.dano_torre = Big.mul_f(Bal.dano_contato(Bal.hp_onda(int(s["onda"])), int(s["onda"]), false, 1.0), 0.6)
+	p.dano_torre = Big.mul_f(Bal.dano_contato(Bal.hp_onda(int(s["onda"])), int(s["onda"]), false, 1.0, s["torre"]["vida_max"]), 0.6)
 
 func atualizar_chefe(e: Inimigo, dt: float) -> void:
 	var fases := maxi(1, int(e.def.get("fases", 1)))
@@ -427,7 +427,7 @@ func atualizar_chefe(e: Inimigo, dt: float) -> void:
 			e.cd -= dt
 			if e.cd <= 0.0:
 				e.cd = maxf(2.0, 5.0 - float(e.fase))
-				dano_na_torre(Bal.mul_contato(e, int(s["onda"]), 1.6), e)
+				dano_na_torre(Bal.mul_contato(e, int(s["onda"]), 1.6, s["torre"]["vida_max"]), e)
 				Bus.particulas.emit("pulso", e.pos, {"raio": 260.0, "cor": "#fb923c"})
 				tremor(10.0, 0.3)
 		"escudo_regen":
@@ -445,7 +445,7 @@ func atualizar_chefe(e: Inimigo, dt: float) -> void:
 			if e.cd <= 0.0:
 				e.cd = 7.0
 				e.pos = arena.centro + Vector2(cos(e.dir_ang), sin(e.dir_ang)) * (Bal.RAIO_TORRE + 60.0)
-				dano_na_torre(Bal.mul_contato(e, int(s["onda"]), 2.0), e)
+				dano_na_torre(Bal.mul_contato(e, int(s["onda"]), 2.0, s["torre"]["vida_max"]), e)
 				e.hp = Big.min_b(Big.add(e.hp, Big.mul_f(e.hp_max, 0.05)), e.hp_max)
 		"fissuras":
 			e.cd -= dt
@@ -480,7 +480,7 @@ func atualizar_chefe(e: Inimigo, dt: float) -> void:
 			e.cd -= dt
 			if e.cd <= 0.0:
 				e.cd = maxf(2.2, 5.0 - 0.7 * float(e.fase))
-				dano_na_torre(Bal.mul_contato(e, int(s["onda"]), 1.4), e)
+				dano_na_torre(Bal.mul_contato(e, int(s["onda"]), 1.4, s["torre"]["vida_max"]), e)
 				Bus.particulas.emit("pulso", e.pos, {"raio": 240.0, "cor": "#fb923c"})
 				tremor(9.0, 0.28)
 				if e.fase >= 1:
@@ -576,8 +576,12 @@ func camera_lenta(escala: float, ms: float) -> void:
 func custo_upgrade(def: Dictionary, nivel: int) -> float:
 	return Big.custo(float(def.get("base", 1)), float(def.get("cresc", 1.1)), nivel)
 
+## Teto EFETIVO de uma melhoria: o do JSON, esticado pelo recorde global.
+func teto_upgrade(def: Dictionary) -> int:
+	return Bal.teto_upgrade(int(def.get("max", -1)), int(s["onda_maxima_global"]))
+
 func max_upgrade(def: Dictionary, nivel: int) -> int:
-	var maxn := int(def.get("max", -1))
+	var maxn := teto_upgrade(def)
 	var teto := 1000000 if maxn < 0 else maxn - nivel
 	if teto <= 0:
 		return 0
@@ -602,7 +606,7 @@ func comprar_upgrade(id: String, qtd = 1) -> int:
 	if str(s["desafios"]["ativo"]) != "" and bool(Dados.desafio_por_id.get(s["desafios"]["ativo"], {}).get("mods", {}).get("semUpgrades", false)):
 		return 0
 	var nivel := int(s["upgrades"].get(id, 0))
-	var maxn := int(def.get("max", -1))
+	var maxn := teto_upgrade(def)
 	if maxn >= 0 and nivel >= maxn:
 		return 0
 	var n := 0
@@ -632,7 +636,7 @@ func auto_comprar() -> void:
 			continue
 		var id := str(def.get("id", ""))
 		var nivel := int(s["upgrades"].get(id, 0))
-		var maxn := int(def.get("max", -1))
+		var maxn := teto_upgrade(def)
 		if maxn >= 0 and nivel >= maxn:
 			continue
 		if modo == "prioridade" and not bool(def.get("destaque", false)) and not melhor.is_empty():

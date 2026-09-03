@@ -193,25 +193,48 @@ func em_area(p: Vector2, raio: float) -> Array[Inimigo]:
 ## ------------------------------------------------------------ seleção
 
 ## modo: "proximo" | "longe" | "forte" | "fraco" | "chefe" | "avancado"
+## Os modos como número. Comparar String dentro de um laço que roda uma vez por
+## inimigo, várias vezes por quadro, é caro em GDScript — e o modo é o mesmo
+## para a varredura inteira, então ele é resolvido UMA vez, aqui fora.
+const M_PROXIMO := 0
+const M_LONGE := 1
+const M_FORTE := 2
+const M_FRACO := 3
+const M_CHEFE := 4
+
+static func _modo_num(modo: String) -> int:
+	match modo:
+		"longe": return M_LONGE
+		"forte": return M_FORTE
+		"fraco": return M_FRACO
+		"chefe": return M_CHEFE
+	return M_PROXIMO
+
 func alvo(origem: Vector2, alcance: float, modo: String = "proximo", excluir: Array = []) -> Inimigo:
 	var melhor: Inimigo = null
 	var melhor_score := -INF
 	var a2 := alcance * alcance
+	var m := _modo_num(modo)
+	var tem_excluir := not excluir.is_empty()
+	var ox := origem.x
+	var oy := origem.y
 	for e in inimigos:
 		if not e.vivo() or e.intangivel > 0.0:
 			continue
-		if not excluir.is_empty() and excluir.has(e):
+		if tem_excluir and excluir.has(e):
 			continue
-		var d2 := (e.pos - origem).length_squared()
+		var dx := e.pos.x - ox
+		var dy := e.pos.y - oy
+		var d2 := dx * dx + dy * dy
 		if d2 > a2:
 			continue
-		var score := 0.0
-		match modo:
-			"longe": score = d2
-			"forte": score = e.hp
-			"fraco": score = -e.hp
-			"chefe": score = (1.0e6 if e.chefe else 0.0) + (1000.0 if e.elite else 0.0) - d2 * 1e-4
-			_: score = -d2
+		var score := -d2
+		if m != M_PROXIMO:
+			match m:
+				M_LONGE: score = d2
+				M_FORTE: score = e.hp
+				M_FRACO: score = -e.hp
+				M_CHEFE: score = (1.0e6 if e.chefe else 0.0) + (1000.0 if e.elite else 0.0) - d2 * 1e-4
 		if score > melhor_score:
 			melhor_score = score
 			melhor = e
@@ -222,10 +245,14 @@ func alvo_ids(origem: Vector2, alcance: float, modo: String, ids: Dictionary) ->
 	var melhor: Inimigo = null
 	var melhor_score := -INF
 	var a2 := alcance * alcance
+	var ox2 := origem.x
+	var oy2 := origem.y
 	for e in inimigos:
 		if not e.vivo() or e.intangivel > 0.0 or ids.has(e.id):
 			continue
-		var d2 := (e.pos - origem).length_squared()
+		var ddx := e.pos.x - ox2
+		var ddy := e.pos.y - oy2
+		var d2 := ddx * ddx + ddy * ddy
 		if d2 > a2:
 			continue
 		var score := -d2

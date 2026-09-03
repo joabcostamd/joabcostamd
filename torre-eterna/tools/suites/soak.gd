@@ -6,6 +6,11 @@ extends RefCounted
 ## Carregado por `res://tools/soak.gd` já dentro de `_initialize()`.
 
 var arvore: SceneTree
+
+## O soak ascende sozinho, e o limiar sobe a cada ascensão: sem isso a
+## ferramenta fica presa num laço de quarenta ondas para sempre.
+const ASCENDER_INICIAL := 40
+const ASCENDER_PASSO := 1.6
 var root: Node
 
 ## Teste de resistência: horas de jogo com invariantes checadas o tempo todo.
@@ -51,7 +56,18 @@ func rodar(cena: SceneTree) -> void:
 	# Ascende sozinho assim que compensa, para o teste passar por esse caminho.
 	jogo.s["desbloqueios"]["autoAscensao"] = true
 	jogo.s["prestigio"]["auto_ascender"] = true
-	jogo.s["prestigio"]["auto_ascender_onda"] = 40
+	# O limiar SOBE a cada ascensão, em vez de ficar preso em 40.
+	#
+	# Com 40 fixo, o soak repetia o mesmo laço de quarenta ondas por quantas
+	# horas se pedisse: uma corrida de 1 h e uma de 3 h fechavam as duas com
+	# `onda maxima 40`. Ou seja, a cláusula "sem travar em 3 h" estava protegida
+	# por uma ferramenta cujo espaço de estados alcançável ia só até a onda 40 —
+	# tudo que quebra depois dela era invisível para o único portão longo com
+	# veredito. Agora cada ascensão empurra o limiar, e o soak sobe de verdade.
+	jogo.s["prestigio"]["auto_ascender_onda"] = ASCENDER_INICIAL
+	Bus.prestigio_feito.connect(func(_camada, _ganho):
+		var atual := int(jogo.s["prestigio"]["auto_ascender_onda"])
+		jogo.s["prestigio"]["auto_ascender_onda"] = int(round(float(atual) * ASCENDER_PASSO)))
 	jogo.marcar_sujo()
 	jogo.recalcular()
 

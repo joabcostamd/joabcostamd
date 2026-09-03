@@ -218,7 +218,7 @@ static func aplicar(j, def: Dictionary, res: Dictionary) -> Dictionary:
 	var v := float(res.get("valor", 0.0))
 	var out := {
 		"tipo": tipo,
-		"texto": "Nada aconteceu. Às vezes é o melhor resultado possível.",
+		"texto": Txt.t("ev_ap_nada"),
 		"icone": str(ICONE_RESULTADO.get(tipo, "estrela")),
 		"cor": UI.TEXTO2,
 		"tom": "info",
@@ -228,14 +228,14 @@ static func aplicar(j, def: Dictionary, res: Dictionary) -> Dictionary:
 			var quantia := ouro_de(j, absf(v))
 			if v >= 0.0:
 				j.ganhar_ouro(quantia, "evento")
-				out["texto"] = "+%s de ouro" % Fmt.big(quantia)
+				out["texto"] = Txt.f("ev_res_ouro_mais", {"q": Fmt.big(quantia)})
 				out["cor"] = UI.OURO
 				out["tom"] = "bom"
 			else:
 				var tinha := float(s["moedas"]["ouro"])
 				var perda := Big.min_b(tinha, quantia)
 				s["moedas"]["ouro"] = Big.sub(tinha, perda)
-				out["texto"] = "-%s de ouro" % Fmt.big(perda)
+				out["texto"] = Txt.f("ev_res_ouro_menos", {"q": Fmt.big(perda)})
 				out["cor"] = UI.VERMELHO
 				out["tom"] = "ruim"
 		"gemas", "fragmentos", "nucleos", "eter", "poeira":
@@ -247,7 +247,7 @@ static func aplicar(j, def: Dictionary, res: Dictionary) -> Dictionary:
 		"xp":
 			var xp := xp_de(j, absf(v))
 			j.ganhar_xp(xp)
-			out["texto"] = "+%s de experiência" % Fmt.big(xp)
+			out["texto"] = Txt.f("ev_res_xp", {"q": Fmt.big(xp)})
 			out["cor"] = UI.ACENTO2
 			out["tom"] = "bom"
 		"buff":
@@ -263,7 +263,7 @@ static func aplicar(j, def: Dictionary, res: Dictionary) -> Dictionary:
 				"icone": "estrela",
 				"cor": str(def.get("cor", "#38bdf8")),
 			})
-			out["texto"] = "%s por %s" % [_desc_buff(res), Ux.tempo_curto(dur)]
+			out["texto"] = Txt.f("ev_res_buff", {"d": _desc_buff(res), "t": Ux.tempo_curto(dur)})
 			out["cor"] = UI.VERDE
 			out["tom"] = "bom"
 		"cura":
@@ -272,38 +272,38 @@ static func aplicar(j, def: Dictionary, res: Dictionary) -> Dictionary:
 			j.curar_torre(Big.mul_f(float(t["vida_max"]), absf(v)))
 			var curou := Big.sub(float(t["vida"]), antes)
 			if Big.is_zero(curou):
-				out["texto"] = "O casco já estava inteiro."
+				out["texto"] = Txt.t("ev_ap_casco_inteiro")
 				out["cor"] = UI.TEXTO2
 			else:
-				out["texto"] = "Casco reparado: +%s" % Fmt.big(curou)
+				out["texto"] = Txt.f("ev_ap_casco_reparado", {"q": Fmt.big(curou)})
 				out["cor"] = UI.VERDE
 				out["tom"] = "bom"
 		"dano":
 			var t2: Dictionary = s["torre"]
 			j.dano_na_torre(Big.mul_f(float(t2["vida_max"]), absf(v)), null, {"ignora_iframes": true})
-			out["texto"] = "A torre levou %s do casco" % Fmt.pct(absf(v), 0)
+			out["texto"] = Txt.f("ev_ap_dano", {"p": Fmt.pct(absf(v), 0)})
 			out["cor"] = UI.VERMELHO
 			out["tom"] = "ruim"
 			j.tremor(12.0, 0.35)
 		"carta":
 			var inst := _carta(j, str(res.get("raridadeMin", "")))
 			if inst.is_empty():
-				out["texto"] = "Nenhuma carta sobreviveu à viagem."
+				out["texto"] = Txt.t("ev_ap_sem_carta")
 			else:
 				var cdef: Dictionary = Dados.carta_por_id.get(str(inst["id"]), {})
 				var rar := str(inst["raridade"])
-				out["texto"] = "%s  ·  %s" % [Ux.txt(cdef, "nome", Cfg.ingles()), _nome_raridade(rar)]
+				out["texto"] = Txt.f("ev_ap_carta", {"n": Ux.txt(cdef, "nome", Cfg.ingles()), "r": _nome_raridade(rar)})
 				out["cor"] = UI.RARIDADE_COR.get(rar, UI.ACENTO)
 				out["tom"] = "epico"
 		"onda":
 			var destino := maxi(1, int(s["onda"]) + 1 + int(v))
 			_ir_para_onda(j, destino)
 			if v >= 0.0:
-				out["texto"] = "O tempo pulou: onda %d" % destino
+				out["texto"] = Txt.f("ev_ap_onda_frente", {"n": destino})
 				out["cor"] = UI.ACENTO
 				out["tom"] = "bom"
 			else:
-				out["texto"] = "O tempo voltou: onda %d" % destino
+				out["texto"] = Txt.f("ev_ap_onda_tras", {"n": destino})
 				out["cor"] = UI.VERMELHO
 				out["tom"] = "ruim"
 		_:
@@ -316,26 +316,31 @@ static func aplicar(j, def: Dictionary, res: Dictionary) -> Dictionary:
 static func resumo(j, res: Dictionary) -> String:
 	var tipo := str(res.get("tipo", "nada"))
 	var v := float(res.get("valor", 0.0))
+	# Onze textos daqui eram escritos crus, em portugues, direto no codigo: em
+	# ingles o dialogo de evento misturava "+20 gemas" com "guaranteed" na mesma
+	# caixa. A regra de i18n do linter so conferia se uma chave USADA existia,
+	# nunca se um texto tinha sido escrito sem chave nenhuma — e e por isso que
+	# a suite ganhou um portao novo para essa classe.
 	match tipo:
 		"ouro":
 			var q := Fmt.big(ouro_de(j, absf(v)))
-			return ("+%s de ouro" % q) if v >= 0.0 else ("-%s de ouro" % q)
+			return Txt.f("ev_res_ouro_mais" if v >= 0.0 else "ev_res_ouro_menos", {"q": q})
 		"gemas", "fragmentos", "nucleos", "eter", "poeira":
-			return "+%s %s" % [Fmt.inteiro(int(absf(v))), _nome_moeda(tipo)]
+			return Txt.f("ev_res_moeda", {"n": Fmt.inteiro(int(absf(v))), "m": _nome_moeda(tipo)})
 		"xp":
-			return "+%s de experiência" % Fmt.big(xp_de(j, absf(v)))
+			return Txt.f("ev_res_xp", {"q": Fmt.big(xp_de(j, absf(v)))})
 		"buff":
-			return "%s por %s" % [_desc_buff(res), Ux.tempo_curto(float(res.get("duracao", 60.0)))]
+			return Txt.f("ev_res_buff", {"d": _desc_buff(res), "t": Ux.tempo_curto(float(res.get("duracao", 60.0)))})
 		"cura":
-			return "Repara %s do casco" % Fmt.pct(absf(v), 0)
+			return Txt.f("ev_res_cura", {"p": Fmt.pct(absf(v), 0)})
 		"dano":
-			return "A torre perde %s do casco" % Fmt.pct(absf(v), 0)
+			return Txt.f("ev_res_dano", {"p": Fmt.pct(absf(v), 0)})
 		"carta":
 			var rar := str(res.get("raridadeMin", ""))
-			return "Uma carta nova" + ("" if rar == "" else " (%s ou melhor)" % _nome_raridade(rar))
+			return Txt.t("ev_res_carta") if rar == "" else Txt.f("ev_res_carta_min", {"r": _nome_raridade(rar)})
 		"onda":
-			return ("Avança %d onda(s)" % int(absf(v))) if v >= 0.0 else ("Recua %d onda(s)" % int(absf(v)))
-	return "Nada"
+			return Txt.f("ev_res_onda_mais" if v >= 0.0 else "ev_res_onda_menos", {"n": int(absf(v))})
+	return Txt.t("ev_res_nada")
 
 static func icone_resultado(res: Dictionary) -> String:
 	var tipo := str(res.get("tipo", "nada"))
@@ -382,23 +387,20 @@ static func _desc_buff(res: Dictionary) -> String:
 		nome = str(res.get("stat", "atributo"))
 	var v := float(res.get("valor", 0.0))
 	match str(res.get("modo", "pct")):
-		"mult": return "%s ×%s" % [nome, Fmt.num(v, 2)]
-		"flat": return "%s +%s" % [nome, Fmt.num(v, 2)]
-	return "%s +%s" % [nome, Fmt.pct(v, 0)]
+		"mult": return Txt.f("ev_buff_mult", {"s": nome, "v": Fmt.num(v, 2)})
+		"flat": return Txt.f("ev_buff_flat", {"s": nome, "v": Fmt.num(v, 2)})
+	return Txt.f("ev_buff_pct", {"s": nome, "v": Fmt.pct(v, 0)})
 
 ## Nome bonito da raridade ("epico" -> "Épico"), vindo dos dados.
 static func _nome_raridade(id: String) -> String:
 	var nome := Ux.txt(Dados.raridade(id), "nome", Cfg.ingles())
 	return nome if nome != "" else id.capitalize()
 
+## Nome da moeda, das chaves `m_*` — que sao as mesmas que os paineis usam.
 static func _nome_moeda(chave: String) -> String:
-	match chave:
-		"gemas": return "gemas"
-		"fragmentos": return "fragmentos"
-		"nucleos": return "núcleos"
-		"eter": return "éter"
-		"poeira": return "poeira"
-	return chave
+	var k := "m_" + chave
+	var nome := Txt.t(k)
+	return chave if nome == k else nome
 
 ## Carta de evento, respeitando a raridade mínima da opção.
 static func _carta(j, raridade_min: String) -> Dictionary:

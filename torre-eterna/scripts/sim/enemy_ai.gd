@@ -316,7 +316,7 @@ static func habilidade(e: Inimigo, dt: float, j) -> void:
 				e.cd -= dt
 				if e.cd <= 0.0:
 					e.cd = 1.0
-					j.dano_na_torre(Bal.mul_contato(e, int(j.s["onda"]), 0.5), e, {"drenar": true})
+					j.dano_na_torre(Bal.mul_contato(e, int(j.s["onda"]), 0.5, j.s["torre"]["vida_max"]), e, {"drenar": true})
 		"chocar":
 			e.cd -= dt
 			if e.cd > 0.0:

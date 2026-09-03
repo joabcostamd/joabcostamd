@@ -11,11 +11,20 @@ static func desenhar(ci: CanvasItem, j, t: float, detalhe: float = 1.0) -> void:
 	var viva := bool(torre["viva"])
 	var r := Bal.RAIO_TORRE
 
-	# nível visual: cresce com o dano acumulado (log), de 0 a 6
-	var poder := clampf(j.stats.b("dano") / 12.0, 0.0, 6.0)
-	var anéis := 1 + int(poder)
+	# Nível visual: cresce com o RECORDE, em escala logarítmica, e não satura.
+	#
+	# Antes vinha de `dano / 12` com teto em 6. Como `dano` é log10 e passa de
+	# 72 por volta da onda 30, o valor grudava no teto para sempre: a torre
+	# ficava pixel por pixel idêntica da onda 30 à 520. A estrela do jogo não
+	# mudava com quinhentas ondas de progressão. Agora cada vez que o recorde
+	# TRIPLICA a torre ganha um degrau — onda 3 dá 1, onda 27 dá 3, onda 240 dá
+	# 5, onda 2.200 dá 7 —, então ela nunca para de mudar e nunca muda rápido
+	# demais para ser notada.
+	var recorde := maxf(1.0, float(s["onda_maxima_global"]))
+	var poder := clampf(log(recorde) / log(3.0), 0.0, 9.0)
+	var anéis := 1 + int(poder * 0.75)
 	var vida_frac := Big.frac(torre["vida"], torre["vida_max"])
-	var cor_nucleo := Color("#7dd3fc").lerp(Color("#f472b6"), clampf(poder / 6.0, 0.0, 1.0))
+	var cor_nucleo := Color("#7dd3fc").lerp(Color("#f472b6"), clampf(poder / 9.0, 0.0, 1.0))
 	# o elemento em que o jogador mais investiu tinge o núcleo
 	var dom := ""
 	var dom_v := 0.0
@@ -52,7 +61,7 @@ static func desenhar(ci: CanvasItem, j, t: float, detalhe: float = 1.0) -> void:
 
 	# --- corpo ---
 	var pts := PackedVector2Array()
-	var lados := 6 + mini(6, int(poder))
+	var lados := 5 + mini(9, int(poder))
 	for i in lados:
 		var an := float(i) / float(lados) * TAU + t * 0.12
 		pts.append(c + Vector2(cos(an), sin(an)) * r)
@@ -105,6 +114,37 @@ static func desenhar(ci: CanvasItem, j, t: float, detalhe: float = 1.0) -> void:
 	if j.invulneravel > 0.0:
 		var k := 0.4 + sin(t * 12.0) * 0.25
 		ci.draw_arc(c, r * 1.85, 0, TAU, 64, Color(1, 1, 1, k), 3.0, true)
+
+	# --- marcas de prestígio ---
+	#
+	# O que a torre carrega de permanente também tem que aparecer nela. Ascensão
+	# põe uma lasca girando; Singularidade acende um halo externo; Transcendência
+	# grava pontas de coroa. São as três camadas do prestígio, na ordem em que o
+	# jogo as apresenta, e é o que faz duas torres de recorde igual parecerem
+	# diferentes se uma delas já foi mais longe.
+	var asc := int(s["prestigio"].get("ascensoes", 0))
+	if asc > 0:
+		var lascas := mini(12, asc)
+		for i in lascas:
+			var an := float(i) / float(lascas) * TAU - t * 0.22
+			var pp := c + Vector2(cos(an), sin(an)) * (r * 1.72)
+			ci.draw_circle(pp, 2.2, Color(0.55, 0.85, 1.0, 0.55))
+	var sing := int(s["prestigio"].get("singularidades", 0))
+	if sing > 0:
+		var k := clampf(float(sing) / 8.0, 0.15, 0.6)
+		ci.draw_arc(c, r * 2.05, 0, TAU, 64, Color(0.66, 0.33, 0.97, k * 0.5), 2.0, true)
+	var trans := int(s["prestigio"].get("transcendencias", 0))
+	if trans > 0:
+		var pontas := mini(9, trans)
+		for i in pontas:
+			var an2 := float(i) / float(pontas) * TAU + t * 0.05
+			var d2 := Vector2(cos(an2), sin(an2))
+			var n2 := Vector2(-d2.y, d2.x)
+			ci.draw_colored_polygon(PackedVector2Array([
+				c + d2 * (r * 1.5) + n2 * 3.0,
+				c + d2 * (r * 1.5) - n2 * 3.0,
+				c + d2 * (r * 1.98),
+			]), Color(0.98, 0.85, 0.35, 0.75))
 
 	# --- torre caída ---
 	if not viva:

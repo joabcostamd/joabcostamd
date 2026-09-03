@@ -86,5 +86,41 @@
   "sim_revive_extra": {
     "pt": "Segundo fôlego. Restam {n} nesta onda.",
     "en": "Second wind. {n} left this wave."
+  },
+  "sv_json_invalido": {
+    "pt": "O estado do jogo gerou JSON inválido (número não-finito?). O save anterior foi mantido.",
+    "en": "The game state produced invalid JSON (non-finite number?). The previous save was kept."
+  },
+  "sv_abrir_falhou": {
+    "pt": "Não consegui abrir o arquivo de save (erro {e}).",
+    "en": "Could not open the save file (error {e})."
+  },
+  "sv_grava_incompleta": {
+    "pt": "A gravação do save saiu incompleta (disco cheio?). O save anterior foi mantido.",
+    "en": "The save write came out incomplete (disk full?). The previous save was kept."
+  },
+  "sv_substituir_falhou": {
+    "pt": "Não consegui substituir o arquivo de save.",
+    "en": "Could not replace the save file."
+  },
+  "sv_ilegivel": {
+    "pt": "Encontrei o arquivo de save e não consegui ler nem ele nem o backup.",
+    "en": "I found the save file and could read neither it nor the backup."
+  },
+  "sv_assinatura": {
+    "pt": "Código de save inválido (assinatura não reconhecida).",
+    "en": "Invalid save code (unrecognised signature)."
+  },
+  "sv_incompleto": {
+    "pt": "Código de save incompleto.",
+    "en": "Incomplete save code."
+  },
+  "sv_checksum": {
+    "pt": "Código de save corrompido (checksum não confere).",
+    "en": "Corrupted save code (checksum mismatch)."
+  },
+  "sv_conteudo_ilegivel": {
+    "pt": "Conteúdo do save não pôde ser lido.",
+    "en": "The save contents could not be read."
   }
 }

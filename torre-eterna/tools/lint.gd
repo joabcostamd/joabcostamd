@@ -29,6 +29,7 @@ func _initialize() -> void:
 	_checar_constantes_mortas()
 	_checar_tipos_cond()
 	_checar_tremor()
+	_checar_texto_cru()
 
 	print("===LINT=== arquivos=%d linhas=%d erros=%d avisos=%d" % [arquivos, linhas, erros.size(), avisos.size()])
 	for e in erros:
@@ -476,6 +477,103 @@ func _coletar_passivas(o, arquivo: String, saida: Dictionary) -> void:
 ## revivesExtra, ondaInicial...). `slotsHabilidade` estava declarado numa
 ## relíquia comprável e pressupunha um sistema de slots de habilidade que este
 ## jogo nunca teve: a relíquia custava núcleos e não fazia absolutamente nada.
+## Texto em português escrito direto no código, sem passar pelo `Txt`.
+##
+## A regra de i18n só conferia se uma chave USADA existia — nunca se um texto
+## tinha sido escrito sem chave nenhuma. Por essa fresta passaram onze frases em
+## `events_sim.gd`: em inglês, o diálogo de evento misturava "+20 gemas" com
+## "guaranteed" na mesma caixa. Aqui a pergunta é a outra: existe string com
+## cara de frase em português fora de um `Txt`?
+##
+## O sinal é acento ou palavra funcional portuguesa numa string com espaço.
+## Chave de tradução, caminho, id e formato não têm nenhum dos dois.
+## Textos que ficam crus de propósito, com a razão ao lado.
+const EXCECOES_TEXTO := {
+	"Português (BR)": "nome de idioma fica no próprio idioma",
+}
+
+const PALAVRAS_PT := ["de ", "da ", "do ", " e ", " ou ", " por ", " com ", " sem ",
+	" que ", " para ", " uma ", " um ", " os ", " as ", " no ", " na "]
+
+func _checar_texto_cru() -> void:
+	var acentos := "áàâãéêíóôõúüçÁÀÂÃÉÊÍÓÔÕÚÜÇ"
+	for caminho in _todos_gd():
+		# ferramentas e dados não vão para a tela do jogador
+		if caminho.begins_with("res://tools") or caminho.get_slice_count("/") == 3:
+			continue
+		# O próprio módulo de tradução guarda os textos padrão.
+		if caminho.ends_with("textos.gd"):
+			continue
+		var f := FileAccess.open(caminho, FileAccess.READ)
+		if f == null:
+			continue
+		var n := 0
+		while not f.eof_reached():
+			var linha := f.get_line()
+			n += 1
+			var limpa := linha.strip_edges()
+			if limpa.begins_with("#"):
+				continue
+			# a linha já usa Txt: o texto ali é chave ou molde, não frase solta
+			if limpa.contains("Txt.t(") or limpa.contains("Txt.f(") or limpa.contains("push_error") \
+					or limpa.contains("push_warning") or limpa.contains("print("):
+				continue
+			# Rótulo de ATRIBUIÇÃO de atributo. `add_mult(stat, v, "Álbum de
+			# Ecos")` guarda de onde veio o bônus para depuração; esse texto não
+			# é desenhado em lugar nenhum (`StatEngine.fontes` não tem leitor de
+			# interface). Traduzi-lo seria trocar dívida por ruído.
+			var atribui := false
+			for chamada in ["add_flat(", "add_pct(", "add_mult(", "add_mult_log(",
+					"ganhar_moeda(", "ganhar_ouro(", "faltando.append("]:
+				if limpa.contains(chamada):
+					atribui = true
+					break
+			if atribui:
+				continue
+			for trecho in _strings_de(limpa):
+				if not trecho.contains(" "):
+					continue
+				# Nome de idioma fica no idioma dele: traduzir "Português (BR)"
+				# para "Portuguese (BR)" torna o seletor pior para quem o procura.
+				if EXCECOES_TEXTO.has(trecho):
+					continue
+				var suspeita := false
+				for c in acentos:
+					if trecho.contains(c):
+						suspeita = true
+						break
+				if not suspeita:
+					for pal in PALAVRAS_PT:
+						if trecho.to_lower().contains(pal):
+							suspeita = true
+							break
+				if suspeita:
+					erros.append("%s:%d texto em portugues fora do Txt: \"%s\"" % [
+						caminho, n, trecho.substr(0, 48)])
+
+## As strings literais de uma linha, sem as aspas.
+func _strings_de(linha: String) -> Array:
+	var out: Array = []
+	var i := 0
+	while i < linha.length():
+		var c := linha[i]
+		if c == "\"" or c == "'":
+			var fim := i + 1
+			var atual := ""
+			while fim < linha.length() and linha[fim] != c:
+				if linha[fim] == "\\":
+					fim += 2
+					continue
+				atual += linha[fim]
+				fim += 1
+			out.append(atual)
+			i = fim + 1
+			continue
+		if c == "#":
+			break
+		i += 1
+	return out
+
 ## `Cfg.forca_tremor()` só pode ser chamado de dentro do Juice.
 ##
 ## A escala do tremor vale no único ponto por onde todo tremor passa. Chamar de

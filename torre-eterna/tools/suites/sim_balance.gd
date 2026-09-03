@@ -62,7 +62,11 @@ func rodar(cena: SceneTree) -> void:
 	print("=== SIMULACAO: %.2f h de jogo (%d passos) ===" % [horas, passos])
 	print("tempo | onda | ouro | dano | vida | inimigos | nivel | frag")
 
+	var onda_no_terco := 0
+	var passo_do_terco := int(float(passos) * 0.66)
 	for i in passos:
+		if i == passo_do_terco:
+			onda_no_terco = int(j.s["onda_maxima"])
 		j.simular(DT)
 		# compra automática básica para simular um jogador ativo
 		if not auto_tudo and i % 20 == 0:
@@ -98,7 +102,59 @@ func rodar(cena: SceneTree) -> void:
 	print("desempenho: %d ms para %d passos (%.2f us/passo, %.0fx tempo real)" % [
 		ms, passos, float(ms) * 1000.0 / float(passos), (horas * 3600.0) / maxf(0.001, float(ms) / 1000.0)])
 	print("recalculos de atributos: %d" % j.stats.recalculos)
-	arvore.quit(0)
+
+	# ------------------------------------------------------------ VEREDITO
+	#
+	# Esta ferramenta nao tinha nenhum. Numa corrida bem-sucedida ela terminava
+	# em `quit(0)` sem imprimir uma linha de status, e o passo do CI que a roda
+	# so procurava por `SCRIPT ERROR`. Ou seja: chegar a onda 25 em trinta
+	# segundos ou em tres horas passava no CI exatamente igual, e a faixa do
+	# criterio 5 era "cobrada" por uma pessoa lendo uma tabela. Um criterio cuja
+	# coluna "como se verifica" aponta para um programa sem PASS/FAIL nao
+	# verifica coisa alguma.
+	#
+	# Agora ele cobra. As faixas so valem quando a corrida e longa o bastante
+	# para conte-las — numa corrida de 1 h nao da para cobrar a onda 100 em ate
+	# 60 min sem transformar o portao em loteria.
+	var falhas: Array = []
+	var minutos := horas * 60.0
+	for regra in [[25, 5.0, 12.0], [50, 15.0, 30.0], [100, 30.0, 60.0]]:
+		var alvo := int(regra[0])
+		var lo := float(regra[1])
+		var hi := float(regra[2])
+		if minutos < hi:
+			continue                       # corrida curta demais para julgar
+		if not marcos.has(alvo):
+			falhas.append("onda %d nao foi alcancada em %.0f min (faixa %.0f-%.0f)" % [alvo, minutos, lo, hi])
+			continue
+		var t_min := float(marcos[alvo]) / 60.0
+		if t_min < lo or t_min > hi:
+			falhas.append("onda %d em %.1f min, fora da faixa %.0f-%.0f" % [alvo, t_min, lo, hi])
+
+	# "sem travar": a onda tem que continuar subindo no ultimo terco da corrida.
+	if minutos >= 30.0 and onda_no_terco > 0 and int(j.s["onda_maxima"]) <= onda_no_terco:
+		falhas.append("a onda parou de subir: %d no ultimo terco, %d no fim" % [
+			onda_no_terco, int(j.s["onda_maxima"])])
+
+	# O catalogo nao pode esvaziar: se TODAS as melhorias com teto estiverem no
+	# maximo, a tela de melhorias ficou sem decisao pelo resto da partida.
+	var com_teto := 0
+	var no_teto := 0
+	for def in Dados.upgrades:
+		var teto: int = j.teto_upgrade(def)
+		if teto < 0:
+			continue
+		com_teto += 1
+		if int(j.s["upgrades"].get(str(def.get("id", "")), 0)) >= teto:
+			no_teto += 1
+	print("melhorias no teto: %d de %d com teto" % [no_teto, com_teto])
+	if com_teto > 0 and no_teto >= com_teto:
+		falhas.append("todas as %d melhorias com teto estao no maximo — a tela ficou sem decisao" % com_teto)
+
+	for f in falhas:
+		print("  FALHOU: ", f)
+	print("===STATUS=== ", "PASS" if falhas.is_empty() else "FAIL")
+	arvore.quit(0 if falhas.is_empty() else 1)
 
 ## Heurística simples de "jogador": compra o upgrade mais barato disponível.
 func _comprar_como_jogador(j) -> void:

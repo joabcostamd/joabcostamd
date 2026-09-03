@@ -127,7 +127,22 @@ const PENALIDADE_MORTE := 1
 const RAIO_TORRE := 34.0
 
 ## Dano (log10) que um inimigo causa ao alcançar a torre.
-static func dano_contato(hp_inimigo_log: float, onda: int, chefe: bool, escala: float) -> float:
+## Teto do dano de contato, como fração da vida MÁXIMA da torre.
+##
+## `dano_contato` era função pura do inimigo: 1,3% da vida DELE. Como a vida do
+## inimigo cresce 0,061 década por onda e a da torre cresce menos, o contato
+## ganhava da vida ~1,12× por onda. Medido numa corrida de 3 h: na onda 230 a
+## torre aguentava 28.190 vazamentos; na onda 422 morria em UM toque, com
+## 354.000× de sobra. Ou seja, a categoria Defesa inteira — vida, armadura,
+## escudo, regeneração, forja de vida — virava desperdício a partir da onda
+## ~300, e o relatório fechava com 181 mortes em 3 h, uma por minuto.
+##
+## Com o teto, vazar volta a ser CUSTO em vez de morte instantânea, e comprar
+## vida volta a comprar sobrevivência. Chefe machuca mais, como sempre.
+const CONTATO_TETO_VIDA := 0.22
+const CONTATO_TETO_VIDA_CHEFE := 0.45
+
+static func dano_contato(hp_inimigo_log: float, onda: int, chefe: bool, escala: float, vida_max_log: float = Big.ZERO) -> float:
 	var frac := DANO_CONTATO_CHEFE if chefe else DANO_CONTATO_FRAC
 	var por_hp := Big.mul_f(hp_inimigo_log, frac)
 	# o piso também respeita o arquétipo: chefe machuca mais mesmo no começo
@@ -137,11 +152,35 @@ static func dano_contato(hp_inimigo_log: float, onda: int, chefe: bool, escala: 
 	var base := Big.max_b(por_hp, piso)
 	if escala > 1.0:
 		base = Big.mul_f(base, sqrt(escala))
+	if vida_max_log > Big.LIMIAR_ZERO:
+		var teto := Big.mul_f(vida_max_log, CONTATO_TETO_VIDA_CHEFE if chefe else CONTATO_TETO_VIDA)
+		base = Big.min_b(base, teto)
 	return base
 
 ## Atalho: dano de contato de um inimigo específico, multiplicado.
-static func mul_contato(e, onda: int, mult: float) -> float:
-	return Big.mul_f(dano_contato(e.hp_max, onda, e.chefe, e.escala), mult)
+static func mul_contato(e, onda: int, mult: float, vida_max_log: float = Big.ZERO) -> float:
+	return Big.mul_f(dano_contato(e.hp_max, onda, e.chefe, e.escala, vida_max_log), mult)
+
+## O teto de uma melhoria cresce com o recorde global.
+##
+## Somando o custo de maxar TODAS as 33 melhorias com teto, o catálogo inteiro
+## custava 6,3e10 de ouro. Medido numa corrida automática: na onda 65, aos 22
+## minutos, o jogador já tinha 2,6e11 no banco — 4,2× o preço de comprar o jogo
+## inteiro. Dali em diante sobravam SEIS botões para as ~370 ondas restantes, e
+## as categorias Elemental, Orbes, Utilidade e Defesa viravam enfeite antes de
+## um terço da sessão. A tela de melhorias ficava sem decisão nenhuma.
+##
+## O teto agora acompanha o recorde. Como o custo cresce geométrico, os níveis
+## além do teto original custam muito mais — o sink continua aberto sem que
+## nada fique barato. Abaixo da onda 50 nada muda: o começo do jogo é o mesmo.
+const TETO_ONDA_LIVRE := 50
+const TETO_CRESCE_POR_ONDA := 0.006
+
+static func teto_upgrade(teto_base: int, recorde: int) -> int:
+	if teto_base < 0:
+		return -1
+	var extra := float(teto_base) * TETO_CRESCE_POR_ONDA * float(maxi(0, recorde - TETO_ONDA_LIVRE))
+	return teto_base + int(floor(extra))
 
 static func fator_armadura(armadura: float, penetracao: float) -> float:
 	var a := maxf(0.0, armadura * (1.0 - minf(0.95, penetracao)))

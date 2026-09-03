@@ -1,33 +1,61 @@
 # Rubrica de qualidade — Torre Eterna
 
-Nota-alvo do projeto: **≥ 95/100**. Esta rubrica existe para que "está bom"
-seja uma medida, não uma opinião. Cada critério tem um teste objetivo:
-alguém de fora precisa conseguir verificar sem confiar em quem escreveu.
+Nota-alvo do projeto: **≥ 95/100**.
 
-| # | Critério | Peso | Como se verifica | Meta |
-|---|---|---:|---|---|
-| 1 | **Compila e roda** | 6 | `tools/verificar.gd` e `agent_verify.gd` | PASS, zero erro de script |
-| 2 | **Testes da simulação** | 10 | `tools/testes.gd` — sem mocks, roda o jogo real | 100% passando, ≥150 asserções |
-| 3 | **Integridade dos dados** | 6 | `tools/validar_dados.gd` | zero erro |
-| 4 | **Desempenho** | 8 | `tools/perf.gd -- 400` | ≤ 4 ms de simulação por frame com 500 inimigos |
-| 5 | **Balanceamento medido** | 8 | `tools/sim_balance.gd -- 2` | onda 25 em 5–12 min; onda 50 em 15–30 min; onda 100 em 30–60 min; sem travar em 3 h |
-| 6 | **Profundidade de sistemas** | 8 | contagem e interligação | ≥10 sistemas que se afetam mutuamente |
-| 7 | **Volume de conteúdo** | 6 | `data/*.json` | ≥20 inimigos, ≥10 chefes, ≥35 melhorias, ≥30 talentos, ≥30 cartas, ≥80 conquistas, ≥10 eras |
-| 8 | **Arte** | 8 | inspeção visual das capturas | tudo procedural, silhuetas distinguíveis em 0,5 s, 10 eras visualmente distintas |
-| 9 | **Juice** | 8 | inspeção visual | tremor, hitstop, câmera lenta, partículas, números de dano, flashes, apresentação de chefe, celebrações |
-| 10 | **Áudio** | 6 | inspeção do código + execução | sintetizado, sem assets, adaptativo, com limite de vozes |
-| 11 | **Interface** | 8 | captura de cada painel | 12+ painéis, nada cortado, contraste legível, estado vazio tratado |
-| 12 | **Acessibilidade** | 5 | painel de configurações | movimento reduzido, daltonismo, alto contraste, fonte grande, números de dano, tremor |
-| 13 | **Persistência** | 5 | `tools/testes.gd` (grupo Save) | autosave, backup, migração, exportar/importar com checksum |
-| 14 | **Originalidade** | 4 | leitura das mecânicas | ≥3 mecânicas que o gênero não tem |
-| 15 | **Documentação e portões** | 4 | `README.md`, `AGENTS.md`, `docs/` | qualquer pessoa consegue rodar, testar e estender |
+**Esta rubrica já mentiu, e a correção está aqui.** A versão anterior abria
+dizendo que "cada critério tem um teste objetivo". Um crítico independente
+mostrou que isso era falso para 59 dos 100 pontos, e que a frase emprestava a
+credibilidade dos critérios que rodam de verdade aos que só pedem opinião. Pior:
+com a régua vaga, dava para "consertar" um portão redefinindo o que ele precisa
+provar — e foi exatamente o que aconteceu com o critério 4, cuja condição difícil
+virou informativa em vez de ser cumprida.
+
+Então a tabela agora tem uma coluna a mais, e ela diz a verdade sobre cada linha:
+
+- **PORTÃO** — um comando decide, e ele imprime `===STATUS===`. Reprovável por
+  qualquer pessoa, sem confiar em ninguém.
+- **MEDIDA** — um comando produz um número, e um humano compara com a meta. O
+  número é reproduzível; a comparação é manual.
+- **JUÍZO** — não há comando. É opinião informada, e vale o que vale.
+
+A nota vale contra um commit nomeado. Nota sobre alvo móvel não é reproduzível:
+os números da seção "Saída crua" dizem de qual execução vieram.
+
+| # | Critério | Peso | Tipo | Como se verifica | Meta |
+|---|---|---:|---|---|---|
+| 1 | **Compila e roda** | 6 | PORTÃO | `tools/verificar.gd`, `tools/lint.gd`, `agent_verify.gd` | PASS, zero erro de script |
+| 2 | **Testes da simulação** | 10 | PORTÃO | `tools/testes.gd` — sem mocks, roda o jogo real | 100% passando, ≥300 asserções, e nenhum bloco pode sumir em silêncio (há piso) |
+| 3 | **Integridade dos dados** | 6 | PORTÃO | `tools/validar_dados.gd` | zero erro |
+| 4 | **Desempenho** | 8 | PORTÃO | `tools/perf.gd -- 400` | **p90 de `Jogo.simular()` ≤ 4 ms nas DUAS pernas**: 20 min de jogo real, e 160 inimigos vivos segurados (o teto que `Bal.contagem_onda` sabe criar, mais 25%). O estresse de 400 é publicado como folga e não reprova, porque o jogo não produz essa população |
+| 5 | **Balanceamento medido** | 8 | PORTÃO | `tools/sim_balance.gd -- 2 auto` | onda 25 em 5–12 min; onda 50 em 15–30 min; onda 100 em 30–60 min; a onda continua subindo no último terço; o catálogo de melhorias não esvazia |
+| 6 | **Profundidade de sistemas** | 8 | JUÍZO | leitura do código, com as duas pontas de cada elo | ≥10 sistemas que se afetam mutuamente. Sem ferramenta: quem avalia conta, e conta diferente |
+| 7 | **Volume de conteúdo** | 6 | PORTÃO | `tools/validar_dados.gd` (`MINIMOS`) | ≥20 inimigos, ≥10 chefes, ≥35 melhorias, ≥30 talentos, ≥30 cartas, ≥80 conquistas, ≥10 eras |
+| 8 | **Arte** | 8 | JUÍZO | capturas + `tools/perf.gd` para custo | tudo procedural, silhuetas distinguíveis em 0,5 s, 10 eras visualmente distintas, a torre muda com a progressão |
+| 9 | **Juice** | 8 | JUÍZO | capturas, e o Portão 8 para erro de motor | tremor, hitstop, câmera lenta, partículas, números legíveis, apresentação de chefe sem colisão |
+| 10 | **Áudio** | 6 | MEDIDA | `tools/testes.gd` (grupo Áudio) + leitura | sintetizado, sem assets, cada habilidade com som próprio, todo som do catálogo com quem o toque |
+| 11 | **Interface** | 8 | JUÍZO | captura de cada painel, em 1,0 e em 1,25 de escala | 12+ painéis, nada inalcançável, contraste legível, estado vazio tratado |
+| 12 | **Acessibilidade** | 5 | MEDIDA | `tools/testes.gd` (grupo Acessibilidade) + painel | tremor e movimento reduzido de fato zerando; contraste ≥4,5:1 conferido por teste; daltonismo medido por separação percebida |
+| 13 | **Persistência** | 5 | PORTÃO | `tools/testes.gd` (grupo Save) | autosave, rotação de backup, migração, exportar/importar com checksum, e save ilegível nunca tratado como jogador novo |
+| 14 | **Originalidade** | 4 | JUÍZO | leitura das mecânicas | ≥3 mecânicas com torque próprio, e o texto do README não pode vender como inédito o que é convenção do gênero |
+| 15 | **Documentação e portões** | 4 | PORTÃO | `tools/testes.gd` (grupo doc) + `.github/workflows/` | os números da documentação batem com a medida real, todo caminho citado existe, e o CI roda os oito portões sem afrouxar nenhum |
+
+Contagem honesta: **51 dos 100 pontos** são decididos por um comando que imprime
+PASS/FAIL (critérios 1, 2, 3, 4, 5, 7, 13, 15). **11 pontos** são medida com
+comparação manual (10 e 12). **38 pontos** são juízo (6, 8, 9, 11, 14) — e
+enquanto forem, a nota deles vale o que vale a pessoa que avalia.
 
 ## O que derruba a nota na hora
 
 - Um portão desativado para "fazer passar".
 - Um número mágico no código de simulação em vez de `Bal`.
-- Uma string visível ao jogador escrita direto no painel em vez de `Txt.t()`.
-- Emoji em texto de interface (a fonte não tem glifo — vira retângulo).
+- Uma string visível ao jogador escrita direto no código em vez de `Txt.t()`.
+  Cobrado pelo linter desde que ele passou a procurar texto em português solto,
+  e não só chave inexistente — a regra antiga não via essa classe, e por ela
+  passaram onze frases que apareciam em português no jogo em inglês.
+- Emoji em texto de interface (a fonte não tem glifo — vira retângulo). O linter
+  pergunta à fonte, em `scripts/` e `tools/`. Os campos `icone` de `data/*.json`
+  guardam emoji e são inertes: nenhum painel os manda para o renderizador, e há
+  teste provando isso — se alguém ligar, o teste reprova.
 - `.tscn`/`project.godot` editado como texto.
 - Uma imagem ou arquivo de som no repositório.
 - Acesso a Dicionário sem tipo explícito (não compila, mas o hábito é o risco).
@@ -69,7 +97,7 @@ $ godot --headless --path . -s res://tools/validar_dados.gd
 ===STATUS=== PASS
 
 $ godot --headless --path . -s res://tools/testes.gd
-===TESTES=== passou=323 falhou=0
+===TESTES=== passou=325 falhou=0
 ===STATUS=== PASS
 
 $ godot --headless --path . -s res://tools/perf.gd -- 400
@@ -108,8 +136,8 @@ STATUS: PASS   (kit 1.5.2, 0 falhas)
 |---|---:|
 | Scripts GDScript | 85 |
 | Linhas de código | 24.098 |
-| Testes da simulação | 323 |
-| Chaves de interface PT/EN | 980 |
+| Testes da simulação | 325 |
+| Chaves de interface PT/EN | 1.012 |
 | Textos de conteúdo PT/EN | 1.286 |
 | Imagens no repositório | 1 (`icon.svg`, o ícone do projeto — nenhuma no jogo) |
 | Arquivos de som no repositório | 0 |

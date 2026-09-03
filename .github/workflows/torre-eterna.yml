@@ -98,14 +98,52 @@ jobs:
       # automação ligada. Erro em tempo de execução não aparece nos testes (que
       # chamam funções isoladas) e aparece aqui — já pegou um `Invalid access`
       # que rodava 21.600 vezes numa partida.
-      - name: Portão 7 — uma hora de jogo sem erro em tempo de execução
+      # Este passo cobrava MENOS do que parecia. Ele só procurava por
+      # `SCRIPT ERROR`, e a ferramenta não imprimia veredito nenhum numa corrida
+      # bem-sucedida: chegar à onda 25 em trinta segundos ou em três horas
+      # passava exatamente igual. A faixa do critério 5 era "verificada" por uma
+      # pessoa lendo uma tabela. Agora o simulador emite `===STATUS===` cobrando
+      # as faixas, e o passo roda `-- 2` como o critério manda, não `-- 1`.
+      - name: Portão 7 — duas horas de jogo, sem erro e dentro da faixa
         working-directory: torre-eterna
         run: |
           set -euo pipefail
-          saida=$(godot --headless --path . -s res://tools/sim_balance.gd -- 1 auto 2>&1) || true
-          echo "$saida" | tail -30
+          saida=$(godot --headless --path . -s res://tools/sim_balance.gd -- 2 auto 2>&1) || true
+          echo "$saida" | tail -40
           if echo "$saida" | grep -q "SCRIPT ERROR"; then
             echo "::error::o simulador emitiu SCRIPT ERROR"
             echo "$saida" | grep -A1 "SCRIPT ERROR" | head -20
             exit 1
           fi
+          echo "$saida" | grep -q "===STATUS=== PASS"
+
+      # Nenhum outro portão DESENHA um quadro. Todos rodam `--headless`, que usa
+      # um renderizador burro: as chamadas de desenho nunca são executadas, e um
+      # erro de renderização é estruturalmente invisível para eles. Foi assim que
+      # 48 `Invalid polygon data, triangulation failed` a cada 30 s de jogo comum
+      # viveram no projeto sem nenhum portão reclamar — e captura estática também
+      # não mostra, porque o erro sai no stderr, não na imagem.
+      - name: Instalar Xvfb (para o portão que desenha)
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq xvfb libxcursor1 libxinerama1 libxi6 libxrandr2
+
+      - name: Portão 8 — o jogo DESENHA sem erro de motor
+        working-directory: torre-eterna
+        run: |
+          set -euo pipefail
+          falhou=0
+          for cena in "--onda=20" "--onda=120 --painel=conquistas" "--onda=200 --tela=final"; do
+            saida=$(xvfb-run -a -s "-screen 0 1280x720x24" \
+              godot --path . -- --shot=12 $cena --saida=/tmp/portao8.png 2>&1) || true
+            # o driver de áudio ALSA não existe no runner; a falha dele é do
+            # ambiente, não do jogo, e o próprio Godot cai no driver mudo
+            ruins=$(echo "$saida" | grep -E "^ERROR:|SCRIPT ERROR" \
+              | grep -v "audio_driver_alsa" | grep -v "ERR_CANT_OPEN" || true)
+            if [ -n "$ruins" ]; then
+              echo "::error::o jogo emitiu erro de motor desenhando ($cena)"
+              echo "$ruins" | head -20
+              falhou=1
+            else
+              echo "ok: $cena"
+            fi
+          done
+          exit $falhou

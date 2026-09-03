@@ -192,7 +192,14 @@ func desenhar(ci: CanvasItem) -> void:
 				ci.draw_arc(p["pos"], maxf(1.0, raio), 0, TAU, 40, Color(cor.r, cor.g, cor.b, cor.a * k), float(p.get("esp", 3.0)) * k, true)
 			"estilhaco":
 				var a := float(p.get("ang", 0.0))
-				var r := float(p["r"]) * k
+				# `k` vai a zero no fim da vida, e com ele os tres vertices
+				# colapsam no mesmo ponto: o motor rejeita o poligono com
+				# "Invalid polygon data, triangulation failed" e a particula
+				# simplesmente nao desenha nos ultimos quadros. Sao 48 erros a
+				# cada 30 s de jogo comum — invisiveis em captura estatica, e
+				# nenhuma ferramenta do projeto desenhava um quadro para ve-los.
+				# Piso de meio pixel: abaixo disso nao ha o que mostrar mesmo.
+				var r := maxf(0.5, float(p["r"]) * k)
 				var pos: Vector2 = p["pos"]
 				ci.draw_colored_polygon(PackedVector2Array([
 					pos + Vector2(cos(a), sin(a)) * r,

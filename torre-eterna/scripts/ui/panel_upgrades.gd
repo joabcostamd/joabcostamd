@@ -180,7 +180,7 @@ func atualizar() -> void:
 		var r: Dictionary = linhas[id]
 		var def: Dictionary = r["def"]
 		var nivel := int(jogo.s["upgrades"].get(id, 0))
-		var maxn := int(def.get("max", -1))
+		var maxn: int = jogo.teto_upgrade(def)
 		var no_teto := maxn >= 0 and nivel >= maxn
 		var sufixo: String = ("/%d" % maxn) if maxn >= 0 else ""
 		r["nivel"].text = Txt.t("upg_max_curto") if no_teto else (Txt.f("upg_nv", {"n": nivel}) + sufixo)

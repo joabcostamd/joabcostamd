@@ -48,6 +48,7 @@ func rodar(cena: SceneTree) -> void:
 	t_numeros_dano()
 	t_chaves_dinamicas()
 	t_pista_de_ouro()
+	t_icones()
 	t_dicas()
 	t_audio()
 	t_save()
@@ -1156,6 +1157,49 @@ func t_dicas() -> void:
 	ok("no sem dica continua ignorando", mudo.mouse_filter == Control.MOUSE_FILTER_IGNORE)
 	raiz.free()
 	raiz2.free()
+
+## O campo `icone` de `data/*.json` guarda emoji, e a regra de glifo do linter
+## so varre `scripts/` e `tools/`. A pergunta que importa nao e "ha emoji no
+## JSON?", e "algum emoji chega a tela?" — e a resposta tem que continuar sendo
+## nao. `Icone.desenhar` recebe NOME e desenha vetor; nome desconhecido cai num
+## circulo. Este teste prova que os campos do conteudo sao inertes: se alguem
+## ligar um deles a um renderizador, ele passa a desenhar um circulo mudo no
+## lugar do icone, e o portao avisa antes de isso chegar ao jogador.
+func t_icones() -> void:
+	g("Icones")
+	var com_emoji: Array = []
+	for grupo in [Dados.upgrades, Dados.talentos, Dados.cartas, Dados.reliquias,
+			Dados.conquistas, Dados.habilidades, Dados.eventos]:
+		for def in grupo:
+			var ic := str(def.get("icone", ""))
+			if ic == "":
+				continue
+			# nome de icone vetorial e ASCII minusculo com _; emoji nao e
+			var so_ascii := true
+			for i in ic.length():
+				if ic.unicode_at(i) > 127:
+					so_ascii = false
+					break
+			if not so_ascii:
+				com_emoji.append(str(def.get("id", "?")))
+	ok("o conteudo tem campos icone", true)
+	# Se algum dia esses campos virarem nomes de verdade, este teste vira o
+	# oposto: hoje ele registra que sao decorativos e nao vao para a tela.
+	var lidos := 0
+	for arq in ["res://scripts/ui/panel_conquistas.gd", "res://scripts/ui/panel_missoes.gd",
+			"res://scripts/ui/panel_upgrades.gd", "res://scripts/ui/panel_habilidades.gd",
+			"res://scripts/ui/panel_reliquias.gd", "res://scripts/ui/panel_cartas.gd"]:
+		var f := FileAccess.open(arq, FileAccess.READ)
+		if f == null:
+			continue
+		var t := f.get_as_text()
+		f.close()
+		if t.contains("get(\"icone\"") or t.contains("[\"icone\"]"):
+			# so conta se o valor for para um renderizador de icone
+			if t.contains("configurar(str(def.get(\"icone\"") or t.contains("Icone.desenhar(self, str(def"):
+				lidos += 1
+	ok("nenhum painel manda o campo icone do JSON para o renderizador", lidos == 0,
+		"%d paineis mandam; %d ids com emoji no conteudo" % [lidos, com_emoji.size()])
 
 ## Aos sete minutos o jogador passivo estava com milhares de ouro parado e o
 ## MESMO dano do segundo zero: o jogo tinha uma unica pista persistente de

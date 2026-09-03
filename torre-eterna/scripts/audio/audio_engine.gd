@@ -91,14 +91,6 @@ func progresso_geracao() -> float:
 	return clampf(1.0 - float(_fila.size()) / total, 0.0, 1.0)
 
 ## Linha de depuração: o que a trilha está fazendo agora.
-func estado() -> String:
-	if not ligado:
-		return "áudio desligado (sem tela)"
-	var m: String = musica.descricao() if musica != null else "—"
-	return "sons %d/%d · %s" % [bancos.size(), catalogo.size(), m]
-
-## ------------------------------------------------------------------ vozes
-
 func _criar_vozes() -> void:
 	for i in VOZES:
 		var p := AudioStreamPlayer2D.new()

@@ -38,7 +38,7 @@ func salvar(dados: Dictionary) -> bool:
 	# jogador perdeu save E backup sem nunca ter visto um aviso. Por isso o
 	# save só acontece se o texto voltar a virar Dicionário.
 	if JSON.parse_string(texto) == null:
-		ultimo_erro = "O estado do jogo gerou JSON inválido (número não-finito?). O save anterior foi mantido."
+		ultimo_erro = Txt.t("sv_json_invalido")
 		push_error(ultimo_erro)
 		Bus.toast(Txt.t("save_falhou"), "ruim", "cadeado")
 		return false
@@ -71,7 +71,7 @@ func salvar(dados: Dictionary) -> bool:
 	var tmp := cam() + ".tmp"
 	var f := FileAccess.open(tmp, FileAccess.WRITE)
 	if f == null:
-		ultimo_erro = "Não consegui abrir o arquivo de save (erro %d)." % FileAccess.get_open_error()
+		ultimo_erro = Txt.f("sv_abrir_falhou", {"e": int(FileAccess.get_open_error())})
 		push_error(ultimo_erro)
 		return false
 	f.store_string(texto)
@@ -81,13 +81,13 @@ func salvar(dados: Dictionary) -> bool:
 	if conferido != null:
 		conferido.close()
 	if not (JSON.parse_string(de_volta) is Dictionary):
-		ultimo_erro = "A gravação do save saiu incompleta (disco cheio?). O save anterior foi mantido."
+		ultimo_erro = Txt.t("sv_grava_incompleta")
 		push_error(ultimo_erro)
 		Bus.toast(Txt.t("save_falhou"), "ruim", "cadeado")
 		DirAccess.remove_absolute(tmp)
 		return false
 	if DirAccess.rename_absolute(tmp, cam()) != OK:
-		ultimo_erro = "Não consegui substituir o arquivo de save."
+		ultimo_erro = Txt.t("sv_substituir_falhou")
 		push_error(ultimo_erro)
 		DirAccess.remove_absolute(tmp)
 		return false
@@ -115,7 +115,7 @@ func carregar() -> Dictionary:
 	if d.is_empty():
 		if tinha:
 			falhou_ao_ler = true
-			ultimo_erro = "Encontrei o arquivo de save e não consegui ler nem ele nem o backup."
+			ultimo_erro = Txt.t("sv_ilegivel")
 			push_error(ultimo_erro)
 		return {}
 	return migrar(d)
@@ -177,22 +177,22 @@ func importar(texto: String) -> Dictionary:
 	ultimo_erro = ""
 	var t := texto.strip_edges().replace("\n", "").replace(" ", "")
 	if not t.begins_with(ASSINATURA):
-		ultimo_erro = "Código de save inválido (assinatura não reconhecida)."
+		ultimo_erro = Txt.t("sv_assinatura")
 		return {}
 	var resto := t.substr(ASSINATURA.length())
 	var sep := resto.find("|")
 	if sep < 0:
-		ultimo_erro = "Código de save incompleto."
+		ultimo_erro = Txt.t("sv_incompleto")
 		return {}
 	var soma := resto.substr(0, sep)
 	var b64 := resto.substr(sep + 1)
 	if _checksum(b64) != soma:
-		ultimo_erro = "Código de save corrompido (checksum não confere)."
+		ultimo_erro = Txt.t("sv_checksum")
 		return {}
 	var json := Marshalls.base64_to_utf8(b64)
 	var r = JSON.parse_string(json)
 	if not (r is Dictionary):
-		ultimo_erro = "Conteúdo do save não pôde ser lido."
+		ultimo_erro = Txt.t("sv_conteudo_ilegivel")
 		return {}
 	return migrar(r)
 
