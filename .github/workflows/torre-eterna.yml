@@ -74,11 +74,11 @@ jobs:
           echo "$saida"
           echo "$saida" | grep -q "===STATUS=== PASS"
 
-      - name: Portão 5 — desempenho com 500 inimigos
+      - name: Portão 5 — desempenho com a arena cheia
         working-directory: torre-eterna
         run: |
           set -euo pipefail
-          saida=$(godot --headless --path . -s res://tools/perf.gd -- 400 2>&1) || true
+          saida=$(godot --headless --path . -s res://tools/perf.gd -- 412 2>&1) || true
           echo "$saida"
           echo "$saida" | grep -q "===STATUS=== PASS"
 
