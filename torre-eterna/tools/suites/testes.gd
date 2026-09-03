@@ -1247,7 +1247,21 @@ func t_mecanicas() -> void:
 	ok("album da bonus", float(b["dano"]) > 0.0 and float(b["ouro"]) > 0.0)
 
 	# --- Adaptação do Enxame ---
-	s["adaptacao"] = {"fogo": 0.0, "gelo": 0.0, "raio": 0.0, "veneno": 0.0, "vazio": 0.0}
+	# A LINHA QUE ESTAVA AQUI ESCREVIA O DICIONÁRIO NA MÃO, e por isso a suíte
+	# inteira passou por meses com a mecânica MORTA: `GameState.novo()` entrega
+	# `"adaptacao": {}` e o semeador só agia `if not s.has(...)`, que é falso
+	# desde o primeiro quadro. O teste media a função com um estado que o jogo
+	# nunca produz. Agora ele parte do estado REAL, e é isso que o faz morder.
+	var s_novo := GameState.novo()
+	ok("o estado novo do jogo produz adaptacao utilizavel",
+		not (s_novo["adaptacao"] as Dictionary).is_empty()
+			or not Mecanicas.estado_adaptacao(s_novo).is_empty())
+	for i in 30:
+		Mecanicas.registrar_elemento(s_novo, "fogo")
+	ok("a partir do estado REAL, usar um elemento cria resistencia",
+		Mecanicas.fator_elemento(s_novo, "fogo") < 0.85,
+		"fator=%s" % str(Mecanicas.fator_elemento(s_novo, "fogo")))
+
 	ok("sem adaptacao o fator e 1", perto(Mecanicas.fator_elemento(s, "fogo"), 1.0, 1e-9))
 	for i in 30:
 		Mecanicas.registrar_elemento(s, "fogo")

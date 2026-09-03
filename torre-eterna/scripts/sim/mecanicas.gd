@@ -170,8 +170,23 @@ const ADAPT_GANHO := 0.010
 const ADAPT_DECAI := 0.0016
 const ADAPT_TETO := 0.62
 
+## A ADAPTACAO ESTAVA MORTA DESDE SEMPRE, e por uma unica palavra.
+##
+## `GameState.novo()` declara `"adaptacao": {}` — a chave EXISTE e esta vazia.
+## Esta funcao semeava com `if not s.has("adaptacao")`, que e falso desde o
+## primeiro quadro de toda partida. Consequencia em cadeia: `registrar_elemento`
+## caia em `if not a.has(elemento): return` para os cinco elementos, nada nunca
+## era registrado, e `fator_elemento` devolvia 1,0 para sempre. Uma das cinco
+## mecanicas-assinatura do jogo — anunciada no README como "o mundo cria
+## resistencia ao elemento que voce mais usa, ate 62%" — nunca aconteceu uma
+## vez, em nenhuma partida.
+##
+## E passou por 348 assercoes verdes porque o teste escrevia o dicionario
+## completo na mao antes de medir: media a funcao com o estado que o jogo nunca
+## produz. Por isso a condicao agora e `is_empty()`, e o teste passou a partir
+## do estado que `GameState.novo()` realmente devolve.
 static func estado_adaptacao(s: Dictionary) -> Dictionary:
-	if not s.has("adaptacao"):
+	if not s.has("adaptacao") or (s["adaptacao"] as Dictionary).is_empty():
 		s["adaptacao"] = {"fogo": 0.0, "gelo": 0.0, "raio": 0.0, "veneno": 0.0, "vazio": 0.0}
 	return s["adaptacao"]
 
