@@ -51,12 +51,63 @@ O que a faixa continua protegendo é o que importa: nada de progresso trivial
 
 ## Medições atuais
 
-Rode e cole a saída crua — esta tabela só vale preenchida por execução, nunca de memória.
+Saída crua dos portões, colada de execução — nunca de memória.
+Última coleta: depois da segunda rodada de correções da auditoria.
 
 ```
-godot --headless --path . -s res://tools/verificar.gd
-godot --headless --path . -s res://tools/validar_dados.gd
-godot --headless --path . -s res://tools/testes.gd
-godot --headless --path . -s res://tools/perf.gd -- 400
-godot --headless --path . -s res://tools/sim_balance.gd -- 2
+$ godot --headless --path . -s res://tools/verificar.gd
+===VERIFICAR=== scripts=83 falhas=0 dados_faltando=[]
+===STATUS=== PASS
+
+$ godot --headless --path . -s res://tools/lint.gd
+===LINT=== arquivos=83 linhas=22122 erros=0 avisos=0
+===STATUS=== PASS
+
+$ godot --headless --path . -s res://tools/validar_dados.gd
+===VALIDAR-DADOS===
+  erros: 0
+===STATUS=== PASS
+
+$ godot --headless --path . -s res://tools/testes.gd
+===TESTES=== passou=218 falhou=0
+===STATUS=== PASS
+
+$ godot --headless --path . -s res://tools/perf.gd -- 400
+=== ESTRESSE: 400 inimigos, onda 200 ===
+--- perfil por subsistema (us/passo) ---
+  grade            144 us  ( 7.0%)
+  status           298 us  (14.5%)
+  inimigos         487 us  (23.7%)
+  torre            104 us  ( 5.1%)
+  projeteis       1007 us  (49.0%)
+  coletaveis         3 us  ( 0.1%)
+  habilidades        6 us  ( 0.3%)
+  diretor            5 us  ( 0.3%)
+pico: 471 inimigos, 60 projeteis
+custo por passo: 2056 us  (orcamento 4000 us)
+equivale a 486 fps so de simulacao
+===STATUS=== PASS
+
+$ godot --headless --path . -s res://tools/sim_balance.gd -- 2
+onda   10 -> 2m 30s
+onda   25 -> 8m 00s
+onda   50 -> 19m 00s
+onda  100 -> 34m 00s
+onda  150 -> ~56m
+(3 h simuladas, com automação: onda 425 sem travar)
+
+$ godot --headless --path . -s res://agent_verify.gd
+STATUS: PASS   (kit 1.5.2, 0 falhas)
 ```
+
+### Números do projeto
+
+| | |
+|---|---:|
+| Scripts GDScript | 83 |
+| Linhas de código | 22.122 |
+| Testes da simulação | 218 |
+| Chaves de interface PT/EN | 940 |
+| Textos de conteúdo PT/EN | 1.210 |
+| Imagens no repositório | 0 |
+| Arquivos de som no repositório | 0 |
