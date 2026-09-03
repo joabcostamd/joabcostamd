@@ -357,4 +357,11 @@ func levar_dano(dano_log: float, fonte, opt: Dictionary = {}) -> float:
 		torre["tempo_morta"] = Bal.RESPAWN
 		s["stats"]["mortes"] = int(s["stats"]["mortes"]) + 1
 		Bus.torre_caiu.emit()
+		# A torre cair era o evento mais importante do jogo e não gerava uma
+		# única palavra: tela treme, som toca, e o jogador fica sem saber que
+		# perdeu uma onda nem quanto tempo vai ficar sem atirar.
+		Bus.toast(Txt.f("sim_torre_caiu", {
+			"n": Bal.PENALIDADE_MORTE,
+			"s": int(ceil(Bal.RESPAWN)),
+		}), "ruim", "coracao")
 	return dano

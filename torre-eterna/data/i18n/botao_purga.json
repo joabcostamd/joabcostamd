@@ -14,5 +14,9 @@
   "pur_estourar": {
     "pt": "Deixar estourar desperdiça a carga e trava a torre.",
     "en": "Letting it burst wastes the charge and jams the tower."
+  },
+  "pur_tecla": {
+    "pt": "P",
+    "en": "P"
   }
 }

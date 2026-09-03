@@ -101,6 +101,20 @@ func _construir() -> void:
 	centro.offset_bottom = 90
 	centro.alignment = BoxContainer.ALIGNMENT_CENTER
 	centro.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# Véu por trás do bloco da onda. Numa onda de chefe cheia de efeitos, os
+	# anéis de morte passam por cima e o jogador perde justamente o que precisa
+	# ler: o número da onda, o nome do chefe e a barra de vida dele. Escurecer o
+	# fundo resolve sem tirar nada do juice.
+	var veu := ColorRect.new()
+	veu.color = Color(0.02, 0.03, 0.07, 0.45)
+	veu.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	veu.anchor_left = 0.5
+	veu.anchor_right = 0.5
+	veu.offset_left = -210
+	veu.offset_right = 210
+	veu.offset_top = 4
+	veu.offset_bottom = 96
+	add_child(veu)
 	add_child(centro)
 	lbl_onda = UI.titulo(Txt.t("onda") + " 1", 24)
 	lbl_onda.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER

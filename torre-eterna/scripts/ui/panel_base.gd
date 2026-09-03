@@ -99,7 +99,7 @@ func _montar_janela() -> void:
 	var fechar := Button.new()
 	fechar.custom_minimum_size = Vector2(36, 32)
 	fechar.focus_mode = Control.FOCUS_NONE
-	fechar.tooltip_text = "Fechar (Esc)"
+	fechar.tooltip_text = Txt.t("fechar") + " (Esc)"
 	fechar.pressed.connect(fechar_painel)
 	var icf := Control.new()
 	icf.set_script(load("res://scripts/ui/icone_control.gd"))

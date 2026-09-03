@@ -140,6 +140,16 @@ static func desenhar(ci: CanvasItem, nome: String, c: Vector2, t: float, cor: Co
 				var a5 := float(i) / 8.0 * TAU
 				ci.draw_line(c + Vector2(cos(a5), sin(a5)) * r * 0.4, c + Vector2(cos(a5), sin(a5)) * r, cor, 2.5)
 			ci.draw_circle(c, r * 0.3, Color(1, 1, 1, 0.9))
+		# A Purga fica LADO A LADO com a habilidade Nova na barra do rodapé, e as
+		# duas desenhavam o mesmo ícone: onda expandindo (anéis que crescem para
+		# fora), não estrela de raios.
+		"purga":
+			for i in 3:
+				var rr := r * (0.42 + 0.28 * float(i))
+				var esp := 3.0 - float(i) * 0.7
+				var alfa := 1.0 - float(i) * 0.26
+				ci.draw_arc(c, rr, 0.0, TAU, 30, Color(cor.r, cor.g, cor.b, cor.a * alfa), esp, true)
+			ci.draw_circle(c, r * 0.22, Color(1, 1, 1, 0.92))
 		"ampulheta":
 			_poly(ci, [c + Vector2(-r * 0.55, -r * 0.75), c + Vector2(r * 0.55, -r * 0.75), c + Vector2(0, 0)], cor)
 			_poly(ci, [c + Vector2(-r * 0.55, r * 0.75), c + Vector2(r * 0.55, r * 0.75), c + Vector2(0, 0)], cor)

@@ -50,7 +50,14 @@ func _draw() -> void:
 	if na_janela:
 		escala = 1.0 + sin(t * 12.0) * 0.10
 		draw_circle(c, r * 1.35, Color(UI.OURO.r, UI.OURO.g, UI.OURO.b, 0.16 + sin(t * 12.0) * 0.08))
-	Icone.desenhar(self, "nova", c, r * 1.05 * escala, cor, cor.darkened(0.4))
+	Icone.desenhar(self, "purga", c, r * 1.05 * escala, cor, cor.darkened(0.4))
+
+	# A tecla, no mesmo canto em que as habilidades mostram 1–0. A Purga era a
+	# única ação do rodapé sem atalho visível, apesar de ser a única que o jogo
+	# pede de verdade.
+	var fonte_t := ThemeDB.fallback_font
+	draw_string(fonte_t, Vector2(6.0, 15.0), Txt.t("pur_tecla"),
+		HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color(cor.r, cor.g, cor.b, 0.85))
 
 	var pct := "%d%%" % int(carga * 100.0)
 	var fonte := ThemeDB.fallback_font
