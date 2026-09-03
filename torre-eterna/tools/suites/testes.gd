@@ -1520,8 +1520,28 @@ func t_sistemas() -> void:
 		return
 	var elos: Array = bruto.get("elos", [])
 	ok("ha pelo menos 10 elos declarados", elos.size() >= 10, "%d elos" % elos.size())
+	# ESTE PORTAO PROVAVA QUE UMA STRING EXISTIA, nao que o elo existia.
+	#
+	# A verificacao inteira era `texto.contains(prova)`. Um auditor independente
+	# cortou os dois elos da Adaptacao do Enxame, reescreveu o nome da prova
+	# dentro de um COMENTARIO em portugues, e a suite fechou 348/348 verde. Pior:
+	# o portao ja certificava elos mortos — "Panteao -> Atributos" pela existencia
+	# de `func bonus_panteao`, funcao que naquele momento era inalcancavel, e
+	# "Combate -> Adaptacao" por `func decair_adaptacao`, que iterava um
+	# dicionario vazio porque a mecanica estava quebrada. Oito pontos de rubrica
+	# satisfeitos por texto morto.
+	#
+	# Agora sao tres exigencias, e a terceira e a que morde:
+	#   1. a prova aparece em CODIGO, com comentarios e strings removidos;
+	#   2. quando a prova e uma funcao, ela precisa estar DECLARADA;
+	#   3. e precisa ter pelo menos um CHAMADOR em outro lugar de scripts/.
+	# Funcao declarada e nunca chamada deixa de contar como elo.
 	var sem_prova: Array = []
+	var nao_chamada: Array = []
 	var sistemas := {}
+	var codigo_todo := ""
+	for arq_gd in _listar_gd("res://scripts"):
+		codigo_todo += _sem_comentario(FileAccess.get_file_as_string(arq_gd))
 	for item in elos:
 		if not (item is Dictionary):
 			continue
@@ -1534,13 +1554,51 @@ func t_sistemas() -> void:
 		if fa == null:
 			sem_prova.append("%s (arquivo sumiu)" % arq)
 			continue
-		var texto := fa.get_as_text()
+		var texto := _sem_comentario(fa.get_as_text())
 		fa.close()
+		var rotulo := "%s -> %s" % [str(elo.get("de", "")), str(elo.get("para", ""))]
 		if not texto.contains(prova):
-			sem_prova.append("%s -> %s: '%s' nao existe em %s" % [
-				str(elo.get("de", "")), str(elo.get("para", "")), prova, arq])
-	ok("todo elo declarado tem prova no codigo", sem_prova.is_empty(), str(sem_prova.slice(0, 3)))
+			sem_prova.append("%s: '%s' nao existe em CODIGO de %s" % [rotulo, prova, arq])
+			continue
+		# Prova do tipo "func nome": exigir chamador de verdade.
+		if prova.begins_with("func "):
+			var nome := prova.substr(5).strip_edges()
+			if codigo_todo.count(nome + "(") < 2:
+				nao_chamada.append("%s: %s existe e ninguem chama" % [rotulo, nome])
+	ok("todo elo declarado tem prova em CODIGO, nao em comentario",
+		sem_prova.is_empty(), str(sem_prova.slice(0, 3)))
+	ok("toda funcao citada como prova de elo tem chamador",
+		nao_chamada.is_empty(), str(nao_chamada.slice(0, 3)))
 	ok("ha pelo menos 10 sistemas distintos", sistemas.size() >= 10, "%d sistemas" % sistemas.size())
+
+## Remove os COMENTARIOS, e so eles.
+##
+## O furo demonstrado pelo auditor foi escrever o nome da prova dentro de um
+## comentario em portugues; e isso que precisa deixar de contar. As strings
+## ficam, de proposito: em GDScript uma chave de dicionario e uma string, e
+## `s["desafios"]["completos"]` e uso legitimo em codigo — a primeira versao
+## desta funcao apagava strings tambem e reprovou tres elos que estao vivos.
+## O `#` dentro de uma string nao abre comentario, entao o estado de aspas
+## precisa ser acompanhado mesmo mantendo o conteudo.
+func _sem_comentario(texto: String) -> String:
+	var saida := ""
+	for linha in texto.split("\n"):
+		var aspas := ""
+		var corte := linha.length()
+		var i := 0
+		while i < linha.length():
+			var c := linha[i]
+			if aspas != "":
+				if c == aspas:
+					aspas = ""
+			elif c == "\"" or c == "'":
+				aspas = c
+			elif c == "#":
+				corte = i
+				break
+			i += 1
+		saida += linha.substr(0, corte) + "\n"
+	return saida
 
 ## O campo `icone` de `data/*.json` guarda emoji, e a regra de glifo do linter
 ## so varre `scripts/` e `tools/`. A pergunta que importa nao e "ha emoji no
