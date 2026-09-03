@@ -2905,13 +2905,28 @@ func t_sistemas() -> void:
 		var texto := _sem_comentario(fa.get_as_text())
 		fa.close()
 		var rotulo := "%s -> %s" % [str(elo.get("de", "")), str(elo.get("para", ""))]
-		if not texto.contains(prova):
+		# PALAVRA INTEIRA, nao pedaco de palavra. `contains("combo")` casa dentro
+		# de `combo_buffs`, `descombobular` e de qualquer coisa: a prova passava
+		# por acidente de substring.
+		if not _tem_simbolo(texto, prova):
 			sem_prova.append("%s: '%s' nao existe em CODIGO de %s" % [rotulo, prova, arq])
 			continue
-		# Prova do tipo "func nome": exigir chamador de verdade.
+		# Prova do tipo "func nome": exigir chamador de verdade E nome sem
+		# ambiguidade.
+		#
+		# A contagem era GLOBAL: `codigo_todo.count(nome + "(")`. O elo
+		# "Eventos -> Economia e Torre" prova com `func aplicar`, e `Cfg.aplicar()`
+		# existe em outro arquivo — entao o elo se certificava sozinho com uma
+		# chamada que nao tem nada a ver com ele. Agora, se o mesmo nome for
+		# declarado em mais de um lugar, a prova e recusada por ambigua: quem
+		# declarou o elo tem que apontar um simbolo que so existe uma vez.
 		if prova.begins_with("func "):
 			var nome := prova.substr(5).strip_edges()
-			if codigo_todo.count(nome + "(") < 2:
+			var declaracoes := codigo_todo.count("func " + nome + "(")
+			if declaracoes > 1:
+				nao_chamada.append("%s: '%s' e declarada %d vezes — prova ambigua" % [
+					rotulo, nome, declaracoes])
+			elif codigo_todo.count(nome + "(") < 2:
 				nao_chamada.append("%s: %s existe e ninguem chama" % [rotulo, nome])
 	ok("todo elo declarado tem prova em CODIGO, nao em comentario",
 		sem_prova.is_empty(), str(sem_prova.slice(0, 3)))
@@ -3037,6 +3052,17 @@ func _conferir_contagem_honesta() -> int:
 				ditos[i], rotulos[i], reais_c[i]])
 			erros += 1
 	return erros
+
+## O simbolo aparece como PALAVRA INTEIRA no texto? `contains` casa dentro de
+## outra palavra e certifica elo por acidente de substring.
+func _tem_simbolo(texto: String, simbolo: String) -> bool:
+	if simbolo == "":
+		return false
+	# Prova composta ("func x", "Classe.metodo") ja e especifica: basta conter.
+	if simbolo.contains(" ") or simbolo.contains("."):
+		return texto.contains(simbolo)
+	var re := RegEx.create_from_string("(?<![A-Za-z0-9_])" + simbolo + "(?![A-Za-z0-9_])")
+	return re.search(texto) != null
 
 ## Le um script do projeto como texto. Devolve "" se nao abrir — quem chama
 ## afirma sobre o conteudo, entao um arquivo faltando reprova de qualquer jeito.
