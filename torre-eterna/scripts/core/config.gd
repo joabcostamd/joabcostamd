@@ -88,8 +88,17 @@ func _aplicar_escala() -> void:
 	if bool(v["fonte_grande"]):
 		e *= 1.12
 	var jan := get_window()
-	if jan != null:
-		jan.content_scale_factor = clampf(e, 0.7, 1.6)
+	if jan == null:
+		return
+	# CANVAS_ITEMS + EXPAND é o modo que faz a escala funcionar de verdade: a
+	# interface é desenhada num espaço LÓGICO menor e só depois ampliada, então
+	# âncoras e centralização continuam certas e `get_viewport_rect()` devolve o
+	# tamanho lógico. No modo padrão (DISABLED) a ampliação acontece em volta do
+	# canto superior esquerdo: com escala 1,4 os painéis escorregavam para baixo
+	# e para a direita e o botão de fechar saía da tela.
+	jan.content_scale_mode = Window.CONTENT_SCALE_MODE_CANVAS_ITEMS
+	jan.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_EXPAND
+	jan.content_scale_factor = clampf(e, 0.7, 1.6)
 
 ## O filtro de acessibilidade é um CanvasLayer global criado sob demanda —
 ## fica acima de tudo, inclusive dos painéis, para a opção valer na hora.

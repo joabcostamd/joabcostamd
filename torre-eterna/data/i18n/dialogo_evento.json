@@ -5,7 +5,7 @@
   },
   "evt_rodape": {
     "pt": "A escolha é sua, e não tem volta. A onda seguinte já está a caminho.",
-    "en": "The choice is yours, and there is no taking it back. The next wave is already on its way."
+    "en": "Your call, and there's no going back. The next wave is already on its way."
   },
   "evt_de_sair_certo": {
     "pt": "de sair certo",
@@ -17,7 +17,7 @@
   },
   "evt_sem_risco": {
     "pt": "Sem risco. Sem surpresa.",
-    "en": "No risk. No surprise."
+    "en": "No risk. No surprises."
   },
   "evt_se_der_errado": {
     "pt": "Se der errado: {s}",
@@ -33,7 +33,7 @@
   },
   "evt_correu_mal": {
     "pt": "correu mal",
-    "en": "went badly"
+    "en": "went wrong"
   },
   "evt_feito": {
     "pt": "feito",

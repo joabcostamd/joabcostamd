@@ -115,6 +115,10 @@ func _talvez_capturar() -> void:
 			Cfg.set_v("alto_contraste", true)
 		elif a == "--codex":
 			_codex_debug = true
+		elif a.begins_with("--escala="):
+			Cfg.set_v("escala_ui", float(a.substr(9)))
+		elif a == "--fonte-grande":
+			Cfg.set_v("fonte_grande", true)
 	if segundos < 0.0:
 		return
 	if _abrir_debug != "":

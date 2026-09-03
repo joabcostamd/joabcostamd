@@ -44,14 +44,44 @@ func _process(delta: float) -> void:
 		_acc = 0.0
 		atualizar()
 
+## Tamanho real da janela: o que o painel pediu, limitado pelo que cabe na
+## tela. Com "fonte grande" ou escala da interface em 1,4 a tela LÓGICA encolhe
+## (o `content_scale_factor` divide tudo), então um painel que pede 1170px de
+## largura passava do limite e saía pela direita levando o botão de fechar
+## junto — sem jeito de fechar a não ser pelo Esc. Todo mínimo interno grande
+## tem que sair daqui, não de constante em pixel.
+## Com `CONTENT_SCALE_MODE_CANVAS_ITEMS` (ver `Cfg._aplicar_escala`) o retângulo
+## do viewport já vem em coordenadas LÓGICAS, que é onde os Controls vivem —
+## então a conta é direta. O que não pode voltar é o mínimo em pixel fixo lá
+## dentro: é ele que empurrava o painel para fora quando a tela lógica encolhia.
+## O espaço disponível é o do PAI, não o do viewport. `get_viewport_rect()`
+## devolve pixels físicos; com a escala da interface ligada a área lógica onde
+## os Controls vivem é menor, e era por isso que um painel de 1170 "cabia" numa
+## tela lógica de 816 e saía pela direita levando o botão de fechar junto.
+func _area() -> Vector2:
+	var a := get_parent_area_size()
+	if a.x < 100.0 or a.y < 100.0:
+		a = get_viewport_rect().size
+	return a
+
+func larg_janela() -> float:
+	return minf(largura, _area().x - 40.0)
+
+func alt_janela() -> float:
+	return minf(altura, _area().y - 40.0)
+
+## Largura útil de dentro da janela, já descontadas as margens do painel.
+func larg_util() -> float:
+	return maxf(280.0, larg_janela() - 44.0)
+
 func _montar_janela() -> void:
 	janela = UI.painel(UI.PAINEL, 16)
 	janela.anchor_left = 0.5
 	janela.anchor_right = 0.5
 	janela.anchor_top = 0.5
 	janela.anchor_bottom = 0.5
-	var w := minf(largura, get_viewport_rect().size.x - 40.0)
-	var h := minf(altura, get_viewport_rect().size.y - 40.0)
+	var w := larg_janela()
+	var h := alt_janela()
 	janela.offset_left = -w * 0.5
 	janela.offset_right = w * 0.5
 	janela.offset_top = -h * 0.5

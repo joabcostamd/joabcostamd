@@ -10,6 +10,23 @@ extends "res://scripts/ui/panel_base.gd"
 ## moldura, brilho de raridade e uma silhueta própria para cada `forma`.
 
 const LARG_ESQ := 806.0
+
+## A coluna esquerda pede LARG_ESQ, mas nunca mais do que 70% do que cabe.
+func _larg_esq() -> float:
+	return minf(LARG_ESQ, larg_util() * 0.70)
+
+## A coluna de detalhe, e a largura dos textos dentro dela. Eram 244px fixos em
+## dez lugares: com a interface em escala grande a coluna encolhia e os rótulos
+## não, então o painel inteiro estufava para fora da tela.
+func _larg_dir() -> float:
+	return minf(306.0, larg_util() * 0.30)
+
+func _larg_texto_dir() -> float:
+	return maxf(150.0, _larg_dir() - 62.0)
+
+## Sete colunas de carta só cabem numa janela larga.
+func _colunas() -> int:
+	return clampi(int(_larg_esq() / 96.0), 3, COLUNAS)
 const CARTA_W := 104.0
 const CARTA_H := 140.0
 const SLOT_H := 188.0
@@ -73,11 +90,13 @@ func montar(c: VBoxContainer) -> void:
 
 	var esq := UI.vbox(8)
 	esq.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	esq.custom_minimum_size.x = LARG_ESQ
+	# proporcional, não fixo: com a interface em escala grande a tela lógica
+	# encolhe e um mínimo de 806px empurrava o painel para fora do monitor
+	esq.custom_minimum_size.x = _larg_esq()
 	principal.add_child(esq)
 
 	var dir := UI.vbox(8)
-	dir.custom_minimum_size.x = 306
+	dir.custom_minimum_size.x = _larg_dir()
 	principal.add_child(dir)
 
 	# --- equipadas ---
@@ -111,13 +130,13 @@ func montar(c: VBoxContainer) -> void:
 	caixa_grade.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	rolagem.add_child(caixa_grade)
 	grade = GridContainer.new()
-	grade.columns = COLUNAS
+	grade.columns = _colunas()
 	grade.add_theme_constant_override("h_separation", 8)
 	grade.add_theme_constant_override("v_separation", 8)
 	caixa_grade.add_child(grade)
 	lbl_grade_vazia = UI.rotulo(Txt.t("car_grade_vazia"), 13, UI.TEXTO3)
 	lbl_grade_vazia.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	lbl_grade_vazia.custom_minimum_size.x = LARG_ESQ - 20.0
+	lbl_grade_vazia.custom_minimum_size.x = _larg_esq() - 20.0
 	caixa_grade.add_child(lbl_grade_vazia)
 
 	# --- alternador: detalhe da carta ou quadro de conjuntos ---
@@ -294,7 +313,7 @@ func _reconstruir() -> void:
 
 	# ---- slots equipados ----
 	var eq := _equipadas()
-	var w := clampf((LARG_ESQ - 8.0 * float(slots - 1)) / float(slots), 76.0, 150.0)
+	var w := clampf((_larg_esq() - 8.0 * float(slots - 1)) / float(slots), 60.0, 150.0)
 	for i in slots:
 		var uid := str(eq[i])
 		var inst := _achar(uid)
@@ -473,11 +492,11 @@ func _mostrar_detalhe() -> void:
 	if inst.is_empty():
 		var l := UI.rotulo(Txt.t("car_sel_vazia"), 13, UI.TEXTO2)
 		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		l.custom_minimum_size.x = 244
+		l.custom_minimum_size.x = _larg_texto_dir()
 		detalhe.add_child(l)
 		var l2 := UI.rotulo(Txt.t("car_sel_vazia_lore"), 12, UI.TEXTO3)
 		l2.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		l2.custom_minimum_size.x = 244
+		l2.custom_minimum_size.x = _larg_texto_dir()
 		detalhe.add_child(l2)
 		return
 
@@ -501,7 +520,7 @@ func _mostrar_detalhe() -> void:
 	cab.add_child(vt)
 	var ln := UI.rotulo(txt(def, "nome"), 15, cor_rar)
 	ln.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	ln.custom_minimum_size.x = 148
+	ln.custom_minimum_size.x = minf(148.0, _larg_texto_dir() * 0.62)
 	vt.add_child(ln)
 	vt.add_child(UI.rotulo("%s · %s %d/%d" % [_nome_rar(raridade), Txt.t("car_nv_abrev"), nivel, Dados.nivel_max_carta], 12, UI.TEXTO2))
 	if slot >= 0:
@@ -510,7 +529,7 @@ func _mostrar_detalhe() -> void:
 
 	var ld := UI.rotulo(txt(def, "desc"), 11, UI.TEXTO3)
 	ld.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	ld.custom_minimum_size.x = 244
+	ld.custom_minimum_size.x = _larg_texto_dir()
 	detalhe.add_child(ld)
 	detalhe.add_child(UI.separador())
 
@@ -523,14 +542,14 @@ func _mostrar_detalhe() -> void:
 		var ef: Dictionary = e
 		var l3 := UI.rotulo("· " + str(ef["texto"]), 12, ef["cor"])
 		l3.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		l3.custom_minimum_size.x = 244
+		l3.custom_minimum_size.x = _larg_texto_dir()
 		detalhe.add_child(l3)
 	if nivel < Dados.nivel_max_carta:
 		var prev := _efeitos_carta(def, raridade, nivel + 1)
 		if not prev.is_empty():
 			var lp := UI.rotulo(Txt.f("car_no_nivel", {"n": nivel + 1, "t": str(prev[0]["texto"])}), 11, UI.TEXTO3)
 			lp.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-			lp.custom_minimum_size.x = 244
+			lp.custom_minimum_size.x = _larg_texto_dir()
 			detalhe.add_child(lp)
 
 	# --- conjunto ---
@@ -549,7 +568,7 @@ func _mostrar_detalhe() -> void:
 			Txt.t("car_conj_completo") if faltam == 0 else Txt.f("car_conj_faltam", {"n": faltam}),
 			11, UI.VERDE if faltam == 0 else UI.TEXTO3)
 		lc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		lc.custom_minimum_size.x = 244
+		lc.custom_minimum_size.x = _larg_texto_dir()
 		detalhe.add_child(lc)
 
 	# --- sinergia ---
@@ -562,7 +581,7 @@ func _mostrar_detalhe() -> void:
 			var lsin := UI.rotulo(Txt.f("car_sinergia", {"nome": txt(alvo, "nome")}) + marca_eq,
 				11, UI.ACENTO2 if junto else UI.TEXTO3)
 			lsin.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-			lsin.custom_minimum_size.x = 244
+			lsin.custom_minimum_size.x = _larg_texto_dir()
 			lsin.tooltip_text = Txt.t("car_dica_sinergia")
 			detalhe.add_child(lsin)
 
@@ -813,7 +832,7 @@ func _montar_conjuntos() -> void:
 			pecas.append({"id": str(cid), "rotulo": lp})
 		var lb := UI.rotulo(_texto_efeitos(conj.get("bonus", []), 1), 11, UI.TEXTO3)
 		lb.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		lb.custom_minimum_size.x = 244
+		lb.custom_minimum_size.x = _larg_texto_dir()
 		v.add_child(lb)
 		caixa_conjuntos.add_child(cx)
 		conjuntos_ui.append({"def": conj, "caixa": cx, "nome": ln, "contagem": lc, "pecas": pecas, "bonus": lb, "cor": cor, "completo": false})

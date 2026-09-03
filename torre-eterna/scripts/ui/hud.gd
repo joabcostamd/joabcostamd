@@ -55,8 +55,21 @@ func _ready() -> void:
 
 func _construir() -> void:
 	# ---------- topo esquerdo: moedas ----------
-	var topo := UI.hbox(10)
-	topo.position = Vector2(14, 12)
+	# HFlow, não HBox: seis moedas em fila reta ultrapassam 700px e entram por
+	# baixo do contador de onda, que é centralizado. Com quebra automática e
+	# largura amarrada ao meio da tela (menos a folga do contador), a fila passa
+	# a virar duas linhas em vez de invadir o vizinho.
+	var topo := HFlowContainer.new()
+	topo.add_theme_constant_override("h_separation", 10)
+	topo.add_theme_constant_override("v_separation", 5)
+	topo.anchor_left = 0.0
+	topo.anchor_right = 0.5
+	topo.anchor_top = 0.0
+	topo.anchor_bottom = 0.0
+	topo.offset_left = 14
+	topo.offset_right = -170
+	topo.offset_top = 12
+	topo.offset_bottom = 110
 	topo.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(topo)
 	for chave in ["ouro", "gemas", "fragmentos", "nucleos", "eter", "poeira"]:
