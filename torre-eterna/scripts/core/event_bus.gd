@@ -57,6 +57,10 @@ signal desbloqueio(chave)
 # --- habilidades ---
 signal habilidade_usada(id, nivel)
 signal habilidade_pronta(id)
+## A Purga com a QUALIDADE que ela teve (0,18 a 1,0). `habilidade_usada` diz
+## que a Purga saiu; este diz COMO. Sem ele, uma Purga perfeita e uma estourada
+## faziam exatamente o mesmo som — a qualidade era calculada e jogada fora.
+signal purga_usada(qualidade: float, perfeita: bool)
 
 # --- juice / apresentação ---
 signal tremor_pedido(amplitude, duracao)

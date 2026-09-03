@@ -21,12 +21,33 @@ static func _e(camadas: Array, db: float = PADRAO_DB, variacao: float = PADRAO_V
 		taxa: float = PADRAO_TAXA, pico: float = 0.85) -> Dictionary:
 	return {"camadas": camadas, "db": db, "var": variacao, "taxa": taxa, "pico": pico}
 
+## UM WAV POR NOME VIRA BRITADEIRA.
+##
+## Cada efeito tinha exatamente uma forma de onda, gerada uma vez. Com vinte
+## tiros por segundo, o transiente de ruido — a parte que o ouvido usa para
+## separar um golpe do outro — era rigorosamente identico vinte vezes por
+## segundo. Variar so o tom (que e o que `var` faz) nao resolve: o ouvido junta
+## repeticoes identicas numa textura continua, e o combate virava chiado.
+##
+## Aqui ficam quantas VARIANTES cada nome tem. Cada variante e a mesma receita
+## com outra semente de ruido, entao o carater e o mesmo e o detalhe muda —
+## exatamente como dois tiros da mesma arma. So os sons que tocam muitas vezes
+## por segundo pagam a memoria; o resto continua com um.
+const VARIANTES := {
+	"tiro": 4, "impacto": 4, "morte": 3, "tiro_critico": 3, "torre_dano": 2,
+	"ouro": 3, "clique": 2,
+}
+
+static func variantes(nome: String) -> int:
+	return int(VARIANTES.get(nome, 1))
+
 ## Nomes na ordem em que devem ser gerados (mais tocados primeiro).
 static func nomes() -> Array:
 	return [
 		"tiro", "impacto", "morte", "ouro", "clique", "tiro_critico",
 		"compra", "bloqueado", "abrir", "fechar", "erro", "hab_pronta", "hab_purga",
 		"hab_sobrecarga", "hab_chuva_ouro", "hab_escudo", "hab_sentinelas",
+		"hab_purga_perfeita",
 		"torre_dano", "onda", "nivel", "carta", "missao", "moeda",
 		"alerta_chefe", "morte_chefe", "conquista", "lendario",
 		"hab_generica", "hab_nova", "hab_congelar", "hab_cura",
@@ -103,14 +124,28 @@ static func catalogo() -> Dictionary:
 		 "atk": 0.001, "dec": 0.2, "rel": 0.05, "lp0": 6000.0, "lp1": 1200.0, "vol": 0.35},
 	], -4.0, 0.03, 0.4, 0.95)
 
+	# "EU APANHEI" NAO PODE SER "EU MACHUQUEI" TRANSPOSTO.
+	#
+	# `impacto` e `torre_dano` eram a mesma receita — ruido curto mais uma
+	# senoide descendo — separados so pela altura. Nos dois sons mais frequentes
+	# do jogo, um deles significa "esta funcionando" e o outro "voce esta
+	# perdendo": o jogador precisa saber qual e sem olhar para a barra de vida.
+	#
+	# O golpe recebido agora e METAL RACHANDO, nao um baque: um tritono batido
+	# (a distancia que o ouvido le como errado), FM inarmonico curto para dar a
+	# rachadura, e a cauda desce em vez de cortar. E mais longo e mais escuro de
+	# proposito — ocupa espaco, como uma coisa ruim deve ocupar.
 	c["torre_dano"] = _e([
-		{"onda": "ruido", "dur": 0.16, "atk": 0.001, "dec": 0.12, "rel": 0.04,
-		 "lp0": 2400.0, "lp1": 300.0, "vol": 0.7},
-		{"onda": "senoide", "f0": 190.0, "f1": 72.0, "curva": 0.7, "dur": 0.2,
-		 "atk": 0.001, "dec": 0.15, "rel": 0.05, "sat": 0.3, "vol": 0.8},
-		{"onda": "quadrada", "f0": 420.0, "f1": 150.0, "dur": 0.08, "atk": 0.001,
-		 "dec": 0.06, "rel": 0.02, "lp0": 2000.0, "vol": 0.25},
-	], -10.0, 0.1, 0.09)
+		{"onda": "ruido", "dur": 0.26, "atk": 0.001, "dec": 0.2, "sus": 0.05,
+		 "rel": 0.08, "lp0": 1800.0, "lp1": 220.0, "vol": 0.65},
+		{"onda": "quadrada", "f0": 233.0, "f1": 96.0, "curva": 0.9, "dur": 0.3,
+		 "atk": 0.001, "dec": 0.2, "sus": 0.06, "rel": 0.09, "sat": 0.55,
+		 "fm_ratio": 1.414, "fm_index": 2.6, "fm_decai": 11.0, "vol": 0.75},
+		{"onda": "quadrada", "f0": 329.6, "f1": 140.0, "dur": 0.24, "atraso": 0.008,
+		 "atk": 0.001, "dec": 0.17, "rel": 0.06, "lp0": 1500.0, "sat": 0.4, "vol": 0.4},
+		{"onda": "senoide", "f0": 62.0, "f1": 41.0, "curva": 1.1, "dur": 0.42,
+		 "atk": 0.004, "dec": 0.28, "sus": 0.08, "rel": 0.12, "vol": 0.7},
+	], -9.0, 0.08, 0.09)
 
 	c["torre_destruida"] = _e([
 		{"onda": "ruido", "dur": 1.5, "atk": 0.005, "dec": 0.5, "sus": 0.06,
@@ -124,9 +159,13 @@ static func catalogo() -> Dictionary:
 
 	# --- economia -----------------------------------------------------
 	# Sino curto: o tom sobe com o combo (o motor manda o pitch).
+	# SINO PRECISA DE RAZAO INARMONICA. Com `fm_ratio` inteiro (3,0 aqui e 2,0 no
+	# `moeda`) os parciais caem todos em harmonicos da fundamental e o resultado
+	# e timbre de orgao, nao de metal: e exatamente a diferenca entre "nota" e
+	# "tim". 2,76 e a razao classica de Chowning para sino; 3,51 e a segunda.
 	c["ouro"] = _e([
 		{"onda": "senoide", "f0": 1320.0, "f1": 1480.0, "curva": 0.4, "dur": 0.11,
-		 "atk": 0.001, "dec": 0.09, "rel": 0.02, "fm_ratio": 3.0, "fm_index": 0.55,
+		 "atk": 0.001, "dec": 0.09, "rel": 0.02, "fm_ratio": 2.76, "fm_index": 0.62,
 		 "fm_decai": 30.0, "vol": 0.7},
 		{"onda": "triangulo", "f0": 1980.0, "dur": 0.07, "atraso": 0.012,
 		 "atk": 0.001, "dec": 0.06, "rel": 0.01, "vol": 0.3},
@@ -134,17 +173,36 @@ static func catalogo() -> Dictionary:
 
 	c["moeda"] = _e([
 		{"onda": "senoide", "f0": 880.0, "f1": 1320.0, "curva": 0.5, "dur": 0.45,
-		 "atk": 0.004, "dec": 0.35, "sus": 0.1, "rel": 0.1, "fm_ratio": 2.0,
-		 "fm_index": 0.9, "fm_decai": 8.0, "vol": 0.7},
+		 "atk": 0.004, "dec": 0.35, "sus": 0.1, "rel": 0.1, "fm_ratio": 3.51,
+		 "fm_index": 1.05, "fm_decai": 8.0, "vol": 0.7},
 		{"onda": "triangulo", "f0": 1760.0, "dur": 0.3, "atraso": 0.06,
 		 "atk": 0.003, "dec": 0.25, "rel": 0.05, "vol": 0.25},
 	], -12.0, 0.04, 0.12)
 
-	c["compra"] = _e(Synth.sequencia(
-		{"onda": "triangulo", "f0": 523.25, "dur": 0.13, "atk": 0.002, "dec": 0.1,
-		 "rel": 0.03, "lp0": 6000.0, "vol": 0.7}, [0, 7], 0.055, 1.0) + [
-		{"onda": "ruido", "dur": 0.03, "atk": 0.001, "dec": 0.024, "rel": 0.005,
-		 "lp0": 3000.0, "lp1": 900.0, "vol": 0.2},
+	# NOVE EFEITOS ERAM O MESMO TRIANGULO TRANSPOSTO.
+	#
+	# compra, nivel, carta, missao, conquista, prestigio: todos `Synth.sequencia`
+	# de onda triangular, diferentes so na nota de partida e nos intervalos. Ou
+	# seja: o jogo tinha um instrumento so tocando notas diferentes, e o jogador
+	# nao conseguia dizer, de ouvido, se tinha comprado, subido de nivel ou
+	# completado uma missao. Timbre e o que separa evento de evento; altura so
+	# separa nota de nota.
+	#
+	# A regra da correcao: diferenciar por EXCITACAO, nao por transposicao. Cada
+	# um destes agora e um objeto fisico diferente — trava, papel, marca de
+	# caneta, sino de trofeu — e o triangulo cantado fica so onde ele e a coisa
+	# certa: subir de nivel.
+	#
+	# COMPRA: uma trava de maquina fechando. Percussivo, seco, curto — a mao
+	# sente o clique. Sem intervalo cantado nenhum.
+	c["compra"] = _e([
+		{"onda": "quadrada", "f0": 1400.0, "f1": 620.0, "curva": 0.35, "dur": 0.045,
+		 "atk": 0.0005, "dec": 0.035, "rel": 0.008, "lp0": 7000.0, "lp1": 2200.0,
+		 "sat": 0.45, "vol": 0.55},
+		{"onda": "ruido", "dur": 0.05, "atk": 0.0004, "dec": 0.04, "rel": 0.008,
+		 "lp0": 5200.0, "lp1": 1100.0, "vol": 0.42},
+		{"onda": "senoide", "f0": 196.0, "f1": 150.0, "dur": 0.11, "atraso": 0.006,
+		 "atk": 0.001, "dec": 0.085, "rel": 0.02, "vol": 0.5},
 	], -12.0, 0.05, 0.05)
 
 	c["bloqueado"] = _e([
@@ -183,10 +241,14 @@ static func catalogo() -> Dictionary:
 		 "sus": 0.2, "rel": 0.35, "vol": 0.7},
 	], -7.0, 0.02, 0.5)
 
+	# PRESTIGIO: o unico que continua sendo um acorde — mas em DENTE com vozes
+	# desafinadas e filtro abrindo, nao no mesmo triangulo dos outros cinco. E o
+	# momento mais raro do jogo e tem que soar como orgao de catedral, nao como
+	# a compra de uma melhoria em outra oitava.
 	c["prestigio"] = _e(Synth.sequencia(
-		{"onda": "triangulo", "f0": 261.63, "dur": 0.85, "vozes": 2, "detune": 0.1,
-		 "atk": 0.006, "dec": 0.3, "sus": 0.22, "rel": 0.5, "lp0": 7000.0,
-		 "vol": 0.55}, [0, 7, 12, 16, 19, 24], 0.13, 0.9) + [
+		{"onda": "dente", "f0": 261.63, "dur": 0.85, "vozes": 3, "detune": 0.16,
+		 "atk": 0.02, "dec": 0.3, "sus": 0.26, "rel": 0.55, "lp0": 1200.0,
+		 "lp1": 7000.0, "sat": 0.3, "vol": 0.5}, [0, 7, 12, 16, 19, 24], 0.13, 0.9) + [
 		{"onda": "senoide", "f0": 65.4, "dur": 1.7, "atk": 0.02, "dec": 0.6,
 		 "sus": 0.22, "rel": 0.95, "vol": 0.7},
 		{"onda": "senoide", "f0": 1046.5, "f1": 1568.0, "curva": 0.6, "dur": 1.2,
@@ -202,23 +264,41 @@ static func catalogo() -> Dictionary:
 		 "atk": 0.01, "dec": 0.6, "sus": 0.15, "rel": 0.35, "vol": 0.4},
 	], -8.0, 0.02, 0.3)
 
-	c["carta"] = _e(Synth.sequencia(
-		{"onda": "triangulo", "f0": 659.25, "dur": 0.22, "atk": 0.002, "dec": 0.17,
-		 "rel": 0.04, "lp0": 8000.0, "vol": 0.6}, [0, 5], 0.07, 1.0),
-		-13.0, 0.04, 0.15)
+	# CARTA: papel deslizando. Ruido filtrado subindo (o atrito), e so no fim um
+	# toque de corda soltando — a carta assentando na mesa.
+	c["carta"] = _e([
+		{"onda": "ruido", "dur": 0.2, "atk": 0.02, "dec": 0.12, "sus": 0.2,
+		 "rel": 0.06, "lp0": 900.0, "lp1": 7000.0, "vol": 0.5},
+		{"onda": "triangulo", "f0": 1244.5, "f1": 980.0, "curva": 0.4, "dur": 0.13,
+		 "atraso": 0.11, "atk": 0.001, "dec": 0.1, "rel": 0.03, "vol": 0.4},
+	], -13.0, 0.04, 0.15)
 
-	c["conquista"] = _e(Synth.sequencia(
-		{"onda": "triangulo", "f0": 659.25, "dur": 0.45, "vozes": 2, "detune": 0.07,
-		 "atk": 0.003, "dec": 0.3, "sus": 0.18, "rel": 0.14, "lp0": 8000.0,
-		 "vol": 0.6}, [0, 4, 7, 12], 0.09, 1.0) + [
+	# CONQUISTA: sino de trofeu. Metal batido de verdade — parciais inarmonicos
+	# (2,76 e 5,4, as razoes de Chowning) com cauda longa, nao um arpejo cantado.
+	c["conquista"] = _e([
+		{"onda": "senoide", "f0": 659.25, "dur": 1.1, "atk": 0.002, "dec": 0.35,
+		 "sus": 0.18, "rel": 0.6, "fm_ratio": 2.76, "fm_index": 3.0,
+		 "fm_decai": 5.5, "vol": 0.65},
+		{"onda": "senoide", "f0": 988.0, "dur": 0.85, "atraso": 0.03, "atk": 0.002,
+		 "dec": 0.3, "sus": 0.12, "rel": 0.45, "fm_ratio": 5.4, "fm_index": 1.7,
+		 "fm_decai": 7.0, "vol": 0.34},
+		{"onda": "ruido", "dur": 0.04, "atk": 0.0005, "dec": 0.032, "rel": 0.006,
+		 "lp0": 9000.0, "lp1": 3000.0, "vol": 0.3},
 		{"onda": "senoide", "f0": 164.8, "dur": 0.9, "atk": 0.01, "dec": 0.5,
 		 "sus": 0.15, "rel": 0.35, "vol": 0.45},
 	], -9.0, 0.02, 0.25)
 
-	c["missao"] = _e(Synth.sequencia(
-		{"onda": "triangulo", "f0": 587.33, "dur": 0.2, "atk": 0.002, "dec": 0.15,
-		 "rel": 0.04, "lp0": 7000.0, "vol": 0.55}, [0, 5], 0.08, 1.0),
-		-13.0, 0.03, 0.2)
+	# MISSAO: a marca de caneta no papel. Dois riscos curtos de ruido, o segundo
+	# mais agudo — o som de um tique sendo feito, nao de uma nota sendo tocada.
+	c["missao"] = _e([
+		{"onda": "ruido", "dur": 0.055, "atk": 0.001, "dec": 0.045, "rel": 0.008,
+		 "lp0": 2600.0, "lp1": 6500.0, "vol": 0.5},
+		{"onda": "ruido", "dur": 0.08, "atraso": 0.075, "atk": 0.001, "dec": 0.06,
+		 "rel": 0.015, "lp0": 3800.0, "lp1": 9000.0, "vol": 0.55},
+		{"onda": "senoide", "f0": 880.0, "dur": 0.16, "atraso": 0.075, "atk": 0.002,
+		 "dec": 0.12, "rel": 0.03, "fm_ratio": 2.76, "fm_index": 0.5,
+		 "fm_decai": 22.0, "vol": 0.3},
+	], -13.0, 0.03, 0.2)
 
 	# --- habilidades ---------------------------------------------------
 	c["hab_nova"] = _e([
@@ -293,6 +373,33 @@ static func catalogo() -> Dictionary:
 		 "vozes": 3, "detune": 0.25, "atk": 0.002, "dec": 0.4, "sus": 0.05,
 		 "rel": 0.14, "sat": 0.7, "lp0": 2400.0, "lp1": 9000.0, "vol": 0.6},
 	], -5.0, 0.03, 0.12)
+
+	# PURGA PERFEITA: outro som, nao o mesmo mais alto.
+	#
+	# A qualidade da Purga vai de 0,18 (estourou a carga) a 1,0 (janela dourada)
+	# — o jogo CALCULA esse numero, usa no dano, nas particulas, no tremor e no
+	# hitstop, e jogava fora no audio: acertar a janela no milesimo e estourar
+	# feio faziam exatamente o mesmo barulho. A recompensa mais fina do jogo era
+	# muda.
+	#
+	# A perfeita tem sino: dois parciais inarmonicos (2,76 e 5,4 da fundamental,
+	# as razoes de Chowning) subindo por cima do estouro, e uma cauda longa que
+	# a estourada nao tem. Da para reconhecer de olhos fechados.
+	c["hab_purga_perfeita"] = _e([
+		{"onda": "senoide", "f0": 55.0, "f1": 420.0, "curva": 2.4, "dur": 1.25,
+		 "atk": 0.004, "dec": 0.8, "sus": 0.14, "rel": 0.42, "sat": 0.55, "vol": 0.95},
+		{"onda": "ruido", "dur": 1.0, "atk": 0.003, "dec": 0.62, "sus": 0.08,
+		 "rel": 0.3, "lp0": 600.0, "lp1": 14000.0, "vol": 0.5},
+		{"onda": "dente", "f0": 260.0, "f1": 2100.0, "curva": 1.9, "dur": 0.6,
+		 "vozes": 3, "detune": 0.22, "atk": 0.002, "dec": 0.44, "sus": 0.05,
+		 "rel": 0.16, "sat": 0.7, "lp0": 2600.0, "lp1": 11000.0, "vol": 0.55},
+		{"onda": "senoide", "f0": 880.0, "dur": 1.6, "atraso": 0.06, "atk": 0.002,
+		 "dec": 0.5, "sus": 0.22, "rel": 0.9, "fm_ratio": 2.76, "fm_index": 2.4,
+		 "fm_decai": 3.2, "vol": 0.5},
+		{"onda": "senoide", "f0": 1320.0, "dur": 1.3, "atraso": 0.1, "atk": 0.002,
+		 "dec": 0.42, "sus": 0.16, "rel": 0.75, "fm_ratio": 5.4, "fm_index": 1.5,
+		 "fm_decai": 4.0, "vol": 0.3},
+	], -3.0, 0.015, 0.12, 0.95)
 
 	# Sobrecarga: a torre acelera. Serra subindo, com voz dupla batendo.
 	c["hab_sobrecarga"] = _e([

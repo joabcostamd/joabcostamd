@@ -91,7 +91,7 @@ func rodar(cena: SceneTree) -> void:
 		"Mods": 19, "Numeros de dano": 2, "Offline": 6,
 		"Ondas": 12, "Pista de ouro": 3, "Prestígio": 25,
 		"Progresso": 14, "Saque": 8, "Save": 41,
-		"Celebracao": 25, "Fim de sessao": 25, "Painel de melhorias": 20, "Rodape": 26, "Sistemas": 6, "StatEngine": 5, "Teto": 38, "Áudio": 16,
+		"Celebracao": 25, "Fim de sessao": 25, "Painel de melhorias": 20, "Rodape": 26, "Sistemas": 6, "StatEngine": 5, "Teto": 38, "Áudio": 45,
 	}
 	for nome_g in minimo_por_grupo:
 		var rodou := int(por_grupo.get(nome_g, 0))
@@ -2483,6 +2483,19 @@ func t_sistemas() -> void:
 ## desta funcao apagava strings tambem e reprovou tres elos que estao vivos.
 ## O `#` dentro de uma string nao abre comentario, entao o estado de aspas
 ## precisa ser acompanhado mesmo mantendo o conteudo.
+## Assinatura estrutural de uma receita de som: quais ondas, quantas camadas e
+## que envelopes. Duas receitas com a mesma assinatura sao o MESMO som — no
+## maximo transposto — e e exatamente isso que os portoes de audio proibem.
+func _assinatura_som(receita: Dictionary) -> String:
+	var partes: Array = []
+	for camada in receita.get("camadas", []):
+		var c: Dictionary = camada
+		partes.append("%s:%.3f:%.4f:%.4f:%s" % [
+			str(c.get("onda", "")), float(c.get("dur", 0.0)),
+			float(c.get("atk", 0.0)), float(c.get("dec", 0.0)),
+			str(c.get("fm_ratio", "-"))])
+	return "|".join(partes)
+
 ## Le um script do projeto como texto. Devolve "" se nao abrir — quem chama
 ## afirma sobre o conteudo, entao um arquivo faltando reprova de qualquer jeito.
 func _ler(caminho: String) -> String:
@@ -2750,6 +2763,117 @@ func t_audio() -> void:
 	ok("nenhum som curto demais", curtos.is_empty(), str(curtos))
 	ok("nenhum som longo demais", longos.is_empty(), str(longos))
 	ok("gerou audio de verdade", total_amostras > 44100, str(total_amostras))
+
+	# --- 1. PURGA PERFEITA E PURGA ESTOURADA NAO PODEM SOAR IGUAL ---
+	# A qualidade (0,18 a 1,0) e calculada e usada no dano, nas particulas, no
+	# tremor e no hitstop — e era jogada fora no audio.
+	ok("existe um som proprio da Purga perfeita", cat.has("hab_purga_perfeita"))
+	ok("...e ele e gerado junto com os outros",
+		Sfx.nomes().has("hab_purga_perfeita"))
+	ok("...e nao e o mesmo da Purga comum",
+		_assinatura_som(cat.get("hab_purga_perfeita", {})) != _assinatura_som(cat.get("hab_purga", {})))
+	var txt_bus := _ler("res://scripts/core/event_bus.gd")
+	ok("o barramento carrega a qualidade da Purga", txt_bus.contains("signal purga_usada"))
+	var txt_mec := _ler("res://scripts/sim/mecanicas.gd")
+	ok("a Purga emite a qualidade que teve", txt_mec.contains("Bus.purga_usada.emit(q, perfeita)"))
+	var txt_ae := _ler("res://scripts/audio/audio_engine.gd")
+	ok("o audio escuta a qualidade", txt_ae.contains("Bus.purga_usada.connect(_ao_purga)"))
+	ok("...e escolhe outro som quando e perfeita",
+		txt_ae.contains('tocar("hab_purga_perfeita"'))
+
+	# --- 2. A ESCADA DO COMBO EM SEMITONS, nao em fracao linear ---
+	var A := load("res://scripts/audio/audio_engine.gd") as GDScript
+	ok("audio_engine.gd carrega", A != null)
+	if A != null:
+		var p0: float = A._passo_do_combo(0)
+		ok("combo zero nao mexe no tom", perto(p0, 1.0, 0.0001))
+		var subiu := true
+		var anterior := 0.0
+		for combo in [0, 4, 8, 12, 20, 40, 80, 400]:
+			var v: float = A._passo_do_combo(int(combo))
+			if v < anterior:
+				subiu = false
+			anterior = v
+		ok("a escada so sobe", subiu)
+		ok("a escada tem teto", perto(A._passo_do_combo(4000), A._passo_do_combo(400), 0.0001))
+		# Cada degrau tem que ser um SEMITOM EXATO: 2^(n/12). Se alguem voltar
+		# para a reta na razao, isto reprova.
+		var todos_afinados := true
+		for combo2 in [0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40]:
+			var razao: float = A._passo_do_combo(int(combo2))
+			var semitons: float = log(razao) / log(2.0) * 12.0
+			if absf(semitons - round(semitons)) > 0.001:
+				todos_afinados = false
+		ok("todo degrau do combo cai num semitom exato", todos_afinados)
+
+	# --- 3. SINO PRECISA DE RAZAO INARMONICA ---
+	var inteiros: Array = []
+	for nome_s in ["ouro", "moeda", "conquista"]:
+		for camada in (cat.get(nome_s, {}) as Dictionary).get("camadas", []):
+			var cm: Dictionary = camada
+			if not cm.has("fm_ratio"):
+				continue
+			var r := float(cm["fm_ratio"])
+			if absf(r - round(r)) < 0.001:
+				inteiros.append("%s (%.2f)" % [nome_s, r])
+	ok("os sinos nao usam razao FM inteira (isso e orgao, nao metal)",
+		inteiros.is_empty(), str(inteiros))
+
+	# --- 4. NOVE EFEITOS ERAM O MESMO TRIANGULO TRANSPOSTO ---
+	var familia := ["compra", "nivel", "carta", "missao", "conquista", "prestigio"]
+	var ondas := {}
+	for nome_f in familia:
+		var cams: Array = (cat.get(nome_f, {}) as Dictionary).get("camadas", [])
+		if cams.is_empty():
+			continue
+		ondas[str((cams[0] as Dictionary).get("onda", ""))] = true
+	ok("os eventos de progresso nao sao todos o mesmo instrumento",
+		ondas.size() >= 3, str(ondas.keys()))
+	var assinaturas := {}
+	for nome_f2 in familia:
+		assinaturas[_assinatura_som(cat.get(nome_f2, {}))] = true
+	ok("cada evento de progresso tem receita propria",
+		assinaturas.size() == familia.size(), "%d de %d" % [assinaturas.size(), familia.size()])
+
+	# --- 5. "EU MACHUQUEI" E "EU APANHEI" NAO PODEM SER A MESMA RECEITA ---
+	ok("dar dano e levar dano soam diferente",
+		_assinatura_som(cat.get("impacto", {})) != _assinatura_som(cat.get("torre_dano", {})))
+	# ...e nao so por altura: o numero de camadas e o formato tem que diferir.
+	var n_imp: int = (cat.get("impacto", {}) as Dictionary).get("camadas", []).size()
+	var n_dano: int = (cat.get("torre_dano", {}) as Dictionary).get("camadas", []).size()
+	ok("levar dano tem corpo proprio, nao o mesmo transposto", n_imp != n_dano)
+
+	# --- 6. UM WAV POR NOME VIRA BRITADEIRA ---
+	ok("o tiro tem variantes", Sfx.variantes("tiro") >= 2)
+	ok("o impacto tem variantes", Sfx.variantes("impacto") >= 2)
+	ok("som raro nao paga variante", Sfx.variantes("prestigio") == 1)
+	ok("o gerador enfileira as variantes", txt_ae.contains("_enfileirar_sfx"))
+	ok("...e nunca repete a ultima", txt_ae.contains("_sortear_variante"))
+	# Variante de verdade e OUTRA ONDA, nao a mesma com outro nome.
+	var motor = A.new()
+	var base: Array = (cat.get("tiro", {}) as Dictionary).get("camadas", [])
+	var v1: Array = motor._semear(base, 1)
+	ok("a variante muda a semente do ruido",
+		int((v1[0] as Dictionary).get("semente", 0)) != int((base[0] as Dictionary).get("semente", 20260903)))
+	var som0: PackedFloat32Array = Synth.mixar(base)
+	var som1: PackedFloat32Array = Synth.mixar(v1)
+	var iguais := true
+	for i in range(0, mini(som0.size(), som1.size()), 97):
+		if absf(som0[i] - som1[i]) > 0.0005:
+			iguais = false
+			break
+	ok("a variante gera onda diferente de verdade", not iguais)
+	motor.free()
+
+	# --- 7. A TRILHA TEM QUE SABER DA PURGA E DA VIDA ---
+	var txt_mu := _ler("res://scripts/audio/music.gd")
+	ok("a trilha semeia uma vez por COMPASSO, nao por passo",
+		txt_mu.contains("if compasso != _compasso_semeado:"))
+	ok("a trilha sabe da Purga", txt_mu.contains("func marcar_purga("))
+	ok("...e da janela dourada", txt_mu.contains("func marcar_purga_pronta("))
+	ok("a vida entra na intensidade de forma continua",
+		txt_mu.contains("bruta += (1.0 - vida) * 0.30"))
+	ok("...e nao como degrau unico", not txt_mu.contains("if vida < 0.35:"))
 
 	# o WAV precisa sair no formato que o Godot toca
 	var primeiro: Dictionary = cat[cat.keys()[0]]

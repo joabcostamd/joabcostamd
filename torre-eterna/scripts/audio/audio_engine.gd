@@ -22,7 +22,10 @@ const ESSENCIAIS := 8         # sons que nascem antes da trilha
 const DIST_MAX := 3200.0
 
 var catalogo: Dictionary = {}          # nome -> {camadas, db, var, taxa, pico}
-var bancos: Dictionary = {}            # nome -> AudioStreamWAV
+var bancos: Dictionary = {}            # nome -> AudioStreamWAV (variante 0)
+## nome -> Array[AudioStreamWAV]: as variantes de ruido do mesmo efeito.
+var _variantes: Dictionary = {}
+var _ultima_variante: Dictionary = {}
 var musica: Musica
 var ligado := true                     # false em headless: tudo vira no-op
 var gerando := true
@@ -86,7 +89,14 @@ func parar_tudo() -> void:
 
 ## Quanto do catálogo já existe (0..1) — a barra de "aquecendo" da trilha.
 func progresso_geracao() -> float:
-	var total: float = float(Sfx.nomes().size() + (musica.nomes_banco().size() if musica != null else 0))
+	# Conta VARIANTES, nao nomes: com quatro variantes de tiro a fila e maior que
+	# a lista de nomes, e a barra de "aquecendo" chegava a 100% com metade do
+	# catalogo por gerar.
+	var total := 0.0
+	for nome in Sfx.nomes():
+		total += float(Sfx.variantes(str(nome)))
+	if musica != null:
+		total += float(musica.nomes_banco().size())
 	if total <= 0.0:
 		return 1.0
 	return clampf(1.0 - float(_fila.size()) / total, 0.0, 1.0)
@@ -157,7 +167,7 @@ func _disparar(nome: String, db: float, pitch: float, pos: Vector2) -> void:
 		return
 	if bool(Cfg.get_v("mudo", false)):
 		return
-	var fluxo: AudioStreamWAV = bancos.get(nome, null)
+	var fluxo: AudioStreamWAV = _sortear_variante(nome)
 	if fluxo == null:
 		return                                  # ainda não gerado: silêncio, nunca travamento
 	var e: Dictionary = catalogo.get(nome, {})
@@ -178,6 +188,20 @@ func _disparar(nome: String, db: float, pitch: float, pos: Vector2) -> void:
 	p.volume_db = float(e.get("db", -10.0)) + db
 	p.play()
 
+## Escolhe a variante do efeito, NUNCA repetindo a ultima. Repetir de vez em
+## quando por sorteio puro e justamente o que se ouve — duas identicas seguidas
+## chamam mais atencao do que quatro alternadas.
+func _sortear_variante(nome: String) -> AudioStreamWAV:
+	var lista: Array = _variantes.get(nome, [])
+	if lista.size() <= 1:
+		return bancos.get(nome, null)
+	var anterior := int(_ultima_variante.get(nome, -1))
+	var i := _rng.randi() % lista.size()
+	if i == anterior:
+		i = (i + 1) % lista.size()
+	_ultima_variante[nome] = i
+	return lista[i]
+
 ## -------------------------------------------------------------- geração
 
 ## A ordem importa: primeiro o punhado de sons que tocam a cada segundo, depois
@@ -185,11 +209,11 @@ func _disparar(nome: String, db: float, pitch: float, pos: Vector2) -> void:
 func _montar_fila() -> void:
 	var sons: Array = Sfx.nomes()
 	for i in mini(ESSENCIAIS, sons.size()):
-		_fila.append(["sfx", str(sons[i])])
+		_enfileirar_sfx(str(sons[i]))
 	for nome in ["perc", "hat", "pad", "baixo_quadrada", "arpejo_quadrada"]:
 		_fila.append(["musica", str(nome)])
 	for i in range(ESSENCIAIS, sons.size()):
-		_fila.append(["sfx", str(sons[i])])
+		_enfileirar_sfx(str(sons[i]))
 	for nome in musica.nomes_banco():
 		var chave: Array = ["musica", str(nome)]
 		if not _fila.has(chave):
@@ -217,17 +241,44 @@ func _gerar_fatia() -> void:
 			_guardar(_item, _fabrica.resultado)
 			_fabrica = null
 
+## Enfileira todas as variantes de um efeito. Ver `Sfx.VARIANTES`.
+func _enfileirar_sfx(nome: String) -> void:
+	for v in Sfx.variantes(nome):
+		_fila.append(["sfx", nome, v])
+
 func _receita_do_item(item: Array) -> Dictionary:
 	if str(item[0]) == "sfx":
 		var e: Dictionary = catalogo.get(str(item[1]), {})
-		return {"camadas": e.get("camadas", []), "pico": float(e.get("pico", 0.85))}
+		var camadas: Array = e.get("camadas", [])
+		var v := int(item[2]) if item.size() > 2 else 0
+		if v > 0:
+			camadas = _semear(camadas, v)
+		return {"camadas": camadas, "pico": float(e.get("pico", 0.85))}
 	return musica.receita_banco(str(item[1]))
+
+## A variante `v` da mesma receita: outra semente de ruido e um empurrao minimo
+## na duracao. O carater fica; o detalhe muda. Copia rasa por camada — as
+## camadas do catalogo sao `const` de fato e nao podem ser tocadas.
+func _semear(camadas: Array, v: int) -> Array:
+	var saida: Array = []
+	for item in camadas:
+		var c: Dictionary = (item as Dictionary).duplicate()
+		c["semente"] = int(c.get("semente", 20260903)) + v * 7919
+		c["dur"] = float(c.get("dur", 0.1)) * (1.0 + float(v) * 0.013)
+		saida.append(c)
+	return saida
 
 func _guardar(item: Array, fluxo: AudioStreamWAV) -> void:
 	if fluxo == null:
 		return
 	if str(item[0]) == "sfx":
-		bancos[str(item[1])] = fluxo
+		var nome := str(item[1])
+		var v := int(item[2]) if item.size() > 2 else 0
+		if v == 0:
+			bancos[nome] = fluxo
+		var lista: Array = _variantes.get(nome, [])
+		lista.append(fluxo)
+		_variantes[nome] = lista
 	else:
 		musica.definir_banco(str(item[1]), fluxo)
 		# a trilha entra assim que tem percussão e um baixo
@@ -303,6 +354,10 @@ func _ligar_sinais() -> void:
 
 	# habilidades
 	Bus.habilidade_usada.connect(func(id, _nv): tocar(Sfx.som_habilidade(str(id))))
+	Bus.purga_usada.connect(_ao_purga)
+	Bus.habilidade_pronta.connect(func(id):
+		if str(id) == "purga" and musica != null:
+			musica.marcar_purga_pronta())
 	Bus.habilidade_pronta.connect(func(_id): tocar("hab_pronta"))
 
 	# interface
@@ -372,11 +427,39 @@ func _ao_apanhar(_dano: float, vida: float, vida_max: float) -> void:
 	var f := Big.frac(vida, vida_max)
 	tocar("torre_dano", 0.0, 0.85 + f * 0.25)
 
+## A ESCADA DO COMBO EM SEMITONS, nao em fracao linear.
+##
+## Era `1,0 + combo * 0,019`: uma reta na RAZAO de frequencia. O ouvido nao ouve
+## razao linear, ouve intervalo — e cada degrau caia entre duas notas, num tom a
+## cada vez diferente do anterior. Contra uma trilha afinada, isso e desafinacao
+## pura: o jogo tocava microtons por cima da propria musica.
+##
+## Agora sobe por uma pentatonica maior de duas oitavas, um degrau a cada quatro
+## pontos de combo. Cada moeda cai numa nota que existe na escala, e a subida
+## soa como subida.
+const ESCADA_COMBO := [0, 2, 4, 7, 9, 12, 14, 16, 19, 21, 24]
+
+static func _passo_do_combo(combo: int) -> float:
+	var i := clampi(combo / 4, 0, ESCADA_COMBO.size() - 1)
+	return pow(2.0, float(ESCADA_COMBO[i]) / 12.0)
+
 ## O tom sobe com o combo: cada moeda soa um degrau acima da anterior.
+## A PURGA SOA COMO ELA FOI. A qualidade (0,18 a 1,0) decide o som, o tom e o
+## volume — e a perfeita e outro som, com sino, nao o mesmo mais alto.
+func _ao_purga(qualidade: float, perfeita: bool) -> void:
+	var q := clampf(qualidade, 0.0, 1.0)
+	if perfeita:
+		tocar("hab_purga_perfeita", 0.0, 1.0)
+	else:
+		# Estourada soa MAIS GRAVE e mais baixa: o ouvido lê "murchou".
+		tocar("hab_purga", -8.0 + 8.0 * q, 0.82 + 0.2 * q)
+	if musica != null:
+		musica.marcar_purga(q)
+
 func _ao_ouro(_valor: float, fonte: String) -> void:
 	if fonte != "coleta" and fonte != "abate":
 		return
-	tocar("ouro", 0.0, 1.0 + minf(float(_combo), 36.0) * 0.019)
+	tocar("ouro", 0.0, _passo_do_combo(_combo))
 
 func _ao_moeda(chave: String, _valor: float, _fonte: String) -> void:
 	if chave == "ouro":

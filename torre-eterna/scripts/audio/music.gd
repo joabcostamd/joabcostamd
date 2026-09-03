@@ -43,6 +43,13 @@ var _era_pendente := -1
 var _intensidade := 0.0
 var _dt_ctx := 0.016
 var _chefe := false
+## Ultimo compasso que semeou o gerador — ver `_tocar_passo`.
+var _compasso_semeado := -1
+## Abafamento momentaneo depois de uma Purga (0..1) e o brilho que vem depois.
+var _duck := 0.0
+var _brilho_purga := 0.0
+## A janela dourada da Purga esta aberta? A trilha sustenta uma quinta em cima.
+var _purga_pronta := false
 
 func _init(no_host: Node) -> void:
 	host = no_host
@@ -158,6 +165,7 @@ func atualizar(dt: float, ctx: Dictionary) -> void:
 	_aplicar_contexto(ctx)
 
 	var alvo: float = _ganho_alvo if bool(ctx.get("ativo", true)) else _ganho_alvo * 0.45
+	alvo *= 1.0 - _duck * 0.62
 	_ganho = move_toward(_ganho, alvo, dt * 1.4)
 	if _era_pendente >= 0 and _ganho <= 0.06:
 		_trocar_era(_era_pendente)
@@ -190,9 +198,18 @@ func _aplicar_contexto(ctx: Dictionary) -> void:
 	var bruta := clampf(inimigos / 16.0, 0.0, 1.0) * 0.55
 	if _chefe:
 		bruta += 0.32
-	if vida < 0.35:
-		bruta += 0.18
+	# A VIDA ERA UM DEGRAU: abaixo de 35% somava 0,18 e pronto. Cinco por cento
+	# de vida e cem por cento soavam exatamente igual desde que os dois
+	# estivessem do mesmo lado do degrau. Agora e continuo, e o ultimo quarto
+	# pesa o dobro — e quando a torre esta para cair a trilha esta no talo.
+	bruta += (1.0 - vida) * 0.30
+	if vida < 0.25:
+		bruta += (0.25 - vida) * 1.2
 	_intensidade = lerpf(_intensidade, clampf(bruta, 0.0, 1.0), clampf(_dt_ctx * 2.5, 0.0, 1.0))
+	# A Purga abre um buraco na trilha e devolve com brilho. Sem isto a mecanica
+	# assinatura do jogo passava sem que a musica percebesse.
+	_duck = maxf(0.0, _duck - _dt_ctx * 2.6)
+	_brilho_purga = maxf(0.0, _brilho_purga - _dt_ctx * 0.5)
 
 func _trocar_era(idx: int) -> void:
 	_era_idx = idx
@@ -209,6 +226,19 @@ func _trocar_era(idx: int) -> void:
 	_passo = 0
 	_t = 0.0
 
+## A PURGA CHEGA NA TRILHA. Chamado quando a Purga dispara: abre um buraco
+## curto (a musica sai da frente do estouro) e devolve com brilho proporcional a
+## qualidade. Purga perfeita abre mais fundo e brilha mais tempo.
+func marcar_purga(qualidade: float) -> void:
+	var q := clampf(qualidade, 0.0, 1.0)
+	_duck = maxf(_duck, 0.45 + 0.55 * q)
+	_brilho_purga = maxf(_brilho_purga, 0.5 + 0.5 * q)
+	_purga_pronta = false
+
+## A janela dourada abriu: a trilha sustenta uma quinta acima ate a Purga sair.
+func marcar_purga_pronta() -> void:
+	_purga_pronta = true
+
 ## Quantas camadas estão no ar agora.
 func camadas_ativas() -> int:
 	var extra := int(round(_intensidade * float(_camadas_max - 1)))
@@ -222,7 +252,14 @@ func _tocar_passo(p: int) -> void:
 	var no_compasso := p % 16
 	var compasso := int(p / 16)
 	var camadas := camadas_ativas()
-	_rng.seed = 7717 * (compasso + 1) + _era_idx * 131
+	# UMA SEMENTE POR COMPASSO, nao por passo. Isto estava DENTRO do laco de
+	# passo: os dezesseis passos de um compasso resemeavam o gerador com o MESMO
+	# numero, entao toda decisao "aleatoria" do compasso (o swing do chimbau, o
+	# floreio do arpejo) saia identica dezesseis vezes seguidas. A variacao que a
+	# trilha foi escrita para ter simplesmente nao acontecia.
+	if compasso != _compasso_semeado:
+		_compasso_semeado = compasso
+		_rng.seed = 7717 * (compasso + 1) + _era_idx * 131
 
 	# --- baixo: a fundação, sempre presente ---
 	var bate_baixo := no_compasso % 8 == 0
@@ -259,6 +296,14 @@ func _tocar_passo(p: int) -> void:
 		_pad(float(_raiz + 12 + (6 if _chefe else quinta)), -22.0)
 
 	# --- contracanto: só quando o campo está cheio ---
+	# A JANELA DOURADA DA PURGA soa: uma quinta acima da tonica, no primeiro
+	# tempo, enquanto a carga estiver cheia. O jogador aprende a ouvir a janela
+	# antes de olhar para o botao.
+	if _purga_pronta and no_compasso == 0:
+		_nota(banco("arpejo"), REF_ARPEJO, float(_raiz + 19), -15.0, 1.0)
+	# ...e o brilho que sobra depois de uma Purga boa: uma oitava acima, curta.
+	if _brilho_purga > 0.05 and no_compasso % 4 == 2:
+		_nota(banco("arpejo"), REF_ARPEJO, float(_raiz + 24), -22.0 + 8.0 * _brilho_purga, 1.0)
 	if camadas >= 5 and (no_compasso == 4 or no_compasso == 11) and _rng.randf() < 0.7:
 		var g: int = int(_escala[_rng.randi() % _escala.size()])
 		_nota(banco("arpejo"), REF_ARPEJO, float(_raiz + 36 + g), -21.0, 1.0)

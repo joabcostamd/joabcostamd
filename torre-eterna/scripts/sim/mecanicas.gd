@@ -140,7 +140,7 @@ static func disparar_purga(j, automatica: bool = false, forcar_qualidade: float 
 	if perfeita:
 		Bus.camera_lenta.emit(0.4, 320.0)
 		Bus.celebracao.emit("purga_perfeita", {"mortos": mortos})
-	Bus.habilidade_usada.emit("purga", 1)
+	Bus.purga_usada.emit(q, perfeita)
 	return true
 
 # ======================================================== ÁLBUM DE ECOS ====
