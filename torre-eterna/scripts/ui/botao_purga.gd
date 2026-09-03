@@ -18,7 +18,12 @@ func _ready() -> void:
 		Txt.t("purga"), Txt.t("pur_atalho"), Txt.t("pur_acumula"),
 		Txt.t("purga_dica"), pct_janela, Txt.t("pur_efeito"), Txt.t("pur_estourar"),
 	]
-	pressed.connect(func(): jogo.purgar())
+	# O retorno de `purgar()` era descartado. Como o motor de audio toca "clique"
+	# em todo BaseButton, uma Purga que NAO aconteceu soava exatamente como uma
+	# que aconteceu — o pior retorno possivel para uma acao que falhou.
+	pressed.connect(func():
+		if not jogo.purgar():
+			Bus.toast(Txt.t("purga_sem_carga"), "bloqueado", "nova"))
 
 func _process(delta: float) -> void:
 	t += delta

@@ -34,7 +34,7 @@ static func aplicar_dano(e: Inimigo, dano: float, j, opt: Dictionary = {}) -> Di
 		if Big.gte(e.escudo, dmg):
 			e.escudo = Big.sub(e.escudo, dmg)
 			e.flash = maxf(e.flash, 0.12)
-			Bus.inimigo_atingido.emit(e, dmg, bool(opt.get("crit", false)), str(opt.get("elemento", "")))
+			Bus.inimigo_atingido.emit(e, dmg, bool(opt.get("crit", false)), str(opt.get("elemento", "")), bool(opt.get("dot", false)))
 			return {"morreu": false, "dano": dmg, "overkill": Big.ZERO, "absorvido": true}
 		dmg = Big.sub(dmg, e.escudo)
 		e.escudo = Big.ZERO
@@ -64,7 +64,7 @@ static func aplicar_dano(e: Inimigo, dano: float, j, opt: Dictionary = {}) -> Di
 		if not Big.is_zero(cura):
 			j.curar_torre(cura)
 
-	Bus.inimigo_atingido.emit(e, dmg, bool(opt.get("crit", false)), str(opt.get("elemento", "")))
+	Bus.inimigo_atingido.emit(e, dmg, bool(opt.get("crit", false)), str(opt.get("elemento", "")), bool(opt.get("dot", false)))
 
 	if Big.lte(e.hp, Big.ZERO) or Big.is_zero(e.hp):
 		var overkill := Big.ZERO

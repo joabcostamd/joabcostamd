@@ -50,14 +50,20 @@ func _conectar() -> void:
 	Bus.combo_quebrou.connect(_ao_combo_quebrou)
 	Bus.prestigio_feito.connect(func(_c, _g): particulas.limpar(); numeros.limpar())
 
-func _ao_atingir(e, dano_log: float, critico: bool, elemento: String) -> void:
+func _ao_atingir(e, dano_log: float, critico: bool, elemento: String, dot: bool = false) -> void:
 	var cor := Color.WHITE
 	if critico:
 		cor = Color("#fde047")
 	elif elemento != "":
 		cor = Color.html(str(Bal.ELEMENTOS.get(elemento, {}).get("cor", "#ffffff")))
-	numeros.adicionar(e.pos + Vector2(0, -e.raio), Fmt.big(dano_log), cor, critico, 1.0 + (0.25 if e.chefe else 0.0), dano_log)
-	if critico:
+	# O tique de dano por tempo entra menor e sem tremor: ele conta, mas nao pode
+	# competir com o golpe. Antes fogo e veneno enchiam o pool de numeros a 60 Hz
+	# por inimigo e empurravam para fora justamente o numero do tiro.
+	var escala := 1.0 + (0.25 if e.chefe else 0.0)
+	if dot:
+		escala *= 0.7
+	numeros.adicionar(e.pos + Vector2(0, -e.raio), Fmt.big(dano_log), cor, critico and not dot, escala, dano_log)
+	if critico and not dot:
 		juice.tremer(2.6, 0.09)
 
 func _ao_morrer(e, _ouro: float) -> void:
@@ -278,11 +284,21 @@ func _desenhar_anel_purga() -> void:
 	if brilho > 0.0:
 		draw_arc(c, raio + 14.0 * (1.0 - brilho), 0, TAU, 64, Color(1, 1, 1, brilho * 0.5), 3.0, true)
 
+## A TECLA P NAO E TRATADA AQUI, de proposito.
+##
+## Ela era, com `set_input_as_handled()` incondicional — e como este no e filho
+## de Main e a entrada nao tratada anda em ordem inversa, o handler de main.gd
+## nunca via a tecla. Consequencia: o aviso "o nucleo ainda esta vazio", que
+## esta escrito e pronto em main.gd, era CODIGO MORTO; e a guarda de tela modal
+## que main.gd faz tambem era pulada, entao dava para queimar 26 segundos de
+## carga contra uma arena parada com o menu de Pausa aberto.
+##
+## Aqui fica so o clique na torre, que e um gesto do campo e nao existe em
+## main.gd. Ele passa pelo mesmo caminho unico de disparo.
 func _unhandled_input(evento: InputEvent) -> void:
-	if evento.is_action_pressed("purga"):
-		jogo.purgar()
-		get_viewport().set_input_as_handled()
-	elif evento is InputEventMouseButton and evento.pressed and evento.button_index == MOUSE_BUTTON_LEFT:
+	if evento is InputEventMouseButton and evento.pressed and evento.button_index == MOUSE_BUTTON_LEFT:
+		if jogo.pausado:
+			return
 		if evento.position.distance_to(jogo.arena.centro) < Bal.RAIO_TORRE * 2.6:
 			jogo.purgar()
 			get_viewport().set_input_as_handled()

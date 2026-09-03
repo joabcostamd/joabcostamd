@@ -349,7 +349,13 @@ func _ao_atirar(angulo: float, quantidade: int) -> void:
 	var pos := _centro() + Vector2.from_angle(angulo) * 210.0
 	tocar_em("tiro", pos, 0.0, 1.0 - minf(float(quantidade - 1), 4.0) * 0.03)
 
-func _ao_atingir(e, _dano: float, critico: bool, _elemento: String) -> void:
+func _ao_atingir(e, _dano: float, critico: bool, _elemento: String, dot: bool = false) -> void:
+	# Tique de queimadura e veneno NAO toca. Sao ~6.000 emissoes por segundo com
+	# a arena cheia; deixar passar entupia o limitador de taxa e o tiro de
+	# verdade — o unico som que o jogador precisa ouvir para saber que a torre
+	# esta funcionando — virava parte de um chiado continuo.
+	if dot:
+		return
 	if critico:
 		tocar_em("tiro_critico", _pos(e), 0.0, 1.0)
 	else:

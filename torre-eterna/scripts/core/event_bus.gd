@@ -5,7 +5,12 @@ extends Node
 
 # --- combate ---
 signal inimigo_surgiu(e)
-signal inimigo_atingido(e, dano_log, critico, elemento)
+## `dot` = dano por tempo (queimadura, veneno). Nasceu porque fogo e veneno
+## disparavam este sinal a 60 Hz POR INIMIGO: com 100 inimigos afetados sao
+## ~6.000 emissoes por segundo, o som de impacto ficava preso no limitador de
+## taxa para sempre e o tiro de verdade deixava de ser audivel. Quem escuta
+## precisa poder distinguir o tique do golpe.
+signal inimigo_atingido(e, dano_log, critico, elemento, dot)
 signal inimigo_morreu(e, ouro_log)
 ## Um banner cinematografico ocupou o meio da tela por N segundos.
 signal banner_cinematico(segundos: float)
