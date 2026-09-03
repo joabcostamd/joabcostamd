@@ -192,6 +192,19 @@ func _validar_efeito(origem: String, ef) -> void:
 		erros.append("%s: multiplicador negativo (é %s)" % [origem, str(v)])
 	elif tipo == "mult" and float(v) == 0.0:
 		avisos.append("%s: multiplicador ZERO anula o atributo (confirme que é intencional)" % origem)
+	# `pct` multiplica `base + flat`, NAO so a base — conferido em
+	# `StatEngine.calcular()`. Entao um `pct` sobre atributo de base zero nao e
+	# efeito morto: ele vale assim que o jogador investir naquele atributo por
+	# outro caminho. E CONDICIONAL, e isso merece aviso, nao erro.
+	#
+	# Escrevo isto porque cheguei a transformar em ERRO e quase "consertei" tres
+	# efeitos que funcionam (a Forja de Ferro, o talento de escudo e o Halo
+	# Suspenso). O portao que reprova codigo correto e pior que portao nenhum.
+	if tipo == "pct" and Dados.stat_defs.has(stat):
+		var base_stat := float((Dados.stat_defs[stat] as Dictionary).get("base", 0.0))
+		if base_stat == 0.0 and float(v) != 0.0:
+			avisos.append("%s: 'pct' sobre '%s' (base zero) so vale se o jogador investir nesse atributo" % [
+				origem, stat])
 
 func _efeitos() -> void:
 	for grupo in [["upgrades", Dados.upgrades], ["talentos", Dados.talentos],
@@ -201,6 +214,12 @@ func _efeitos() -> void:
 			if lista is Array:
 				for ef in lista:
 					_validar_efeito("%s/%s" % [grupo[0], str(it.get("id", "?"))], ef)
+			# Os MARCOS tambem sao efeito, e ficavam fora desta varredura: foi
+			# assim que sete deles nasceram mortos sem ninguem reclamar.
+			for mk in it.get("marcos", []):
+				for ef_mk in (mk as Dictionary).get("efeito", []):
+					_validar_efeito("%s/%s marco %d" % [
+						grupo[0], str(it.get("id", "?")), int((mk as Dictionary).get("nivel", 0))], ef_mk)
 	for chave in ["fragmentos", "nucleos", "eter"]:
 		for no in Dados.arvore[chave]:
 			for ef in no.get("efeito", []):

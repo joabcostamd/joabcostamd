@@ -1578,9 +1578,44 @@ func t_painel_melhorias() -> void:
 		if mx2 > 0 and int((marcos2[0] as Dictionary).get("nivel", 0)) > mx2:
 			longe.append(str(def_m2.get("id", "?")))
 	ok("o primeiro marco cabe no teto de projeto", longe.is_empty(), str(longe))
-	# ...e o modificador realmente aplica.
-	var txt_mod := _ler("res://scripts/sim/modifiers.gd")
-	ok("os marcos entram no calculo de atributos", txt_mod.contains('def.get("marcos", [])'))
+	# ...e o modificador realmente aplica — MEDIDO, nao lido. Um nivel abaixo do
+	# marco o atributo nao pode ter o bonus; um nivel acima, tem. E o atributo
+	# conferido e o do MARCO, que por construcao nao e o que a melhoria vende.
+	var def_marco: Dictionary = Dados.upgrade_por_id.get("dano", {})
+	var marcos_d: Array = def_marco.get("marcos", [])
+	ok("a melhoria de dano tem marcos para medir", not marcos_d.is_empty())
+	if not marcos_d.is_empty():
+		var mk0: Dictionary = marcos_d[0]
+		var nivel_mk := int(mk0.get("nivel", 0))
+		var ef0: Dictionary = (mk0["efeito"] as Array)[0]
+		var chave_mk := str(ef0.get("stat", ""))
+		var nivel_antes := int(jogo.s["upgrades"].get("dano", 0))
+		jogo.s["upgrades"]["dano"] = nivel_mk - 1
+		jogo.marcar_sujo()
+		jogo.recalcular()
+		var antes_mk: float = jogo.stats.n(chave_mk)
+		jogo.s["upgrades"]["dano"] = nivel_mk
+		jogo.marcar_sujo()
+		jogo.recalcular()
+		var depois_mk: float = jogo.stats.n(chave_mk)
+		ok("cruzar o marco muda o atributo que o marco promete",
+			depois_mk > antes_mk, "%s: %.4f -> %.4f" % [chave_mk, antes_mk, depois_mk])
+		# O ganho ESPERADO depende do tipo, e a conta e a do motor:
+		# `(base + flat) * (1 + pct) * mult`. Para `pct`, o delta e o valor
+		# VEZES o que o atributo ja valia — foi assim que a primeira versao
+		# deste teste reprovou por 0,0025 contra 0,05 e me fez quase "consertar"
+		# um dado que estava certo.
+		var esperado := 0.0
+		match str(ef0.get("tipo", "flat")):
+			"flat": esperado = float(ef0.get("valor", 0.0))
+			"pct": esperado = antes_mk * float(ef0.get("valor", 0.0))
+			"mult": esperado = antes_mk * (float(ef0.get("valor", 1.0)) - 1.0)
+		ok("...e o ganho e o que o JSON declara, na conta do motor",
+			perto(depois_mk - antes_mk, esperado, maxf(0.0001, absf(esperado) * 0.02)),
+			"%.4f vs %.4f (%s)" % [depois_mk - antes_mk, esperado, str(ef0.get("tipo", "flat"))])
+		jogo.s["upgrades"]["dano"] = nivel_antes
+		jogo.marcar_sujo()
+		jogo.recalcular()
 	var txt_g2 := _ler("res://scripts/sim/game.gd")
 	ok("cruzar um marco avisa o jogador", txt_g2.contains('Bus.celebracao.emit("marco"'))
 	# E o painel mostra o que falta — a antecipacao mora ai.
