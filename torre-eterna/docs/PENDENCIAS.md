@@ -51,16 +51,16 @@ suíte reprovou):
 | 2.5 | `cuspir` anunciada no codex e sem braço — o inimigo chamado "atirador" nunca atirou. `ondaMax` era a linha de chegada de 12 dos 14 desafios e ninguém lia: `encerrar_desafio(true)` não tinha chamador, então o desafio **nunca terminava** e a recompensa era inalcançável | ✅ |
 | 2.6 | `salvamento_travado`: o boot trancava, o sinal `save_ilegivel` não tinha ouvinte e **não existia caminho para religar** — quem tivesse save corrompido jogava para sempre sem gravar, sem saber por quê | ✅ Avisa e oferece a chave em Configurações |
 
-## 3. Economia e ritmo — 🟡 PARCIAL (3.2 e 3.5 fechados)
+## 3. Economia e ritmo — 🟡 PARCIAL (3.3 pela metade, 3.7 em aberto)
 
 | # | Pendência | Prova |
 |---|---|---|
-| 3.1 | **O ritmo é ditado pelo spawner, não pelo poder.** Passada a onda ~50, comprar dano não encurta nada dentro de uma run: medido a ~490 ondas/hora, quase uma reta, com 21 ordens de grandeza de dano sobrando. | `tools/duracao.gd` (medição), `scripts/sim/waves.gd` |
+| 3.1 | ✅ **FECHADO, com a resposta invertida.** O achado original está certo — passada a onda ~50 comprar dano não encurta a run — mas a correção óbvia (acelerar o spawn quando a arena esvazia) foi medida e **quebra o jogo**: onda máxima de 261 para 115. A razão está em dois números: a vida do inimigo cresce 1,152 por onda e o ouro 1,128, com teto de 30 inimigos. **Avançar uma onda é, sozinho, perda líquida de poder relativo** — o jogador ganha porque passa TEMPO dentro da onda. Um spawner que acelera sozinho empobrece quem joga. A decisão fica com o jogador e vem com prêmio (`antecipar()`, +60% de ouro), e uma asserção tranca a relação entre os dois expoentes. | `scripts/sim/waves.gd`, `t_ondas` |
 | 3.2 | ✅ **FECHADO.**  **O catálogo de melhorias esvazia** (as 33 com teto ficam no máximo). O portão mede a onda FINAL em vez de QUANDO esvaziou, então não pega. | `tools/suites/sim_balance.gd` |
-| 3.3 | **Camadas 2 e 3 fora de alcance prático.** Medido com prestígio ligado: nível 500 (máximo) em **5 h**, conquistas travam em **58/85**, e a Singularidade (8 ascensões) **não chegou em 7 h** — o jogador tinha 5 e desacelerando. A Transcendência pede 5 singularidades. | `tools/duracao.gd` |
-| 3.4 | **39 melhorias uniformes** — quase todas "+X%", sem decisão de build. | `data/upgrades.json` |
+| 3.3 | 🟡 **CAMADA 2 FECHADA, CAMADA 3 EM ABERTO.** O laudo antigo ("Singularidade não chegou em 7 h") foi medido com o jogo travando na onda 85 e com uma régua que exigia dobrar a onda a cada ascensão — a oitava pediria a onda 3.200. Remedido: **1ª ascensão aos 7m29, oito ascensões em 1h14, nível 500 em 4h07, onda 150 em 5h34, 1ª Singularidade em 5h36**, 53/85 conquistas e as 30 cartas vistas em 7 h. A Transcendência (5 singularidades + onda 500) **não chega em 7 h** e é trabalho de dezenas de horas — o que é normal para uma terceira camada, mas está dito e não escondido. | `tools/duracao.gd` |
+| 3.4 | ✅ **FECHADO.** **39 melhorias uniformes** — quase todas "+X%", sem decisão de build. Quinze delas ganharam **marcos**: degraus que entregam algo *diferente* do que a melhoria vende (o Canhão passa crítico, a Refrigeração passa projétil, o Fogo passa área). Como o ouro é finito a cada instante, qual degrau perseguir primeiro é a decisão que faltava — e uma asserção reprova marco que só repete o próprio efeito. | `data/upgrades.json`, `t_painel_melhorias` |
 | 3.5 | ✅ **FECHADO.**  **Nada mata a torre hoje**, e morrer limpa a tela de graça: não há estado de derrota real. | `scripts/sim/game.gd` |
-| 3.6 | **A Retomada é corrida impossível de ganhar**: 10 s reais × 6 = 60 s de jogo, contra 16–18 s por onda. Termina por relógio, não por progresso. | `scripts/sim/mecanicas.gd` |
+| 3.6 | ✅ **FECHADO.** **A Retomada é corrida impossível de ganhar**: 10 s reais × 6 = 60 s de jogo, contra 16–18 s por onda. Termina por relógio, não por progresso. | `scripts/sim/mecanicas.gd` |
 
 ### 3.7 — NOVO, medido nesta rodada
 
@@ -68,7 +68,7 @@ suíte reprovou):
 |---|---|---|
 | 3.7 | **A perna de 160 vivos do portão de desempenho continua acima do orçamento**: 8.537 us contra 4.000. Caiu de 22.672 us (2,7×) consertando morteiro, vida de projétil, dano contínuo e corrente de raio; o que sobra é o custo intrínseco de 53 impactos por passo — doze perfurações vezes quinze projéteis. Mexer nisso é mudar o jogo, não otimizá-lo. A perna do JOGO REAL passa com folga (1.854 us de 4.000). | `tools/perf.gd -- 412` |
 
-## 4. Experiência do jogador — 🟡 PARCIAL (só 4.9 em aberto)
+## 4. Experiência do jogador — ✅ FECHADO
 
 | # | Pendência | Prova |
 |---|---|---|
@@ -80,7 +80,7 @@ suíte reprovou):
 | 4.6 | ✅ **FECHADO.**  **As 10 Eras nunca dizem o nome.** `Bus.era_mudou` tem um único ouvinte: o pintor de fundo. Cada era traz `regra.texto` escrito e revisado, nunca mostrado. | `scripts/sim/waves.gd` |
 | 4.7 | ✅ **FECHADO.**  **Álbum de Ecos sem placar.** A palavra "album" não aparece uma vez em `scripts/ui/`. Paga bônus permanente e o jogador não vê. | `scripts/ui/` |
 | 4.8 | ✅ **FECHADO.**  **Fim de sessão braçal**: falta "Coletar tudo (N)" e "Reciclar duplicadas (N)" — os dois critérios já existem prontos no código. | `scripts/ui/panel_missoes.gd`, `scripts/sim/loot.gd` |
-| 4.9 | **Navegação por teclado inexistente**: 296 controles interativos, 11 focáveis, nenhum `Button`. | `scripts/ui/ui_kit.gd` |
+| 4.9 | ✅ **FECHADO.** **Navegação por teclado inexistente**: 296 controles interativos, 11 focáveis, nenhum `Button`. | `scripts/ui/ui_kit.gd` |
 | 4.10 | ✅ **FECHADO.**  **Contraste WCAG cobre 3 de ~18 cores de texto**, e há reprovação viva não detectada. | `tools/suites/testes.gd` |
 
 ## 5. Áudio — ✅ FECHADO
@@ -96,11 +96,11 @@ suíte reprovou):
 | 5.7 | ✅ **FECHADO.**  **A trilha não sabe da Purga** nem distingue 5% de vida de 100%. | `scripts/audio/music.gd` |
 | 5.8 | ✅ **FECHADO.**  **Sinos que não são sinos**: `ouro` e `moeda` usam razões FM inteiras (timbre de órgão, não de metal). | `scripts/audio/sfx.gd` |
 
-## 6. Documentação que não bate com o código — 🟡 PARCIAL (só 6.1 em aberto)
+## 6. Documentação que não bate com o código — ✅ FECHADO
 
 | # | Pendência | Prova |
 |---|---|---|
-| 6.1 | **`QUALIDADE.md` publica saída "colada de execução — nunca de memória" que foi editada à mão.** Pelo menos quatro blocos: `validar_dados` sem os 4 avisos, `perf` sem a perna de folga, `sim_balance` sem a tabela, e uma linha (`STATUS: PASS (kit 1.5.2, 0 falhas)`) que **nenhum caminho de código emite**. Num documento cuja tese é honestidade. | `docs/QUALIDADE.md`, `agent_verify.gd` |
+| 6.1 | ✅ **FECHADO.** **`QUALIDADE.md` publica saída "colada de execução — nunca de memória" que foi editada à mão.** Pelo menos quatro blocos: `validar_dados` sem os 4 avisos, `perf` sem a perna de folga, `sim_balance` sem a tabela, e uma linha (`STATUS: PASS (kit 1.5.2, 0 falhas)`) que **nenhum caminho de código emite**. Num documento cuja tese é honestidade. | `docs/QUALIDADE.md`, `agent_verify.gd` |
 | 6.2 | ✅ **FECHADO.**  **Badge do README anuncia 195 testes**; o portão mede 370. É a primeira tela do documento. | `README.md` |
 | 6.3 | ✅ **FECHADO.**  **"Contagem honesta" erra a própria soma**: 61/11/28, não 59/11/30. | `docs/QUALIDADE.md` |
 | 6.4 | ✅ **FECHADO.**  **`docs/PLANO.md` está fora do portão de doc** e apodreceu em quatro números. | `docs/PLANO.md` |
