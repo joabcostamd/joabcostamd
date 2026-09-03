@@ -88,7 +88,7 @@ func rodar(cena: SceneTree) -> void:
 		"Dicas": 5, "Economia": 9, "Elites": 11,
 		"Eventos": 12, "Feedback": 2, "Ferramentas": 3, "Daltonismo": 9, "Tempo": 5, "Conteudo lido": 21, "Fmt": 6,
 		"Habilidades": 17, "Icones": 2, "Integridade": 9,
-		"Longo prazo": 7, "Mecânicas": 61, "Mira": 6,
+		"Longo prazo": 7, "Mecânicas": 69, "Mira": 6,
 		"Mods": 19, "Numeros de dano": 2, "Offline": 6,
 		"Ondas": 12, "Pista de ouro": 3, "Prestígio": 25,
 		"Progresso": 14, "Saque": 8, "Save": 41,
@@ -2190,6 +2190,37 @@ func t_mecanicas() -> void:
 	jogo.s["auto"]["comprar"] = false
 	Mecanicas.iniciar_retomada(jogo, 30)
 	ok("retomada liga a compra automatica", bool(jogo.s["auto"]["comprar"]))
+	# A RETOMADA ACABA POR PROGRESSO, NAO POR RELOGIO. Eram 10 s reais fixos: a
+	# x6 isso da quatro ondas, contra um alvo que podia ser a onda 200 — a
+	# corrida tinha a linha de chegada fora da pista e `superou` nunca acontecia.
+	var r_ret: Dictionary = jogo.s["retomada"]
+	ok("a retomada guarda a onda que ja viu", r_ret.has("onda_vista"))
+	ok("...e o quanto ficou parada", r_ret.has("parado"))
+	ok("o teto e maior que os 10 s de antes", Mecanicas.RETOMADA_DURACAO > 10.0)
+	ok("existe um tempo de parada", Mecanicas.RETOMADA_PARADA > 0.0)
+	# Parada: sem ganhar onda, ela termina no tempo de parada — nao no teto.
+	var passo_r := 0.5 * Mecanicas.RETOMADA_VELOCIDADE
+	var voltas := 0
+	while Mecanicas.em_retomada(jogo.s) and voltas < 400:
+		Mecanicas.atualizar_retomada(passo_r, jogo)
+		voltas += 1
+	var reais := float(voltas) * 0.5
+	ok("parada de onda encerra a Retomada bem antes do teto",
+		reais <= Mecanicas.RETOMADA_PARADA + 1.0, "%.1f s reais" % reais)
+	# Subindo: cada onda nova zera o cronometro de parada, e a Retomada segue.
+	Mecanicas.iniciar_retomada(jogo, 30)
+	var r2: Dictionary = jogo.s["retomada"]
+	Mecanicas.atualizar_retomada(passo_r, jogo)
+	var parado_antes := float(r2["parado"])
+	ok("ficar parado acumula", parado_antes > 0.0)
+	jogo.s["onda"] = int(jogo.s["onda"]) + 1
+	Mecanicas.atualizar_retomada(passo_r, jogo)
+	ok("ganhar uma onda zera o cronometro de parada", float(r2["parado"]) == 0.0)
+	# ...e superar o alvo encerra na hora, que e o final que ela promete.
+	jogo.s["onda"] = 31
+	Mecanicas.atualizar_retomada(passo_r, jogo)
+	ok("passar do alvo encerra a Retomada", not Mecanicas.em_retomada(jogo.s))
+	Mecanicas.iniciar_retomada(jogo, 30)
 	Mecanicas.encerrar_retomada(jogo)
 	ok("encerrar devolve a compra automatica", not bool(jogo.s["auto"]["comprar"]))
 	ok("encerrar limpa o estado", not Mecanicas.em_retomada(jogo.s))

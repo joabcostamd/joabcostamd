@@ -383,7 +383,21 @@ static func abrir_caixa(j) -> Dictionary:
 ## Depois de um prestígio, o jogo acelera sozinho e reconstrói o império
 ## enquanto você assiste — com a marca da run anterior na tela para ser
 ## ultrapassada ao vivo. O reset deixa de ser o anticlímax e vira o clímax.
-const RETOMADA_DURACAO := 10.0
+## A RETOMADA ACABA POR PROGRESSO, NAO POR RELOGIO.
+##
+## Eram 10 segundos reais fixos. A ×6, isso da 60 segundos de jogo, e uma onda
+## leva de 16 a 18 s: quatro ondas. Como o ALVO e o recorde da corrida anterior
+## — que podia ser a onda 200 — `superou` nunca acontecia, e a mecanica que
+## existe para transformar o reset em climax terminava sempre do mesmo jeito:
+## o cronometro zerava no meio da subida e o jogo voltava ao normal sem dizer
+## nada. Era uma corrida com a linha de chegada fora da pista.
+##
+## Agora ela dura ENQUANTO ESTIVER SUBINDO: acaba quando o alvo e superado
+## (o final que ela sempre prometeu), quando passam `RETOMADA_PARADA` segundos
+## reais sem ganhar uma onda, ou no teto duro — que existe so para o caso
+## degenerado de uma build que sobe para sempre.
+const RETOMADA_DURACAO := 45.0
+const RETOMADA_PARADA := 6.0
 const RETOMADA_VELOCIDADE := 6.0
 
 static func iniciar_retomada(j, onda_anterior: int) -> void:
@@ -395,6 +409,8 @@ static func iniciar_retomada(j, onda_anterior: int) -> void:
 		"velocidade_antes": float(j.velocidade),
 		"auto_antes": bool(j.s["auto"]["comprar"]),
 		"superou": false,
+		"onda_vista": int(j.s["onda"]),
+		"parado": 0.0,
 	}
 	j.s["auto"]["comprar"] = true
 	j.fator_retomada = RETOMADA_VELOCIDADE
@@ -415,8 +431,19 @@ static func atualizar_retomada(dt: float, j) -> void:
 		Bus.celebracao.emit("retomada_superada", {"onda": int(j.s["onda"])})
 		Bus.toast(Txt.t("sim_retomada_superada"), "epico")
 
-	r["restante"] = float(r["restante"]) - dt / maxf(0.001, RETOMADA_VELOCIDADE)
-	if float(r["restante"]) <= 0.0 or bool(r["superou"]):
+	# `dt` chega ja acelerado pelo `time_scale`; dividir pela velocidade devolve
+	# o tempo REAL, que e o que o jogador sente.
+	var real := dt / maxf(0.001, RETOMADA_VELOCIDADE)
+	r["restante"] = float(r["restante"]) - real
+	# Enquanto a onda sobe, o cronometro de parada volta para o comeco: a
+	# Retomada acompanha a subida em vez de cortar no meio dela.
+	var agora := int(j.s["onda"])
+	if agora > int(r.get("onda_vista", 0)):
+		r["onda_vista"] = agora
+		r["parado"] = 0.0
+	else:
+		r["parado"] = float(r.get("parado", 0.0)) + real
+	if bool(r["superou"]) or float(r["restante"]) <= 0.0 or float(r["parado"]) >= RETOMADA_PARADA:
 		encerrar_retomada(j)
 
 static func encerrar_retomada(j) -> void:
