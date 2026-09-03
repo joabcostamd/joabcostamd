@@ -133,7 +133,13 @@ func _posicionar_toasts() -> void:
 	# aberto; ninguém os ensinou a fugir do banner, e o nome do chefe saía
 	# ilegível por baixo de cinco avisos de conquista. Mesma saída: a caixa se
 	# muda para o rodapé enquanto o banner estiver na tela.
-	var aberto := atual != "" or _banner_ate > 0.0
+	# Terceira vez que o mesmo defeito aparece: os avisos aprenderam a fugir do
+	# painel, depois do banner cinematográfico, e ninguém os ensinou a fugir do
+	# DIÁLOGO DE EVENTO — que é o pior lugar para cobrir, porque o evento exige
+	# uma escolha e o jogador precisa LER para escolher. Numa captura da onda 61
+	# o aviso "O núcleo encheu e estourou" tapava o título "Colheita Dourada".
+	var dialogo_na_tela := dialogo != null and is_instance_valid(dialogo)
+	var aberto := atual != "" or _banner_ate > 0.0 or dialogo_na_tela
 	caixa_toast.anchor_top = 1.0 if aberto else 0.0
 	caixa_toast.anchor_bottom = 1.0 if aberto else 0.0
 	# No rodapé a caixa cresce PARA CIMA (senão os últimos avisos saem da tela) e
@@ -226,8 +232,16 @@ func abrir_evento(def: Dictionary) -> void:
 	dialogo.set_script(script)
 	dialogo.evento = def
 	raiz.add_child(dialogo)
+	# Quando o diálogo sai, os avisos precisam VOLTAR para o topo — senão ficam
+	# presos no rodapé para o resto da partida.
+	dialogo.tree_exited.connect(func():
+		dialogo = null
+		_posicionar_toasts())
 	dialogo.move_to_front()
-	caixa_toast.move_to_front()
+	# O aviso NÃO volta para a frente aqui. Ele vinha, e por isso passava por
+	# cima da escolha que o jogador precisa ler. Com a caixa fugindo para o
+	# rodapé, o aviso continua visível e deixa de disputar espaço com o texto.
+	_posicionar_toasts()
 
 ## ------------------------------------------------------------- toasts
 
