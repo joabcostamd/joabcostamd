@@ -31,6 +31,7 @@ var caixa_adapt: HBoxContainer
 var rotulos_adapt := {}
 var botoes_painel := {}
 var lbl_velocidade: Label
+var b_mira: Button
 var aviso_pontos: Label
 var ic_pontos: Control
 
@@ -255,7 +256,9 @@ func _construir() -> void:
 	lbl_velocidade = UI.rotulo("×1", 15, UI.ACENTO)
 	acoes.add_child(_botao_com_icone("velocidade", Txt.t("velocidade"), UI.ACENTO, _alternar_velocidade))
 	acoes.add_child(lbl_velocidade)
-	acoes.add_child(_botao_com_icone("alvo", Txt.t("mira"), UI.VERDE, _alternar_mira))
+	b_mira = _botao_com_icone("alvo", Txt.t("mira"), UI.VERDE, _alternar_mira)
+	acoes.add_child(b_mira)
+	_atualizar_dica_mira()
 	acoes.add_child(_botao_com_icone("salvar", Txt.t("salvar_agora") + " (F5)", UI.TEXTO2, func(): jogo.salvar(); Bus.toast(Txt.t("jogo_salvo"), "bom")))
 
 	# a Purga fica à esquerda da barra de habilidades, com destaque próprio
@@ -474,7 +477,21 @@ func _atualizar_buffs() -> void:
 		var l: Label = cx2.get_child(1)
 		l.text = "%ds" % int(ceil(float(b["restante"])))
 		l.add_theme_color_override("font_color", cor)
-		cx2.tooltip_text = "%s — %s" % [str(b.get("fonte", "")), str(b.get("stat", ""))]
+		# O tooltip mostrava a chave interna ("ganhoOuro"). data/stats.json já tem
+		# o nome legível de cada atributo — é de lá que ele sai agora, junto com
+		# o tamanho do efeito, que é a informação que o jogador realmente quer.
+		cx2.tooltip_text = "%s — %s" % [str(b.get("fonte", "")), _descrever_buff(b)]
+
+## Nome legível do atributo mais o tamanho do efeito ("Ganho de Ouro ×1,5").
+func _descrever_buff(b: Dictionary) -> String:
+	var chave := str(b.get("stat", ""))
+	var def: Dictionary = Dados.stat_defs.get(chave, {})
+	var nome := Ux.txt(def, "nome", Cfg.ingles()) if not def.is_empty() else chave
+	var v := float(b.get("valor", 0.0))
+	match str(b.get("tipo", "")):
+		"mult": return "%s ×%s" % [nome, Fmt.num(v, 2)]
+		"pct": return "%s %s%s" % [nome, "+" if v >= 0.0 else "", Fmt.pct(v, 0)]
+		_: return "%s %s%s" % [nome, "+" if v >= 0.0 else "", Fmt.num(v, 2)]
 
 ## --------------------------------------------------------------- ações
 
@@ -493,7 +510,15 @@ func _alternar_mira() -> void:
 	var i := modos.find(atual)
 	var novo := str(modos[(i + 1) % modos.size()])
 	jogo.definir_mira(novo)
-	Bus.toast(Txt.t("mira") + ": " + novo, "info", "alvo")
+	# O aviso mostrava o identificador interno ("avancado"). Agora mostra o nome
+	# do modo, e o botão passa a dizer em qual modo você está sem precisar clicar.
+	Bus.toast("%s: %s" % [Txt.t("mira"), Txt.t("mira_" + novo)], "info", "alvo")
+	_atualizar_dica_mira()
+
+func _atualizar_dica_mira() -> void:
+	if b_mira == null:
+		return
+	b_mira.tooltip_text = "%s: %s" % [Txt.t("mira"), Txt.t("mira_" + str(jogo.s["torre"]["mira"]))]
 
 func _pulsar_nivel() -> void:
 	UI.pulsar(lbl_nivel, UI.OURO)

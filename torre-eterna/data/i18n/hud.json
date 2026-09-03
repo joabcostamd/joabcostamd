@@ -1,0 +1,26 @@
+{
+  "mira_proximo": {
+    "pt": "Mais próximo",
+    "en": "Closest"
+  },
+  "mira_avancado": {
+    "pt": "Mais avançado",
+    "en": "Furthest along"
+  },
+  "mira_forte": {
+    "pt": "Mais forte",
+    "en": "Strongest"
+  },
+  "mira_fraco": {
+    "pt": "Mais fraco",
+    "en": "Weakest"
+  },
+  "mira_chefe": {
+    "pt": "Chefe primeiro",
+    "en": "Boss first"
+  },
+  "mira_longe": {
+    "pt": "Mais distante",
+    "en": "Farthest"
+  }
+}

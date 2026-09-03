@@ -126,6 +126,7 @@ static func _sortear(modelos: Array, qtd: int, progresso: int, j) -> Array:
 			"id": str(def.get("id", "")),
 			"alvo": alvo,
 			"base": valor_cond(j.s, str(meta.get("tipo", "")), str(meta.get("chave", ""))),
+			"prog": 0.0,
 			"pronta": false,
 			"coletada": false,
 		})
@@ -143,9 +144,25 @@ static func checar_missoes(j) -> void:
 				continue
 			var meta: Dictionary = def.get("meta", {})
 			var atual := valor_cond(s, str(meta.get("tipo", "")), str(meta.get("chave", "")))
-			if atual - float(mi["base"]) >= float(mi["alvo"]):
+			if _avancar(mi, atual) >= float(mi["alvo"]):
 				mi["pronta"] = true
 				Bus.missao_concluida.emit(str(mi["id"]))
+
+## Avanço de uma missão, guardado no próprio item.
+##
+## Nem todo contador sobe sempre: `onda` e `nivel` voltam a 1 no prestígio,
+## gemas e fragmentos são gastos, cartas somem do inventário quando são
+## consumidas. Medir `atual - base` num contador desses deixava a missão do dia
+## IMPOSSÍVEL depois de uma ascensão — o valor ficava permanentemente abaixo da
+## base. Aqui a base acompanha a descida e o progresso já ganho nunca é perdido.
+static func _avancar(mi: Dictionary, atual: float) -> float:
+	var base := float(mi.get("base", 0.0))
+	if atual < base:
+		mi["base"] = atual
+		base = atual
+	var prog := maxf(float(mi.get("prog", 0.0)), atual - base)
+	mi["prog"] = prog
+	return prog
 
 static func progresso_missao(s: Dictionary, mi: Dictionary) -> float:
 	var def: Dictionary = Dados.missao_por_id.get(str(mi["id"]), {})
@@ -154,7 +171,7 @@ static func progresso_missao(s: Dictionary, mi: Dictionary) -> float:
 	var meta: Dictionary = def.get("meta", {})
 	var atual := valor_cond(s, str(meta.get("tipo", "")), str(meta.get("chave", "")))
 	var alvo := maxf(1.0, float(mi["alvo"]))
-	return clampf((atual - float(mi["base"])) / alvo, 0.0, 1.0)
+	return clampf(_avancar(mi, atual) / alvo, 0.0, 1.0)
 
 static func coletar_missao(j, grupo: String, indice: int) -> bool:
 	var s: Dictionary = j.s

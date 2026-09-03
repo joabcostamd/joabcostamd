@@ -412,6 +412,14 @@ func t_saque() -> void:
 ## ---------------------------------------------------------- progresso
 func t_progresso() -> void:
 	g("Progresso")
+	# Missao ligada a contador que anda para tras (onda e nivel voltam a 1 no
+	# prestigio; gemas e cartas sao gastas) ficava impossivel para sempre.
+	var missao_teste := {"id": "x", "alvo": 10.0, "base": 40.0, "prog": 0.0, "pronta": false, "coletada": false}
+	ok("progresso conta subida", Progresso._avancar(missao_teste, 45.0) >= 5.0)
+	Progresso._avancar(missao_teste, 1.0)             # prestigio: contador despenca
+	ok("base acompanha a descida", float(missao_teste["base"]) <= 1.0)
+	ok("progresso ja ganho nao se perde", float(missao_teste["prog"]) >= 5.0)
+	ok("missao volta a ser possivel", Progresso._avancar(missao_teste, 11.0) >= 10.0)
 	var s: Dictionary = jogo.s
 	ok("le condicao", Progresso.valor_cond(s, "onda") == float(s["onda"]))
 	ok("condicao desconhecida = 0", Progresso.valor_cond(s, "nao_existe") == 0.0)
