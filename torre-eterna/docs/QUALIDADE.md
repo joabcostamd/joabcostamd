@@ -98,7 +98,7 @@ melhoria com ouro**. `comprar_talento`, `comprar_no`, `comprar_reliquia` e
 `Saque.equipar` não tinham um único chamador fora de `scripts/ui/`: nenhuma
 execução sem tela usava metade dos sistemas de poder do jogo. Aquele número
 media um jogador com uma mão amarrada nas costas. Com o agente jogando inteiro,
-a mesma build chega à onda 100 em 29m52 em vez de "mais de 30 min" — **o jogo
+a mesma build chega à onda 100 em 29m38 em vez de "mais de 30 min" — **o jogo
 não ficou mais generoso; a medição é que estava errada**.
 
 E os pisos novos ficam abaixo da medida com folga, de propósito: piso encostado
@@ -188,13 +188,29 @@ maquina: 36208 us na conta de referencia (39000 esperado) -> fator 1.00x
 recalculos de atributos: 2448
 ===STATUS=== PASS
 
-$ godot --headless --path . -s res://tools/sim_balance.gd -- 2
-onda   10 -> 2m 30s
-onda   25 -> 8m 00s
-onda   50 -> 19m 00s
-onda  100 -> 34m 00s
-onda  150 -> ~56m
-(3 h simuladas, com automação: onda 425 sem travar)
+$ godot --headless --path . -s res://tools/sim_balance.gd -- 1.2 auto
+=== MARCOS (tempo para chegar) ===
+  onda   10 -> 2m 43s
+  onda   25 -> 7m 29s
+  onda   50 -> 14m 56s
+  onda   75 -> 22m 11s
+  onda  100 -> 29m 38s
+  onda  150 -> 43m 20s
+  onda  200 -> 56m 04s
+
+=== RESUMO ===
+onda maxima: 266
+mortes: 0 | inimigos mortos: 9918 | chefes: 26
+ouro total: 5,13e50 | dano max: 1,77e40
+cartas: 178 | conquistas: 44
+fragmentos se ascender agora: 20,42 T
+pico de entidades: 22 inimigos, 800 projeteis
+desempenho: 158089 ms para 259200 passos (609.91 us/passo, 27x tempo real)
+melhorias no teto: 33 de 33 com teto (onda 266)
+===STATUS=== PASS
+
+(duas execuções seguidas do mesmo commit dão marcos idênticos linha a linha —
+ é o que a semente fixa compra)
 
 $ godot --headless --path . -s res://agent_verify.gd
 STATUS: PASS   (kit 1.5.2, 0 falhas)
