@@ -20,7 +20,6 @@ const ZERO := -1.0e30
 const ONE := 0.0
 const LIMIAR_ZERO := -1.0e29
 const CORTE_SOMA := 17.0          ## além disto a parcela menor some no float
-const LOG10_2 := 0.30102999566398
 const MAX_LOG := 1.0e29
 
 ## ------------------------------------------------------------- construção

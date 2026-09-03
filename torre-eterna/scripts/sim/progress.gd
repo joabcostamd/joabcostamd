@@ -4,6 +4,52 @@ extends RefCounted
 ## Conquistas, missões diárias/semanais, temporada e codex.
 
 ## Lê o valor atual de uma condição rastreável.
+## Todo tipo de condição que `valor_cond` sabe ler. Existe para o portão
+## conseguir perguntar "o conteúdo cita algum tipo sem leitor?" — sem isso, um
+## tipo com erro de digitação cai no `_` da correspondência abaixo, devolve 0
+## para sempre e a conquista fica presa sem ninguém reclamar. O linter compara
+## esta lista com os casos reais da função e reprova se as duas divergirem.
+const TIPOS_COND := [
+	"onda",
+	"ondaMaxima",
+	"ondaMaximaGlobal",
+	"inimigosMortos",
+	"chefesMortos",
+	"ouroTotal",
+	"ouroGasto",
+	"nivel",
+	"comboMaximo",
+	"criticos",
+	"ascensoes",
+	"singularidades",
+	"transcendencias",
+	"cartas",
+	"lendarios",
+	"tempoTotal",
+	"habilidadesUsadas",
+	"douradosAbatidos",
+	"dourados",
+	"danoMaximo",
+	"ondasCompletas",
+	"mortes",
+	"relicas",
+	"conquistasTotal",
+	"missoesCompletas",
+	"desafiosCompletos",
+	"tiros",
+	"gemas",
+	"fragmentos",
+	"nucleos",
+	"eter",
+	"upgradeNivel",
+	"talentoNivel",
+	"inimigoTipo",
+	"eras",
+]
+
+static func tipo_cond_conhecido(tipo: String) -> bool:
+	return TIPOS_COND.has(tipo)
+
 static func valor_cond(s: Dictionary, tipo: String, chave: String = "") -> float:
 	var st: Dictionary = s["stats"]
 	match tipo:

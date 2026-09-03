@@ -85,14 +85,14 @@ static func pontos_por_nivel(n: int) -> int:
 	return p
 
 # ============================================================= COMBATE ====
+## Estes dois duplicam `data/stats.json`. Ficam aqui porque os testes precisam
+## de um valor de referência em código, e `validar_dados.gd` compara os dois:
+## se o JSON mudar e a constante não, o portão de dados reprova. Os outros seis
+## que moravam neste bloco (cadência, crítico, velocidade, vida, regeneração)
+## eram cópias sem nenhum leitor — dois deles nomeando stats que nem existem no
+## JSON. Foram removidos em vez de mantidos por educação.
 const DANO_BASE := 4.0
-const CADENCIA_BASE := 1.6
 const ALCANCE_BASE := 260.0
-const CRIT_BASE := 0.05
-const CRIT_MULT_BASE := 2.0
-const VEL_PROJETIL := 460.0
-const VIDA_BASE := 100.0
-const REGEN_BASE := 0.5
 
 const ARMADURA_K := 60.0
 const COMBO_JANELA := 2.6
@@ -195,7 +195,6 @@ const CHANCE_CARTA_TETO := 0.010
 const CHANCE_CARTA_ELITE_TETO := 0.06
 const CHANCE_CARTA_CHEFE := 1.0
 const CHANCE_CARTA_ELITE := 0.018
-const PITY_PASSO := 0.0009
 const GEMAS_CHEFE := 3
 const GEMAS_SUPER := 25
 const POEIRA := {"comum": 5, "incomum": 14, "raro": 45, "epico": 160, "lendario": 600, "mitico": 2400}

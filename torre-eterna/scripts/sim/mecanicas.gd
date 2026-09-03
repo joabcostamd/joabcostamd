@@ -23,6 +23,15 @@ static func estado_purga(s: Dictionary) -> Dictionary:
 		s["purga"] = {"carga": 0.0, "auto": false, "usos": 0, "perfeitas": 0, "estourou": 0, "brilho": 0.0}
 	return s["purga"]
 
+## Cada abate adianta a carga da Purga — a promessa que `PURGA_POR_ABATE` fazia
+## e ninguem cumpria. Nao dispara nada por conta propria: so empurra a carga,
+## e quem decide o estouro continua sendo `atualizar_purga` no quadro seguinte.
+static func creditar_abate_purga(j) -> void:
+	if not bool(j.s["torre"]["viva"]):
+		return
+	var p := estado_purga(j.s)
+	p["carga"] = minf(1.0, float(p["carga"]) + PURGA_POR_ABATE)
+
 static func atualizar_purga(dt: float, j) -> void:
 	var p := estado_purga(j.s)
 	if not bool(j.s["torre"]["viva"]):

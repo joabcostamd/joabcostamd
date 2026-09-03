@@ -26,6 +26,8 @@ func _initialize() -> void:
 	_checar_sons()
 	_checar_passivas()
 	_checar_especiais()
+	_checar_constantes_mortas()
+	_checar_tipos_cond()
 
 	print("===LINT=== arquivos=%d linhas=%d erros=%d avisos=%d" % [arquivos, linhas, erros.size(), avisos.size()])
 	for e in erros:
@@ -77,6 +79,11 @@ func _checar(caminho: String) -> void:
 			var fim := resto.find(aspa)
 			if fim > 0:
 				var alvo := resto.substr(0, fim)
+				# Caminho nao tem espaco: se a string continua em prosa depois
+				# do arquivo ("res://x.gd nao compila"), so o comeco e caminho.
+				var esp := alvo.find(" ")
+				if esp > 0:
+					alvo = alvo.substr(0, esp)
 				# O Godot esconde de `res://` tudo que começa com ponto, então
 				# `.gitignore` e `.verify/` existem no disco e somem daqui. A
 				# regra não pode acusar de inexistente o que ela não consegue
@@ -420,6 +427,130 @@ func _coletar_passivas(o, arquivo: String, saida: Dictionary) -> void:
 ## revivesExtra, ondaInicial...). `slotsHabilidade` estava declarado numa
 ## relíquia comprável e pressupunha um sistema de slots de habilidade que este
 ## jogo nunca teve: a relíquia custava núcleos e não fazia absolutamente nada.
+## `Progresso.TIPOS_COND` tem que listar exatamente os casos de `valor_cond`.
+##
+## A lista existe para o portão perguntar "todo tipo citado pelo conteúdo tem
+## leitor?". Se ela e a função divergirem, a pergunta passa a ter resposta
+## errada e o tipo órfão volta a ficar invisível — que é justamente o bug que
+## ela foi criada para pegar. Aqui as duas são comparadas no arquivo.
+func _checar_tipos_cond() -> void:
+	var f := FileAccess.open("res://scripts/sim/progress.gd", FileAccess.READ)
+	if f == null:
+		erros.append("nao consegui ler progress.gd para conferir TIPOS_COND")
+		return
+	var texto := f.get_as_text()
+	f.close()
+	var na_lista := {}
+	var re_lista := RegEx.new()
+	re_lista.compile("^\\t\"(\\w+)\",$")
+	var re_caso := RegEx.new()
+	# Um caso pode ter vários rótulos: `"douradosAbatidos", "dourados": return`.
+	# A primeira versão desta regra só via o rótulo único e deu falso positivo.
+	re_caso.compile("^\\t\\t((?:\"\\w+\"(?:,\\s*)?)+):\\s*return")
+	var dentro_lista := false
+	var dentro_func := false
+	var nos_casos := {}
+	for linha in texto.split("\n"):
+		if linha.begins_with("const TIPOS_COND"):
+			dentro_lista = true
+			continue
+		if dentro_lista:
+			if linha.begins_with("]"):
+				dentro_lista = false
+			else:
+				var m := re_lista.search(linha)
+				if m != null:
+					na_lista[m.get_string(1)] = true
+			continue
+		if linha.begins_with("static func valor_cond"):
+			dentro_func = true
+			continue
+		if dentro_func:
+			if linha.begins_with("static func"):
+				dentro_func = false
+				continue
+			var m2 := re_caso.search(linha)
+			if m2 != null:
+				for rotulo in m2.get_string(1).split(","):
+					nos_casos[rotulo.strip_edges().trim_prefix("\"").trim_suffix("\"")] = true
+	if nos_casos.size() < 10 or na_lista.size() < 10:
+		erros.append("conferencia de TIPOS_COND leu de menos (%d casos, %d na lista) — o parser quebrou" % [
+			nos_casos.size(), na_lista.size()])
+	for t in nos_casos.keys():
+		if not na_lista.has(t):
+			erros.append("valor_cond le '%s' e TIPOS_COND nao lista" % t)
+	for t in na_lista.keys():
+		if not nos_casos.has(t):
+			erros.append("TIPOS_COND lista '%s' e valor_cond nao le" % t)
+
+## Constante declarada e nunca lida.
+##
+## `PURGA_POR_ABATE := 0.006  ## cada abate adianta a carga` viveu no repositório
+## com esse comentário e ZERO leitores: a carga da Purga só andava pelo relógio,
+## então o acoplamento que o comentário anunciava era ficção. O linter dava
+## `avisos=0`. Uma constante morta é sempre uma de duas coisas — uma promessa
+## que ninguém cumpriu, ou lixo. As duas merecem aparecer.
+func _checar_constantes_mortas() -> void:
+	var decl := {}          # nome -> "arquivo:linha"
+	var usos := {}          # nome -> quantas vezes aparece fora da declaração
+	var re := RegEx.new()
+	re.compile("^const ([A-Z][A-Z0-9_]*)\\s*(:=|:|=)")
+	for caminho in _todos_gd():
+		var f := FileAccess.open(caminho, FileAccess.READ)
+		if f == null:
+			continue
+		var n := 0
+		while not f.eof_reached():
+			var linha := f.get_line()
+			n += 1
+			var limpa := linha.strip_edges()
+			var m := re.search(limpa)
+			if m != null:
+				decl[m.get_string(1)] = "%s:%d" % [caminho, n]
+				continue
+			# conta os usos no código, ignorando comentário e texto entre aspas
+			var corpo := _sem_strings(limpa)
+			var c := corpo.find("#")
+			if c >= 0:
+				corpo = corpo.substr(0, c)
+			for nome in decl.keys():
+				if _cita(corpo, str(nome)):
+					usos[nome] = int(usos.get(nome, 0)) + 1
+	# segunda passada: uma constante pode ser usada ANTES de ser declarada no
+	# arquivo, ou por outro arquivo lido antes dela
+	for caminho in _todos_gd():
+		var f := FileAccess.open(caminho, FileAccess.READ)
+		if f == null:
+			continue
+		while not f.eof_reached():
+			var limpa := f.get_line().strip_edges()
+			if re.search(limpa) != null:
+				continue
+			var corpo := _sem_strings(limpa)
+			var c := corpo.find("#")
+			if c >= 0:
+				corpo = corpo.substr(0, c)
+			for nome in decl.keys():
+				if _cita(corpo, str(nome)):
+					usos[nome] = int(usos.get(nome, 0)) + 1
+	for nome in decl.keys():
+		if int(usos.get(nome, 0)) == 0:
+			erros.append("%s constante declarada e nunca lida: %s" % [decl[nome], nome])
+
+## Palavra inteira: `PURGA_DANO` não pode contar como uso de `PURGA_DAN`.
+func _cita(texto: String, nome: String) -> bool:
+	var i := texto.find(nome)
+	while i >= 0:
+		var antes := "" if i == 0 else texto[i - 1]
+		var fim := i + nome.length()
+		var depois := "" if fim >= texto.length() else texto[fim]
+		var borda_ok := func(c: String) -> bool:
+			return c == "" or not (c == "_" or c.to_lower() != c.to_upper() or c.is_valid_int())
+		if borda_ok.call(antes) and borda_ok.call(depois):
+			return true
+		i = texto.find(nome, i + 1)
+	return false
+
 func _checar_especiais() -> void:
 	var declarados := {}
 	var d := DirAccess.open("res://data")

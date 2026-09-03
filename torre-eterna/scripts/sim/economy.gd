@@ -85,7 +85,11 @@ static func gastar_moeda(chave: String, valor: float, j) -> bool:
 
 static func ganhar_xp(valor: float, j) -> void:
 	var s: Dictionary = j.s
-	var v := Big.mul_f(valor, j.stats.n("ganhoXP"))
+	# O modificador de XP dos desafios era escrito em `mods_dif["xp"]` e nunca
+	# lido por ninguem. Tres desafios o declaram, e no Pobreza — que zera o ouro
+	# — o XP em dobro e a UNICA compensacao oferecida: quem aceitava o desafio
+	# perdia o ouro e nao recebia nada em troca.
+	var v := Big.mul_f(valor, j.stats.n("ganhoXP") * float(j.mods_dif.get("xp", 1.0)))
 	if Big.is_zero(v):
 		return
 	s["xp"] = Big.add(s["xp"], v)

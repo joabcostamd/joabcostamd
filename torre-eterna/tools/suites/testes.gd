@@ -49,6 +49,16 @@ func rodar(cena: SceneTree) -> void:
 	t_habilidades()
 	t_integridade()
 
+	# Piso de asserções. Sem ele, `falhou == 0` também é verdade quando um
+	# subsistema inteiro deixa de ser exercitado — um `return` cedo por alvo
+	# nulo, uma lista de dados vazia — e a suíte imprime PASS tendo rodado
+	# metade. O piso sobe junto com a suíte: é o número atual menos uma folga
+	# pequena, então perder um bloco reprova, e adicionar teste nunca reprova.
+	var piso := 250
+	if passou < piso:
+		print("  FALHOU [suite] rodou %d assercoes, piso e %d — algum bloco saiu cedo" % [passou, piso])
+		falhou += 1
+
 	print("\n===TESTES=== passou=%d falhou=%d" % [passou, falhou])
 	print("===STATUS=== ", "PASS" if falhou == 0 else "FAIL")
 	arvore.quit(0 if falhou == 0 else 1)
@@ -218,8 +228,14 @@ func t_economia() -> void:
 	ok("ganha pontos", int(s["pontos_talento"]) > 0)
 	ok("progresso 0..1", Economia.progresso_nivel(s) >= 0.0 and Economia.progresso_nivel(s) <= 1.0)
 
-	var mortos := int(s["stats"]["mortos"])
-	ok("estatisticas coerentes", mortos >= 0)
+	# Antes: `ok("estatisticas coerentes", mortos >= 0)` — `mortos` e um contador
+	# que nunca desce, entao a assercao era verdadeira por construcao. A
+	# pergunta com conteudo e se o contador ANDA quando um inimigo morre.
+	var mortos_antes := int(s["stats"]["mortos"])
+	var alvo_teste := EnemyAI.criar(Dados.pool_da_onda(1)[0], 1, jogo, {})
+	Combate.matar(alvo_teste, jogo, false)
+	ok("contador de mortos anda", int(s["stats"]["mortos"]) == mortos_antes + 1,
+		"%d -> %d" % [mortos_antes, int(s["stats"]["mortos"])])
 
 	# Juros compostos sobre o estoque nao podem virar hiperinflacao: sem teto,
 	# 10% ao segundo faz o ouro crescer e^360 em uma hora.
@@ -497,10 +513,22 @@ func t_progresso() -> void:
 	for c in Dados.conquistas:
 		var cond: Dictionary = c.get("cond", {})
 		var t := str(cond.get("tipo", ""))
-		if t != "" and Progresso.valor_cond(s, t, str(cond.get("chave", ""))) == 0.0:
-			# 0 pode ser legitimo; so checamos que nao explode
-			pass
-	ok("conquistas nao explodem", true)
+	# Antes: um laco de corpo `pass` seguido de `ok(..., true)` — literal. Nao
+	# podia falhar nem se `valor_cond` estourasse em toda conquista. Agora a
+	# assercao e sobre COBERTURA: todo tipo de condicao que o conteudo usa
+	# precisa ser reconhecido por `valor_cond`, senao a conquista fica presa.
+	var tipos_vistos := {}
+	var tipos_mudos: Array = []
+	for c in Dados.conquistas:
+		var cond: Dictionary = c.get("cond", {})
+		var t := str(cond.get("tipo", ""))
+		if t == "" or tipos_vistos.has(t):
+			continue
+		tipos_vistos[t] = true
+		if not Progresso.tipo_cond_conhecido(t):
+			tipos_mudos.append(t)
+	ok("todo tipo de condicao de conquista tem leitor", tipos_mudos.is_empty(),
+		"mudos: %s de %d tipos" % [str(tipos_mudos), tipos_vistos.size()])
 
 	Progresso.gerar_missoes(jogo, true)
 	var n_di: int = s["missoes"]["diarias"].size()
@@ -631,6 +659,9 @@ func t_mecanicas() -> void:
 	s["cartas"]["inventario"] = []
 	s["cartas"]["equipadas"] = ["", "", ""]
 	ok("panteao comeca vazio", int(Mecanicas.bonus_panteao(s)["n"]) == 0)
+	# Antes este bloco inteiro (8 assercoes) ficava atras de um `if` mudo: sem
+	# conjuntos no JSON, ele simplesmente nao rodava e a suite dizia PASS.
+	ok("existe conjunto para consagrar", not Dados.conjuntos.is_empty())
 	if not Dados.conjuntos.is_empty():
 		var conj: Dictionary = Dados.conjuntos[0]
 		var cid := str(conj.get("id", ""))
@@ -882,6 +913,49 @@ func t_save() -> void:
 	ok("tipo trocado nao passa (bool)", torto["modo_farm"] is bool)
 	var infinito := GameState.mesclar(GameState.novo(), {"xp": INF, "nivel": NAN})
 	ok("nao-finito nao entra no estado", is_finite(float(infinito["xp"])) and int(infinito["nivel"]) >= 1)
+
+	# --- backup, autosave e migracao ---
+	# Estes tres estavam ESCRITOS e sem um unico teste: apagar o corpo de cada
+	# um deixava a suite inteira verde. Sao as tres coisas cuja falha custa o
+	# progresso de quem joga, entao sao as tres que precisam morder.
+
+	# 1. Salvar duas vezes deixa a versao ANTERIOR no backup.
+	jogo.s["onda"] = 101
+	save.salvar(jogo.s)
+	jogo.s["onda"] = 202
+	save.salvar(jogo.s)
+	var b := FileAccess.open(save.cam_backup(), FileAccess.READ)
+	var bak_txt := b.get_as_text() if b != null else ""
+	if b != null:
+		b.close()
+	var bak = JSON.parse_string(bak_txt)
+	ok("backup guarda a versao anterior", bak is Dictionary and int(bak.get("onda", -1)) == 101,
+		"backup diz onda=%s" % (str(bak.get("onda", "?")) if bak is Dictionary else "nao e json"))
+	var atual = JSON.parse_string(FileAccess.open(save.cam(), FileAccess.READ).get_as_text())
+	ok("save guarda a versao nova", atual is Dictionary and int(atual.get("onda", -1)) == 202)
+
+	# 2. O autosave dispara sozinho dentro do laco, no intervalo configurado.
+	Cfg.set_v("autosave_seg", 1.0)
+	jogo.s["onda"] = 303
+	jogo.tempo_autosave = 0.0
+	for i in 70:
+		jogo.simular(1.0 / 60.0)
+	var fd := FileAccess.open(save.cam(), FileAccess.READ)
+	var depois = JSON.parse_string(fd.get_as_text()) if fd != null else null
+	if fd != null:
+		fd.close()
+	ok("autosave grava sozinho", depois is Dictionary and int(depois.get("onda", -1)) == 303,
+		"disco diz onda=%s" % (str(depois.get("onda", "?")) if depois is Dictionary else "nao e json"))
+	Cfg.set_v("autosave_seg", 20.0)
+
+	# 3. Migracao: carimba a versao atual e nao perde nada do que ja estava la.
+	var velho := {"versao": 0, "onda": 42, "moedas": {"ouro": 5.0}}
+	var migrado: Dictionary = save.migrar(velho.duplicate(true))
+	ok("migracao carimba a versao", int(migrado.get("versao", -1)) == save.VERSAO,
+		"versao %s" % str(migrado.get("versao", "?")))
+	ok("migracao preserva os campos", int(migrado.get("onda", 0)) == 42)
+	var ja_novo := {"versao": save.VERSAO, "onda": 9}
+	ok("migracao nao mexe em save ja atual", int(save.migrar(ja_novo.duplicate(true))["onda"]) == 9)
 
 ## ------------------------------------------------------------ offline
 func t_offline() -> void:

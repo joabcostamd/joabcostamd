@@ -7,5 +7,14 @@ extends SceneTree
 ## carregado aqui dentro, quando os autoloads já existem.
 
 func _initialize() -> void:
-	var suite = load("res://tools/suites/sim_balance.gd").new()
+	# Se o corpo não compila, `load()` devolve um GDScript vazio e o `.new()`
+	# estoura sem que ninguém imprima nada: a ferramenta fica pendurada para
+	# sempre em vez de reprovar. O portão precisa falhar alto.
+	var corpo = load("res://tools/suites/sim_balance.gd")
+	if corpo == null or not (corpo as GDScript).can_instantiate():
+		print("res://tools/suites/sim_balance.gd nao compila")
+		print("===STATUS=== FAIL")
+		quit(1)
+		return
+	var suite = corpo.new()
 	suite.rodar(self)

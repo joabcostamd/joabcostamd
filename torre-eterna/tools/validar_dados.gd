@@ -21,8 +21,18 @@ const COND_VALIDAS := [
 	"fragmentos", "nucleos", "eter", "upgradeNivel", "talentoNivel", "inimigoTipo", "eras",
 ]
 const TIPOS_EFEITO := ["flat", "pct", "mult", "passiva"]
+## Teto plausível — só para os tipos que o jogo de fato limita. Onda, nível e
+## combo têm um máximo que sai das constantes do balanceamento; ouro e XP não
+## têm nenhum (num idle, 1e20 de ouro é começo de partida), então para eles a
+## regra checa só sinal e finitude. Inventar um teto para moeda seria trocar um
+## bug silencioso por um portão que reprova conteúdo legítimo.
+const TETO_COND := {
+	"onda": 100000.0, "ondaMaxima": 100000.0, "ondaMaximaGlobal": 100000.0,
+	"nivel": 1000.0, "combo": 100000.0,
+}
+
 const MINIMOS := {
-	"inimigos": 20, "chefes": 8, "upgrades": 35, "talentos": 30, "cartas": 30,
+	"inimigos": 20, "chefes": 10, "upgrades": 35, "talentos": 30, "cartas": 30,
 	"reliquias": 24, "conquistas": 80, "missoes_diarias": 20, "missoes_semanais": 10,
 	"eventos": 18, "desafios": 12, "eras": 10, "entradas_lore": 35, "habilidades": 8,
 }
@@ -33,6 +43,7 @@ func _initialize() -> void:
 		erros.append("arquivos de dados ausentes: %s" % str(Dados.faltando))
 
 	_contagens()
+	_bases_batem()
 	_ids_unicos()
 	_efeitos()
 	_condicoes()
@@ -215,6 +226,33 @@ func _validar_cond(origem: String, cond) -> void:
 	var v = cond.get("valor", null)
 	if not (v is float or v is int):
 		erros.append("%s: condição sem valor numérico" % origem)
+		return
+	# Sem faixa, `{"tipo":"onda","valor":-5}` passava limpo (meta cumprida antes
+	# de começar) e `valor: 1e9` também (meta que ninguém alcança). As duas
+	# quebram a missão em silêncio, que é o pior jeito de quebrar.
+	var n := float(v)
+	if not is_finite(n):
+		erros.append("%s: valor não-finito" % origem)
+	elif n <= 0.0:
+		erros.append("%s: valor %s não é positivo — meta já cumprida ao nascer" % [origem, str(v)])
+	elif TETO_COND.has(tipo) and n > float(TETO_COND[tipo]):
+		erros.append("%s: valor %s acima do teto de '%s' (%s)" % [
+			origem, str(v), tipo, str(TETO_COND[tipo])])
+
+## `Bal.DANO_BASE` e `Bal.ALCANCE_BASE` duplicam `data/stats.json`. Duplicata
+## calada diverge: o JSON muda, a constante fica, e os testes passam a medir
+## contra um valor que o jogo não usa mais. Aqui a duplicata vira invariante.
+func _bases_batem() -> void:
+	for par in [["dano", Bal.DANO_BASE], ["alcance", Bal.ALCANCE_BASE]]:
+		var id := str(par[0])
+		var def: Dictionary = Dados.stat_defs.get(id, {})
+		if def.is_empty():
+			erros.append("stat '%s' não existe em stats.json, mas Bal tem constante para ele" % id)
+			continue
+		var base := float(def.get("base", 0.0))
+		if not is_equal_approx(base, float(par[1])):
+			erros.append("stats.json diz %s.base=%s e Bal diz %s — os dois têm que dizer o mesmo" % [
+				id, str(base), str(par[1])])
 
 func _eh_chefe(id: String) -> bool:
 	for c in Dados.chefes + Dados.super_chefes:
@@ -280,8 +318,11 @@ func _bilingue() -> void:
 		for it in grupo:
 			if it.has("nome") and not it.has("nomeEn"):
 				faltando += 1
+	# Isto era AVISO enquanto `_i18n_conteudo` trata exatamente a mesma omissão
+	# como ERRO. A mesma falta não pode ser bloqueante num caminho e ignorável
+	# no outro — quem lê o portão não tem como saber qual das duas vale.
 	if faltando > 0:
-		avisos.append("%d itens sem tradução em inglês (nomeEn)" % faltando)
+		erros.append("%d itens sem tradução em inglês (nomeEn)" % faltando)
 
 func _curvas() -> void:
 	# eras precisam começar em ondas crescentes

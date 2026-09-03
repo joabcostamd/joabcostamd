@@ -342,6 +342,11 @@ func ao_morrer_inimigo(e: Inimigo, critico: bool) -> void:
 		if not e.saiu:
 			Mecanicas.peregrino_morto(self)
 		return
+	# A Purga promete no proprio comentario da constante que "cada abate adianta
+	# a carga". A constante existia desde sempre e ninguem a lia: a carga so
+	# andava pelo relogio, entao o acoplamento Combate -> Purga era ficcao. Com
+	# isso, matar rapido passa a valer Purga mais cedo, que e o que o jogo diz.
+	Mecanicas.creditar_abate_purga(self)
 	Saque.tentar_drop(e, self)
 	if e.def.has("divide") and not e.dividido:
 		EnemyAI.dividir(e, self)
