@@ -35,11 +35,14 @@ jobs:
 
       # Cada portão imprime "===STATUS=== PASS". O exit code do Godot não é
       # confiável, então o contrato é o bloco — igual ao AGENTS.md manda.
+      # O `|| true` em cada captura não afrouxa nada: sem ele, `set -e` mata o
+      # passo na hora da atribuição e o `echo` nunca roda, então uma falha
+      # chegava aqui sem uma linha sequer de diagnóstico. Quem reprova é o grep.
       - name: Portão 1 — todo script compila e os dados existem
         working-directory: torre-eterna
         run: |
           set -euo pipefail
-          saida=$(godot --headless --path . -s res://tools/verificar.gd 2>&1)
+          saida=$(godot --headless --path . -s res://tools/verificar.gd 2>&1) || true
           echo "$saida"
           echo "$saida" | grep -q "===STATUS=== PASS"
 
@@ -47,7 +50,7 @@ jobs:
         working-directory: torre-eterna
         run: |
           set -euo pipefail
-          saida=$(godot --headless --path . -s res://tools/lint.gd 2>&1)
+          saida=$(godot --headless --path . -s res://tools/lint.gd 2>&1) || true
           echo "$saida"
           echo "$saida" | grep -q "===STATUS=== PASS"
 
@@ -55,7 +58,7 @@ jobs:
         working-directory: torre-eterna
         run: |
           set -euo pipefail
-          saida=$(godot --headless --path . -s res://tools/validar_dados.gd 2>&1)
+          saida=$(godot --headless --path . -s res://tools/validar_dados.gd 2>&1) || true
           echo "$saida"
           echo "$saida" | grep -q "===STATUS=== PASS"
 
@@ -63,7 +66,7 @@ jobs:
         working-directory: torre-eterna
         run: |
           set -euo pipefail
-          saida=$(godot --headless --path . -s res://tools/testes.gd 2>&1)
+          saida=$(godot --headless --path . -s res://tools/testes.gd 2>&1) || true
           echo "$saida"
           echo "$saida" | grep -q "===STATUS=== PASS"
 
@@ -71,7 +74,7 @@ jobs:
         working-directory: torre-eterna
         run: |
           set -euo pipefail
-          saida=$(godot --headless --path . -s res://tools/perf.gd -- 400 2>&1)
+          saida=$(godot --headless --path . -s res://tools/perf.gd -- 400 2>&1) || true
           echo "$saida"
           echo "$saida" | grep -q "===STATUS=== PASS"
 
@@ -79,7 +82,7 @@ jobs:
         working-directory: torre-eterna
         run: |
           set -euo pipefail
-          saida=$(godot --headless --path . -s res://agent_verify.gd 2>&1)
+          saida=$(godot --headless --path . -s res://agent_verify.gd 2>&1) || true
           echo "$saida"
           echo "$saida" | grep -q '"status": "PASS"'
 
@@ -87,7 +90,7 @@ jobs:
         working-directory: torre-eterna
         run: |
           set -euo pipefail
-          saida=$(godot --headless --path . -s res://tools/soak.gd -- 1 2>&1)
+          saida=$(godot --headless --path . -s res://tools/soak.gd -- 1 2>&1) || true
           echo "$saida"
           echo "$saida" | grep -q "===STATUS=== PASS"
 
@@ -99,7 +102,7 @@ jobs:
         working-directory: torre-eterna
         run: |
           set -euo pipefail
-          saida=$(godot --headless --path . -s res://tools/sim_balance.gd -- 1 auto 2>&1)
+          saida=$(godot --headless --path . -s res://tools/sim_balance.gd -- 1 auto 2>&1) || true
           echo "$saida" | tail -30
           if echo "$saida" | grep -q "SCRIPT ERROR"; then
             echo "::error::o simulador emitiu SCRIPT ERROR"
