@@ -1676,19 +1676,111 @@ func t_custo_do_quadro() -> void:
 	p_test.limpar()
 	ok("reciclar o projetil zera a explosao", not p_test.explodiu)
 	var txt_tw := _ler("res://scripts/sim/tower.gd")
-	ok("a explosao e uma so por projetil",
-		txt_tw.contains("if p.area > 0.0 and not p.explodiu:"))
+	# ...e o COMPORTAMENTO, nao a linha: um morteiro que atravessa dois corpos
+	# so pode espalhar estilhaco na primeira vez. Era aqui que area e perfuracao
+	# se multiplicavam — doze explosoes por projetil, cada uma varrendo vinte
+	# inimigos.
+	jogo.arena.limpar_tudo()
+	var a1 = EnemyAI.criar(Dados.inimigo_por_id["grunhido"], 5, jogo, {})
+	var a2 = EnemyAI.criar(Dados.inimigo_por_id["grunhido"], 5, jogo, {})
+	var espectador = EnemyAI.criar(Dados.inimigo_por_id["grunhido"], 5, jogo, {})
+	ok("criou os tres inimigos do teste do morteiro",
+		a1 != null and a2 != null and espectador != null)
+	if a1 != null and a2 != null and espectador != null:
+		var centro_m: Vector2 = jogo.arena.centro
+		a1.pos = centro_m
+		a2.pos = centro_m + Vector2(6.0, 0.0)
+		espectador.pos = centro_m + Vector2(60.0, 0.0)
+		# Vida MODESTA de proposito: com 1e18 de vida e 1e3 de dano a diferenca
+		# some no float64 do log10 e o teste reprova por precisao, nao por
+		# comportamento — que foi exatamente o que aconteceu na primeira versao.
+		for e_m in [a1, a2, espectador]:
+			e_m.hp = Big.from(1.0e6)
+			e_m.hp_max = e_m.hp
+			e_m.escudo = Big.ZERO
+			e_m.armadura = 0.0
+		jogo.arena.reconstruir_grade()
+		var pm := Projetil.new()
+		pm.limpar()
+		pm.ativo = true
+		pm.pos = centro_m
+		pm.dano = Big.from(1.0e4)
+		pm.area = 120.0
+		pm.perfuracao = 5
+		pm.origem = "torre"
+		var antes_esp: float = espectador.hp
+		jogo.torre._impacto(pm, a1)
+		var depois_1: float = espectador.hp
+		ok("o primeiro impacto explode e pega o espectador", Big.lt(depois_1, antes_esp))
+		ok("o projetil marca que ja explodiu", pm.explodiu)
+		jogo.arena.reconstruir_grade()
+		jogo.torre._impacto(pm, a2)
+		ok("o segundo impacto NAO explode de novo",
+			perto(Big.to_f(espectador.hp), Big.to_f(depois_1), maxf(1.0, Big.to_f(depois_1) * 1e-9)))
+		ok("...mas o alvo direto do segundo impacto leva dano",
+			Big.lt(a2.hp, Big.from(1.0e6)))
+	jogo.arena.limpar_tudo()
 
 	# 2. VIDA DO PROJETIL PROPORCIONAL A TRAVESSIA. Fixo em 3,5 s, o pool de 800
-	# vivia saturado com ~500 projeteis que ja nao podiam acertar nada.
-	ok("a vida do projetil sai da velocidade", txt_tw.contains("p.vida = clampf(2200.0"))
+	# vivia saturado com ~500 projeteis que ja nao podiam acertar nada. A CURVA
+	# e testada como curva — nao procurando a formula no texto do arquivo.
+	ok("projetil lento vive o maximo", perto(Bal.vida_projetil(100.0), Bal.VIDA_PROJETIL_MAX, 0.001))
+	ok("projetil rapido vive menos", Bal.vida_projetil(900.0) < Bal.VIDA_PROJETIL_MAX)
+	ok("...e mais rapido ainda vive menos que ele",
+		Bal.vida_projetil(2000.0) < Bal.vida_projetil(900.0))
+	ok("a vida nunca cai a zero", Bal.vida_projetil(1.0e9) >= Bal.VIDA_PROJETIL_MIN)
+	ok("a vida nunca passa do teto", Bal.vida_projetil(0.0) <= Bal.VIDA_PROJETIL_MAX)
+	# ...e o projetil que a torre cria de verdade obedece a curva.
+	jogo.arena.limpar_tudo()
+	var alvo_v = EnemyAI.criar(Dados.inimigo_por_id["grunhido"], 5, jogo, {})
+	ok("criou o alvo do disparo", alvo_v != null)
+	if alvo_v != null:
+		alvo_v.pos = jogo.arena.centro + Vector2(120.0, 0.0)
+		jogo.arena.reconstruir_grade()
+		jogo.torre.disparar(alvo_v)
+		var criados: Array = jogo.arena.projeteis
+		ok("a torre criou projetil", criados.size() > 0)
+		if criados.size() > 0:
+			var pv: Projetil = criados[0]
+			ok("o projetil nasce com a vida da curva",
+				perto(pv.vida, Bal.vida_projetil(pv.velocidade), 0.001))
+	jogo.arena.limpar_tudo()
 
 	# 3. CADENCIA ALEM DO TETO VIRA DANO. O laco disparava ate doze vezes por
 	# passo e jogava o resto fora: quem comprava cadencia depois disso pagava
 	# por nada.
 	ok("existe teto de disparos por passo", TorreSim.TIROS_POR_PASSO >= 1)
-	ok("o excedente vira forca da salva", txt_tw.contains("var forca := float(pedidos) / float(tiros)"))
-	ok("...e a forca chega ao dano do projetil", txt_tw.contains("float(j.mods_dif.get(\"danoTorre\", 1.0))), forca)"))
+	# A FORCA DA SALVA e medida no dano do projetil, nao procurada no texto: uma
+	# salva de forca 4 tem que sair com quatro vezes o dano de uma de forca 1.
+	jogo.arena.limpar_tudo()
+	var alvo_f = EnemyAI.criar(Dados.inimigo_por_id["grunhido"], 5, jogo, {})
+	ok("criou o alvo da salva", alvo_f != null)
+	if alvo_f != null:
+		alvo_f.pos = jogo.arena.centro + Vector2(120.0, 0.0)
+		jogo.arena.reconstruir_grade()
+		# Sem critico, senao a rolagem mascara a comparacao.
+		var crit_antes: float = jogo.stats.n("critChance")
+		jogo.torre.disparar(alvo_f, null, 1.0)
+		var d1 := 0.0
+		for pp in jogo.arena.projeteis:
+			if not (pp as Projetil).critico:
+				d1 = (pp as Projetil).dano
+				break
+		jogo.arena.limpar_tudo()
+		jogo.arena.reconstruir_grade()
+		jogo.torre.disparar(alvo_f, null, 4.0)
+		var d4 := 0.0
+		for pp2 in jogo.arena.projeteis:
+			if not (pp2 as Projetil).critico:
+				d4 = (pp2 as Projetil).dano
+				break
+		ok("a salva com forca 4 sai com 4x o dano",
+			d1 > Big.LIMIAR_ZERO and d4 > Big.LIMIAR_ZERO
+			and perto(Big.to_f(Big.div(d4, d1)), 4.0, 0.05),
+			"%.3f" % (Big.to_f(Big.div(d4, d1)) if d1 > Big.LIMIAR_ZERO else -1.0))
+		ok("a chance de critico nao mudou no caminho",
+			perto(jogo.stats.n("critChance"), crit_antes, 0.0001))
+	jogo.arena.limpar_tudo()
 
 	# 4. DANO CONTINUO A 10 Hz, nao a cada quadro. Com 212 inimigos em chamas
 	# eram 424 chamadas de `aplicar_dano` por passo so para dividir o mesmo dano

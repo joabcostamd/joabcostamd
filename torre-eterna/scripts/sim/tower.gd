@@ -200,7 +200,7 @@ func _criar_projetil(ang: float, alvo: Inimigo, forca: float = 1.0) -> void:
 	# testado contra a grade a cada quadro. Medido: o pool de 800 ficava
 	# saturado com ~500 projeteis vivos e a colisao sozinha custava 2,9 ms por
 	# passo. Um projetil que nao acertou em uma travessia e meia nao vai acertar.
-	p.vida = clampf(2200.0 / maxf(160.0, p.velocidade), 0.7, 3.5)
+	p.vida = Bal.vida_projetil(p.velocidade)
 	p.origem = "torre"
 	p.elemento = _sortear_elemento()
 	if p.elemento != "":

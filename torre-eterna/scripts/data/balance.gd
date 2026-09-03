@@ -231,6 +231,21 @@ static func teto_upgrade(teto_base: int, recorde: int, fixo: bool = false) -> in
 const PROJETEIS_TETO := 48
 const ORBES_TETO := 24
 
+## Quanto tempo um projetil vive, em funcao da velocidade dele.
+##
+## Era 3,5 s para todo mundo. Com a melhoria de velocidade (+26 px/s por nivel)
+## ele cruza a arena inteira em menos de dois segundos e passa o resto do tempo
+## vivo sem poder acertar nada — mas continua sendo testado contra a grade a
+## cada quadro. Medido: o pool de 800 ficava saturado com ~500 projeteis vivos e
+## a colisao sozinha custava 2,9 ms por passo.
+##
+## Vive aqui, e nao inline na torre, porque assim o portao pode perguntar pela
+## CURVA em vez de procurar a formula no texto do arquivo.
+const VIDA_PROJETIL_MAX := 3.5
+const VIDA_PROJETIL_MIN := 0.7
+static func vida_projetil(velocidade: float) -> float:
+	return clampf(2200.0 / maxf(160.0, velocidade), VIDA_PROJETIL_MIN, VIDA_PROJETIL_MAX)
+
 static func fator_armadura(armadura: float, penetracao: float) -> float:
 	var a := maxf(0.0, armadura * (1.0 - minf(0.95, penetracao)))
 	return ARMADURA_K / (ARMADURA_K + a)
