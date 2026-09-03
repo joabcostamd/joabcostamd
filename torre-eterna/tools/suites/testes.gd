@@ -91,7 +91,7 @@ func rodar(cena: SceneTree) -> void:
 		"Mods": 19, "Numeros de dano": 2, "Offline": 6,
 		"Ondas": 12, "Pista de ouro": 3, "Prestígio": 25,
 		"Progresso": 14, "Saque": 8, "Save": 41,
-		"Celebracao": 25, "Fim de sessao": 15, "Painel de melhorias": 20, "Rodape": 26, "Sistemas": 6, "StatEngine": 5, "Teto": 38, "Áudio": 16,
+		"Celebracao": 25, "Fim de sessao": 25, "Painel de melhorias": 20, "Rodape": 26, "Sistemas": 6, "StatEngine": 5, "Teto": 38, "Áudio": 16,
 	}
 	for nome_g in minimo_por_grupo:
 		var rodou := int(por_grupo.get(nome_g, 0))
@@ -1295,6 +1295,23 @@ func t_fim_de_sessao() -> void:
 	ok("com o Contrato de Recompra o ouro fica inteiro",
 		perto(Big.to_f(jogo.s["moedas"]["ouro"]), 1.0e9, 1.0e3))
 	jogo.pas.erase("contrato_recompra")
+
+	# O ALBUM DE ECOS PAGAVA EM SILENCIO: a palavra "album" nao aparecia uma vez
+	# em `scripts/ui/`. E o unico progresso que nenhum prestigio tira.
+	var st_alb: Dictionary = GameState.novo()
+	var alb0: Dictionary = Mecanicas.bonus_album(st_alb)
+	ok("album vazio nao paga nada", int(alb0["n"]) == 0 and float(alb0["dano"]) == 0.0)
+	ok("registrar uma carta entra no album", Mecanicas.registrar_no_album(st_alb, "x"))
+	ok("registrar a MESMA carta nao conta de novo", not Mecanicas.registrar_no_album(st_alb, "x"))
+	var alb1: Dictionary = Mecanicas.bonus_album(st_alb)
+	ok("uma carta no album ja paga dano", float(alb1["dano"]) > 0.0)
+	ok("...e ouro", float(alb1["ouro"]) > 0.0)
+	var txt_ca := _ler("res://scripts/ui/panel_cartas.gd")
+	ok("o painel de Cartas mostra o Album", txt_ca.contains("Mecanicas.bonus_album("))
+	ok("...com o placar de quantas de quantas", txt_ca.contains('lbl_album.text = "%d / %d"'))
+	ok("...e com o bonus que ele paga", txt_ca.contains("car_album_bonus"))
+	for chave_a in ["car_album", "car_album_bonus", "car_album_dica"]:
+		ok("a chave %s existe" % chave_a, Txt.t(str(chave_a)) != str(chave_a))
 
 	# COLETAR TUDO: o criterio ja existia dos dois lados, faltava o botao.
 	var st: Dictionary = GameState.novo()

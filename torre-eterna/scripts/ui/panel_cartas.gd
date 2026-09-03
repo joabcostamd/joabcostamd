@@ -33,6 +33,9 @@ const SLOT_H := 188.0
 const COLUNAS := 7
 
 var lbl_poeira: Label
+var lbl_album: Label
+var lbl_album_bonus: Label
+var barra_album: ProgressBar
 var lbl_slots: Label
 var lbl_inv: Label
 var check_reciclar: CheckButton
@@ -84,6 +87,26 @@ func montar(c: VBoxContainer) -> void:
 	lbl_slots.tooltip_text = Txt.t("car_dica_slots")
 	topo.add_child(lbl_slots)
 	c.add_child(topo)
+
+	# O ALBUM DE ECOS PAGAVA EM SILENCIO. Ver uma carta pela primeira vez da
+	# +1,8% de dano e +1,2% de ouro PARA SEMPRE — imune a Ascensao, Singularidade
+	# e Transcendencia, o unico progresso do jogo que nenhum prestigio toca. E a
+	# palavra "album" nao aparecia uma unica vez em `scripts/ui/`: o jogador
+	# recebia o bonus, via o total de dano subir e nunca soube de onde vinha,
+	# nem que colecionar duplicada em raridade nova valia alguma coisa.
+	var linha_alb := UI.hbox(8)
+	linha_alb.add_child(UI.icone("livro", UI.ACENTO2, 18))
+	linha_alb.add_child(UI.rotulo(Txt.t("car_album"), 14, UI.TEXTO2))
+	lbl_album = UI.rotulo("", 14, UI.ACENTO2)
+	linha_alb.add_child(lbl_album)
+	linha_alb.add_child(UI.espacador())
+	lbl_album_bonus = UI.rotulo("", 13, UI.VERDE)
+	linha_alb.add_child(lbl_album_bonus)
+	barra_album = UI.barra(UI.ACENTO2)
+	barra_album.custom_minimum_size = Vector2(150, 8)
+	linha_alb.add_child(barra_album)
+	linha_alb.tooltip_text = Txt.t("car_album_dica")
+	c.add_child(linha_alb)
 
 	# ---- corpo em duas colunas ----
 	var principal := UI.hbox(14)
@@ -965,6 +988,14 @@ func _reciclar_duplicadas() -> void:
 func atualizar() -> void:
 	if jogo == null or lbl_poeira == null:
 		return
+	if lbl_album != null:
+		var alb: Dictionary = Mecanicas.bonus_album(jogo.s)
+		var total := maxi(1, Dados.cartas.size())
+		var vistas := int(alb["n"])
+		lbl_album.text = "%d / %d" % [vistas, total]
+		lbl_album_bonus.text = Txt.f("car_album_bonus", {
+			"d": Fmt.pct(float(alb["dano"])), "o": Fmt.pct(float(alb["ouro"]))})
+		barra_album.value = float(vistas) / float(total)
 	if b_reciclar_dups != null:
 		var dups := Saque.contar_duplicadas(jogo.s)
 		b_reciclar_dups.visible = dups > 0

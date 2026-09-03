@@ -266,5 +266,17 @@
  "car_reciclou_dups": {
   "pt": "{n} duplicada(s) recicladas",
   "en": "{n} duplicate(s) recycled"
+ },
+ "car_album": {
+  "pt": "Álbum de Ecos",
+  "en": "Echo Album"
+ },
+ "car_album_bonus": {
+  "pt": "+{d} dano · +{o} ouro, para sempre",
+  "en": "+{d} damage · +{o} gold, forever"
+ },
+ "car_album_dica": {
+  "pt": "Ver uma carta pela primeira vez entra no Álbum e paga um bônus permanente — nenhum prestígio tira. Duplicada em raridade nova também conta.",
+  "en": "Seeing a card for the first time enters the Album and pays a permanent bonus — no prestige takes it away. A duplicate at a new rarity counts too."
  }
 }
