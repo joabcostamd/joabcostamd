@@ -126,5 +126,9 @@
  "sim_perdeu_ouro": {
   "pt": "A torre caiu — {v} de ouro ficou no chão",
   "en": "The tower fell — {v} gold left on the ground"
+ },
+ "sim_marco": {
+  "pt": "Marco! {u} nível {n}",
+  "en": "Milestone! {u} level {n}"
  }
 }

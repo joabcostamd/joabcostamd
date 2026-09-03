@@ -78,7 +78,39 @@
      "valor": 2.4
     }
    ],
-   "destaque": true
+   "destaque": true,
+   "marcos": [
+    {
+     "nivel": 50,
+     "efeito": [
+      {
+       "stat": "critChance",
+       "tipo": "pct",
+       "valor": 0.05
+      }
+     ]
+    },
+    {
+     "nivel": 150,
+     "efeito": [
+      {
+       "stat": "critDano",
+       "tipo": "pct",
+       "valor": 0.25
+      }
+     ]
+    },
+    {
+     "nivel": 400,
+     "efeito": [
+      {
+       "stat": "multiplicador",
+       "tipo": "mult",
+       "valor": 1.5
+      }
+     ]
+    }
+   ]
   },
   {
    "id": "cadencia",
@@ -98,7 +130,39 @@
      "valor": 0.03
     }
    ],
-   "destaque": true
+   "destaque": true,
+   "marcos": [
+    {
+     "nivel": 150,
+     "efeito": [
+      {
+       "stat": "projeteis",
+       "tipo": "flat",
+       "valor": 1
+      }
+     ]
+    },
+    {
+     "nivel": 300,
+     "efeito": [
+      {
+       "stat": "velProjetil",
+       "tipo": "pct",
+       "valor": 0.35
+      }
+     ]
+    },
+    {
+     "nivel": 600,
+     "efeito": [
+      {
+       "stat": "multiplicador",
+       "tipo": "mult",
+       "valor": 1.35
+      }
+     ]
+    }
+   ]
   },
   {
    "id": "critico",
@@ -116,6 +180,28 @@
      "stat": "critChance",
      "tipo": "flat",
      "valor": 0.0065
+    }
+   ],
+   "marcos": [
+    {
+     "nivel": 70,
+     "efeito": [
+      {
+       "stat": "critDano",
+       "tipo": "pct",
+       "valor": 0.4
+      }
+     ]
+    },
+    {
+     "nivel": 140,
+     "efeito": [
+      {
+       "stat": "multiplicador",
+       "tipo": "mult",
+       "valor": 1.3
+      }
+     ]
     }
    ]
   },
@@ -357,7 +443,29 @@
    ],
    "requer": {
     "onda": 20
-   }
+   },
+   "marcos": [
+    {
+     "nivel": 30,
+     "efeito": [
+      {
+       "stat": "area",
+       "tipo": "flat",
+       "valor": 18
+      }
+     ]
+    },
+    {
+     "nivel": 60,
+     "efeito": [
+      {
+       "stat": "critChance",
+       "tipo": "pct",
+       "valor": 0.04
+      }
+     ]
+    }
+   ]
   },
   {
    "id": "gelo",
@@ -379,7 +487,29 @@
    ],
    "requer": {
     "onda": 24
-   }
+   },
+   "marcos": [
+    {
+     "nivel": 30,
+     "efeito": [
+      {
+       "stat": "cadencia",
+       "tipo": "pct",
+       "valor": 0.15
+      }
+     ]
+    },
+    {
+     "nivel": 60,
+     "efeito": [
+      {
+       "stat": "armadura",
+       "tipo": "flat",
+       "valor": 25
+      }
+     ]
+    }
+   ]
   },
   {
    "id": "raio",
@@ -401,7 +531,29 @@
    ],
    "requer": {
     "onda": 28
-   }
+   },
+   "marcos": [
+    {
+     "nivel": 30,
+     "efeito": [
+      {
+       "stat": "critChance",
+       "tipo": "pct",
+       "valor": 0.06
+      }
+     ]
+    },
+    {
+     "nivel": 60,
+     "efeito": [
+      {
+       "stat": "ricochete",
+       "tipo": "flat",
+       "valor": 1
+      }
+     ]
+    }
+   ]
   },
   {
    "id": "veneno",
@@ -423,7 +575,29 @@
    ],
    "requer": {
     "onda": 32
-   }
+   },
+   "marcos": [
+    {
+     "nivel": 30,
+     "efeito": [
+      {
+       "stat": "execucao",
+       "tipo": "pct",
+       "valor": 0.04
+      }
+     ]
+    },
+    {
+     "nivel": 60,
+     "efeito": [
+      {
+       "stat": "roubodeVida",
+       "tipo": "pct",
+       "valor": 0.02
+      }
+     ]
+    }
+   ]
   },
   {
    "id": "vazio",
@@ -445,7 +619,29 @@
    ],
    "requer": {
     "onda": 40
-   }
+   },
+   "marcos": [
+    {
+     "nivel": 30,
+     "efeito": [
+      {
+       "stat": "penetracao",
+       "tipo": "pct",
+       "valor": 0.12
+      }
+     ]
+    },
+    {
+     "nivel": 60,
+     "efeito": [
+      {
+       "stat": "danoChefe",
+       "tipo": "pct",
+       "valor": 0.25
+      }
+     ]
+    }
+   ]
   },
   {
    "id": "vida",
@@ -465,7 +661,39 @@
      "valor": 26
     }
    ],
-   "destaque": true
+   "destaque": true,
+   "marcos": [
+    {
+     "nivel": 60,
+     "efeito": [
+      {
+       "stat": "regen",
+       "tipo": "pct",
+       "valor": 0.5
+      }
+     ]
+    },
+    {
+     "nivel": 180,
+     "efeito": [
+      {
+       "stat": "armadura",
+       "tipo": "flat",
+       "valor": 40
+      }
+     ]
+    },
+    {
+     "nivel": 400,
+     "efeito": [
+      {
+       "stat": "escudoMax",
+       "tipo": "pct",
+       "valor": 0.5
+      }
+     ]
+    }
+   ]
   },
   {
    "id": "regen",
@@ -503,6 +731,28 @@
      "tipo": "flat",
      "valor": 4.5
     }
+   ],
+   "marcos": [
+    {
+     "nivel": 60,
+     "efeito": [
+      {
+       "stat": "espinhos",
+       "tipo": "pct",
+       "valor": 0.3
+      }
+     ]
+    },
+    {
+     "nivel": 120,
+     "efeito": [
+      {
+       "stat": "vidaMax",
+       "tipo": "pct",
+       "valor": 0.25
+      }
+     ]
+    }
    ]
   },
   {
@@ -525,7 +775,29 @@
    ],
    "requer": {
     "onda": 16
-   }
+   },
+   "marcos": [
+    {
+     "nivel": 45,
+     "efeito": [
+      {
+       "stat": "escudoRegen",
+       "tipo": "pct",
+       "valor": 0.5
+      }
+     ]
+    },
+    {
+     "nivel": 90,
+     "efeito": [
+      {
+       "stat": "armadura",
+       "tipo": "flat",
+       "valor": 25
+      }
+     ]
+    }
+   ]
   },
   {
    "id": "escudo_regen",
@@ -637,7 +909,29 @@
    ],
    "requer": {
     "upgrade": "orbe"
-   }
+   },
+   "marcos": [
+    {
+     "nivel": 50,
+     "efeito": [
+      {
+       "stat": "orbes",
+       "tipo": "flat",
+       "valor": 1
+      }
+     ]
+    },
+    {
+     "nivel": 100,
+     "efeito": [
+      {
+       "stat": "velOrbe",
+       "tipo": "pct",
+       "valor": 0.4
+      }
+     ]
+    }
+   ]
   },
   {
    "id": "vel_orbe",
@@ -679,7 +973,39 @@
      "valor": 1.075
     }
    ],
-   "destaque": true
+   "destaque": true,
+   "marcos": [
+    {
+     "nivel": 50,
+     "efeito": [
+      {
+       "stat": "jurosOuro",
+       "tipo": "pct",
+       "valor": 0.02
+      }
+     ]
+    },
+    {
+     "nivel": 150,
+     "efeito": [
+      {
+       "stat": "sorte",
+       "tipo": "pct",
+       "valor": 0.15
+      }
+     ]
+    },
+    {
+     "nivel": 350,
+     "efeito": [
+      {
+       "stat": "chanceDrop",
+       "tipo": "pct",
+       "valor": 0.3
+      }
+     ]
+    }
+   ]
   },
   {
    "id": "xp",
@@ -697,6 +1023,28 @@
      "stat": "ganhoXP",
      "tipo": "mult",
      "valor": 1.07
+    }
+   ],
+   "marcos": [
+    {
+     "nivel": 70,
+     "efeito": [
+      {
+       "stat": "chanceDrop",
+       "tipo": "pct",
+       "valor": 0.25
+      }
+     ]
+    },
+    {
+     "nivel": 140,
+     "efeito": [
+      {
+       "stat": "sorte",
+       "tipo": "pct",
+       "valor": 0.2
+      }
+     ]
     }
    ]
   },
@@ -805,7 +1153,29 @@
    ],
    "requer": {
     "onda": 12
-   }
+   },
+   "marcos": [
+    {
+     "nivel": 35,
+     "efeito": [
+      {
+       "stat": "duracaoHab",
+       "tipo": "pct",
+       "valor": 0.3
+      }
+     ]
+    },
+    {
+     "nivel": 70,
+     "efeito": [
+      {
+       "stat": "multiplicador",
+       "tipo": "mult",
+       "valor": 1.15
+      }
+     ]
+    }
+   ]
   },
   {
    "id": "duracao",

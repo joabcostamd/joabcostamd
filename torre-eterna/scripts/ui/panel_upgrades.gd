@@ -171,6 +171,13 @@ func _linha_upgrade(def: Dictionary) -> void:
 	l["textos"].add_child(desc)
 	var efeito := UI.rotulo("", 12, UI.VERDE)
 	l["textos"].add_child(efeito)
+	# O PROXIMO MARCO. As 39 melhorias eram "+X%" e nada mais: comprava-se a
+	# mais barata, sempre, e a ordem nao importava. O marco entrega uma coisa
+	# DIFERENTE do que a melhoria vende, e como o ouro e finito a cada instante,
+	# QUAL degrau perseguir primeiro vira a decisao que faltava. Aqui fica a
+	# antecipacao: o que falta e o que vem.
+	var marco := UI.rotulo("", 12, UI.OURO)
+	l["textos"].add_child(marco)
 
 	var col := UI.vbox(1)
 	col.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -193,7 +200,7 @@ func _linha_upgrade(def: Dictionary) -> void:
 
 	lista.add_child(l["caixa"])
 	linhas[id] = {"def": def, "botao": b, "nivel": nivel, "efeito": efeito, "ganho": ganho,
-		"caixa": l["caixa"]}
+		"marco": marco, "caixa": l["caixa"]}
 
 func _icone_de(def: Dictionary) -> String:
 	match str(def.get("id", "")):
@@ -240,6 +247,7 @@ func atualizar() -> void:
 		var sufixo: String = ("/%d" % maxn) if maxn >= 0 else ""
 		r["nivel"].text = Txt.t("upg_max_curto") if no_teto else (Txt.f("upg_nv", {"n": nivel}) + sufixo)
 		r["efeito"].text = _texto_efeito(def, nivel)
+		r["marco"].text = texto_marco(def, nivel, Cfg.ingles())
 		var b: Button = r["botao"]
 		if no_teto:
 			b.text = Txt.t("maximo")
@@ -258,6 +266,36 @@ func atualizar() -> void:
 		b.add_theme_color_override("font_color", UI.TEXTO if pode else UI.TEXTO3)
 		r["ganho"].text = _texto_ganho(def, nivel, n)
 		r["ganho"].add_theme_color_override("font_color", UI.VERDE if pode else UI.TEXTO3)
+
+## O PROXIMO MARCO desta melhoria, ou o ultimo conquistado quando nao ha mais.
+## Estatica para o portao poder perguntar sem montar painel.
+static func texto_marco(def: Dictionary, nivel: int, ingles: bool) -> String:
+	var marcos: Array = def.get("marcos", [])
+	if marcos.is_empty():
+		return ""
+	for item in marcos:
+		var mk: Dictionary = item
+		var alvo := int(mk.get("nivel", 0))
+		if nivel < alvo:
+			return Txt.f("upg_marco_falta", {
+				"n": str(alvo - nivel), "v": alvo, "e": _resumo_efeito(mk.get("efeito", []), ingles)})
+	var ultimo: Dictionary = marcos[marcos.size() - 1]
+	return Txt.f("upg_marco_completo", {
+		"e": _resumo_efeito(ultimo.get("efeito", []), ingles)})
+
+## Resumo curto de uma lista de efeitos, para caber numa linha de marco.
+static func _resumo_efeito(efeitos: Array, ingles: bool) -> String:
+	var partes: Array = []
+	for item in efeitos:
+		var ef: Dictionary = item
+		var sd: Dictionary = Dados.stat_defs.get(str(ef.get("stat", "")), {})
+		var nome := Ux.txt(sd, "nome", ingles)
+		var v := float(ef.get("valor", 0.0))
+		match str(ef.get("tipo", "flat")):
+			"pct": partes.append("+%s %s" % [Fmt.pct(v), nome])
+			"mult": partes.append("×%s %s" % [Fmt.num(v, 2), nome])
+			_: partes.append("+%s %s" % [Fmt.num(v, 0), nome])
+	return " · ".join(partes)
 
 ## Quantos niveis este clique compra. Estatica para o portao poder perguntar
 ## direto, sem montar painel: e ela que garante que o lote DEGRADA em vez de

@@ -90,9 +90,9 @@ func rodar(cena: SceneTree) -> void:
 		"Habilidades": 17, "Icones": 2, "Integridade": 9,
 		"Longo prazo": 7, "Mecânicas": 69, "Mira": 6,
 		"Mods": 19, "Numeros de dano": 2, "Offline": 6,
-		"Ondas": 12, "Pista de ouro": 3, "Prestígio": 25,
+		"Ondas": 17, "Pista de ouro": 3, "Prestígio": 25,
 		"Progresso": 14, "Saque": 8, "Save": 41,
-		"Celebracao": 25, "Fim de sessao": 25, "Painel de melhorias": 20, "Rodape": 26, "Sistemas": 6, "StatEngine": 5, "Custo do quadro": 12, "Teto": 38, "Áudio": 45,
+		"Celebracao": 25, "Fim de sessao": 25, "Painel de melhorias": 28, "Rodape": 26, "Sistemas": 6, "StatEngine": 5, "Custo do quadro": 12, "Teto": 38, "Áudio": 45,
 	}
 	for nome_g in minimo_por_grupo:
 		var rodou := int(por_grupo.get(nome_g, 0))
@@ -1462,6 +1462,75 @@ func t_painel_melhorias() -> void:
 	ok("MAX sem ouro ainda oferece 1", P.quantidade_do_lote(-1, 0, -1, 0) == 1)
 	ok("melhoria sem teto nao limita o lote", P.quantidade_do_lote(10, 500, -1, 999) == 10)
 
+	# MARCOS: as 39 melhorias eram "+X%" e nada mais, entao a tela mais aberta do
+	# jogo nao tinha decisao nenhuma — comprava-se a mais barata, sempre, e a
+	# ordem nao importava. Cada marco entrega uma coisa DIFERENTE do que a
+	# melhoria vende, e o ouro e finito a cada instante: QUAL degrau perseguir
+	# primeiro e a decisao que faltava.
+	var validos_stat: Dictionary = Dados.stat_defs
+	var com_marco := 0
+	var erros_marco: Array = []
+	for def_m in Dados.upgrades:
+		var marcos: Array = def_m.get("marcos", [])
+		if marcos.is_empty():
+			continue
+		com_marco += 1
+		var anterior := 0
+		for item_m in marcos:
+			var mk: Dictionary = item_m
+			var nivel_m := int(mk.get("nivel", 0))
+			if nivel_m <= anterior:
+				erros_marco.append("%s: marcos fora de ordem" % str(def_m.get("id", "?")))
+			anterior = nivel_m
+			var efs: Array = mk.get("efeito", [])
+			if efs.is_empty():
+				erros_marco.append("%s: marco %d nao entrega nada" % [str(def_m.get("id", "?")), nivel_m])
+			for ef_m in efs:
+				var st_m := str((ef_m as Dictionary).get("stat", ""))
+				if not validos_stat.has(st_m):
+					erros_marco.append("%s: stat '%s' nao existe" % [str(def_m.get("id", "?")), st_m])
+				# O marco tem que entregar OUTRA coisa: se ele so repete o que a
+				# melhoria ja vende, ele nao cria decisao nenhuma.
+				for ef_base in def_m.get("efeito", []):
+					if str((ef_base as Dictionary).get("stat", "")) == st_m:
+						erros_marco.append("%s: marco repete o proprio efeito (%s)" % [
+							str(def_m.get("id", "?")), st_m])
+	ok("varias melhorias tem marcos", com_marco >= 10, str(com_marco))
+	ok("todo marco e valido, crescente e entrega algo novo",
+		erros_marco.is_empty(), str(erros_marco))
+	# O PRIMEIRO marco tem que ser alcancavel dentro do teto de projeto, senao
+	# ninguem o ve antes da onda 50.
+	var longe: Array = []
+	for def_m2 in Dados.upgrades:
+		var marcos2: Array = def_m2.get("marcos", [])
+		if marcos2.is_empty():
+			continue
+		var mx2 := int(def_m2.get("max", -1))
+		if mx2 > 0 and int((marcos2[0] as Dictionary).get("nivel", 0)) > mx2:
+			longe.append(str(def_m2.get("id", "?")))
+	ok("o primeiro marco cabe no teto de projeto", longe.is_empty(), str(longe))
+	# ...e o modificador realmente aplica.
+	var txt_mod := _ler("res://scripts/sim/modifiers.gd")
+	ok("os marcos entram no calculo de atributos", txt_mod.contains('def.get("marcos", [])'))
+	var txt_g2 := _ler("res://scripts/sim/game.gd")
+	ok("cruzar um marco avisa o jogador", txt_g2.contains('Bus.celebracao.emit("marco"'))
+	# E o painel mostra o que falta — a antecipacao mora ai.
+	var P2 := load("res://scripts/ui/panel_upgrades.gd") as GDScript
+	var def_dano: Dictionary = Dados.upgrade_por_id.get("dano", {})
+	ok("a melhoria de dano tem marcos", not (def_dano.get("marcos", []) as Array).is_empty())
+	if not def_dano.is_empty():
+		var t_zero: String = P2.texto_marco(def_dano, 0, false)
+		# O idioma dos portoes e pt (ver `Cfg.idioma_do_sistema`), entao a
+		# assercao olha o NUMERO, que nao muda de lingua.
+		var nivel_1 := int((def_dano["marcos"] as Array)[0]["nivel"])
+		ok("no nivel zero o painel diz o que falta",
+			t_zero != "" and t_zero.contains(str(nivel_1)))
+		var alto := int((def_dano["marcos"] as Array)[-1]["nivel"]) + 10
+		var t_alto: String = P2.texto_marco(def_dano, alto, false)
+		ok("com tudo conquistado o painel muda de frase",
+			t_alto != "" and t_alto != t_zero and not t_alto.contains(str(nivel_1)))
+		ok("melhoria sem marco nao inventa linha", P2.texto_marco({}, 0, false) == "")
+
 	var txt_p := _ler("res://scripts/ui/panel_upgrades.gd")
 	# A aba "Tudo" e a memoria da aba: sem as duas, achar o que da para comprar
 	# custava sete cliques, e o painel voltava para a primeira categoria toda vez.
@@ -1912,6 +1981,23 @@ func t_defesa() -> void:
 ## ---------------------------------------------------------------- ondas
 func t_ondas() -> void:
 	g("Ondas")
+	# POR QUE O SPAWNER NAO PODE ACELERAR SOZINHO. A vida do inimigo cresce mais
+	# rapido por onda (1,152) do que o ouro que ele larga (1,128), e a contagem
+	# por onda tem teto. Logo, avancar uma onda e por si so uma PERDA de poder
+	# relativo: o jogador ganha porque passa tempo DENTRO da onda, matando,
+	# rendendo juros e subindo de nivel. Encurtar a onda sem dar o ganho junto
+	# empobrece quem joga — foi medido (onda maxima de 261 para 115) antes de
+	# ser entendido. Se alguem inverter os expoentes, o comentario de
+	# `waves.gd` para de valer e isto reprova.
+	ok("a vida cresce mais rapido por onda que o ouro", Bal.HP_CRESC > Bal.OURO_CRESC,
+		"%.3f vs %.3f" % [Bal.HP_CRESC, Bal.OURO_CRESC])
+	ok("a contagem de inimigos por onda tem teto",
+		Bal.contagem_onda(999999) <= 40, str(Bal.contagem_onda(999999)))
+	ok("o spawner nao acelera sozinho",
+		not _sem_comentario(_ler("res://scripts/sim/waves.gd")).contains("contagem_viva_agora() == 0 and faltam"))
+	# ...e a saida que o jogador TEM continua existindo e pagando.
+	ok("antecipar existe", _ler("res://scripts/sim/waves.gd").contains("func antecipar()"))
+	ok("...e paga bonus por isso", Diretor.ANTECIPAR_BONUS > 0.0)
 	ok("hp cresce", Big.gt(Bal.hp_onda(50), Bal.hp_onda(10)))
 	ok("ouro cresce", Big.gt(Bal.ouro_onda(50), Bal.ouro_onda(10)))
 	ok("chefe a cada 10", Bal.eh_chefe(10) and Bal.eh_chefe(20) and not Bal.eh_chefe(11))

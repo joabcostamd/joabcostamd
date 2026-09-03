@@ -91,16 +91,33 @@ func atualizar(dt: float) -> void:
 				return
 			cd_spawn -= dt
 			var faltam := int(s["necessarios"]) - spawnados
-			# NAO ACELERE O SPAWN SOZINHO. Tentei: quando a arena esvaziava e
-			# ainda faltavam inimigos, o proximo vinha quase na hora. As ondas
-			# iniciais aceleraram (onda 25 de 7m27 para 6m59), e o jogo QUEBROU
-			# do meio para a frente: onda 100 saiu de 30m56 para 1h03 e a onda
-			# maxima despencou de 261 para 115. O tempo de espera do spawn era,
-			# na pratica, tempo de acumular poder — encurtar a onda sem dar o
-			# ganho junto so faz o jogador chegar despreparado na parede.
+			# NAO ACELERE O SPAWN SOZINHO — e agora com o motivo, nao so com a
+			# medida.
 			#
-			# A saida certa nao e o jogo decidir o ritmo, e o JOGADOR: quem esta
-			# forte antecipa a onda e leva bonus por isso (ver `antecipar()`).
+			# Tentei: quando a arena esvaziava e ainda faltavam inimigos, o
+			# proximo vinha quase na hora. As ondas iniciais aceleraram (onda 25
+			# de 7m27 para 6m59) e o jogo QUEBROU do meio para a frente: onda 100
+			# saiu de 30m56 para 1h03 e a onda maxima despencou de 261 para 115.
+			# Na epoca escrevi que "o tempo de espera era tempo de acumular
+			# poder", o que e verdade mas nao explica nada. A razao esta em dois
+			# numeros de `Bal`:
+			#
+			#   HP_CRESC   = 1,152 por onda
+			#   OURO_CRESC = 1,128 por onda
+			#
+			# A vida do inimigo cresce MAIS RAPIDO por onda do que o ouro que ele
+			# larga, e a contagem de inimigos por onda tem teto (30). Entao cada
+			# onda avancada e, sozinha, uma perda liquida de poder relativo: o
+			# jogador so ganha porque passa TEMPO dentro da onda matando,
+			# acumulando juros, coletando e subindo de nivel. Avancar mais rapido
+			# pela mesma onda nao aumenta o ganho — encurta justamente a parte
+			# que paga. Um spawner que acelera sozinho e, matematicamente, um
+			# spawner que empobrece o jogador.
+			#
+			# Por isso a decisao e do JOGADOR e vem com premio: quem esta forte
+			# antecipa a onda e leva bonus de ouro por isso (ver `antecipar()`).
+			# O portao `t_ondas` tranca a relacao entre os dois expoentes: se
+			# alguem inverter, este comentario para de valer e a suite avisa.
 			if cd_spawn <= 0.0 and faltam > 0:
 				cd_spawn = Bal.intervalo_spawn(int(s["onda"]))
 				EnemyAI.spawn_onda(int(s["onda"]), j)

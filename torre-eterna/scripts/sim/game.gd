@@ -727,6 +727,16 @@ func comprar_upgrade(id: String, qtd = 1) -> int:
 	s["upgrades"][id] = nivel + n
 	marcar_sujo()
 	recalcular()
+	# MARCO CRUZADO: o degrau que entrega uma coisa diferente do que a melhoria
+	# vende. E o pagamento da antecipacao que o painel constroi — sem aviso, o
+	# jogador atravessa o marco sem perceber que atravessou.
+	for item in def.get("marcos", []):
+		var mk: Dictionary = item
+		var alvo := int(mk.get("nivel", 0))
+		if nivel < alvo and nivel + n >= alvo:
+			Bus.toast(Txt.f("sim_marco", {
+				"u": Ux.txt(def, "nome", Cfg.ingles()), "n": alvo}), "epico", "estrela")
+			Bus.celebracao.emit("marco", {"upgrade": def, "nivel": alvo})
 	Bus.upgrade_comprado.emit(id, n, nivel + n)
 	return n
 

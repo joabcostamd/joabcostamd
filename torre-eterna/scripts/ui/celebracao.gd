@@ -40,6 +40,9 @@ const RECEITAS := {
 	# era traz `nome` e `regra.texto` escritos e revisados nos dois idiomas, e
 	# nenhum dos dois chegava aos olhos de quem joga.
 	"era":            {"titulo": "", "cor": "#38bdf8", "icone": "nova", "som": "conquista", "peso": 1.35},
+	# O marco de melhoria acontece dezenas de vezes por corrida: peso baixo de
+	# proposito, para ser um aceno e nao uma interrupcao.
+	"marco":          {"titulo": "cel_marco", "cor": "#fbbf24", "icone": "estrela", "som": "nivel", "peso": 0.7},
 }
 
 ## Quem manda os painéis. `main.gd` entrega no momento da montagem — caminho de
@@ -293,6 +296,10 @@ func _subtitulo() -> String:
 			var moeda := str(def.get("moeda", ""))
 			var nome_moeda := Txt.t("m_" + moeda) if moeda != "" else ""
 			return "+%s %s" % [Fmt.big(float(d.get("ganho", Big.ZERO))), nome_moeda]
+		"marco":
+			var def_u: Dictionary = d.get("upgrade", {})
+			return Txt.f("cel_marco_sub", {
+				"u": Ux.txt(def_u, "nome", Cfg.ingles()), "n": int(d.get("nivel", 0))})
 		"era":
 			# A REGRA da era, que e a unica coisa que muda o jogo. Se a era nao
 			# tiver regra (a primeira nao tem), fica a descricao.

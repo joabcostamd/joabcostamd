@@ -95,6 +95,18 @@ static func recalcular(s: Dictionary, m: StatEngine) -> Dictionary:
 		var def: Dictionary = Dados.upgrade_por_id.get(id, {})
 		if not def.is_empty() and n > 0:
 			aplicar_efeitos(m, def.get("efeito", []), n, str(def.get("nome", id)), esp, pas)
+			# MARCOS: as 39 melhorias eram "+X%" e nada mais, entao a tela mais
+			# aberta do jogo nao tinha decisao nenhuma — comprava-se a mais
+			# barata, sempre, e a ordem nao importava. Cada marco entrega uma
+			# coisa DIFERENTE do que a melhoria vende: o Canhao de Plasma passa
+			# critico, a Cadencia passa projetil, a Refinaria passa juros. Como
+			# o ouro e finito a cada instante, QUAL degrau perseguir primeiro
+			# vira a decisao que faltava.
+			for marco in def.get("marcos", []):
+				var mk: Dictionary = marco
+				if n >= int(mk.get("nivel", 0)):
+					aplicar_efeitos(m, mk.get("efeito", []), 1,
+						"%s · %d" % [str(def.get("nome", id)), int(mk.get("nivel", 0))], esp, pas)
 
 	# ---------------------------------------------------------- talentos
 	for id in s["talentos"].keys():

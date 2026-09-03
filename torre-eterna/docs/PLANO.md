@@ -43,7 +43,7 @@ precisar de nenhum dos dois.
 | Motor de atributos: flat + pct + mult, com multiplicadores gigantes | teste de agregação |
 | Arena com pooling e grade espacial | `perf.gd` com 500 inimigos |
 | Combate: crítico, armadura, perfuração, ricochete, área, execução, elementos | testes de dano |
-| Diretor de ondas, economia, níveis, saque, prestígio, offline | 616 testes |
+| Diretor de ondas, economia, níveis, saque, prestígio, offline | 630 testes |
 
 **Erro achado pelo simulador nº 1:** a onda travava para sempre se um inimigo
 alcançasse a torre — a condição de vitória contava abates, não inimigos
@@ -78,7 +78,7 @@ Ecos**, **Adaptação do Enxame**, **O Peregrino**, **O Panteão**, **A
 Retomada**, **Aglomeração**, **Caixa da Vigília**. Ver `README.md`.
 
 ### Fase 5 · Portões ✅
-`verificar` · `lint` · `validar_dados` · `testes` (616) · `perf` · `soak` ·
+`verificar` · `lint` · `validar_dados` · `testes` (630) · `perf` · `soak` ·
 `agent_verify` — todos por linha de comando, todos no CI.
 
 ---

@@ -58,5 +58,13 @@
  "upg_ganho_mult": {
   "pt": "×{v} {s}",
   "en": "×{v} {s}"
+ },
+ "upg_marco_falta": {
+  "pt": "Marco em {v} (faltam {n}): {e}",
+  "en": "Milestone at {v} ({n} to go): {e}"
+ },
+ "upg_marco_completo": {
+  "pt": "Todos os marcos: {e}",
+  "en": "All milestones: {e}"
  }
 }
