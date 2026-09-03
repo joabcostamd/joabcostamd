@@ -36,6 +36,7 @@ func rodar(cena: SceneTree) -> void:
 	t_modificadores()
 	t_economia()
 	t_combate()
+	t_mira()
 	t_defesa()
 	t_ondas()
 	t_prestigio()
@@ -466,6 +467,87 @@ func t_combate() -> void:
 	ok("execucao mata", not e3.vivo())
 
 	jogo.arena.limpar_inimigos()
+
+## ------------------------------------------------------------- mira
+## `alvo_ids` é a busca mais quente do jogo (todo impacto de perfuração e todo
+## ricochete faz uma) e não tinha UM teste. Ela foi trocada de varredura linear
+## por busca em anéis de células, e a única coisa que garante que a troca não
+## mexeu no jogo é isto: a resposta da grade tem que bater com a da varredura
+## burra, em cem arranjos diferentes, incluindo os casos que quebram poda mal
+## feita — alvo fora do alcance, todos ignorados, arena vazia.
+func t_mira() -> void:
+	g("Mira")
+	var arena = jogo.arena
+	arena.limpar_inimigos()
+	var def: Dictionary = Dados.inimigo_por_id["grunhido"]
+	var r := RngX.new(4242)
+
+	# Referência burra: varre todos, sem grade, sem poda. É o que a função fazia.
+	var linear := func(origem: Vector2, alcance: float, ids: Dictionary):
+		var melhor = null
+		var melhor_d: float = alcance * alcance
+		for e in arena.inimigos:
+			if not e.vivo() or e.intangivel > 0.0 or ids.has(e.id):
+				continue
+			var d2: float = (e.pos - origem).length_squared()
+			if d2 < melhor_d:
+				melhor_d = d2
+				melhor = e
+		return melhor
+
+	var divergencias := 0
+	var achou_alguem := 0
+	var achou_ninguem := 0
+	for rodada in 100:
+		arena.limpar_inimigos()
+		var quantos := 1 + int(r.f() * 40.0)
+		for i in quantos:
+			var e := EnemyAI.criar(def, 10, jogo, {})
+			if e != null:
+				e.pos = Vector2(r.entre(-200.0, 1400.0), r.entre(-200.0, 900.0))
+		arena.reconstruir_grade()
+
+		# Ignora um pedaço deles, como um projétil perfurante já teria feito.
+		var ids := {}
+		for e in arena.inimigos:
+			if r.f() < 0.4:
+				ids[e.id] = true
+
+		var origem := Vector2(r.entre(0.0, 1280.0), r.entre(0.0, 720.0))
+		var alcance: float = [40.0, 240.0, 400.0, 2000.0][int(r.f() * 4.0)]
+		var a = arena.alvo_ids(origem, alcance, ids)
+		var b = linear.call(origem, alcance, ids)
+		if a != b:
+			divergencias += 1
+		if a == null:
+			achou_ninguem += 1
+		else:
+			achou_alguem += 1
+
+	ok("grade concorda com a varredura linear em 100 arranjos", divergencias == 0,
+		"divergencias=%d" % divergencias)
+	# Sem isto o teste passaria com uma função que devolve sempre null.
+	ok("os 100 arranjos cobriram achar e nao achar", achou_alguem > 10 and achou_ninguem > 0,
+		"achou=%d vazio=%d" % [achou_alguem, achou_ninguem])
+
+	# Poda com alvo colado na origem: o anel 0 já resolve e o resto tem que ser
+	# ignorado sem perder um alvo que esteja mais longe porém dentro do alcance.
+	arena.limpar_inimigos()
+	var perto_e := EnemyAI.criar(def, 10, jogo, {})
+	var longe_e := EnemyAI.criar(def, 10, jogo, {})
+	perto_e.pos = Vector2(600.0, 400.0)
+	longe_e.pos = Vector2(900.0, 400.0)
+	arena.reconstruir_grade()
+	ok("pega o mais perto", arena.alvo_ids(Vector2(610.0, 400.0), 400.0, {}) == perto_e)
+	ok("pula o ignorado e pega o de tras",
+		arena.alvo_ids(Vector2(610.0, 400.0), 400.0, {perto_e.id: true}) == longe_e)
+	ok("nada dentro do alcance devolve nulo",
+		arena.alvo_ids(Vector2(610.0, 400.0), 50.0, {perto_e.id: true}) == null)
+	perto_e.intangivel = 1.0
+	ok("inimigo intangivel nao e alvo",
+		arena.alvo_ids(Vector2(610.0, 400.0), 400.0, {}) == longe_e)
+	perto_e.intangivel = 0.0
+	arena.limpar_inimigos()
 
 ## ------------------------------------------------------- defesa da torre
 func t_defesa() -> void:

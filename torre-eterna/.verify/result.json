@@ -4,12 +4,12 @@
     "modelos3d": 0,
     "recursos": 1,
     "scripts": 85,
-    "strings_auditadas": 80
+    "strings_auditadas": 41
   },
   "corrigidas": 0,
   "kit": "1.5.2",
   "modo": "check",
-  "novas_falhas": 0,
-  "status": "PASS",
-  "total_falhas_conhecidas": 0
+  "novas_falhas": 1,
+  "status": "FAIL",
+  "total_falhas_conhecidas": 1
 }

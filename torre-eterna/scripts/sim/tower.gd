@@ -95,7 +95,7 @@ func atualizar(dt: float) -> void:
 	if alvo != null and int(j.stats.n("projeteis")) > 1:
 		_ids_alvo.clear()
 		_ids_alvo[alvo.id] = true
-		segundo = j.arena.alvo_ids(j.arena.centro, alcance, "proximo", _ids_alvo)
+		segundo = j.arena.alvo_ids(j.arena.centro, alcance, _ids_alvo)
 	while cd_tiro <= 0.0 and tiros < 12:
 		cd_tiro += 1.0 / cadencia
 		if alvo == null:
@@ -280,10 +280,10 @@ func _impacto(p: Projetil, alvo: Inimigo) -> bool:
 	if p.perfuracao > 0:
 		p.perfuracao -= 1
 		p.dano = Big.mul_f(p.dano, 0.82)
-		p.alvo = j.arena.alvo_ids(p.pos, 400.0, "proximo", p.atingidos)
+		p.alvo = j.arena.alvo_ids(p.pos, 400.0, p.atingidos)
 		return false
 	if p.ricochete > 0:
-		var prox: Inimigo = j.arena.alvo_ids(p.pos, 240.0, "proximo", p.atingidos)
+		var prox: Inimigo = j.arena.alvo_ids(p.pos, 240.0, p.atingidos)
 		if prox != null:
 			p.ricochete -= 1
 			p.dano = Big.mul_f(p.dano, 0.75)

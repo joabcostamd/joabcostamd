@@ -20,7 +20,7 @@
 - cenas: 1
 - recursos: 1
 - modelos3d: 0
-- strings_auditadas: 80
+- strings_auditadas: 41
 
 ## Inventario do projeto
 
@@ -179,11 +179,14 @@ _A IA deve consultar esta secao antes de criar qualquer coisa nova, para nao rei
 - `UI  (res://scripts/ui/ui_kit.gd)`
 - `Ux  (res://scripts/core/ux.gd)`
 
-### Sinais declarados (56)
+### Sinais declarados (59)
 
 - `inimigo_surgiu  (res://scripts/core/event_bus.gd)`
 - `inimigo_atingido  (res://scripts/core/event_bus.gd)`
 - `inimigo_morreu  (res://scripts/core/event_bus.gd)`
+- `banner_cinematico  (res://scripts/core/event_bus.gd)`
+- `sequencia_diaria  (res://scripts/core/event_bus.gd)`
+- `save_ilegivel  (res://scripts/core/event_bus.gd)`
 - `inimigo_chegou  (res://scripts/core/event_bus.gd)`
 - `chefe_surgiu  (res://scripts/core/event_bus.gd)`
 - `chefe_morreu  (res://scripts/core/event_bus.gd)`

@@ -301,25 +301,55 @@ func alvo_no_raio(origem: Vector2, raio: float, excluir: Array = []) -> Inimigo:
 			melhor = e
 	return melhor
 
-## Igual a alvo(), mas o filtro é um Dicionário de ids já atingidos (O(1)).
-func alvo_ids(origem: Vector2, alcance: float, modo: String, ids: Dictionary) -> Inimigo:
+## O inimigo vivo mais próximo de `origem` dentro de `alcance`, ignorando os
+## ids que já foram atingidos por este projétil.
+##
+## Esta é a busca mais quente do jogo: cada impacto de perfuração e cada
+## ricochete faz uma. A versão anterior varria a lista `inimigos` INTEIRA e não
+## encostava na grade — o comentário dela dizia "O(1)" falando do filtro de ids
+## e escondia que a varredura era O(n) sobre todos os vivos. Com 193 inimigos e
+## centenas de impactos por passo isso custava 24 ms de simulação por quadro e
+## reprovou o portão de desempenho.
+##
+## Agora a busca anda em anéis de células a partir da origem e PARA no primeiro
+## anel que já não pode conter ninguém mais perto que o melhor achado: qualquer
+## ponto de uma célula a `k` células de distância está a pelo menos
+## `(k-1) * CELULA` da origem, então quando o melhor já é mais perto que isso,
+## não há o que procurar adiante. O inimigo devolvido é o mesmo de antes; só o
+## caminho até ele encurtou.
+func alvo_ids(origem: Vector2, alcance: float, ids: Dictionary) -> Inimigo:
 	var melhor: Inimigo = null
-	var melhor_score := -INF
-	var a2 := alcance * alcance
+	var melhor_d := alcance * alcance
 	var ox2 := origem.x
 	var oy2 := origem.y
-	for e in inimigos:
-		if not e.vivo() or e.intangivel > 0.0 or ids.has(e.id):
-			continue
-		var ddx := e.pos.x - ox2
-		var ddy := e.pos.y - oy2
-		var d2 := ddx * ddx + ddy * ddy
-		if d2 > a2:
-			continue
-		var score := -d2
-		if score > melhor_score:
-			melhor_score = score
-			melhor = e
+	var c0x := int(floor(ox2 / CELULA))
+	var c0y := int(floor(oy2 / CELULA))
+	var max_anel := int(ceil(alcance / CELULA))
+	for anel in range(max_anel + 1):
+		if melhor != null:
+			var piso := float(anel - 1) * CELULA
+			if piso > 0.0 and melhor_d <= piso * piso:
+				break
+		for cx in range(c0x - anel, c0x + anel + 1):
+			var borda_x := absi(cx - c0x) == anel
+			var base := cx * 4096
+			for cy in range(c0y - anel, c0y + anel + 1):
+				# Só a casca do anel: o miolo já foi varrido nos anéis de dentro.
+				if not borda_x and absi(cy - c0y) != anel:
+					continue
+				var k := base + cy
+				if not _grade.has(k):
+					continue
+				for item in _grade[k]:
+					var e: Inimigo = item
+					if not e.vivo() or e.intangivel > 0.0 or ids.has(e.id):
+						continue
+					var ddx := e.pos.x - ox2
+					var ddy := e.pos.y - oy2
+					var d2 := ddx * ddx + ddy * ddy
+					if d2 < melhor_d:
+						melhor_d = d2
+						melhor = e
 	return melhor
 
 ## Ponto de nascimento logo fora da borda visível — a ação acontece na tela,

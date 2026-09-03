@@ -13,6 +13,7 @@ var root: Node
 
 const DT := 1.0 / 60.0
 const ORCAMENTO_US := 4000.0   ## 4 ms de simulação por frame (de 16,6 ms)
+const SEMENTE := 20260903
 
 ## O que este portão mede, e por que assim
 ##
@@ -102,6 +103,14 @@ func rodar(cena: SceneTree) -> void:
 	var j = root.get_node_or_null("Jogo")
 	j.stats = StatEngine.new()
 	j.iniciar()
+	# SEMENTE FIXA, pelo mesmo motivo do portão de balanceamento. Sem ela, os
+	# 20 min de jogo real rodados antes da perna segurada terminavam numa onda
+	# diferente a cada execução (255 numa, 200 noutra), com uma torre de força
+	# diferente e um número de projéteis vivos diferente — 207 numa medição,
+	# 536 na seguinte, do MESMO commit. O portão passava aqui e reprovava no
+	# CI sem que uma linha de código tivesse mudado. Trocar a semente muda o
+	# que este portão mede, então ela é parte do contrato.
+	j.rng = RngX.new(SEMENTE)
 
 	# torre poderosa e onda alta: pior caso realista
 	j.s["onda"] = 200

@@ -149,7 +149,7 @@ $ godot --headless --path . -s res://tools/validar_dados.gd
 ===STATUS=== PASS
 
 $ godot --headless --path . -s res://tools/testes.gd
-===TESTES=== passou=342 falhou=0
+===TESTES=== passou=348 falhou=0
 ===STATUS=== PASS
 
 $ godot --headless --path . -s res://tools/perf.gd -- 400
@@ -222,7 +222,7 @@ STATUS: PASS   (kit 1.5.2, 0 falhas)
 |---|---:|
 | Scripts GDScript | 85 |
 | Linhas de código | 26.788 |
-| Testes da simulação | 342 |
+| Testes da simulação | 348 |
 | Chaves de interface PT/EN | 1.012 |
 | Textos de conteúdo PT/EN | 1.286 |
 | Imagens no repositório | 1 (`icon.svg`, o ícone do projeto — nenhuma no jogo) |
