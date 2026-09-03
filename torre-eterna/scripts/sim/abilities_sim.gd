@@ -94,7 +94,7 @@ static func usar(id: String, j) -> bool:
 					"valor": valor_final,
 					"restante": dur,
 					"fonte": str(def.get("nome", id)),
-					"icone": str(def.get("icone", "")),
+					"icone": Icone.da_habilidade(id),
 					"cor": cor,
 				})
 			Bus.particulas.emit("aura", centro, {"cor": cor, "dur": dur})

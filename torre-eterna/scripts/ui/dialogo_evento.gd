@@ -37,7 +37,7 @@ func configurar(def: Dictionary) -> void:
 func _montar() -> void:
 	modulate = Color(1, 1, 1, 0)
 	scrim = ColorRect.new()
-	scrim.color = Color(1.0, 0.0, 0.0, 0.72)
+	scrim.color = Color(0.02, 0.03, 0.06, 0.72)
 	scrim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	scrim.mouse_filter = Control.MOUSE_FILTER_STOP
 	add_child(scrim)

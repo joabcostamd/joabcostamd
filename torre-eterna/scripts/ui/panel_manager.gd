@@ -168,10 +168,10 @@ func _relatorio_offline(dados: Dictionary) -> void:
 	janela.anchor_right = 0.5
 	janela.anchor_top = 0.5
 	janela.anchor_bottom = 0.5
-	janela.offset_left = -230
-	janela.offset_right = 230
-	janela.offset_top = -150
-	janela.offset_bottom = 150
+	janela.offset_left = -250
+	janela.offset_right = 250
+	janela.offset_top = -200
+	janela.offset_bottom = 200
 	var v := UI.vbox(10)
 	v.add_child(UI.titulo("A torre continuou lutando", 21))
 	v.add_child(UI.separador())
@@ -180,14 +180,35 @@ func _relatorio_offline(dados: Dictionary) -> void:
 		v.add_child(UI.rotulo("Limite de acúmulo: %s (o resto se perdeu)." % Ux.tempo_curto(float(dados["usado"])), 13, UI.TEXTO3))
 	v.add_child(UI.rotulo("Eficiência offline: %s" % Fmt.pct(float(dados["eficiencia"])), 13, UI.TEXTO3))
 	v.add_child(UI.separador())
-	var h1 := UI.hbox(8)
-	h1.add_child(UI.rotulo("🪙", 22))
-	h1.add_child(UI.rotulo("+" + Fmt.big(dados["ouro"]), 22, UI.OURO))
-	v.add_child(h1)
-	var h2 := UI.hbox(8)
-	h2.add_child(UI.rotulo("📘", 18))
-	h2.add_child(UI.rotulo("+" + Fmt.big(dados["xp"]), 18, UI.ACENTO2))
-	v.add_child(h2)
+	v.add_child(_linha_ganho("ouro", UI.OURO, "+" + Fmt.big(dados["ouro"]), 22))
+	v.add_child(_linha_ganho("livro", UI.ACENTO2, "+" + Fmt.big(dados["xp"]) + " XP", 18))
+
+	# --- Caixa da Vigília: o saque offline chega LACRADO ---
+	var seladas := int(dados.get("seladas", 0))
+	if seladas > 0:
+		v.add_child(UI.separador())
+		v.add_child(UI.rotulo("CAIXA DA VIGÍLIA", 13, UI.TEXTO3))
+		var lbl := UI.rotulo("%d carta(s) lacrada(s) enquanto você dormia." % seladas, 14, UI.TEXTO2)
+		v.add_child(lbl)
+		var b_abrir := UI.botao("Abrir uma carta", Callable())
+		b_abrir.custom_minimum_size.y = 40
+		b_abrir.pressed.connect(func():
+			var carta: Dictionary = Mecanicas.abrir_caixa(jogo)
+			if carta.is_empty():
+				b_abrir.disabled = true
+				lbl.text = "A caixa está vazia."
+				return
+			var def: Dictionary = Dados.carta_por_id.get(str(carta.get("id", "")), {})
+			var rar := str(carta.get("raridade", "comum"))
+			lbl.text = "%s  ·  %s" % [Ux.txt(def, "nome", Cfg.ingles()), str(Dados.raridade(rar).get("nome", rar))]
+			lbl.add_theme_color_override("font_color", UI.cor_raridade(rar))
+			UI.saltar(lbl, 1.25)
+			var restam := int(jogo.s["caixa"]["seladas"])
+			b_abrir.text = "Abrir uma carta (%d)" % restam if restam > 0 else "Caixa vazia"
+			b_abrir.disabled = restam <= 0)
+		b_abrir.text = "Abrir uma carta (%d)" % seladas
+		v.add_child(b_abrir)
+
 	v.add_child(UI.espacador(0, false))
 	var b := UI.botao("Continuar", func(): janela.queue_free(); fundo_escuro.visible = false)
 	b.custom_minimum_size.y = 42
@@ -197,3 +218,13 @@ func _relatorio_offline(dados: Dictionary) -> void:
 	fundo_escuro.visible = true
 	janela.move_to_front()
 	UI.saltar(janela, 1.06)
+
+## Linha "ícone + valor" sem emoji (a fonte padrão não tem glifo).
+func _linha_ganho(icone: String, cor: Color, texto: String, tamanho: int) -> HBoxContainer:
+	var h := UI.hbox(8)
+	var ic := Control.new()
+	ic.set_script(load("res://scripts/ui/icone_control.gd"))
+	h.add_child(ic)
+	ic.configurar(icone, cor, float(tamanho))
+	h.add_child(UI.rotulo(texto, tamanho, cor))
+	return h

@@ -439,19 +439,30 @@ func _atualizar_adaptacao() -> void:
 
 func _atualizar_buffs() -> void:
 	var buffs: Array = jogo.s["buffs"]
-	while caixa_buffs.get_child_count() > buffs.size():
-		caixa_buffs.get_child(caixa_buffs.get_child_count() - 1).queue_free()
-		await get_tree().process_frame
-	for i in buffs.size():
+	# recicla as caixas existentes; nunca reconstrói a árvore a cada tick
+	while caixa_buffs.get_child_count() < buffs.size():
+		var cx := UI.hbox(3)
+		cx.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var ic := Control.new()
+		ic.set_script(load("res://scripts/ui/icone_control.gd"))
+		cx.add_child(ic)
+		ic.configurar("estrela", UI.ACENTO, 14)
+		cx.add_child(UI.rotulo("", 12, UI.TEXTO2))
+		caixa_buffs.add_child(cx)
+	for i in caixa_buffs.get_child_count():
+		var cx2: Control = caixa_buffs.get_child(i)
+		if i >= buffs.size():
+			cx2.visible = false
+			continue
+		cx2.visible = true
 		var b: Dictionary = buffs[i]
-		var l: Label
-		if i < caixa_buffs.get_child_count():
-			l = caixa_buffs.get_child(i)
-		else:
-			l = UI.rotulo("", 14)
-			caixa_buffs.add_child(l)
-		l.text = "%s %ds" % [str(b.get("icone", "✦")), int(ceil(float(b["restante"])))]
-		l.add_theme_color_override("font_color", Color.html(str(b.get("cor", "#ffffff"))))
+		var cor := Color.html(str(b.get("cor", "#ffffff")))
+		var ic2: Control = cx2.get_child(0)
+		ic2.configurar(str(b.get("icone", "estrela")), cor, 14)
+		var l: Label = cx2.get_child(1)
+		l.text = "%ds" % int(ceil(float(b["restante"])))
+		l.add_theme_color_override("font_color", cor)
+		cx2.tooltip_text = "%s — %s" % [str(b.get("fonte", "")), str(b.get("stat", ""))]
 
 ## --------------------------------------------------------------- ações
 
