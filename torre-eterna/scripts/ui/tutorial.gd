@@ -21,6 +21,10 @@ const PASSOS := [
 		"texto": "Eu sou a Torre. Atiro sozinha, enferrujo devagar e não durmo.\nO resto é com você.",
 	},
 	{
+		"id": "purga", "alvo": "purga",
+		"texto": "A Purga é a única coisa que eu não faço sozinha.\nDeixe encher e solte na faixa dourada.",
+	},
+	{
 		"id": "ouro", "alvo": "moedas",
 		"texto": "Isso que você recolheu é ouro.\nParado no bolso, ele não mata ninguém.",
 	},
@@ -43,10 +47,6 @@ const PASSOS := [
 	{
 		"id": "habilidade", "alvo": "habilidades",
 		"texto": "Uma habilidade acordou.\nTem tecla, tem recarga e tem hora certa de usar.",
-	},
-	{
-		"id": "purga", "alvo": "purga",
-		"texto": "A Purga é a única coisa que eu não faço sozinha.\nDeixe encher e solte na faixa dourada.",
 	},
 	{
 		"id": "casco", "alvo": "vitais",

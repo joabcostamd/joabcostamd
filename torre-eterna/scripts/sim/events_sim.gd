@@ -254,9 +254,14 @@ static func aplicar(j, def: Dictionary, res: Dictionary) -> Dictionary:
 			var t: Dictionary = s["torre"]
 			var antes := float(t["vida"])
 			j.curar_torre(Big.mul_f(float(t["vida_max"]), absf(v)))
-			out["texto"] = "Casco reparado: +%s" % Fmt.big(Big.sub(float(t["vida"]), antes))
-			out["cor"] = UI.VERDE
-			out["tom"] = "bom"
+			var curou := Big.sub(float(t["vida"]), antes)
+			if Big.is_zero(curou):
+				out["texto"] = "O casco já estava inteiro."
+				out["cor"] = UI.TEXTO2
+			else:
+				out["texto"] = "Casco reparado: +%s" % Fmt.big(curou)
+				out["cor"] = UI.VERDE
+				out["tom"] = "bom"
 		"dano":
 			var t2: Dictionary = s["torre"]
 			j.dano_na_torre(Big.mul_f(float(t2["vida_max"]), absf(v)), null, {"ignora_iframes": true})
@@ -271,7 +276,7 @@ static func aplicar(j, def: Dictionary, res: Dictionary) -> Dictionary:
 			else:
 				var cdef: Dictionary = Dados.carta_por_id.get(str(inst["id"]), {})
 				var rar := str(inst["raridade"])
-				out["texto"] = "%s  ·  %s" % [Ux.txt(cdef, "nome", Cfg.ingles()), rar.capitalize()]
+				out["texto"] = "%s  ·  %s" % [Ux.txt(cdef, "nome", Cfg.ingles()), _nome_raridade(rar)]
 				out["cor"] = UI.RARIDADE_COR.get(rar, UI.ACENTO)
 				out["tom"] = "epico"
 		"onda":
@@ -311,7 +316,7 @@ static func resumo(j, res: Dictionary) -> String:
 			return "A torre perde %s do casco" % Fmt.pct(absf(v), 0)
 		"carta":
 			var rar := str(res.get("raridadeMin", ""))
-			return "Uma carta nova" + ("" if rar == "" else " (%s ou melhor)" % rar.capitalize())
+			return "Uma carta nova" + ("" if rar == "" else " (%s ou melhor)" % _nome_raridade(rar))
 		"onda":
 			return ("Avança %d onda(s)" % int(absf(v))) if v >= 0.0 else ("Recua %d onda(s)" % int(absf(v)))
 	return "Nada"
@@ -364,6 +369,11 @@ static func _desc_buff(res: Dictionary) -> String:
 		"mult": return "%s ×%s" % [nome, Fmt.num(v, 2)]
 		"flat": return "%s +%s" % [nome, Fmt.num(v, 2)]
 	return "%s +%s" % [nome, Fmt.pct(v, 0)]
+
+## Nome bonito da raridade ("epico" -> "Épico"), vindo dos dados.
+static func _nome_raridade(id: String) -> String:
+	var nome := Ux.txt(Dados.raridade(id), "nome", Cfg.ingles())
+	return nome if nome != "" else id.capitalize()
 
 static func _nome_moeda(chave: String) -> String:
 	match chave:

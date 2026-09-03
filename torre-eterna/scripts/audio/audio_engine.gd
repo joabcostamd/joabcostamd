@@ -17,6 +17,8 @@ extends Node
 const VOZES := 24
 const ORCAMENTO_JOGANDO_MS := 2.0
 const ORCAMENTO_OCIOSO_MS := 9.0
+const FATIA := 256            # amostras por passada da fábrica
+const ESSENCIAIS := 8         # sons que nascem antes da trilha
 const DIST_MAX := 3200.0
 
 var catalogo: Dictionary = {}          # nome -> {camadas, db, var, taxa, pico}
@@ -29,6 +31,8 @@ var _vozes: Array[AudioStreamPlayer2D] = []
 var _inicio: Array[int] = []
 var _ultimo: Dictionary = {}           # nome -> ticks_msec do último disparo
 var _fila: Array = []                  # [["sfx"|"musica", nome], ...]
+var _fabrica: Synth.Fabrica = null
+var _item: Array = []
 var _rng := RandomNumberGenerator.new()
 var _combo := 0
 var _jogo: Node = null
@@ -48,11 +52,7 @@ func _ready() -> void:
 
 	catalogo = Sfx.catalogo()
 	musica = Musica.new(self)
-	for nome in Sfx.nomes():
-		_fila.append(["sfx", str(nome)])
-	for nome in musica.nomes_banco():
-		_fila.append(["musica", str(nome)])
-
+	_montar_fila()
 	_criar_vozes()
 	_ligar_sinais()
 
@@ -155,28 +155,60 @@ func _disparar(nome: String, db: float, pitch: float, pos: Vector2) -> void:
 
 ## -------------------------------------------------------------- geração
 
-## Gera o catálogo em fatias. Enquanto o jogador está no título ou pausado o
-## orçamento é maior; em partida, dois milissegundos por quadro e olhe lá.
+## A ordem importa: primeiro o punhado de sons que tocam a cada segundo, depois
+## os instrumentos da trilha (para a música entrar cedo), e só então o resto.
+func _montar_fila() -> void:
+	var sons: Array = Sfx.nomes()
+	for i in mini(ESSENCIAIS, sons.size()):
+		_fila.append(["sfx", str(sons[i])])
+	for nome in ["perc", "hat", "pad", "baixo_quadrada", "arpejo_quadrada"]:
+		_fila.append(["musica", str(nome)])
+	for i in range(ESSENCIAIS, sons.size()):
+		_fila.append(["sfx", str(sons[i])])
+	for nome in musica.nomes_banco():
+		var chave: Array = ["musica", str(nome)]
+		if not _fila.has(chave):
+			_fila.append(chave)
+
+## Gera o catálogo em fatias de poucas centenas de amostras. Enquanto o jogador
+## está no título ou pausado o orçamento é maior; em partida, dois milissegundos
+## por quadro e olhe lá. Nenhum som, por mais longo, custa um quadro inteiro.
 func _gerar_fatia() -> void:
-	if _fila.is_empty():
+	if _fila.is_empty() and _fabrica == null:
 		gerando = false
-		if musica != null and not musica.tocando:
+		print("===AUDIO=== fim da geracao t=%.1fs %s" % [Time.get_ticks_msec() / 1000.0, estado()])
+		if musica != null and not musica.tocando and musica.pronta():
 			musica.iniciar()
 		return
 	var orcamento := ORCAMENTO_OCIOSO_MS if _ocioso() else ORCAMENTO_JOGANDO_MS
 	var limite := Time.get_ticks_usec() + int(orcamento * 1000.0)
-	while not _fila.is_empty() and Time.get_ticks_usec() < limite:
-		var item: Array = _fila.pop_front()
-		var tipo := str(item[0])
-		var nome := str(item[1])
-		if tipo == "sfx":
-			var e: Dictionary = catalogo.get(nome, {})
-			if not e.is_empty():
-				bancos[nome] = Synth.som(e.get("camadas", []), float(e.get("pico", 0.85)))
-		else:
-			musica.gerar_banco(nome)
-		# a trilha entra assim que tem baixo, pad e percussão
-		if musica != null and not musica.tocando and musica.pronta():
+	while Time.get_ticks_usec() < limite:
+		if _fabrica == null:
+			if _fila.is_empty():
+				break
+			_item = _fila.pop_front()
+			var r := _receita_do_item(_item)
+			_fabrica = Synth.Fabrica.new(r.get("camadas", []), float(r.get("pico", 0.85)))
+		if _fabrica.avancar(FATIA):
+			_guardar(_item, _fabrica.resultado)
+			_fabrica = null
+
+func _receita_do_item(item: Array) -> Dictionary:
+	if str(item[0]) == "sfx":
+		var e: Dictionary = catalogo.get(str(item[1]), {})
+		return {"camadas": e.get("camadas", []), "pico": float(e.get("pico", 0.85))}
+	return musica.receita_banco(str(item[1]))
+
+func _guardar(item: Array, fluxo: AudioStreamWAV) -> void:
+	if fluxo == null:
+		return
+	if str(item[0]) == "sfx":
+		bancos[str(item[1])] = fluxo
+	else:
+		musica.definir_banco(str(item[1]), fluxo)
+		print("===AUDIO=== banco %s t=%.1fs" % [str(item[1]), Time.get_ticks_msec() / 1000.0])
+		# a trilha entra assim que tem percussão e um baixo
+		if not musica.tocando and musica.pronta():
 			musica.iniciar()
 
 func _ocioso() -> bool:

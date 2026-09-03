@@ -41,8 +41,12 @@ static func atualizar_purga(dt: float, j) -> void:
 	if float(p["carga"]) >= 1.0:
 		p["estourou"] = int(p["estourou"]) + 1
 		disparar_purga(j, false, 0.30)
-		j.torre.cd_tiro = maxf(j.torre.cd_tiro, 1.2)
-		Bus.toast("O núcleo estourou sozinho — você perdeu a janela.", "ruim")
+		# o primeiro estouro não pune: nesse ponto o jogo ainda nem explicou
+		if int(p["estourou"]) > 1:
+			j.torre.cd_tiro = maxf(j.torre.cd_tiro, 1.2)
+			Bus.toast("O núcleo estourou sozinho — você perdeu a janela.", "ruim")
+		else:
+			Bus.toast("O núcleo encheu e estourou. Da próxima, solte você.", "info")
 
 ## Qualidade da purga pela carga atual.
 static func qualidade_purga(carga: float) -> float:
