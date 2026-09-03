@@ -107,6 +107,8 @@ func _talvez_capturar() -> void:
 			_clicar_debug = a.substr(9)
 		elif a.begins_with("--celebrar="):
 			_celebrar_debug = a.substr(11)
+		elif a == "--en":
+			Cfg.set_v("idioma", "en")
 	if segundos < 0.0:
 		return
 	if _abrir_debug != "":

@@ -60,6 +60,56 @@ func _i18n() -> void:
 	for k in Textos.EN.keys():
 		if not Textos.PT.has(k):
 			avisos.append("chave de interface só em EN: %s" % str(k))
+	_i18n_conteudo()
+
+## O seletor de idioma promete o jogo inteiro em inglês, não só os botões. Todo
+## texto de CONTEÚDO nos JSON (nome de inimigo, descrição de talento, lore de
+## prestígio, dica de chefe) precisa do par `...En`. Faltavam 154 quando esta
+## regra nasceu: o painel de Prestígio tinha os nomes traduzidos e as descrições
+## em português no meio da tela.
+const CAMPOS_TRADUZIVEIS := [
+	"nome", "desc", "descricao", "titulo", "lore",
+	"resetaTexto", "mantemTexto", "requisito", "dica",
+]
+
+func _i18n_conteudo() -> void:
+	var faltas: Array = []
+	var d := DirAccess.open("res://data")
+	if d == null:
+		erros.append("pasta res://data não encontrada")
+		return
+	d.list_dir_begin()
+	var arquivo := d.get_next()
+	while arquivo != "":
+		if arquivo.ends_with(".json"):
+			var f := FileAccess.open("res://data/" + arquivo, FileAccess.READ)
+			if f != null:
+				var bruto = JSON.parse_string(f.get_as_text())
+				f.close()
+				_varrer_traducao(bruto, arquivo, faltas)
+		arquivo = d.get_next()
+	d.list_dir_end()
+	if not faltas.is_empty():
+		erros.append("conteúdo sem tradução em EN (%d): %s" % [
+			faltas.size(), str(faltas.slice(0, 8))])
+
+func _varrer_traducao(o, arquivo: String, faltas: Array) -> void:
+	if o is Dictionary:
+		for campo_v in CAMPOS_TRADUZIVEIS:
+			var campo := str(campo_v)
+			if not o.has(campo) or not (o[campo] is String):
+				continue
+			# a paleta das eras tem uma chave "texto" que é uma COR, não frase
+			if str(o[campo]).begins_with("#"):
+				continue
+			var par: String = str(campo) + "En"
+			if not o.has(par):
+				faltas.append("%s:%s.%s" % [arquivo, str(o.get("id", "?")), campo])
+		for v in o.values():
+			_varrer_traducao(v, arquivo, faltas)
+	elif o is Array:
+		for v in o:
+			_varrer_traducao(v, arquivo, faltas)
 
 func _contagens() -> void:
 	var reais := {
