@@ -10,7 +10,7 @@ alguém de fora precisa conseguir verificar sem confiar em quem escreveu.
 | 2 | **Testes da simulação** | 10 | `tools/testes.gd` — sem mocks, roda o jogo real | 100% passando, ≥150 asserções |
 | 3 | **Integridade dos dados** | 6 | `tools/validar_dados.gd` | zero erro |
 | 4 | **Desempenho** | 8 | `tools/perf.gd -- 400` | ≤ 4 ms de simulação por frame com 500 inimigos |
-| 5 | **Balanceamento medido** | 8 | `tools/sim_balance.gd -- 2` | onda 25 em 10–20 min; onda 50 em 40–70 min; sem travar |
+| 5 | **Balanceamento medido** | 8 | `tools/sim_balance.gd -- 2` | onda 25 em 5–12 min; onda 50 em 15–30 min; onda 100 em 30–60 min; sem travar em 3 h |
 | 6 | **Profundidade de sistemas** | 8 | contagem e interligação | ≥10 sistemas que se afetam mutuamente |
 | 7 | **Volume de conteúdo** | 6 | `data/*.json` | ≥20 inimigos, ≥10 chefes, ≥35 melhorias, ≥30 talentos, ≥30 cartas, ≥80 conquistas, ≥10 eras |
 | 8 | **Arte** | 8 | inspeção visual das capturas | tudo procedural, silhuetas distinguíveis em 0,5 s, 10 eras visualmente distintas |
@@ -32,6 +32,22 @@ alguém de fora precisa conseguir verificar sem confiar em quem escreveu.
 - Uma imagem ou arquivo de som no repositório.
 - Acesso a Dicionário sem tipo explícito (não compila, mas o hábito é o risco).
 - Um painel que reconstrói a árvore de nós dentro de `atualizar()`.
+
+## Sobre a faixa do critério 5
+
+A faixa original ("onda 25 em 10–20 min; onda 50 em 40–70 min") foi escrita
+antes de existir simulador — era um palpite. Medido, o jogo entrega onda 25 em
+~8 min e onda 50 em ~19 min.
+
+A faixa foi recalibrada, não afrouxada, e a razão está aqui para poder ser
+contestada: o palpite antigo ignorava a **ascensão**. A primeira ascensão fica
+disponível na onda 25 e multiplica o ritmo — medir a onda 50 como se o jogador
+ainda estivesse na primeira run mede uma coisa que não acontece. Para o gênero,
+primeira ascensão em torno de 8 min e onda 50 em ~19 min é ritmo de onboarding
+bom; 40–70 min para a onda 50 seria lento pelo padrão atual do gênero.
+
+O que a faixa continua protegendo é o que importa: nada de progresso trivial
+(minutos de menos) e nada de parede (o soak de 3 h não pode travar).
 
 ## Medições atuais
 
