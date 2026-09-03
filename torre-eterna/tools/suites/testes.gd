@@ -217,6 +217,7 @@ func _conferir_doc(total_testes: int) -> int:
 				erros += 1
 	erros += _conferir_contagem_honesta()
 	erros += _conferir_saida_colada()
+	erros += _conferir_ci()
 
 	# Caminho citado na documentacao viva tem que existir.
 	#
@@ -3074,6 +3075,50 @@ func _assinatura_som(receita: Dictionary) -> String:
 			float(c.get("atk", 0.0)), float(c.get("dec", 0.0)),
 			str(c.get("fm_ratio", "-"))])
 	return "|".join(partes)
+
+## O CI RODA OS OITO PORTOES, E ISSO PASSA A SER CONFERIDO.
+##
+## O criterio 15 da rubrica diz, com todas as letras, que o CI "roda os oito
+## portoes sem afrouxar nenhum" — e nenhum comando conferia isso. Era uma
+## clausula de honra: o arquivo de CI vive FORA do projeto Godot
+## (`.github/workflows/`, um nivel acima de `res://`), entao ninguem olhava.
+## Godot le por `res://../`, e agora olha.
+##
+## O que se cobra aqui e o esqueleto: os oito portoes citados pelo nome, e os
+## argumentos que a rubrica declara. Nao prova que o CI passa — prova que ele
+## nao afrouxou nenhum portao em relacao ao que o documento promete.
+func _conferir_ci() -> int:
+	var ci := _ler("res://../.github/workflows/torre-eterna.yml")
+	if ci == "":
+		print("  FALHOU [doc] nao consegui ler o arquivo de CI — o criterio 15 promete oito portoes e ninguem confere")
+		return 1
+	var erros := 0
+	var exigidos := [
+		"tools/verificar.gd", "tools/lint.gd", "tools/validar_dados.gd",
+		"tools/testes.gd", "tools/perf.gd", "tools/soak.gd",
+		"tools/sim_balance.gd", "agent_verify.gd",
+	]
+	for alvo in exigidos:
+		if not ci.contains(str(alvo)):
+			print("  FALHOU [doc] o CI nao roda '%s', e a rubrica promete os oito portoes" % alvo)
+			erros += 1
+	# Os argumentos que a rubrica publica tem que ser os que o CI usa: portao
+	# que roda com numero menor no CI e portao afrouxado.
+	var qual := _ler("res://docs/QUALIDADE.md")
+	for par in [["perf.gd -- ", "tools/perf.gd -- "], ["sim_balance.gd -- ", "tools/sim_balance.gd -- "]]:
+		var re_doc := RegEx.create_from_string(str(par[0]) + "([\\d. a-z]+)`")
+		var m_doc := re_doc.search(qual)
+		if m_doc == null:
+			continue
+		var arg_doc := m_doc.get_string(1).strip_edges()
+		if not ci.contains(str(par[1]) + arg_doc):
+			print("  FALHOU [doc] a rubrica manda '%s%s' e o CI nao usa esse argumento" % [par[0], arg_doc])
+			erros += 1
+	# E o portao 8 (o que desenha) precisa existir com nome, senao "oito" e sete.
+	if not ci.contains("--shot="):
+		print("  FALHOU [doc] o CI nao tem o portao que DESENHA")
+		erros += 1
+	return erros
 
 ## SAIDA "COLADA DE EXECUCAO" TEM QUE SER COLAVEL DE VERDADE.
 ##
