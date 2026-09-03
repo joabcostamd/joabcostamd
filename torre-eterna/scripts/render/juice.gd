@@ -16,7 +16,19 @@ var aberracao := 0.0
 var rng := RngX.new()
 var _timer_lenta := 0.0
 
+## Todo tremor do jogo passa por aqui, e e aqui que a opcao vale.
+##
+## Antes, so os tres `Jogo.tremor()` multiplicavam por `Cfg.forca_tremor()`.
+## Os outros dez disparos — critico, morte de chefe, dourado, golpe na torre,
+## queda da torre, onda de chefe, explosao, surgimento de chefe e a Purga —
+## chamavam esta funcao com a amplitude crua e passavam por fora da opcao.
+## "Movimento reduzido" promete zerar o tremor e o slider promete camera imovel
+## em 0%: com dez de onze caminhos escapando, as duas promessas eram falsas.
+## Filtrar no unico ponto por onde todos passam e o que torna a opcao real.
 func tremer(amplitude: float, duracao: float) -> void:
+	amplitude *= Cfg.forca_tremor()
+	if amplitude <= 0.001:
+		return
 	if amplitude <= tremor_amp * 0.6 and tremor_t > 0.0:
 		return
 	tremor_amp = maxf(tremor_amp, amplitude)

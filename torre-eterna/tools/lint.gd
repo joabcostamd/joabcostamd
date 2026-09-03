@@ -28,6 +28,7 @@ func _initialize() -> void:
 	_checar_especiais()
 	_checar_constantes_mortas()
 	_checar_tipos_cond()
+	_checar_tremor()
 
 	print("===LINT=== arquivos=%d linhas=%d erros=%d avisos=%d" % [arquivos, linhas, erros.size(), avisos.size()])
 	for e in erros:
@@ -103,6 +104,54 @@ func _checar(caminho: String) -> void:
 func _antes_do_comentario(linha: String) -> String:
 	var h := linha.find("#")
 	return linha if h < 0 else linha.substr(0, h)
+
+## Só o código: sem texto entre aspas e sem comentário, numa passada só.
+##
+## Fazer isso em dois passos separados quebra: `_antes_do_comentario` cortava a
+## linha no primeiro `#`, e quando esse `#` estava DENTRO de uma string — como
+## em `linha.find("#")` — a aspa ficava sem fechar. Dali para a frente o
+## separador de strings entendia tudo ao contrário: texto virava código e
+## código virava texto. A regra das entradas `-s` chegou a se acusar por causa
+## disso. Aqui os dois estados são acompanhados juntos, que é a única forma de
+## acertar os dois. Blocos `"""..."""` (o shader mora num) contam como texto.
+func _codigo_puro(texto: String) -> String:
+	var out := ""
+	var em_bloco := false
+	for bruta in texto.split("\n"):
+		var linha := str(bruta)
+		var limpa := ""
+		var i := 0
+		var dentro := false
+		var aspa := ""
+		while i < linha.length():
+			var tres := linha.substr(i, 3)
+			if tres == "\"\"\"" or tres == "'''":
+				em_bloco = not em_bloco
+				i += 3
+				continue
+			if em_bloco:
+				i += 1
+				continue
+			var c := linha[i]
+			if dentro:
+				if c == "\\":
+					i += 2
+					continue
+				if c == aspa:
+					dentro = false
+				i += 1
+				continue
+			if c == "\"" or c == "'":
+				dentro = true
+				aspa = c
+				i += 1
+				continue
+			if c == "#":
+				break
+			limpa += c
+			i += 1
+		out += limpa + "\n"
+	return out
 
 ## A regra verdadeira não é "é emoji?", é "a fonte desenha isso?".
 ## Emoji, setas, bolinhas geométricas — tudo que a fonte padrão não cobre vira
@@ -241,7 +290,7 @@ func _checar_entrada(caminho: String) -> void:
 	# Sem comentários E sem strings: um nome de classe DENTRO de aspas (um padrão
 	# de regex, um caminho, uma mensagem) não é dependência de compilação. A
 	# própria regra se acusou uma vez por causa do regex `Audio\.tocar`.
-	var limpo := _sem_strings(_sem_comentarios(texto))
+	var limpo := _codigo_puro(texto)
 	var citadas: Array = []
 	for classe in _classes_contaminadas():
 		var re := RegEx.create_from_string("(?<![\\w.\"])" + classe + "(?![\\w\"])")
@@ -283,7 +332,7 @@ func _classes_contaminadas() -> Array:
 		var m := re_nome.search(texto)
 		if m == null:
 			continue
-		var limpo := _sem_strings(_sem_comentarios(texto))
+		var limpo := _codigo_puro(texto)
 		for a in autos:
 			var re_uso := RegEx.create_from_string("(?<![\\w.\"])" + str(a) + "\\.")
 			if re_uso.search(limpo) != null:
@@ -427,6 +476,29 @@ func _coletar_passivas(o, arquivo: String, saida: Dictionary) -> void:
 ## revivesExtra, ondaInicial...). `slotsHabilidade` estava declarado numa
 ## relíquia comprável e pressupunha um sistema de slots de habilidade que este
 ## jogo nunca teve: a relíquia custava núcleos e não fazia absolutamente nada.
+## `Cfg.forca_tremor()` só pode ser chamado de dentro do Juice.
+##
+## A escala do tremor vale no único ponto por onde todo tremor passa. Chamar de
+## novo em qualquer outro lugar aplica DUAS vezes — e foi o contrário disso
+## (dez dos onze disparos passando por fora) que deixou "movimento reduzido"
+## sem efeito por muito tempo. Um ponto só, e o linter guarda a porta.
+func _checar_tremor() -> void:
+	for caminho in _todos_gd():
+		if caminho == "res://scripts/render/juice.gd" or caminho == "res://scripts/core/config.gd":
+			continue
+		var f := FileAccess.open(caminho, FileAccess.READ)
+		if f == null:
+			continue
+		var n := 0
+		while not f.eof_reached():
+			var linha := _sem_strings(f.get_line())
+			n += 1
+			var c := linha.find("#")
+			if c >= 0:
+				linha = linha.substr(0, c)
+			if linha.contains("forca_tremor("):
+				erros.append("%s:%d chama forca_tremor() fora do Juice — a escala do tremor vale num ponto so" % [caminho, n])
+
 ## `Progresso.TIPOS_COND` tem que listar exatamente os casos de `valor_cond`.
 ##
 ## A lista existe para o portão perguntar "todo tipo citado pelo conteúdo tem

@@ -43,6 +43,7 @@ func rodar(cena: SceneTree) -> void:
 	t_progresso()
 	t_mecanicas()
 	t_eventos()
+	t_acessibilidade()
 	t_audio()
 	t_save()
 	t_offline()
@@ -902,6 +903,71 @@ func t_eventos() -> void:
 ## --------------------------------------------------------------- áudio
 ## O áudio é sintetizado: dá para provar que cada som existe, tem duração
 ## sensata e NÃO é silêncio — mesmo sem placa de som nesta máquina.
+## ------------------------------------------------------- acessibilidade
+func t_acessibilidade() -> void:
+	g("Acessibilidade")
+	# "Movimento reduzido" promete zerar o tremor e o slider promete camera
+	# imovel em 0%. So os tres `Jogo.tremor()` escalavam pela opcao; os outros
+	# dez disparos — critico, morte de chefe, dourado, golpe na torre, queda da
+	# torre, onda de chefe, explosao, surgimento de chefe e a Purga — chamavam
+	# `Juice.tremer` com a amplitude crua e passavam por fora. Agora a escala
+	# mora no unico ponto por onde todos passam, e este teste bate LA.
+	var mem_mov: bool = Cfg.get_v("movimento_reduzido", false)
+	var mem_tre: float = float(Cfg.get_v("tremor", 1.0))
+	var j2 := Juice.new()
+
+	Cfg.set_v("movimento_reduzido", true)
+	for amp in [2.6, 4.0, 9.0, 12.0, 16.0, 20.0, 22.0, 32.0, 34.0]:
+		j2.tremer(amp, 0.5)
+	ok("movimento reduzido zera todo tremor", is_equal_approx(j2.tremor_amp, 0.0),
+		"sobrou %.3f" % j2.tremor_amp)
+
+	Cfg.set_v("movimento_reduzido", false)
+	Cfg.set_v("tremor", 0.0)
+	j2 = Juice.new()
+	j2.tremer(34.0, 1.0)
+	ok("slider em 0%% deixa a camera imovel", is_equal_approx(j2.tremor_amp, 0.0),
+		"sobrou %.3f" % j2.tremor_amp)
+
+	Cfg.set_v("tremor", 1.0)
+	j2 = Juice.new()
+	j2.tremer(20.0, 0.5)
+	ok("com a opcao ligada o tremor acontece", j2.tremor_amp > 0.0)
+
+	Cfg.set_v("tremor", 0.5)
+	j2 = Juice.new()
+	j2.tremer(20.0, 0.5)
+	ok("slider pela metade da metade do tremor", perto(j2.tremor_amp, 10.0, 0.001), "%.2f" % j2.tremor_amp)
+
+	Cfg.set_v("movimento_reduzido", mem_mov)
+	Cfg.set_v("tremor", mem_tre)
+
+	# Contraste WCAG. TEXTO3 e usado em corpo de 10 a 13px em 188 lugares e
+	# ficava em 3,13:1 sobre PAINEL2 — abaixo dos 4,5:1 exigidos para texto
+	# pequeno. O modo de alto contraste nao consertava: ele estica o gama em
+	# torno do meio-cinza, e texto e fundo escuros sobem juntos. Aqui a paleta
+	# e conferida direto, para a regressao nao voltar em silencio.
+	for par in [["TEXTO", UI.TEXTO], ["TEXTO2", UI.TEXTO2], ["TEXTO3", UI.TEXTO3]]:
+		for fundo in [["PAINEL", UI.PAINEL], ["PAINEL2", UI.PAINEL2]]:
+			var r := _contraste(par[1], fundo[1])
+			ok("%s sobre %s passa 4.5:1" % [par[0], fundo[0]], r >= 4.5, "%.2f:1" % r)
+	ok("hierarquia preservada", _contraste(UI.TEXTO, UI.PAINEL2) > _contraste(UI.TEXTO2, UI.PAINEL2)
+		and _contraste(UI.TEXTO2, UI.PAINEL2) > _contraste(UI.TEXTO3, UI.PAINEL2))
+
+## Razao de contraste da WCAG 2.1 entre duas cores opacas.
+func _contraste(a: Color, b: Color) -> float:
+	var la := _luz_relativa(a)
+	var lb := _luz_relativa(b)
+	return (maxf(la, lb) + 0.05) / (minf(la, lb) + 0.05)
+
+func _luz_relativa(c: Color) -> float:
+	var canais := [c.r, c.g, c.b]
+	var out: Array[float] = []
+	for v in canais:
+		var f := float(v)
+		out.append(f / 12.92 if f <= 0.03928 else pow((f + 0.055) / 1.055, 2.4))
+	return 0.2126 * out[0] + 0.7152 * out[1] + 0.0722 * out[2]
+
 func t_audio() -> void:
 	g("Áudio")
 	var cat: Dictionary = Sfx.catalogo()

@@ -50,6 +50,20 @@ const TIPOS_COND := [
 static func tipo_cond_conhecido(tipo: String) -> bool:
 	return TIPOS_COND.has(tipo)
 
+## Tipos que ANDAM PARA TRÁS: zeram no prestígio ou na troca de run.
+##
+## `_sortear` escala a meta por `onda_maxima_global / 10`, e o progresso de
+## missão é medido por DELTA (`atual - base`) justamente porque estes contadores
+## caem. Escalar um deles pede um múltiplo do teto que o contador consegue
+## andar: a semanal "Marca d'Água" (tipo `onda`, valor 120, escalaComOnda) pedia
+## 12× o recorde, e o delta máximo que qualquer run produz é ~1× o recorde. A
+## missão era matematicamente impossível a partir da onda ~130 e ninguém
+## reclamava, porque uma missão travada parece só uma missão difícil.
+const TIPOS_QUE_RESETAM := ["onda", "nivel", "upgradeNivel", "talentoNivel"]
+
+static func escala_com_onda(tipo: String) -> bool:
+	return not TIPOS_QUE_RESETAM.has(tipo)
+
 static func valor_cond(s: Dictionary, tipo: String, chave: String = "") -> float:
 	var st: Dictionary = s["stats"]
 	match tipo:
@@ -268,7 +282,7 @@ static func _sortear(modelos: Array, qtd: int, progresso: int, j) -> Array:
 		var def: Dictionary = pool[i]
 		var meta: Dictionary = def.get("meta", {})
 		var alvo := float(meta.get("valor", 1))
-		if bool(def.get("escalaComOnda", false)):
+		if bool(def.get("escalaComOnda", false)) and escala_com_onda(str(meta.get("tipo", ""))):
 			alvo = maxf(1.0, alvo * maxf(1.0, float(progresso) / 10.0))
 		out.append({
 			"id": str(def.get("id", "")),

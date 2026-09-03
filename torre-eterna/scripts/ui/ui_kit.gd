@@ -13,7 +13,15 @@ const BORDA := Color("#243356")
 const BORDA_FORTE := Color("#3b5a9e")
 const TEXTO := Color("#e6ecf7")
 const TEXTO2 := Color("#93a3c4")
-const TEXTO3 := Color("#5f6f92")
+## #5f6f92 dava 3,44:1 sobre PAINEL e 3,13:1 sobre PAINEL2 — abaixo dos 4,5:1
+## que a WCAG exige para texto pequeno, e TEXTO3 é usado justamente em corpo de
+## 10 a 13px: rodapé, explicação de opção, progresso de missão, custo
+## indisponível. O modo de alto contraste não salvava: ele estica o gama em
+## torno do meio-cinza, e como o texto e o fundo do painel são AMBOS escuros,
+## os dois sobem juntos e a razão quase não muda (3,44 -> 3,48 medido). Este é
+## o mesmo matiz, só claro o bastante para passar: 4,61:1 sobre PAINEL2, sem
+## perder a hierarquia para o TEXTO2 (6,21:1). O portão de testes confere.
+const TEXTO3 := Color("#778bb6")
 const ACENTO := Color("#38bdf8")
 const ACENTO2 := Color("#a78bfa")
 const OURO := Color("#fbbf24")

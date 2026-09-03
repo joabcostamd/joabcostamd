@@ -450,7 +450,9 @@ func recompensa_de_onda(onda: int) -> void:
 	Bus.ui_atualizar.emit(false)
 
 func tremor(amp: float, dur: float) -> void:
-	Bus.tremor_pedido.emit(amp * Cfg.forca_tremor(), dur)
+	# A escala agora e aplicada dentro de `Juice.tremer`, que e por onde TODO
+	# tremor passa. Multiplicar aqui tambem aplicaria duas vezes.
+	Bus.tremor_pedido.emit(amp, dur)
 
 func hitstop_ms(ms: float) -> void:
 	hitstop = maxf(hitstop, minf(0.2, ms / 1000.0))
