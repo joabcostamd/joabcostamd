@@ -67,6 +67,7 @@ suíte reprovou):
 | # | Pendência | Prova |
 |---|---|---|
 | 3.7 | ✅ **FECHADO, e com uma lição sobre a régua.** A perna de 160 vivos chegou a medir **22.672 us** contra um orçamento de 4.000. Quatro defeitos reais explicam a maior parte: o morteiro explodia uma vez por corpo atravessado, o projétil vivia 3,5 s fixos mesmo cruzando a arena em 1,8 s, o dano contínuo cobrava a cada quadro e a corrente de raio partia a cada acerto. Corrigidos, e **com a máquina parada**, as duas pernas passam: **1.914 us** no jogo real e **3.708 us** na perna cheia, contra 4.090 de orçamento. O resto do que eu tinha lido como regressão era disputa de CPU — eu media desempenho com outros processos do Godot rodando, que é exatamente o erro que o `AGENTS.md` avisa para não cometer. | `tools/perf.gd -- 412` |
+| 3.8 | ✅ **FECHADO, e com a lição de novo.** A mesma perna, medida três vezes seguidas no MESMO commit, deu **3.693 / 3.896 / 4.187 us** contra 4.000 — o portão passava ou reprovava por sorte. Duas metades: o jogo ficou mais rápido de verdade (projéteis −17%, recálculo −25%, compra automática −25%, com o detalhe de cada corte em `docs/QUALIDADE.md`), e o instrumento passou a estimar o p90 com **três voltas de 1.200 passos e a mediana**, com o estado reposto entre elas e as três impressas. A régua não mudou: mesmo orçamento, mesma perna, mesma população. De quebra, a reposição corrigiu um erro meu: as voltas davam sempre `x / 1,1x / 1,7x` e eu tinha lido isso como disputa de CPU — era a compra automática deixando a torre mais forte a cada volta, e ruído de máquina não escolhe sempre a mesma volta. Mediana hoje: **3.708 us**. | `tools/perf.gd -- 412`, `t_combate` |
 
 ## 4. Experiência do jogador — ✅ FECHADO
 
@@ -123,3 +124,9 @@ Para não repetir trabalho — cada um com teste que reprova se voltar:
 - **Dano contínuo entupia o canal do impacto** (~6.000 emissões/s)
 - **Motor subido para Godot 4.7.2** (~15% mais rápido), CI verde nele
 - **Desempenho**: busca de alvo varria todos os inimigos ignorando a grade; laço de projéteis pagava 6 chamadas por projétil por quadro
+- **`StatEngine.fontes` guardava a procedência de todo bônus e ninguém lia** — o `lint.gd` já tinha registrado o fato sem tirar a conclusão; agora é sob demanda
+- **`migrar()` congelava o jogo para sempre** com um `versao` adulterado no arquivo de save
+- **Cinco proteções do save podiam sumir com a suíte verde**; duas das quatro falhas de escrita eram silenciosas; `apagar()` deixava a quarentena no disco
+- **`bonus_permanentes` crescia sem parar** — uma linha nova por missão diária concluída, numa lista lida em todo recálculo
+- **O soak dizia PASS com o jogo sem conseguir gravar** — ele nunca tinha olhado para o disco
+- **As quatro ferramentas escreviam no mesmo arquivo de save** e brigavam quando rodavam juntas

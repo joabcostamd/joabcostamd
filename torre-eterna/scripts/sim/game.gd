@@ -477,11 +477,12 @@ func projetil_inimigo(e: Inimigo) -> void:
 	p.velocidade = 220.0
 	p.ang = ang
 	p.vel = Vector2(cos(ang), sin(ang)) * p.velocidade
+	p.ang_vel = ang
 	p.raio = 5.0
 	p.vida = 6.0
 	p.cor = Color.html("#fb7185")
 	p.tipo = "acido"
-	p.origem = "inimigo"
+	p.do_inimigo = true
 	p.dano_torre = Big.mul_f(Bal.dano_contato(Bal.hp_onda(int(s["onda"])), int(s["onda"]), false, 1.0, s["torre"]["vida_max"]), 0.6)
 
 func atualizar_chefe(e: Inimigo, dt: float) -> void:
@@ -626,7 +627,7 @@ func _engolir(e: Inimigo, dt: float) -> void:
 	var goles := 0
 	for i in range(arena.projeteis.size() - 1, -1, -1):
 		var p: Projetil = arena.projeteis[i]
-		if not p.ativo or str(p.origem) != "torre":
+		if not p.ativo or p.do_inimigo:
 			continue
 		if p.pos.distance_to(e.pos) <= raio:
 			arena.soltar_projetil(i)

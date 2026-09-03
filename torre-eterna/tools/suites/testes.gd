@@ -584,6 +584,164 @@ func t_combate() -> void:
 	ok("armadura meio a meio", perto(Bal.fator_armadura(60.0, 0.0), 0.5, 0.001))
 	ok("penetracao tem teto de 95%", perto(Bal.fator_armadura(60.0, 1.0), 60.0 / 63.0, 0.001), str(Bal.fator_armadura(60.0, 1.0)))
 
+	# --- as economias do laco quente nao podem mudar o que o jogo faz ---
+	#
+	# O subsistema de projeteis era dois tercos do passo inteiro. As correcoes
+	# tiraram trabalho repetido de dentro dele, e cada uma pode virar bug
+	# silencioso: um corpo que fica sem ser acertado, um golpe que perde a
+	# resposta, uma trajetoria que erra o alvo. Os portoes abaixo medem
+	# exatamente isso.
+	jogo.arena.limpar_tudo()
+	var chefao := EnemyAI.criar(Dados.inimigo_por_id["grunhido"], 40, jogo, {"esc_mult": 2.2})
+	var mirim = EnemyAI.criar(Dados.inimigo_por_id["grunhido"], 40, jogo, {})
+	chefao.pos = jogo.arena.centro + Vector2(200.0, 0.0)
+	mirim.pos = jogo.arena.centro + Vector2(-200.0, 0.0)
+	jogo.arena.reconstruir_grade()
+	# O alcance da busca de colisao usa o maior raio VIVO. Se ele ficar menor
+	# que o corpo de alguem, esse alguem vira intocavel — e nada mais no jogo
+	# reclamaria.
+	ok("o alcance de busca cobre o maior corpo vivo",
+		jogo.arena.raio_max_vivo >= chefao.raio,
+		"alcance %.1f, corpo %.1f" % [jogo.arena.raio_max_vivo, chefao.raio])
+	ok("e nao passa do maior corpo que o conteudo tem",
+		jogo.arena.raio_max_vivo <= jogo.arena.RAIO_INIMIGO_MAX)
+	# E o corpo grande TEM que ser encontrado encostando pela borda: e o caso
+	# que um alcance apertado perderia.
+	var na_borda: Vector2 = chefao.pos + Vector2(chefao.raio - 1.0, 0.0)
+	ok("corpo grande e achado pela borda",
+		jogo.arena.primeiro_colidindo(na_borda, 1.0, {}) == chefao)
+	# Com o chefe fora, o alcance encolhe — que e a economia inteira.
+	var alcance_com_chefe: float = jogo.arena.raio_max_vivo
+	chefao.ativo = false
+	jogo.arena.reconstruir_grade()
+	ok("sem corpo grande vivo, a busca encolhe",
+		jogo.arena.raio_max_vivo < alcance_com_chefe,
+		"%.1f -> %.1f" % [alcance_com_chefe, jogo.arena.raio_max_vivo])
+	ok("e o corpo pequeno continua sendo achado",
+		jogo.arena.primeiro_colidindo(mirim.pos, 1.0, {}) == mirim)
+	jogo.arena.limpar_tudo()
+
+	# A resposta de `aplicar_dano` e um Dicionario REAPROVEITADO. Os dois lugares
+	# que a leem (dano em area e a Purga) leem na linha seguinte, e o contrato
+	# esta escrito na funcao — mas contrato escrito nao reprova nada. Este mede:
+	# duas chamadas seguidas, e a segunda tem que dizer a verdade da segunda.
+	var alvo_r := EnemyAI.criar(Dados.inimigo_por_id["grunhido"], 5, jogo, {})
+	var vivo_r: Dictionary = Combate.aplicar_dano(alvo_r, Big.from(1.0), jogo, {"puro": true})
+	ok("golpe fraco diz que nao matou", not bool(vivo_r["morreu"]))
+	var morto_r: Dictionary = Combate.aplicar_dano(alvo_r, Big.mul_f(alvo_r.hp, 100.0), jogo, {"puro": true})
+	ok("golpe forte diz que matou", bool(morto_r["morreu"]))
+	ok("e a resposta e a mesma caixa reaproveitada", vivo_r == morto_r,
+		"se deixarem de ser a mesma caixa, o comentario da funcao virou mentira")
+	# Quem precisa guardar copia — e a copia nao acompanha a proxima chamada.
+	var guardada: Dictionary = morto_r.duplicate()
+	Combate.aplicar_dano(EnemyAI.criar(Dados.inimigo_por_id["grunhido"], 5, jogo, {}),
+		Big.from(1.0), jogo, {"puro": true})
+	ok("a copia sobrevive a chamada seguinte", bool(guardada["morreu"]))
+	jogo.arena.limpar_tudo()
+
+	# O projetil guarda o angulo com que a velocidade foi calculada para nao
+	# refazer seno e cosseno a cada quadro. Se essa memoria dessorar do angulo
+	# de mira, o projetil sai voando para o lado errado — e nenhum outro portao
+	# olharia para isso. A prova e o acerto: mira num alvo parado, deixa o
+	# quadro rodar, e o alvo tem que levar dano.
+	var vitima_t := EnemyAI.criar(Dados.inimigo_por_id["grunhido"], 5, jogo, {})
+	vitima_t.pos = jogo.arena.centro + Vector2(260.0, 0.0)
+	jogo.arena.reconstruir_grade()
+	var hp_t := vitima_t.hp
+	jogo.torre.disparar(vitima_t)
+	ok("o disparo criou projetil", jogo.arena.projeteis.size() > 0)
+	for passo_t in 90:
+		jogo.torre.atualizar_projeteis(1.0 / 60.0)
+		if Big.lt(vitima_t.hp, hp_t):
+			break
+	ok("o projetil chega no alvo parado", Big.lt(vitima_t.hp, hp_t),
+		"a memoria do angulo desencontrou da mira")
+	jogo.arena.limpar_tudo()
+
+	# Projetil de inimigo nao pode machucar inimigo: ele nem entra na busca de
+	# colisao. A troca de String por booleano mexeu justamente nessa pergunta.
+	var atirador := EnemyAI.criar(Dados.inimigo_por_id["grunhido"], 5, jogo, {})
+	atirador.pos = jogo.arena.centro + Vector2(150.0, 0.0)
+	jogo.arena.reconstruir_grade()
+	var hp_at := atirador.hp
+	var pi_teste: Projetil = jogo.arena.novo_projetil()
+	pi_teste.ativo = true
+	pi_teste.do_inimigo = true
+	pi_teste.pos = atirador.pos
+	pi_teste.vel = Vector2(1.0, 0.0)
+	pi_teste.velocidade = 1.0
+	pi_teste.vida = 2.0
+	pi_teste.raio = 20.0
+	for passo_i in 30:
+		jogo.torre.atualizar_projeteis(1.0 / 60.0)
+	ok("projetil de inimigo nao fere inimigo", Big.gte(atirador.hp, hp_at))
+	jogo.arena.limpar_tudo()
+
+	# A explosao percorre uma COPIA dos alvos, porque matar dispara efeitos que
+	# podem varrer a arena de novo e reescrever o buffer no meio do laco. A
+	# copia deixou de alocar um Array por explosao — e se alguem trocar por uma
+	# referencia direta, o laco passa a percorrer uma lista que mudou embaixo
+	# dele. Prova: uma explosao que mata todo mundo continua contando todos.
+	var centro_ex: Vector2 = jogo.arena.centro
+	var vitimas: Array = []
+	for k_ex in 8:
+		var ve = EnemyAI.criar(Dados.inimigo_por_id["grunhido"], 3, jogo, {})
+		ve.pos = centro_ex + Vector2(cos(float(k_ex)) * 40.0, sin(float(k_ex)) * 40.0)
+		vitimas.append(ve)
+	jogo.arena.reconstruir_grade()
+	var mortos_ex: int = Combate.dano_area(centro_ex, 120.0,
+		Big.mul_f(vitimas[0].hp, 1000.0), jogo, {"puro": true})
+	ok("a explosao conta todos os que matou", mortos_ex == 8, "%d de 8" % mortos_ex)
+	var sobrou := 0
+	for item_ex in vitimas:
+		if (item_ex as Inimigo).vivo():
+			sobrou += 1
+	ok("e nao sobrou ninguem vivo no raio", sobrou == 0, "%d vivos" % sobrou)
+	# Com queda pela distancia, quem esta na borda leva menos que quem esta no
+	# centro — a conta virou numeros crus e continua sendo a mesma conta.
+	jogo.arena.limpar_tudo()
+	var perto_ex = EnemyAI.criar(Dados.inimigo_por_id["grunhido"], 3, jogo, {})
+	var longe_ex = EnemyAI.criar(Dados.inimigo_por_id["grunhido"], 3, jogo, {})
+	perto_ex.pos = centro_ex
+	longe_ex.pos = centro_ex + Vector2(115.0, 0.0)
+	jogo.arena.reconstruir_grade()
+	var hp_ex: float = perto_ex.hp
+	Combate.dano_area(centro_ex, 120.0, Big.mul_f(hp_ex, 0.3), jogo,
+		{"puro": true, "queda": true})
+	ok("a explosao machuca mais perto do centro", Big.lt(perto_ex.hp, longe_ex.hp),
+		"perto %.3f, longe %.3f" % [perto_ex.hp, longe_ex.hp])
+	jogo.arena.limpar_tudo()
+
+	# A lista de PROCEDENCIA dos bonus (`StatEngine.fontes`) guardava um
+	# Dicionario por efeito aplicado, e um recalculo completo passa por centenas
+	# deles. Ninguem lia — o proprio lint ja tinha registrado isso — e o
+	# recalculo acontece a cada compra da automacao, a cada 0,35 s. Agora e sob
+	# demanda. Os dois portoes: desligada nao guarda nada, ligada guarda tudo.
+	var m_f := StatEngine.new()
+	m_f.zerar()
+	m_f.add_flat("dano", 10.0, "Teste")
+	m_f.add_pct("dano", 0.5, "Teste")
+	m_f.add_mult("dano", 2.0, "Teste")
+	var guardou_desligada := false
+	for chave_f in m_f.fontes:
+		if not (m_f.fontes[chave_f] as Array).is_empty():
+			guardou_desligada = true
+			break
+	ok("procedencia desligada nao guarda nada", not guardou_desligada)
+	ok("mas o atributo continua sendo somado", perto(float(m_f.flat["dano"]), 10.0, 1e-9))
+	ok("e multiplicado", perto(float(m_f.mult["dano"]), 2.0, 1e-9))
+	var m_g := StatEngine.new()
+	m_g.registrar_fontes = true
+	m_g.zerar()
+	m_g.add_flat("dano", 10.0, "Teste")
+	m_g.add_pct("dano", 0.5, "Teste")
+	m_g.add_mult("dano", 2.0, "Teste")
+	var lista_f: Array = m_g.fontes["dano"]
+	ok("procedencia ligada guarda as tres linhas", lista_f.size() == 3, str(lista_f.size()))
+	ok("com o nome de quem deu", str((lista_f[0] as Dictionary).get("fonte", "")) == "Teste")
+	# E o jogo de verdade roda com ela desligada — que e o ponto.
+	ok("o jogo roda sem guardar procedencia", not jogo.stats.registrar_fontes)
+
 	var def: Dictionary = Dados.inimigo_por_id["grunhido"]
 	var e := EnemyAI.criar(def, 10, jogo, {})
 	ok("inimigo criado", e != null and e.ativo)
@@ -1853,7 +2011,7 @@ func t_custo_do_quadro() -> void:
 		pm.dano = Big.from(1.0e4)
 		pm.area = 120.0
 		pm.perfuracao = 5
-		pm.origem = "torre"
+		pm.do_inimigo = false
 		var antes_esp: float = espectador.hp
 		jogo.torre._impacto(pm, a1)
 		var depois_1: float = espectador.hp
@@ -2241,7 +2399,7 @@ func t_defesa() -> void:
 		pr.pos = alvo_ref.pos
 		pr.dano = Big.from(1.0e6)
 		pr.critico = false
-		pr.origem = "torre"
+		pr.do_inimigo = false
 		jogo.torre._impacto(pr, alvo_ref)
 		ok("reflete quando declara por " + porta, Big.lt(jogo.s["torre"]["vida"], vida_antes),
 			"vida %s -> %s" % [Fmt.big(vida_antes), Fmt.big(jogo.s["torre"]["vida"])])

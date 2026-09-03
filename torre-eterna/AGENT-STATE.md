@@ -20,7 +20,7 @@
 - cenas: 1
 - recursos: 1
 - modelos3d: 0
-- strings_auditadas: 51
+- strings_auditadas: 52
 
 ## Inventario do projeto
 

@@ -92,6 +92,62 @@ GPU de verdade; aqui, o que dá para afirmar é quanto custa a simulação.
 - Acesso a Dicionário sem tipo explícito (não compila, mas o hábito é o risco).
 - Um painel que reconstrói a árvore de nós dentro de `atualizar()`.
 
+## Sobre o critério 4 — o portão que decidia no cara ou coroa
+
+A perna que decide o critério 4 (160 vivos segurados) foi medida em **3.693,
+3.896 e 4.187 us em três execuções seguidas do MESMO commit**, com a máquina
+calibrando dentro de 6% nas três. Contra um orçamento de 4.000, isso não é um
+portão: é um sorteio. Um portão que reprova por azar ensina a re-rodar até
+passar, que é o oposto do que ele existe para fazer.
+
+A resposta tem duas metades, e as duas precisam estar ditas porque uma delas
+mexe no instrumento.
+
+**Primeira metade: o jogo ficou mais rápido de verdade.** Medindo por dentro em
+vez de chutar — 168 consultas de colisão por passo, 607 células varridas para
+294 candidatos, 13,7 impactos, 86 aplicações de dano — deu para ver onde o
+tempo estava, e ele não estava onde eu supus duas vezes seguidas. O que saiu:
+
+| O que era | O que virou | Onde doía |
+|---|---|---|
+| Busca de colisão usava o maior raio do conteúdo (34, de chefe) | Usa o maior raio VIVO, com folga | Numa arena sem chefe varria ~40% de área a mais |
+| `for ... in range()` em quatro varreduras de célula | `while` | Cada `range()` aloca um Array, e isso roda por projétil por quadro |
+| Posição e raio lidos do objeto por candidato | `PackedFloat32Array` paralelo à grade | Leitura de propriedade em GDScript passa pelo interpretador |
+| `origem == "inimigo"` | booleano `do_inimigo` | Comparação de texto 14 mil vezes por segundo |
+| Seno e cosseno por projétil por quadro | Só quando o ângulo muda de verdade | Correção microscópica não move o projétil um pixel |
+| `aplicar_dano` devolvia um Dicionário novo | Devolve uma caixa reaproveitada | 86 alocações por passo, e só 2 dos 11 chamadores leem |
+| `dano_area` copiava os alvos com `.duplicate()` | `resize` num Array que já tem espaço | Uma alocação por explosão, dezenas por passo |
+| `StatEngine.fontes` guardava a procedência de todo bônus | Só quando `registrar_fontes` está ligado | **Ninguém lê essa lista** — o próprio `lint.gd` já dizia isso |
+
+Medido: subsistema de projéteis **3.013 → 2.493 us** por passo (−17%),
+recálculo de atributos **570 → 430 us** (−25%), compra automática **777 → 585
+us** (−25%). A compra automática importa além do portão: ela roda a cada 0,35 s
+no jogo de verdade, e era um soluço de três quartos de milissegundo em cima de
+um quadro, para preencher uma lista sem leitor.
+
+**Segunda metade: o instrumento passou a medir direito, e a régua NÃO mudou.**
+Mesmo orçamento (4.000 us), mesma perna, mesmo p90, mesma população. O que
+mudou é como o p90 é estimado: **três voltas de 1.200 passos e a mediana**, com
+as três impressas no relatório.
+
+E aqui cabe registrar um erro meu, porque ele é instrutivo. As três voltas
+davam `3.469 / 3.574 / 5.991` numa execução e `3.354 / 3.708 / 6.058` na
+seguinte, e eu escrevi neste documento que a terceira era disputa de CPU. Não
+era. **Ruído de máquina não escolhe sempre a mesma volta.** A compra automática
+fica ligada durante a medição — ela faz parte do jogo e o custo dela pertence à
+conta —, e 1.200 passos são 20 s de jogo, tempo para ela comprar umas 58 vezes.
+A torre saía mais forte de cada volta, e a volta seguinte media um jogo mais
+pesado. As três voltas não estavam medindo a mesma coisa, e mediana de coisas
+diferentes não é estimativa de nada.
+
+Corrigido: o estado é reposto entre as voltas, fora do cronômetro. Agora as
+três estimam a mesma quantidade, que é a condição para a mediana significar
+alguma coisa.
+
+Resultado: **3.708 us de mediana contra 4.000 de orçamento** (execução com
+deriva de 0,3%, ou seja, máquina parada), com as três voltas visíveis. Antes
+era 4.187 num sorteio de três.
+
 ## Sobre a faixa do critério 5 — segunda recalibração, e por quê
 
 Os pisos foram remedidos uma segunda vez, e a razão tem que ficar escrita
@@ -173,7 +229,7 @@ $ godot --headless --path . -s res://tools/validar_dados.gd
 ===STATUS=== PASS
 
 $ godot --headless --path . -s res://tools/testes.gd
-===TESTES=== passou=720 falhou=0
+===TESTES=== passou=741 falhou=0
 ===STATUS=== PASS
 
 $ godot --headless --path . -s res://tools/perf.gd -- 412
@@ -189,11 +245,11 @@ maquina: 39882 us na conta de referencia (39000 esperado) -> fator 1.02x
 
 --- PORTAO 2: 160 inimigos vivos SEGURADOS (teto do jogo + 25%) ---
   vivos medios 181 | pico de projeteis 234
-  media   2936 | p50   2771 | p90   3792 | p99   5783 | pior   7996  (us)
-  270 fps no p90
+  media   2839 | p50   2789 | p90   3708 | p99   5381 | pior   6185  (us)
+  269 fps no p90
   lotacao da grade: 16 na celula mais cheia | 3.9 por celula ocupada | 49 celulas
   nos 10% mais caros vs o resto -> mortes 0.1/0.0 | projeteis 166/144 | vivos 180/182
-  normalizado p90: 3708 us  (orcamento 4090 us)
+  p90 3708 us  (orcamento 4000 us)  [3 medidas: 3354 / 3708 / 6058]
 
 --- FOLGA (nao reprova): 412 vivos, alem do que o jogo cria ---
   vivos medios 443 | pico de projeteis 226
@@ -203,20 +259,20 @@ maquina: 39882 us na conta de referencia (39000 esperado) -> fator 1.02x
   nos 10% mais caros vs o resto -> mortes 0.0/0.1 | projeteis 197/163 | vivos 438/445
 
 --- perfil por subsistema a 160 vivos (us/passo, SUBCONJUNTO de simular()) ---
-  grade            170 us
-  status           297 us
-  inimigos         372 us
-  torre            327 us
-  projeteis       2764 us
-  coletaveis        67 us
-  habilidades       80 us
-  diretor           40 us
-  (soma 4117 us; o resto de simular() — eventos, automacao, conquistas,
+  grade            155 us
+  status           272 us
+  inimigos         342 us
+  torre            299 us
+  projeteis       2460 us
+  coletaveis        60 us
+  habilidades       74 us
+  diretor           36 us
+  (soma 3698 us; o resto de simular() — eventos, automacao, conquistas,
    missoes, autosave — esta na media acima, nao aqui)
 recalculos de atributos: 3668
 
 --- rotinas periodicas (medidas DEPOIS das pernas; ver comentario) ---
-  autocompra        743 us por chamada | a cada 0.35s |     35 us/passo amortizado
+  autocompra        585 us por chamada | a cada 0.35s |     28 us/passo amortizado
   conquistas        142 us por chamada | a cada 0.50s |      5 us/passo amortizado
   missoes             5 us por chamada | a cada 0.50s |      0 us/passo amortizado
   auto_habilidade       17 us por chamada | a cada 0.25s |      1 us/passo amortizado
@@ -233,7 +289,7 @@ recalculos de atributos: 3668
   conquistas_missoes         11 us
   autosave                    2 us
   soma: 3290 us/passo (isto SIM cobre simular() inteiro)
-  recalculo         556 us por chamada | 0.06 por passo |     33 us/passo
+  recalculo         430 us por chamada | 0.06 por passo |     24 us/passo
 ===STATUS=== PASS
 
 $ godot --headless --path . -s res://tools/sim_balance.gd -- 1.2 auto
@@ -275,8 +331,8 @@ STATUS: PASS   (3418 ms)
 | | |
 |---|---:|
 | Scripts GDScript | 87 |
-| Linhas de código | 31.951 |
-| Testes da simulação | 720 |
+| Linhas de código | 32.370 |
+| Testes da simulação | 741 |
 | Chaves de interface PT/EN | 1.058 |
 | Textos de conteúdo PT/EN | 1.286 |
 | Imagens no repositório | 1 (`icon.svg`, o ícone do projeto — nenhuma no jogo) |

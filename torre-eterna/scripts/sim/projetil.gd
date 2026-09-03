@@ -23,22 +23,30 @@ var explodiu := false
 var elemento := ""
 var cor: Color = Color(0.49, 0.83, 0.99)
 var tipo := "bala"
-var origem := "torre"
+## De quem é o projétil. Era a String "torre" ou "inimigo", e a pergunta
+## `origem == "inimigo"` era feita uma vez por projétil por quadro — com 234
+## projéteis vivos, catorze mil comparações de texto por segundo para responder
+## sim ou não. Um booleano responde a mesma coisa sem comparar caractere nenhum.
+var do_inimigo := false
+
+## Ângulo com que `vel` foi calculada pela última vez. Enquanto o ângulo de mira
+## não se afastar disso, a velocidade guardada já está certa e o seno/cosseno
+## não precisam ser refeitos (ver `TorreSim.atualizar_projeteis`).
+var ang_vel := 0.0
 var dano_torre := 0.0
 var atingidos: Dictionary = {}
-var trilha: PackedVector2Array = PackedVector2Array()
 
 func limpar() -> void:
 	explodiu = false
 	ativo = false
 	alvo = null
 	atingidos.clear()
-	trilha.clear()
 	perfuracao = 0
 	ricochete = 0
 	area = 0.0
 	elemento = ""
 	critico = false
 	tipo = "bala"
-	origem = "torre"
+	do_inimigo = false
+	ang_vel = 0.0
 	t = 0.0

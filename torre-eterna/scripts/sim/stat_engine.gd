@@ -13,7 +13,20 @@ var pct := {}
 var mult := {}
 var mult_log := {}        # multiplicadores gigantes (em log10)
 var valor := {}
+## De onde veio cada bônus, por atributo. SÓ é preenchido quando pedido.
+##
+## Cada `add_*` guardava um Dicionário novo aqui — e um recálculo completo passa
+## por centenas de efeitos entre melhorias, talentos, cartas, relíquias,
+## prestígio, conquistas e bônus permanentes. Era a maior parte dos 570 us que o
+## recálculo custa, e ele acontece a cada compra da automação: um soluço de meio
+## milissegundo a cada 0,35 s, no jogo de verdade, para encher uma lista que
+## NINGUÉM lê. O próprio `lint.gd` já registrava o fato ("`StatEngine.fontes`
+## não tem leitor de interface") sem tirar a conclusão dele.
+##
+## A capacidade fica: quem quiser a lista liga `registrar_fontes` e manda
+## recalcular. O que sai é o preço de mantê-la ligada o tempo todo para ninguém.
 var fontes := {}
+var registrar_fontes := false
 var recalculos := 0
 var _chaves: Array = []
 
@@ -29,20 +42,23 @@ func zerar() -> void:
 		pct[k] = 0.0
 		mult[k] = 1.0
 		mult_log[k] = 0.0
-		fontes[k] = []
+		# A lista só existe quando alguém a pediu: zerar 39 arrays por recálculo
+		# também é trabalho, e é trabalho para ninguém.
+		if registrar_fontes:
+			fontes[k] = []
 
 func add_flat(chave: String, v: float, fonte: String = "") -> void:
 	if not flat.has(chave):
 		return
 	flat[chave] = float(flat[chave]) + v
-	if fonte != "":
+	if registrar_fontes and fonte != "":
 		fontes[chave].append({"fonte": fonte, "tipo": "flat", "valor": v})
 
 func add_pct(chave: String, v: float, fonte: String = "") -> void:
 	if not pct.has(chave):
 		return
 	pct[chave] = float(pct[chave]) + v
-	if fonte != "":
+	if registrar_fontes and fonte != "":
 		fontes[chave].append({"fonte": fonte, "tipo": "pct", "valor": v})
 
 ## v == 0.0 é válido e ANULA o atributo (cartas de trade-off dependem disso).
@@ -52,7 +68,7 @@ func add_mult(chave: String, v: float, fonte: String = "") -> void:
 	if v == 0.0:
 		mult[chave] = 0.0
 		mult_log[chave] = 0.0
-		if fonte != "":
+		if registrar_fontes and fonte != "":
 			fontes[chave].append({"fonte": fonte, "tipo": "mult", "valor": 0.0})
 		return
 	# multiplicadores enormes vão para o acumulador logarítmico
@@ -60,7 +76,7 @@ func add_mult(chave: String, v: float, fonte: String = "") -> void:
 		mult_log[chave] = float(mult_log[chave]) + log(v) / 2.302585092994046
 	else:
 		mult[chave] = float(mult[chave]) * v
-	if fonte != "":
+	if registrar_fontes and fonte != "":
 		fontes[chave].append({"fonte": fonte, "tipo": "mult", "valor": v})
 
 ## Multiplicador já em log10 (ex.: prestígio ×10^40).
@@ -68,7 +84,7 @@ func add_mult_log(chave: String, log_v: float, fonte: String = "") -> void:
 	if not mult_log.has(chave):
 		return
 	mult_log[chave] = float(mult_log[chave]) + log_v
-	if fonte != "":
+	if registrar_fontes and fonte != "":
 		fontes[chave].append({"fonte": fonte, "tipo": "mult", "valor": pow(10.0, minf(log_v, 300.0))})
 
 func calcular() -> void:

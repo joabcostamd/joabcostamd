@@ -5,9 +5,39 @@ extends RefCounted
 ## `j` é sempre o autoload Jogo (tipado como Node para evitar ciclo de tipos).
 
 ## Aplica dano a um inimigo. Devolve { morreu, dano, overkill, absorvido }.
+## Resposta reaproveitada de `aplicar_dano`. LEIA ANTES DA PRÓXIMA CHAMADA.
+##
+## Montar `{"morreu": ..., "dano": ..., "overkill": ..., "absorvido": ...}` era
+## uma alocação de Dicionário por golpe. Na perna de 160 vivos são centenas de
+## golpes por passo — corrente, área, dano contínuo, orbe, purga, cada projétil
+## —, e dos onze lugares que chamam, só DOIS olham a resposta (o dano em área e
+## a Purga, os dois contando mortos), e os dois olham na linha seguinte.
+##
+## Quem precisar guardar copia: `resultado.duplicate()`.
+static var _res := {"morreu": false, "dano": Big.ZERO, "overkill": Big.ZERO, "absorvido": false}
+
+static func _responder(morreu: bool, dano: float, overkill: float, absorvido: bool) -> Dictionary:
+	_res["morreu"] = morreu
+	_res["dano"] = dano
+	_res["overkill"] = overkill
+	_res["absorvido"] = absorvido
+	return _res
+
 static func aplicar_dano(e: Inimigo, dano: float, j, opt: Dictionary = {}) -> Dictionary:
 	if not e.vivo():
-		return {"morreu": false, "dano": Big.ZERO, "overkill": Big.ZERO, "absorvido": false}
+		return _responder(false, Big.ZERO, Big.ZERO, false)
+
+	# AS OPÇÕES SÃO LIDAS UMA VEZ CADA.
+	#
+	# Eram doze `opt.get()` espalhados pela função — `crit` sozinho aparecia
+	# quatro vezes —, cada um com conversão de tipo em cima. Esta função é o
+	# átomo do combate: projétil, área, corrente, orbe, dano contínuo, purga e
+	# habilidade passam todos por aqui, dezenas de vezes por passo. Ler o
+	# Dicionário uma vez por campo não muda nenhum resultado e tira o trabalho
+	# repetido do lugar mais quente do jogo.
+	var crit := bool(opt.get("crit", false))
+	var elemento := str(opt.get("elemento", ""))
+	var eh_dot := bool(opt.get("dot", false))
 
 	var dmg := dano
 
@@ -15,24 +45,25 @@ static func aplicar_dano(e: Inimigo, dano: float, j, opt: Dictionary = {}) -> Di
 		dmg = Big.mul_f(dmg, 1.0 + e.fissura_forca)
 	if e.marcado > 0.0:
 		dmg = Big.mul_f(dmg, 1.5)
-	if not bool(opt.get("puro", false)) and e.armadura > 0.0:
+	if e.armadura > 0.0 and not bool(opt.get("puro", false)):
 		dmg = Big.mul_f(dmg, Bal.fator_armadura(e.armadura, float(opt.get("penetracao", 0.0))))
 	# "Devolve dano em contato" — a promessa estava no JSON, nos dois idiomas,
 	# impressa no codex, e nada no jogo a lia: o modificador só trocava a cor.
 	# Devolve uma fração pequena e fixa; quem reflete o golpe inteiro é o
 	# Guardião do Espelho, e os dois não podem ser a mesma coisa.
-	if e.elite_mod == "espinhoso" and not bool(opt.get("reflexo", false)):
-		j.dano_na_torre(Bal.dano_espinho(dano, j.s["torre"]["vida_max"]), e, {"reflexo": true})
-	if e.elite_mod == "blindado":
-		dmg = Big.mul_f(dmg, 0.55)
+	if e.elite_mod != "":
+		if e.elite_mod == "espinhoso" and not bool(opt.get("reflexo", false)):
+			j.dano_na_torre(Bal.dano_espinho(dano, j.s["torre"]["vida_max"]), e, {"reflexo": true})
+		elif e.elite_mod == "blindado":
+			dmg = Big.mul_f(dmg, 0.55)
 
 	var absorvido := false
 	if e.escudo > Big.LIMIAR_ZERO:
 		if Big.gte(e.escudo, dmg):
 			e.escudo = Big.sub(e.escudo, dmg)
 			e.flash = maxf(e.flash, 0.12)
-			Bus.inimigo_atingido.emit(e, dmg, bool(opt.get("crit", false)), str(opt.get("elemento", "")), bool(opt.get("dot", false)))
-			return {"morreu": false, "dano": dmg, "overkill": Big.ZERO, "absorvido": true}
+			Bus.inimigo_atingido.emit(e, dmg, crit, elemento, eh_dot)
+			return _responder(false, dmg, Big.ZERO, true)
 		dmg = Big.sub(dmg, e.escudo)
 		e.escudo = Big.ZERO
 		absorvido = true
@@ -44,7 +75,7 @@ static func aplicar_dano(e: Inimigo, dano: float, j, opt: Dictionary = {}) -> Di
 
 	var hp_antes := e.hp
 	e.hp = Big.sub(e.hp, dmg)
-	e.flash = maxf(e.flash, 0.2 if bool(opt.get("crit", false)) else 0.12)
+	e.flash = maxf(e.flash, 0.2 if crit else 0.12)
 	e.tremor = minf(1.0, e.tremor + 0.35)
 	e.sem_dano_t = 0.0
 
@@ -52,7 +83,7 @@ static func aplicar_dano(e: Inimigo, dano: float, j, opt: Dictionary = {}) -> Di
 	st["dano_total"] = Big.add(st["dano_total"], dmg)
 	if Big.gt(dmg, st["dano_maximo"]):
 		st["dano_maximo"] = dmg
-	if bool(opt.get("crit", false)):
+	if crit:
 		st["criticos"] = int(st["criticos"]) + 1
 
 	var rv := float(opt.get("roubodeVida", 0.0))
@@ -61,28 +92,50 @@ static func aplicar_dano(e: Inimigo, dano: float, j, opt: Dictionary = {}) -> Di
 		if not Big.is_zero(cura):
 			j.curar_torre(cura)
 
-	Bus.inimigo_atingido.emit(e, dmg, bool(opt.get("crit", false)), str(opt.get("elemento", "")), bool(opt.get("dot", false)))
+	Bus.inimigo_atingido.emit(e, dmg, crit, elemento, eh_dot)
 
 	if Big.lte(e.hp, Big.ZERO) or Big.is_zero(e.hp):
 		var overkill := Big.ZERO
 		if Big.gt(dmg, hp_antes):
 			overkill = Big.min_b(Big.sub(dmg, hp_antes), Big.mul_f(hp_antes, Bal.OVERKILL_TETO))
-		matar(e, j, overkill, bool(opt.get("crit", false)), float(opt.get("ouro_mult", 1.0)))
-		return {"morreu": true, "dano": dmg, "overkill": overkill, "absorvido": absorvido}
-	return {"morreu": false, "dano": dmg, "overkill": Big.ZERO, "absorvido": absorvido}
+		matar(e, j, overkill, crit, float(opt.get("ouro_mult", 1.0)))
+		return _responder(true, dmg, overkill, absorvido)
+	return _responder(false, dmg, Big.ZERO, absorvido)
 
 ## Dano em área.
+## Cópia própria dos alvos da explosão, reaproveitada entre chamadas.
+##
+## `em_area` devolve um buffer interno que ela mesma reusa, então quem vai
+## MEXER no jogo enquanto percorre precisa de cópia: matar um inimigo dispara
+## efeitos que podem chamar `em_area` de novo e reescrever o buffer no meio do
+## laço. A cópia era `.duplicate()` — uma alocação de Array por explosão, e com
+## a área no máximo são dezenas de explosões por passo. `resize` num Array que
+## já tem espaço não realoca: a cópia continua sendo cópia, sem lixo novo.
+static var _alvos_area: Array[Inimigo] = []
+
 static func dano_area(centro: Vector2, raio: float, dano: float, j, opt: Dictionary = {}) -> int:
-	var alvos: Array = j.arena.em_area(centro, raio).duplicate()
+	var vindos: Array[Inimigo] = j.arena.em_area(centro, raio)
+	var quantos := vindos.size()
+	_alvos_area.resize(quantos)
+	for i in quantos:
+		_alvos_area[i] = vindos[i]
 	var mortos := 0
 	var ignorar: Array = opt.get("ignorar", [])
+	var tem_ignorar := not ignorar.is_empty()
 	var queda := bool(opt.get("queda", false))
-	for e in alvos:
-		if ignorar.has(e):
+	var cx_a := centro.x
+	var cy_a := centro.y
+	var raio_seguro := maxf(1.0, raio)
+	for e in _alvos_area:
+		if tem_ignorar and ignorar.has(e):
 			continue
 		var q := 1.0
 		if queda:
-			q = maxf(0.35, 1.0 - e.pos.distance_to(centro) / maxf(1.0, raio))
+			# Números crus em vez de `e.pos.distance_to(centro)`: a raiz é
+			# necessária, o Vector2 temporário não.
+			var adx := e.pos.x - cx_a
+			var ady := e.pos.y - cy_a
+			q = maxf(0.35, 1.0 - sqrt(adx * adx + ady * ady) / raio_seguro)
 		var r := aplicar_dano(e, Big.mul_f(dano, q), j, opt)
 		if r["morreu"]:
 			mortos += 1

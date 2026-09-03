@@ -184,6 +184,7 @@ func _criar_projetil(ang: float, alvo: Inimigo, forca: float = 1.0) -> void:
 	p.pos = centro_p + Vector2(cos(ang), sin(ang)) * (Bal.RAIO_TORRE - 4.0)
 	p.velocidade = j.stats.n("velProjetil")
 	p.vel = Vector2(cos(ang), sin(ang)) * p.velocidade
+	p.ang_vel = ang
 	p.ang = ang
 	p.dano = golpe[0]
 	p.critico = golpe[1]
@@ -201,7 +202,7 @@ func _criar_projetil(ang: float, alvo: Inimigo, forca: float = 1.0) -> void:
 	# saturado com ~500 projeteis vivos e a colisao sozinha custava 2,9 ms por
 	# passo. Um projetil que nao acertou em uma travessia e meia nao vai acertar.
 	p.vida = Bal.vida_projetil(p.velocidade)
-	p.origem = "torre"
+	p.do_inimigo = false
 	p.elemento = _sortear_elemento()
 	if p.elemento != "":
 		p.cor = Color.html(str(Bal.ELEMENTOS[p.elemento]["cor"]))
@@ -270,14 +271,15 @@ func atualizar_projeteis(dt: float) -> void:
 			arena.soltar_projetil(i)
 			continue
 
-		if p.origem == "inimigo":
-			p.pos += p.vel * dt
-			var idx := p.pos.x - cx
-			var idy := p.pos.y - cy
+		if p.do_inimigo:
+			var np := p.pos + p.vel * dt
+			p.pos = np
+			var idx := np.x - cx
+			var idy := np.y - cy
 			if idx * idx + idy * idy < raio_torre2:
 				j.dano_na_torre(p.dano_torre, null, {"projetil": true})
 				arena.soltar_projetil(i)
-			elif p.pos.x < lim_x0 or p.pos.y < lim_y0 or p.pos.x > lim_x1 or p.pos.y > lim_y1:
+			elif np.x < lim_x0 or np.y < lim_y0 or np.x > lim_x1 or np.y > lim_y1:
 				arena.soltar_projetil(i)
 			continue
 
@@ -289,14 +291,31 @@ func atualizar_projeteis(dt: float) -> void:
 			var d := fposmod(ang - p.ang + PI, TAU) - PI
 			var na := p.ang + d * t_lerp
 			p.ang = na
-			p.vel = Vector2(cos(na), sin(na)) * p.velocidade
-		p.pos += p.vel * dt
+			# O SENO E O COSSENO SÓ QUANDO O ÂNGULO MUDA DE VERDADE.
+			#
+			# Eram três contas de trigonometria por projétil por quadro (um
+			# `angle`, um `cos`, um `sin`), e com 234 projéteis vivos isso é
+			# quarenta mil por segundo. Mas um projétil já apontado para o alvo
+			# corrige um ângulo microscópico: a direção nova é a mesma de antes
+			# até a sexta casa. Abaixo de um milésimo de radiano — que a 1280
+			# pixels de arena não move o projétil um pixel sequer em toda a vida
+			# dele — a velocidade anterior serve, e as duas contas caras não
+			# acontecem. O `angle` continua sendo feito: é ele que descobre se
+			# há correção a fazer.
+			if absf(na - p.ang_vel) > 0.001:
+				p.ang_vel = na
+				p.vel = Vector2(cos(na), sin(na)) * p.velocidade
+		# A posição nova fica numa variável local: `p.pos` era lido cinco vezes
+		# depois de escrito (as quatro bordas e a consulta de colisão), e cada
+		# leitura é acesso a campo de objeto — uma vez por projétil por quadro.
+		var pos_nova := p.pos + p.vel * dt
+		p.pos = pos_nova
 
-		if p.pos.x < lim_x0 or p.pos.y < lim_y0 or p.pos.x > lim_x1 or p.pos.y > lim_y1:
+		if pos_nova.x < lim_x0 or pos_nova.y < lim_y0 or pos_nova.x > lim_x1 or pos_nova.y > lim_y1:
 			arena.soltar_projetil(i)
 			continue
 
-		var atingido: Inimigo = arena.primeiro_colidindo(p.pos, p.raio, p.atingidos)
+		var atingido: Inimigo = arena.primeiro_colidindo(pos_nova, p.raio, p.atingidos)
 		if atingido != null:
 			if _impacto(p, atingido):
 				arena.soltar_projetil(i)
@@ -313,6 +332,7 @@ func _atualizar_opt_impacto() -> void:
 	_opt_impacto["execucao"] = j.stats.n("execucao")
 	_opt_impacto["roubodeVida"] = j.stats.n("roubodeVida")
 
+
 func _impacto(p: Projetil, alvo: Inimigo) -> bool:
 	var opt := _opt_impacto
 	opt["crit"] = p.critico
@@ -320,10 +340,11 @@ func _impacto(p: Projetil, alvo: Inimigo) -> bool:
 
 	# O Guardiao do Espelho declara `"mecanica": "refletir"`, e so o refletor
 	# comum declara `"hab"`. O codigo olhava so `hab`, entao o chefe cujo nome e
-	# a mecanica nunca refletiu nada — e o codex explicava o reflexo dele.
-	if (alvo.hab == "refletir" or str(alvo.def.get("mecanica", "")) == "refletir") and not p.critico:
+	# a mecanica nunca refletiu nada — e o codex explicava o reflexo dele. As
+	# duas perguntas viram um campo so, resolvido quando o inimigo nasce.
+	if alvo.reflete and not p.critico:
 		j.dano_na_torre(Bal.dano_refletido(p.dano, j.s["torre"]["vida_max"]), alvo, {"reflexo": true})
-	if bool(alvo.def.get("invisivel", false)):
+	if alvo.invisivel:
 		alvo.revelado = true
 
 	Combate.aplicar_dano(alvo, p.dano, j, opt)
@@ -362,6 +383,7 @@ func _impacto(p: Projetil, alvo: Inimigo) -> bool:
 			p.alvo = prox
 			p.ang = (prox.pos - p.pos).angle()
 			p.vel = Vector2(cos(p.ang), sin(p.ang)) * p.velocidade
+			p.ang_vel = p.ang
 			p.vida = maxf(p.vida, 1.2)
 			return false
 	return true

@@ -35,6 +35,13 @@ var dividido := false
 var peregrino := false
 var saiu := false
 
+## Duas perguntas ao JSON que eram feitas A CADA IMPACTO: se o corpo devolve o
+## golpe e se ele começa invisível. `def.get()` mais conversão de tipo, dezenas
+## de vezes por passo, para responder algo que não muda desde que o inimigo
+## nasceu. Resolvidas uma vez em `EnemyAI.criar`.
+var reflete := false
+var invisivel := false
+
 var fase := 0
 var fase_prox := 0.0
 

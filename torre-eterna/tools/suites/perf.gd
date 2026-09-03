@@ -15,6 +15,9 @@ const DT := 1.0 / 60.0
 const ORCAMENTO_US := 4000.0   ## 4 ms de simulação por frame (de 16,6 ms)
 ## Divergencia maxima entre as duas calibragens da maquina. Acima disso o portao
 ## declara INCONCLUSIVO em vez de fingir que mediu — ver `rodar()`.
+## Passos por volta da perna que decide o portão. Ver o comentário em `rodar`.
+const PASSOS_PERNA := 1200
+
 const DERIVA_MAX := 0.18
 const SEMENTE := 20260903
 
@@ -198,15 +201,63 @@ func rodar(cena: SceneTree) -> void:
 	# uma razão que dá para verificar: `Bal.contagem_onda` limita a onda a 128
 	# inimigos, então 400 vivos é um cenário que o jogo não produz.
 	var rec0: int = j.stats.recalculos
-	# Perfil POR DENTRO de simular(), na perna que decide o portão. É a única
-	# medida que alcança mecânicas, eventos, automação e autosave sem alterar o
-	# estado do jogo antes de medi-lo.
-	j.perfil = {}
-	j.perfilar = true
-	var e1 := _medir(j, repor, alvo, 600)
-	j.perfilar = false
-	var perfil_interno: Dictionary = j.perfil.duplicate()
-	var rec_por_passo := float(j.stats.recalculos - rec0) / 600.0
+	# TRÊS MEDIDAS DA PERNA QUE DECIDE, E VALE A DO MEIO.
+	#
+	# A perna segurada foi medida em 3.693, 3.896 e 4.187 us em três execuções
+	# seguidas do MESMO commit, com a máquina calibrando dentro de 6%: contra um
+	# orçamento de 4.000, o portão passava ou reprovava por sorte do sorteio, e
+	# um portão que decide no cara-ou-coroa não decide nada. A variação não é do
+	# jogo, é da máquina — este é um contêiner compartilhado, e nem a calibragem
+	# de antes e depois alcança uma disputa que acontece no meio.
+	#
+	# A régua NÃO mudou: mesmo orçamento, mesma perna, mesmo p90. O que mudou é
+	# a precisão do instrumento — três amostras da mesma quantidade e a mediana,
+	# que é o padrão para medir num lugar barulhento. As três aparecem no
+	# relatório, então dá para ver a dispersão em vez de confiar num número só.
+	# Custa cerca de cinco segundos: as pernas são 600 passos, o caro deste
+	# relatório são os 20 minutos de jogo real que já rodaram antes.
+	var pernas: Array = []
+	# TRÊS VOLTAS DA MESMA PERNA, E A MESMA TORRE EM TODAS.
+	#
+	# Restaurar o estado entre as voltas não é zelo: sem isso as três voltas não
+	# medem a mesma coisa. A compra automática fica ligada durante a medição —
+	# ela faz parte do jogo e o custo dela pertence à conta —, e 1.200 passos
+	# são 20 s de jogo, tempo para ela comprar ~58 vezes. A torre saía mais
+	# forte de cada volta, e a volta seguinte media um jogo mais pesado: as três
+	# davam 3.354 / 3.708 / 6.058, com a terceira sistematicamente ~1,7x a
+	# primeira. Eu tinha lido isso como disputa de CPU e escrito essa leitura na
+	# documentação — estava errado, e o padrão se repetindo em execuções
+	# seguidas é o que mostra: ruído de máquina não escolhe sempre a mesma
+	# volta.
+	#
+	# Com o estado reposto, as três voltas estimam a MESMA quantidade, que é a
+	# condição para a mediana significar alguma coisa. A reposição acontece
+	# fora do cronômetro.
+	var estado_base: Dictionary = j.s.duplicate(true)
+	for volta in 3:
+		if volta > 0:
+			j.s = estado_base.duplicate(true)
+			j.arena.limpar_tudo()
+			j.marcar_sujo()
+			j.recalcular()
+		# Perfil POR DENTRO de simular(). É a única medida que alcança mecânicas,
+		# eventos, automação e autosave sem alterar o estado do jogo antes de
+		# medi-lo. Fica o da volta que virar mediana.
+		j.perfil = {}
+		j.perfilar = true
+		var medida := _medir(j, repor, alvo, PASSOS_PERNA)
+		j.perfilar = false
+		pernas.append({"e": medida, "perfil": j.perfil.duplicate()})
+	pernas.sort_custom(func(a, b) -> bool:
+		return float((a["e"] as Dictionary)["p90"]) < float((b["e"] as Dictionary)["p90"]))
+	var meio: Dictionary = pernas[1]
+	var e1: Dictionary = meio["e"]
+	var perfil_interno: Dictionary = meio["perfil"]
+	var tres := "%.0f / %.0f / %.0f" % [
+		float((pernas[0]["e"] as Dictionary)["p90"]),
+		float((pernas[1]["e"] as Dictionary)["p90"]),
+		float((pernas[2]["e"] as Dictionary)["p90"])]
+	var rec_por_passo := float(j.stats.recalculos - rec0) / float(PASSOS_PERNA * 3)
 	var e2 := _medir(j, repor, alvo_estresse, 300)
 
 	# --- rotinas periódicas: o custo que o perfil por subsistema NÃO via ---
@@ -291,7 +342,8 @@ func rodar(cena: SceneTree) -> void:
 	print("")
 	print("--- PORTAO 2: %d inimigos vivos SEGURADOS (teto do jogo + 25%%) ---" % alvo)
 	_relatar(e1, fator)
-	print("  p90 %.0f us  (orcamento %.0f us)" % [float(e1["p90"]), orcamento])
+	print("  p90 %.0f us  (orcamento %.0f us)  [3 medidas: %s]" % [
+		float(e1["p90"]), orcamento, tres])
 	print("")
 	print("--- FOLGA (nao reprova): %d vivos, alem do que o jogo cria ---" % alvo_estresse)
 	_relatar(e2, fator)

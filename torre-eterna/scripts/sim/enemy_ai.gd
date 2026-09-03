@@ -75,6 +75,10 @@ static func criar(def: Dictionary, onda: int, j, opt: Dictionary = {}) -> Inimig
 	e.forma = str(def.get("forma", "circulo"))
 	e.mov = str(def.get("mov", "direto"))
 	e.hab = str(def.get("hab", ""))
+	# O Guardião do Espelho declara `"mecanica": "refletir"`; o refletor comum
+	# declara `"hab"`. Os dois contam, e a conta é feita aqui, não no impacto.
+	e.reflete = e.hab == "refletir" or str(def.get("mecanica", "")) == "refletir"
+	e.invisivel = bool(def.get("invisivel", false))
 	e.cor = Color.html(str(def.get("cor", "#8b93a7")))
 	e.cor2 = Color.html(str(def.get("cor2", "#3a4050")))
 	if e.elite:

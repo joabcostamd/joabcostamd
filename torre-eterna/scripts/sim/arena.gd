@@ -8,6 +8,26 @@ const CELULA := 72.0
 ## células precisa olhar sem consultar cada inimigo antes.
 const RAIO_INIMIGO_MAX := 34.0
 
+## Folga sobre o maior raio VIVO. O raio de um inimigo pode crescer no meio do
+## passo (divisão, evolução) e a grade só é refeita no passo seguinte: a folga
+## cobre esse atraso de um quadro.
+const RAIO_FOLGA := 1.3
+
+## Maior raio entre os inimigos vivos AGORA, com folga — refeito a cada
+## reconstrução da grade.
+##
+## O teste de colisão precisa olhar as células que podem conter um inimigo cujo
+## corpo alcance o projétil, e usava o maior raio do CONTEÚDO INTEIRO (34, que é
+## de chefe). Um grunhido tem raio 15. Numa arena sem chefe nenhum — que é a
+## esmagadora maioria dos quadros — a busca varria uma área quase 40% maior do
+## que precisava.
+##
+## Medido na perna de 160 vivos: 168 consultas por passo, 607 células varridas
+## para 294 candidatos — ou seja, metade das células estava vazia. A varredura
+## custa 490 us por passo de um subsistema de projéteis de ~2.500 us, que é dois
+## terços do passo inteiro.
+var raio_max_vivo := RAIO_INIMIGO_MAX
+
 var largura := 1280.0
 var altura := 720.0
 var centro := Vector2(640, 360)
@@ -34,6 +54,20 @@ var max_projeteis := 800
 var max_coletaveis := 350
 
 var _grade := {}
+## Espelho da grade em números crus: para cada célula, três floats por inimigo
+## (x, y, raio) na MESMA ordem do array de objetos.
+##
+## O laço de colisão roda uma vez por inimigo por projétil por quadro: na perna
+## de 160 vivos são 294 candidatos por passo, espalhados por 607 células. Cada
+## candidato lia `e.pos.x`, `e.pos.y` e `e.raio` do objeto, e leitura de
+## propriedade em GDScript passa pelo interpretador. Num `PackedFloat32Array` é
+## leitura de memória direta.
+##
+## O objeto só é tocado quando a distância JÁ disse que houve encosto — e aí a
+## conferência de vivo/intangível/ignorado acontece igual. As posições daqui são
+## as mesmas que o laço lia antes: a grade é refeita depois do movimento dos
+## inimigos e antes dos projéteis, então nada anda entre uma coisa e outra.
+var _grade_n := {}
 var _celulas_usadas: Array[int] = []
 var _buffer: Array[Inimigo] = []
 var vivos := 0
@@ -164,7 +198,7 @@ func limpar_inimigos() -> void:
 	for i in range(inimigos.size() - 1, -1, -1):
 		soltar_inimigo(i)
 	for i in range(projeteis.size() - 1, -1, -1):
-		if projeteis[i].origem == "inimigo":
+		if projeteis[i].do_inimigo:
 			soltar_projetil(i)
 
 ## -------------------------------------------------------------- grade
@@ -175,21 +209,34 @@ func reconstruir_grade() -> void:
 	for k in _celulas_usadas:
 		var c: Array = _grade[k]
 		c.clear()
+		var cn: PackedFloat32Array = _grade_n[k]
+		cn.clear()
+		_grade_n[k] = cn
 	_celulas_usadas.clear()
 	vivos = 0
+	var maior := 0.0
 	for e in inimigos:
 		if not e.vivo():
 			continue
 		vivos += 1
+		if e.raio > maior:
+			maior = e.raio
 		var k := _chave(e.pos)
 		if _grade.has(k):
 			var celula: Array = _grade[k]
 			if celula.is_empty():
 				_celulas_usadas.append(k)
 			celula.append(e)
+			var cn: PackedFloat32Array = _grade_n[k]
+			cn.append(e.pos.x)
+			cn.append(e.pos.y)
+			cn.append(e.raio)
+			_grade_n[k] = cn
 		else:
 			_grade[k] = [e]
+			_grade_n[k] = PackedFloat32Array([e.pos.x, e.pos.y, e.raio])
 			_celulas_usadas.append(k)
+	raio_max_vivo = minf(RAIO_INIMIGO_MAX, maior * RAIO_FOLGA)
 
 func _chave(p: Vector2) -> int:
 	return int(floor(p.x / CELULA)) * 4096 + int(floor(p.y / CELULA))
@@ -231,16 +278,31 @@ func em_area(p: Vector2, raio: float) -> Array[Inimigo]:
 	var c0 := Vector2i(int(floor((p.x - raio) / CELULA)), int(floor((p.y - raio) / CELULA)))
 	var c1 := Vector2i(int(floor((p.x + raio) / CELULA)), int(floor((p.y + raio) / CELULA)))
 	var r2 := raio * raio
-	for cx in range(c0.x, c1.x + 1):
-		for cy in range(c0.y, c1.y + 1):
-			var k := cx * 4096 + cy
+	var px_a := p.x
+	var py_a := p.y
+	# `while` no lugar de `for ... in range()`: cada `range()` ALOCA um Array, e
+	# esta varredura roda uma vez por explosão, dezenas de vezes por passo.
+	var cx := c0.x
+	while cx <= c1.x:
+		var base := cx * 4096
+		cx += 1
+		var cy := c0.y
+		while cy <= c1.y:
+			var k := base + cy
+			cy += 1
 			if not _grade.has(k):
 				continue
 			var celula: Array = _grade[k]
 			for item in celula:
 				var e: Inimigo = item
-				var d: float = (e.pos - p).length_squared()
-				if d <= r2 + e.raio * e.raio:
+				# Números crus em vez de `(e.pos - p).length_squared()`: a
+				# subtração de Vector2 cria um valor temporário a cada vizinho,
+				# e esta varredura roda uma vez por explosão — com a área no
+				# máximo, dezenas de vezes por passo. É o mesmo padrão que o
+				# teste de colisão já usa logo abaixo.
+				var edx := e.pos.x - px_a
+				var edy := e.pos.y - py_a
+				if edx * edx + edy * edy <= r2 + e.raio * e.raio:
 					_buffer.append(e)
 	return _buffer
 
@@ -253,33 +315,56 @@ func em_area(p: Vector2, raio: float) -> Array[Inimigo]:
 ## CI, dez vezes o orçamento inteiro do quadro. Aqui a resposta sai na primeira
 ## colisão e o buffer não é tocado.
 func primeiro_colidindo(pos: Vector2, raio: float, ignorar: Dictionary) -> Inimigo:
-	var alcance := raio + RAIO_INIMIGO_MAX
+	var alcance := raio + raio_max_vivo
 	var cx0 := int(floor((pos.x - alcance) / CELULA))
 	var cy0 := int(floor((pos.y - alcance) / CELULA))
 	var cx1 := int(floor((pos.x + alcance) / CELULA))
 	var cy1 := int(floor((pos.y + alcance) / CELULA))
 	var px := pos.x
 	var py := pos.y
-	for cx in range(cx0, cx1 + 1):
+	# As duas perguntas que NÃO dependem do candidato saem do laço. Elas eram
+	# feitas uma vez por inimigo por projétil por quadro — o `ignorar` está
+	# vazio na esmagadora maioria dos projéteis (só perfuração e ricochete
+	# enchem), e `poupar_peregrino` é uma leitura de campo do objeto.
+	var tem_ignorar := not ignorar.is_empty()
+	var poupar := poupar_peregrino
+	# `while` no lugar de `for ... in range()`: o `range()` ALOCA um Array, e
+	# estes dois laços rodam uma vez por projétil por quadro. Com 234 projéteis
+	# vivos são quase quinhentas alocações por passo para percorrer, no total,
+	# umas três células.
+	var cx := cx0
+	while cx <= cx1:
 		var base := cx * 4096
-		for cy in range(cy0, cy1 + 1):
-			var celula = _grade.get(base + cy)
+		cx += 1
+		var cy := cy0
+		while cy <= cy1:
+			var chave := base + cy
+			cy += 1
+			var celula = _grade.get(chave)
 			if celula == null:
 				continue
-			for item in celula:
-				var e: Inimigo = item
-				# `vivo()` inline: é `ativo and morrendo <= 0.0`. Este teste roda
-				# uma vez por inimigo por projétil por quadro — a chamada custa
-				# mais que a conta que ela faz.
-				if not e.ativo or e.morrendo > 0.0 or e.intangivel > 0.0 or ignorar.has(e.id):
+			var nums: PackedFloat32Array = _grade_n[chave]
+			var quantos: int = celula.size()
+			for idx in quantos:
+				# A DISTÂNCIA PRIMEIRO, e só ela. Encosto é raro: na esmagadora
+				# maioria das iterações a resposta é "passou longe", e essa
+				# resposta sai de três leituras de número cru.
+				var o: int = idx * 3
+				var dx := nums[o] - px
+				var dy := nums[o + 1] - py
+				var rr := nums[o + 2] + raio
+				if dx * dx + dy * dy > rr * rr:
 					continue
-				if poupar_peregrino and e.peregrino:
+				# Encostou. AGORA vale tocar no objeto e perguntar o resto.
+				# `vivo()` inline: é `ativo and morrendo <= 0.0`.
+				var e: Inimigo = celula[idx]
+				if not e.ativo or e.morrendo > 0.0 or e.intangivel > 0.0:
 					continue
-				var dx := e.pos.x - px
-				var dy := e.pos.y - py
-				var rr := e.raio + raio
-				if dx * dx + dy * dy <= rr * rr:
-					return e
+				if tem_ignorar and ignorar.has(e.id):
+					continue
+				if poupar and e.peregrino:
+					continue
+				return e
 	return null
 
 ## ------------------------------------------------------------ seleção
@@ -385,19 +470,32 @@ func alvo_ids(origem: Vector2, alcance: float, ids: Dictionary) -> Inimigo:
 	var c0x := int(floor(ox2 / CELULA))
 	var c0y := int(floor(oy2 / CELULA))
 	var max_anel := int(ceil(alcance / CELULA))
-	for anel in range(max_anel + 1):
+	# TRÊS `range()` ANINHADOS POR CHAMADA. Cada um aloca um Array, e esta busca
+	# roda a cada perfuração e a cada ricochete — dezenas de vezes por passo,
+	# para percorrer, na maioria das vezes, um punhado de células. Trocados por
+	# `while`, a busca não aloca nada.
+	var anel := -1
+	while anel < max_anel:
+		anel += 1
 		if melhor != null:
 			var piso := float(anel - 1) * CELULA
 			if piso > 0.0 and melhor_d <= piso * piso:
 				break
-		for cx in range(c0x - anel, c0x + anel + 1):
+		var cx := c0x - anel
+		var cx_fim := c0x + anel
+		while cx <= cx_fim:
 			var borda_x := absi(cx - c0x) == anel
 			var base := cx * 4096
-			for cy in range(c0y - anel, c0y + anel + 1):
+			cx += 1
+			var cy := c0y - anel
+			var cy_fim := c0y + anel
+			while cy <= cy_fim:
+				var cy_atual := cy
+				cy += 1
 				# Só a casca do anel: o miolo já foi varrido nos anéis de dentro.
-				if not borda_x and absi(cy - c0y) != anel:
+				if not borda_x and absi(cy_atual - c0y) != anel:
 					continue
-				var celula = _grade.get(base + cy)
+				var celula = _grade.get(base + cy_atual)
 				if celula == null:
 					continue
 				for item in celula:
