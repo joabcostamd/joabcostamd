@@ -216,8 +216,8 @@
   "en": "That card is equipped"
  },
  "car_auto_reciclar": {
-  "pt": "Reciclar dupl.",
-  "en": "Recycle dupes"
+  "pt": "Reciclar sozinho",
+  "en": "Auto-recycle"
  },
  "car_auto_reciclar_dica": {
   "pt": "Recicla sozinho toda carta duplicada de raridade igual ou pior à que você já tem. Nunca joga fora carta nova nem carta equipada.",

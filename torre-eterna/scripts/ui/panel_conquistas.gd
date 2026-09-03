@@ -109,6 +109,14 @@ func montar(c: VBoxContainer) -> void:
 	abas = TabBar.new()
 	abas.clip_tabs = true
 	abas.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	# FONTE MENOR PARA A ULTIMA ABA NAO SUMIR NA ESCALA 1,25.
+	#
+	# Com a fonte padrao as oito abas pedem ~957 px logicos e sobram ~940: a aba
+	# "Segredos" ficava atras de duas setinhas de 20 px. Ela continua alcancavel,
+	# mas quem joga nessa escala nunca descobre que existe uma categoria inteira
+	# de conquistas secretas — e "nada inalcancavel" nao e a mesma coisa que
+	# "nada invisivel". Faltavam vinte pixels.
+	abas.add_theme_font_size_override("font_size", 13)
 	cats = [{"id": "todas", "nome": Txt.t("cqt_cat_todas")}]
 	for item in Dados.categorias_conquista:
 		var cat: Dictionary = item

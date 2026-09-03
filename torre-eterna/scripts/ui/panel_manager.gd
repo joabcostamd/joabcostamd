@@ -129,7 +129,16 @@ func _montar_overlay() -> void:
 ## banner de chefe, dois também — cinco avisos empilhados enterravam o nome do
 ## chefe, que é o momento mais cinematográfico do jogo.
 func _teto_toasts() -> int:
-	return 2 if (atual != "" or _banner_ate > 0.0) else 5
+	# UM so com painel aberto, nao dois.
+	#
+	# Dois avisos empilhados ocupam ~100 px de altura no meio do painel, e
+	# painel tem 660-690 px centrados: a faixa dos avisos cai DENTRO dele.
+	# Medido em capturas: dois avisos apagavam duas linhas inteiras da lista que
+	# a pessoa foi ler — o nome de uma habilidade, a recompensa de duas
+	# conquistas, uma opcao de configuracao. E acontece o tempo todo, porque
+	# conquista, evento e nivel de temporada disparam aviso sozinhos enquanto o
+	# painel esta aberto.
+	return 1 if (atual != "" or _banner_ate > 0.0) else 5
 
 func _posicionar_toasts() -> void:
 	if caixa_toast == null:
@@ -158,8 +167,20 @@ func _posicionar_toasts() -> void:
 	# (-58 a -14), e numa captura da onda 93 o aviso e os rotulos "Conquistas",
 	# "Codex" e "Habilidades" saiam impressos um por cima do outro, os dois
 	# ilegiveis. A caixa agora para ACIMA da barra, com folga.
+	# E ELE VAI PARA O CANTO, NAO PARA O MEIO.
+	#
+	# Centralizado, mesmo um aviso so atravessa a largura inteira do painel.
+	# Encostado na direita e mais estreito, ele cobre um canto — e canto de
+	# painel e onde menos costuma haver texto que decide alguma coisa.
+	# Enfileirar para depois nao serve: "gemas insuficientes" e resposta a um
+	# clique dado dentro do painel, e chegar tarde e pior que atrapalhar.
+	caixa_toast.anchor_left = 1.0 if aberto else 0.5
+	caixa_toast.anchor_right = 1.0 if aberto else 0.5
+	caixa_toast.offset_left = -352.0 if aberto else -220.0
+	caixa_toast.offset_right = -16.0 if aberto else 220.0
+	caixa_toast.alignment = BoxContainer.ALIGNMENT_END if aberto else BoxContainer.ALIGNMENT_CENTER
 	var teto_toast := UI.RODAPE_TOPO - UI.RODAPE_FOLGA
-	caixa_toast.offset_top = (teto_toast - 110.0) if aberto else 96.0
+	caixa_toast.offset_top = (teto_toast - 56.0) if aberto else 96.0
 	caixa_toast.offset_bottom = teto_toast if aberto else 300.0
 	caixa_toast.grow_vertical = Control.GROW_DIRECTION_BEGIN if aberto else Control.GROW_DIRECTION_END
 	caixa_toast.alignment = BoxContainer.ALIGNMENT_END if aberto else BoxContainer.ALIGNMENT_CENTER

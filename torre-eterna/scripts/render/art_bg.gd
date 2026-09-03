@@ -86,9 +86,14 @@ func atualizar(dt: float) -> void:
 			"chuva":
 				p.y += vel * 26.0 * float(f["v"]) * dt
 				p.x += vel * 3.0 * dt
-			"neve", "cinzas":
+			"neve":
 				p.y += vel * 6.0 * float(f["v"]) * dt
 				p.x += sin(t * 0.8 + float(f["f"])) * 9.0 * dt
+			"cinzas":
+				# Cinza desce mais devagar e vagueia mais que neve: ela e leve e
+				# o ar do Campo de Vidro esta quente.
+				p.y += vel * 3.5 * float(f["v"]) * dt
+				p.x += sin(t * 0.45 + float(f["f"])) * 22.0 * dt
 			"fogo":
 				p.y -= vel * 10.0 * float(f["v"]) * dt
 				p.x += sin(t * 2.0 + float(f["f"])) * 12.0 * dt
@@ -106,9 +111,35 @@ func atualizar(dt: float) -> void:
 			p.x = -8.0
 		f["p"] = p
 
+## Aplica o brilho e a saturacao que a era pede numa cor do fundo.
+##
+## Brilho anda numa faixa estreita de proposito (0,78 a 1,00): o jogo se le em
+## cima do fundo, e clarear demais come o contraste dos inimigos e dos numeros
+## de dano. O que importa e a era ter clima proprio, nao ser clara.
+func _com_ambiente(c: Color) -> Color:
+	var brilho := clampf(float(ambiente.get("brilho", 0.2)), 0.0, 1.0)
+	var sat := clampf(float(ambiente.get("saturacao", 1.0)), 0.0, 2.0)
+	var cinza := c.r * 0.299 + c.g * 0.587 + c.b * 0.114
+	var s := Color(
+		lerpf(cinza, c.r, sat), lerpf(cinza, c.g, sat), lerpf(cinza, c.b, sat), c.a)
+	var k := 0.78 + brilho * 0.22
+	return Color(clampf(s.r * k, 0.0, 1.0), clampf(s.g * k, 0.0, 1.0),
+		clampf(s.b * k, 0.0, 1.0), c.a)
+
 func desenhar(ci: CanvasItem, centro: Vector2, detalhe: float = 1.0) -> void:
-	var c1 := Color.html(str(paleta.get("fundo", "#080b14")))
-	var c2 := Color.html(str(paleta.get("fundo2", "#0e1424")))
+	# BRILHO E SATURACAO ERAM DADOS MORTOS.
+	#
+	# As dez eras declaram `ambiente.brilho` (0,18 a 0,90) e
+	# `ambiente.saturacao` (0,55 a 1,35) em `data/eras.json`, e o desenho lia
+	# so a vinheta. Medida a luminancia media do fundo nas dez capturas, todas
+	# ficavam entre 4 e 22 de 255: as eras mudavam de MATIZ e nao de clima. A
+	# Fundicao Perpetua pedia brilho 0,62 e era tao escura quanto a Necropole
+	# (0,34); o Nada pedia saturacao 0,55 e nao dessaturava nada.
+	#
+	# As duas entram aqui, nas cores do gradiente, ANTES do cache — entao nao
+	# custam um quadro a mais: a textura so e refeita quando a era muda.
+	var c1 := _com_ambiente(Color.html(str(paleta.get("fundo", "#080b14"))))
+	var c2 := _com_ambiente(Color.html(str(paleta.get("fundo2", "#0e1424"))))
 	var acento := Color.html(str(paleta.get("acento", "#38bdf8")))
 	var grade := Color.html(str(paleta.get("grade", "#1b2740")))
 
@@ -153,7 +184,10 @@ func desenhar(ci: CanvasItem, centro: Vector2, detalhe: float = 1.0) -> void:
 		"ondas":
 			var cor := Color(grade.r, grade.g, grade.b, op)
 			for i in 10:
-				var raio := fmod(t * 40.0 + float(i) * 90.0, 900.0)
+				# `esc` no lugar de 90 fixo: a Aurora (150) e o Inverno (128)
+				# desenhavam as MESMAS dez ondas, e o unico dado que tentava
+				# separa-las nao mudava um pixel.
+				var raio := fmod(t * 40.0 + float(i) * esc, 900.0)
 				ci.draw_arc(centro, raio, 0, TAU, 48, Color(cor.r, cor.g, cor.b, cor.a * (1.0 - raio / 900.0)), 1.5, true)
 		"circuito":
 			var cor := Color(grade.r, grade.g, grade.b, op)
@@ -168,7 +202,10 @@ func desenhar(ci: CanvasItem, centro: Vector2, detalhe: float = 1.0) -> void:
 			var cor_r := Color(grade.r, grade.g, grade.b, op)
 			for i in 26:
 				var an := float(i) * 2.399963 + 0.7
-				var d := 150.0 + float(i) * 24.0
+				# Idem: a Necropole (160) caia nos mesmos 26 pontos do Cinturao
+				# de Sucata (96). Duas das dez "terras novas" eram o mesmo
+				# desenho repintado, e a virada de era lia como troca de filtro.
+				var d := esc + float(i) * esc * 0.25
 				var p := centro + Vector2(cos(an), sin(an) * 0.72) * d
 				var w := 12.0 + float(i % 4) * 7.0
 				var h := 16.0 + float((i * 7) % 5) * 9.0
@@ -199,18 +236,53 @@ func desenhar(ci: CanvasItem, centro: Vector2, detalhe: float = 1.0) -> void:
 
 	# --- céu / partículas ambientais ---
 	var cor_ceu := Color.html(str(ceu.get("cor", "#dbeafe")))
+	# QUATRO TIPOS DE CEU DESENHAVAM O MESMO PONTINHO.
+	#
+	# "estrelas", "aurora", "vazio" e "nuvens" caiam todos no mesmo ramo: o
+	# Cinturao de Sucata pedia NUVENS e recebia estrelas, o Jardim pedia VAZIO e
+	# recebia estrelas. O dado estava no JSON desde sempre, escrito e revisado, e
+	# quatro eras dividiam um ceu so. Cada uma tem o seu agora, reusando os
+	# mesmos pontos ja sorteados — mesma quantidade de desenho por quadro.
 	match str(ceu.get("tipo", "estrelas")):
-		"estrelas", "aurora", "vazio", "nuvens":
+		"estrelas", "aurora":
 			for i in estrelas.size():
 				var b := brilhos[i] * (0.55 + 0.45 * sin(t * 1.6 + float(i) * 0.7))
 				ci.draw_circle(estrelas[i], 1.0 + b * 0.9, Color(cor_ceu.r, cor_ceu.g, cor_ceu.b, b * 0.7))
+		"nuvens":
+			# Banco de poeira em suspensao: elipses largas e moles, andando de
+			# lado. Nada pisca — poeira nao cintila.
+			for i in estrelas.size():
+				var b2 := brilhos[i]
+				var pos_n := estrelas[i] + Vector2(fmod(t * 7.0 + float(i) * 37.0, tam.x + 220.0) - 110.0, 0.0)
+				pos_n.x = fmod(pos_n.x + tam.x, tam.x)
+				var rx := 26.0 + b2 * 40.0
+				ci.draw_set_transform(pos_n, 0.0, Vector2(1.0, 0.34))
+				ci.draw_circle(Vector2.ZERO, rx, Color(cor_ceu.r, cor_ceu.g, cor_ceu.b, 0.045 + b2 * 0.05))
+				ci.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+		"vazio":
+			# O Jardim pede VAZIO: aneis finos que abrem devagar e somem. E a
+			# ausencia desenhada, nao mais um ceu estrelado.
+			for i in mini(estrelas.size(), 18):
+				var fase := fmod(t * 0.16 + float(i) * 0.37, 1.0)
+				var raio_v := 4.0 + fase * 46.0
+				ci.draw_arc(estrelas[i], raio_v, 0.0, TAU, 18,
+					Color(cor_ceu.r, cor_ceu.g, cor_ceu.b, (1.0 - fase) * 0.22), 1.0, true)
 		"chuva":
 			for f in flocos:
 				var p: Vector2 = f["p"]
 				ci.draw_line(p, p + Vector2(1.5, 9.0), Color(cor_ceu.r, cor_ceu.g, cor_ceu.b, 0.35), 1.0)
-		"neve", "cinzas", "fogo":
+		"neve", "fogo":
 			for f in flocos:
 				ci.draw_circle(f["p"], float(f["r"]), Color(cor_ceu.r, cor_ceu.g, cor_ceu.b, 0.45))
+		"cinzas":
+			# Cinza nao e floco de neve: e lasca irregular que brilha e apaga
+			# enquanto cai. Mesmo laco, primitiva e alfa diferentes.
+			for f in flocos:
+				var pc: Vector2 = f["p"]
+				var rc := float(f["r"])
+				var pisca := 0.28 + 0.34 * absf(sin(t * 1.7 + float(f["f"])))
+				ci.draw_rect(Rect2(pc, Vector2(rc * 1.6, rc * 1.1)),
+					Color(cor_ceu.r, cor_ceu.g, cor_ceu.b, pisca))
 		"codigo":
 			for f in flocos:
 				var p2: Vector2 = f["p"]

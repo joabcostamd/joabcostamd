@@ -1787,6 +1787,84 @@ func t_celebracao() -> void:
 	ok("a volta da torre tem visual", fonte_vc.contains("Bus.torre_renasceu.connect"),
 		"o unico ouvinte do sinal era o motor de audio")
 
+	# --- ACHADOS DAS LENTES DE ARTE, INTERFACE E ORIGINALIDADE ---
+
+	# A compra automatica escolhia o alvo com o teto ESTICADO pelo recorde e
+	# calculava a quantidade com o `max` cru do JSON. Passado esse max — o caso
+	# normal depois do recorde ~50 — a subtracao dava negativo e ela comprava
+	# UM nivel por chamada, a cada 0,35 s, com o ouro empilhando sem uso.
+	var fonte_g := _ler("res://scripts/sim/game.gd")
+	ok("a compra automatica usa o teto esticado",
+		fonte_g.contains("var maxn_alvo := teto_upgrade(melhor)"),
+		"com o max cru do JSON ela trava em 1 nivel por chamada")
+	# Medido: com o nivel ACIMA do max do JSON, o teto tem que sobrar.
+	var def_dano: Dictionary = Dados.upgrade_por_id["dano"]
+	var max_cru := int(def_dano.get("max", -1))
+	if max_cru > 0:
+		var onda_antes_ac := int(jogo.s["onda_maxima_global"])
+		jogo.s["onda_maxima_global"] = 400
+		var esticado: int = jogo.teto_upgrade(def_dano)
+		ok("o teto do recorde passa do teto do arquivo", esticado > max_cru,
+			"arquivo %d, esticado %d" % [max_cru, esticado])
+		jogo.s["onda_maxima_global"] = onda_antes_ac
+
+	# Tres dos quatro controles de ambiente das eras eram dados mortos: o
+	# desenho lia so a vinheta, e as dez eras mudavam de matiz sem mudar de
+	# clima. Brilho e saturacao passaram a entrar nas cores do gradiente.
+	var fonte_bg := _ler("res://scripts/render/art_bg.gd")
+	ok("o brilho da era entra no desenho", fonte_bg.contains('ambiente.get("brilho"'))
+	ok("a saturacao da era entra no desenho", fonte_bg.contains('ambiente.get("saturacao"'))
+	# E `chao.escala` era ignorado por dois tipos, entao duas duplas de eras
+	# desenhavam o mesmo chao com numeros diferentes no arquivo.
+	ok("as ondas do chao usam a escala da era",
+		fonte_bg.contains("fmod(t * 40.0 + float(i) * esc, 900.0)"),
+		"com 90 fixo, Aurora e Inverno desenham as mesmas dez ondas")
+	ok("as ruinas do chao usam a escala da era",
+		fonte_bg.contains("var d := esc + float(i) * esc * 0.25"),
+		"com 150+24i, Necropole e Sucata caem nos mesmos 26 pontos")
+	# Quatro tipos de ceu caiam no mesmo ramo de pontinhos.
+	ok("nuvens tem desenho proprio", fonte_bg.contains('"nuvens":'))
+	ok("vazio tem desenho proprio", fonte_bg.contains('"vazio":'))
+	ok("cinzas tem desenho proprio", fonte_bg.contains('"cinzas":'))
+	# E toda era precisa ter os quatro controles, senao o dado nasce morto.
+	var eras_sem: Array = []
+	for item_era in Dados.eras:
+		var e_def: Dictionary = item_era
+		var amb: Dictionary = e_def.get("ambiente", {})
+		if not (amb.has("brilho") and amb.has("saturacao") and amb.has("vinheta")):
+			eras_sem.append(str(e_def.get("id", "?")))
+	ok("toda era declara brilho, saturacao e vinheta", eras_sem.is_empty(), str(eras_sem))
+
+	# A Sombra era o unico bicho cuja ficha do Codex vinha vazia: o corte de
+	# alfa de invisivel vazava para o bestiario.
+	ok("o Codex revela o inimigo invisivel",
+		_ler("res://scripts/ui/panel_codex.gd").contains("e.revelado = true"),
+		"o disfarce e estado de combate, nao propriedade da especie")
+
+	# Com painel aberto, o aviso atravessava a lista que a pessoa foi ler.
+	var fonte_pm := _ler("res://scripts/ui/panel_manager.gd")
+	ok("com painel aberto cabe UM aviso so",
+		fonte_pm.contains('return 1 if (atual != "" or _banner_ate > 0.0) else 5'))
+	ok("e ele vai para o canto, nao para o meio",
+		fonte_pm.contains("caixa_toast.anchor_left = 1.0 if aberto else 0.5"))
+
+	# Os dois controles de reciclagem tinham nomes quase iguais lado a lado, e
+	# um deles desmancha cartas na hora.
+	var t_auto := Txt.t("car_auto_reciclar")
+	var t_agora := Txt.t("car_reciclar_dups")
+	# Os dois comecam com "Reciclar", e tudo bem: os dois reciclam. O que nao
+	# pode e um ser PREFIXO do outro — era "Reciclar dupl." contra "Reciclar
+	# duplicadas ({n})", que so divergem no caractere 14, e um deles desmancha
+	# cartas na hora. Divergir cedo e o que deixa ler de relance, sem passar o
+	# mouse — e em toque nao existe passar o mouse.
+	var i_dif := 0
+	while i_dif < mini(t_auto.length(), t_agora.length()) and t_auto[i_dif] == t_agora[i_dif]:
+		i_dif += 1
+	ok("os dois botoes de reciclagem divergem cedo", i_dif <= 10,
+		"'%s' e '%s' so diferem no caractere %d" % [t_auto, t_agora, i_dif])
+	ok("e nenhum e prefixo do outro",
+		not t_agora.begins_with(t_auto) and not t_auto.begins_with(t_agora))
+
 	# COMEMORACAO EM ANDAMENTO NAO PODE ESCREVER POR CIMA DE PAINEL ABERTO.
 	#
 	# A guarda existia e so impedia de COMECAR. Uma que ja estava rodando seguia

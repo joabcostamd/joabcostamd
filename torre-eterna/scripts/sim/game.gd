@@ -804,7 +804,20 @@ func auto_comprar() -> void:
 	var orcamento := Big.mul_f(s["moedas"]["ouro"], Bal.FATIA_AUTOCOMPRA)
 	var id_alvo := str(melhor["id"])
 	var nivel_alvo := int(s["upgrades"].get(id_alvo, 0))
-	var maxn_alvo := int(melhor.get("max", -1))
+	# O MESMO TETO DA SELECAO, NAO O CRU DO JSON.
+	#
+	# A escolha do alvo, dez linhas acima, usa `teto_upgrade`, que ESTICA o teto
+	# pelo recorde de onda. A conta da quantidade usava o `max` cru do arquivo.
+	# A partir do momento em que o nivel passa desse max — o caso normal depois
+	# do recorde ~50 — `teto` ficava NEGATIVO, `quantos` ficava negativo, e o
+	# `maxi(1, ...)` la embaixo comprava exatamente UM nivel por chamada, a cada
+	# 0,35 s, em vez dos milhares que a fatia de ouro pagaria.
+	#
+	# Ou seja: o comentario logo acima diz que comprar um nivel por vez faz "a
+	# economia inteira virar enfeite", e era exatamente isso que acontecia na
+	# metade da partida em que o ouro cresce mais rapido. Os marcos altos que o
+	# README vende como decisao eram os que demoravam mais a chegar.
+	var maxn_alvo := teto_upgrade(melhor)
 	var teto := 1000000 if maxn_alvo < 0 else maxn_alvo - nivel_alvo
 	var quantos := mini(teto, Big.max_afford(
 		orcamento, float(melhor.get("base", 1)), float(melhor.get("cresc", 1.1)), nivel_alvo))
