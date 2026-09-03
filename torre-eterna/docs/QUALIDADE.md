@@ -142,11 +142,14 @@ diferentes não é estimativa de nada.
 
 Corrigido: o estado é reposto entre as voltas, fora do cronômetro. Agora as
 três estimam a mesma quantidade, que é a condição para a mediana significar
-alguma coisa.
+alguma coisa — e o efeito aparece na hora. As voltas passaram de
+`3.354 / 3.708 / 6.058` (81% de dispersão) para `3.568 / 3.570 / 3.753` (5%).
+A dispersão que sobrou é a máquina; a que sumiu era a ferramenta.
 
-Resultado: **3.708 us de mediana contra 4.000 de orçamento** (execução com
-deriva de 0,3%, ou seja, máquina parada), com as três voltas visíveis. Antes
-era 4.187 num sorteio de três.
+Resultado final, com a máquina limpa: **mediana 3.570 us contra 4.135 de
+orçamento** (a máquina mediu 1,03x mais lenta que a referência e o orçamento
+acompanhou), ou 3.570 contra os 4.000 nominais. Antes desta rodada, o mesmo
+commit dava 4.187 num sorteio de três.
 
 ## Sobre a faixa do critério 5 — segunda recalibração, e por quê
 
@@ -245,11 +248,11 @@ maquina: 39882 us na conta de referencia (39000 esperado) -> fator 1.02x
 
 --- PORTAO 2: 160 inimigos vivos SEGURADOS (teto do jogo + 25%) ---
   vivos medios 181 | pico de projeteis 234
-  media   2839 | p50   2789 | p90   3708 | p99   5381 | pior   6185  (us)
-  269 fps no p90
+  media   2787 | p50   2758 | p90   3570 | p99   4553 | pior   5796  (us)
+  280 fps no p90
   lotacao da grade: 16 na celula mais cheia | 3.9 por celula ocupada | 49 celulas
   nos 10% mais caros vs o resto -> mortes 0.1/0.0 | projeteis 166/144 | vivos 180/182
-  p90 3708 us  (orcamento 4000 us)  [3 medidas: 3354 / 3708 / 6058]
+  p90 3570 us  (orcamento 4135 us)  [3 medidas: 3568 / 3570 / 3753]
 
 --- FOLGA (nao reprova): 412 vivos, alem do que o jogo cria ---
   vivos medios 443 | pico de projeteis 226
@@ -263,7 +266,7 @@ maquina: 39882 us na conta de referencia (39000 esperado) -> fator 1.02x
   status           272 us
   inimigos         342 us
   torre            299 us
-  projeteis       2460 us
+  projeteis       2406 us
   coletaveis        60 us
   habilidades       74 us
   diretor           36 us
@@ -272,7 +275,7 @@ maquina: 39882 us na conta de referencia (39000 esperado) -> fator 1.02x
 recalculos de atributos: 3668
 
 --- rotinas periodicas (medidas DEPOIS das pernas; ver comentario) ---
-  autocompra        585 us por chamada | a cada 0.35s |     28 us/passo amortizado
+  autocompra        618 us por chamada | a cada 0.35s |     29 us/passo amortizado
   conquistas        142 us por chamada | a cada 0.50s |      5 us/passo amortizado
   missoes             5 us por chamada | a cada 0.50s |      0 us/passo amortizado
   auto_habilidade       17 us por chamada | a cada 0.25s |      1 us/passo amortizado
@@ -289,7 +292,7 @@ recalculos de atributos: 3668
   conquistas_missoes         11 us
   autosave                    2 us
   soma: 3290 us/passo (isto SIM cobre simular() inteiro)
-  recalculo         430 us por chamada | 0.06 por passo |     24 us/passo
+  recalculo         463 us por chamada | 0.05 por passo |     25 us/passo
 ===STATUS=== PASS
 
 $ godot --headless --path . -s res://tools/sim_balance.gd -- 1.2 auto
