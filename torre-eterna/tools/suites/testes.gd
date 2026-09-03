@@ -16,9 +16,11 @@ var falhou := 0
 var grupo := ""
 var jogo: Node
 
-func rodar(a: SceneTree) -> void:
-	arvore = a
-	root = a.root
+func rodar(cena: SceneTree) -> void:
+	arvore = cena
+	root = cena.root
+	# roda num save separado: a suite nao pode apagar o progresso de quem joga
+	SaveSys.prefixo = "_ferramenta_"
 	Dados.carregar(true)
 	jogo = root.get_node_or_null("Jogo")
 	var save = root.get_node_or_null("SaveSys")
@@ -611,13 +613,13 @@ func t_save() -> void:
 
 	# --- save corrompido no disco: precisa cair no backup, nunca travar ---
 	var bom: String = JSON.stringify(jogo.s)
-	var f1 := FileAccess.open(save.CAMINHO, FileAccess.WRITE)
+	var f1 := FileAccess.open(save.cam(), FileAccess.WRITE)
 	f1.store_string(bom)
 	f1.close()
-	var f2 := FileAccess.open(save.CAMINHO_BACKUP, FileAccess.WRITE)
+	var f2 := FileAccess.open(save.cam_backup(), FileAccess.WRITE)
 	f2.store_string(bom)
 	f2.close()
-	var f3 := FileAccess.open(save.CAMINHO, FileAccess.WRITE)
+	var f3 := FileAccess.open(save.cam(), FileAccess.WRITE)
 	f3.store_string("{isso nao e json valido[[[")
 	f3.close()
 	var recuperado: Dictionary = save.carregar()
@@ -625,7 +627,7 @@ func t_save() -> void:
 	ok("backup preserva a onda", int(recuperado.get("onda", -1)) == int(jogo.s["onda"]))
 
 	# os dois corrompidos: precisa devolver vazio sem explodir
-	var f4 := FileAccess.open(save.CAMINHO_BACKUP, FileAccess.WRITE)
+	var f4 := FileAccess.open(save.cam_backup(), FileAccess.WRITE)
 	f4.store_string("lixo total")
 	f4.close()
 	var vazio: Dictionary = save.carregar()

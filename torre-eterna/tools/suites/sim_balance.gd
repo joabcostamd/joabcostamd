@@ -14,9 +14,11 @@ var root: Node
 
 const DT := 1.0 / 60.0
 
-func rodar(a: SceneTree) -> void:
-	arvore = a
-	root = a.root
+func rodar(cena: SceneTree) -> void:
+	arvore = cena
+	root = cena.root
+	# roda num save separado: a suite nao pode apagar o progresso de quem joga
+	SaveSys.prefixo = "_ferramenta_"
 	var args := OS.get_cmdline_user_args()
 	var horas := 1.0
 	if args.size() > 0:
@@ -39,11 +41,15 @@ func rodar(a: SceneTree) -> void:
 	j.iniciar()
 	# Um jogador de verdade usa as habilidades: a IA de uso automático é o
 	# comportamento base do simulador; "auto" liga também a compra automática.
+	# Os desbloqueios moram em `s["desbloqueios"]`; `esp` é recalculado a partir
+	# dele e escrever direto em `esp` era apagado no primeiro recalcular() — o
+	# simulador media 3h de jogo com a automação DESLIGADA sem avisar.
 	j.s["auto"]["habilidades"] = true
-	j.esp["desbloqueios"]["autoHabilidade"] = true
+	j.s["desbloqueios"]["autoHabilidade"] = true
 	if auto_tudo:
 		j.s["auto"]["comprar"] = true
-		j.esp["desbloqueios"]["autoCompra"] = true
+		j.s["desbloqueios"]["autoCompra"] = true
+	j.recalcular()
 
 	var passos := int(horas * 3600.0 / DT)
 	var marcos := {}

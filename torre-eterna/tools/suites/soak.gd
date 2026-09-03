@@ -24,9 +24,11 @@ var maior_buffs := 0
 var maior_inventario := 0
 var prestigios := 0
 
-func rodar(a: SceneTree) -> void:
-	arvore = a
-	root = a.root
+func rodar(cena: SceneTree) -> void:
+	arvore = cena
+	root = cena.root
+	# roda num save separado: a suite nao pode apagar o progresso de quem joga
+	SaveSys.prefixo = "_ferramenta_"
 	Dados.carregar(true)
 	var args := OS.get_cmdline_user_args()
 	var horas := 2.0

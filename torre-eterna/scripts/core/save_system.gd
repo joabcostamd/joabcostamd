@@ -9,6 +9,20 @@ const CAMINHO_BACKUP := "user://torre_eterna.bak"
 const CAMINHO_CONFIG := "user://torre_eterna_config.json"
 const ASSINATURA := "TORRE1|"
 
+## Prefixo dos arquivos. As ferramentas de linha de comando (testes, soak,
+## simulador) trocam isto para não mexer no save de quem joga: rodar a suíte
+## apagava o progresso real e deixava as capturas de tela não determinísticas.
+static var prefixo := ""
+
+static func cam() -> String:
+	return CAMINHO.replace("torre_eterna.", prefixo + "torre_eterna.")
+
+static func cam_backup() -> String:
+	return CAMINHO_BACKUP.replace("torre_eterna.", prefixo + "torre_eterna.")
+
+static func cam_config() -> String:
+	return CAMINHO_CONFIG.replace("torre_eterna_", prefixo + "torre_eterna_")
+
 var ultimo_erro := ""
 
 ## ---------------------------------------------------------------- disco
@@ -16,16 +30,16 @@ var ultimo_erro := ""
 func salvar(dados: Dictionary) -> bool:
 	var texto := JSON.stringify(dados)
 	# backup do save anterior antes de sobrescrever
-	if FileAccess.file_exists(CAMINHO):
-		var antigo := FileAccess.open(CAMINHO, FileAccess.READ)
+	if FileAccess.file_exists(cam()):
+		var antigo := FileAccess.open(cam(), FileAccess.READ)
 		if antigo:
 			var conteudo := antigo.get_as_text()
 			antigo.close()
-			var bak := FileAccess.open(CAMINHO_BACKUP, FileAccess.WRITE)
+			var bak := FileAccess.open(cam_backup(), FileAccess.WRITE)
 			if bak:
 				bak.store_string(conteudo)
 				bak.close()
-	var f := FileAccess.open(CAMINHO, FileAccess.WRITE)
+	var f := FileAccess.open(cam(), FileAccess.WRITE)
 	if f == null:
 		ultimo_erro = "Não consegui abrir o arquivo de save (erro %d)." % FileAccess.get_open_error()
 		push_error(ultimo_erro)
@@ -36,9 +50,9 @@ func salvar(dados: Dictionary) -> bool:
 	return true
 
 func carregar() -> Dictionary:
-	var d := _ler(CAMINHO)
+	var d := _ler(cam())
 	if d.is_empty():
-		d = _ler(CAMINHO_BACKUP)
+		d = _ler(cam_backup())
 		if not d.is_empty():
 			push_warning("[save] save principal corrompido; backup restaurado.")
 	if d.is_empty():
@@ -59,17 +73,17 @@ func _ler(caminho: String) -> Dictionary:
 	return {}
 
 func existe_save() -> bool:
-	return FileAccess.file_exists(CAMINHO)
+	return FileAccess.file_exists(cam())
 
 func apagar() -> void:
-	for c in [CAMINHO, CAMINHO_BACKUP]:
+	for c in [cam(), cam_backup()]:
 		if FileAccess.file_exists(c):
 			DirAccess.remove_absolute(ProjectSettings.globalize_path(c))
 
 func tamanho_kb() -> float:
-	if not FileAccess.file_exists(CAMINHO):
+	if not FileAccess.file_exists(cam()):
 		return 0.0
-	var f := FileAccess.open(CAMINHO, FileAccess.READ)
+	var f := FileAccess.open(cam(), FileAccess.READ)
 	if f == null:
 		return 0.0
 	var t := f.get_length()
@@ -130,10 +144,10 @@ func _checksum(s: String) -> String:
 ## ------------------------------------------------------------- configurações
 
 func salvar_config(cfg: Dictionary) -> void:
-	var f := FileAccess.open(CAMINHO_CONFIG, FileAccess.WRITE)
+	var f := FileAccess.open(cam_config(), FileAccess.WRITE)
 	if f:
 		f.store_string(JSON.stringify(cfg))
 		f.close()
 
 func carregar_config() -> Dictionary:
-	return _ler(CAMINHO_CONFIG)
+	return _ler(cam_config())

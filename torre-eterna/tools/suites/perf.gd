@@ -17,6 +17,8 @@ const ORCAMENTO_US := 4000.0   ## 4 ms de simulação por frame (de 16,6 ms)
 func rodar(cena: SceneTree) -> void:
 	arvore = cena
 	root = cena.root
+	# roda num save separado: a suite nao pode apagar o progresso de quem joga
+	SaveSys.prefixo = "_ferramenta_"
 	Dados.carregar(true)
 	var args := OS.get_cmdline_user_args()
 	var alvo := 400
