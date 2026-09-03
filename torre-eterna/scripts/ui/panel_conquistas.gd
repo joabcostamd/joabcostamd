@@ -108,9 +108,13 @@ func montar(c: VBoxContainer) -> void:
 
 	# ---- lista ----
 	rolagem = UI.scroll()
+	var margem := MarginContainer.new()
+	margem.add_theme_constant_override("margin_right", 12)
+	margem.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	rolagem.add_child(margem)
 	lista = UI.vbox(6)
 	lista.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	rolagem.add_child(lista)
+	margem.add_child(lista)
 	c.add_child(rolagem)
 
 	lbl_vazio = UI.rotulo("", 14, UI.TEXTO3)
@@ -129,7 +133,7 @@ func _marcar_novas() -> void:
 
 ## Ao fechar, tudo que estava piscando passa a ser história.
 func _exit_tree() -> void:
-	if jogo == null:
+	if jogo == null or not is_instance_valid(jogo):
 		return
 	var vistas: Array = jogo.s["conquistas_vistas"]
 	var mudou := false
@@ -185,33 +189,33 @@ func _linha_conquista(def: Dictionary) -> void:
 	l["textos"].add_child(cabeca)
 
 	# --- descrição ---
-	var desc_txt := "Registro selado. Faça algo estranho o bastante e ele se abre." if oculta else txt(def, "desc")
+	var desc_txt := _frase_selada(id) if oculta else txt(def, "desc")
 	var desc := UI.rotulo(desc_txt, 12, UI.TEXTO2 if feita else UI.TEXTO3)
 	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	desc.custom_minimum_size.x = 430
 	l["textos"].add_child(desc)
 
-	# --- progresso ---
+	# --- progresso + recompensa, na mesma linha ---
 	var lp := UI.hbox(8)
 	var barra := UI.barra(UI.VERDE if feita else cor, 8)
-	barra.custom_minimum_size.x = 240
+	barra.custom_minimum_size.x = 190
 	barra.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	barra.tooltip_text = "Progresso rumo a algo que você ainda não deveria saber." if oculta else _dica_meta(def)
 	lp.add_child(barra)
 	var lbl_prog := UI.rotulo("", 12, UI.TEXTO3)
 	lp.add_child(lbl_prog)
-	l["textos"].add_child(lp)
+	lp.add_child(UI.rotulo("·", 12, UI.BORDA_FORTE))
 
-	# --- recompensa ---
 	var rec: Dictionary = def.get("recompensa", {})
-	var lr := UI.hbox(5)
 	var ic_rec := Control.new()
 	ic_rec.set_script(load("res://scripts/ui/icone_control.gd"))
-	lr.add_child(ic_rec)
+	lp.add_child(ic_rec)
 	var cor_rec: Color = _cor_recompensa(rec)
-	ic_rec.configurar(_icone_recompensa(rec), cor_rec if feita else cor_rec.darkened(0.4), 14)
-	lr.add_child(UI.rotulo(_texto_recompensa(rec), 12, cor_rec if feita else UI.TEXTO3))
-	lr.tooltip_text = "Recompensa entregue no momento em que a conquista cai."
-	l["textos"].add_child(lr)
+	ic_rec.configurar("cadeado" if oculta else _icone_recompensa(rec), UI.TEXTO3 if oculta else (cor_rec if feita else cor_rec.darkened(0.4)), 14)
+	var lbl_rec := UI.rotulo("recompensa selada" if oculta else _texto_recompensa(rec), 12, UI.TEXTO3 if oculta else (cor_rec if feita else UI.TEXTO3))
+	lbl_rec.tooltip_text = "O prêmio só aparece quando o registro abrir." if oculta else "Recompensa entregue no instante em que a conquista cai."
+	lp.add_child(lbl_rec)
+	l["textos"].add_child(lp)
 
 	# --- coluna direita: pontos e data ---
 	var col := UI.vbox(2)
@@ -226,12 +230,12 @@ func _linha_conquista(def: Dictionary) -> void:
 	col.add_child(ldata)
 	l["direita"].add_child(col)
 
-	l["caixa"].tooltip_text = _dica_meta(def)
+	l["caixa"].tooltip_text = "Conquista oculta: nem a meta aparece. A barra mede o quanto falta." if oculta else _dica_meta(def)
 	lista.add_child(l["caixa"])
 	linhas[id] = {
 		"def": def, "caixa": l["caixa"], "icone": l["icone"], "nome": nome, "desc": desc,
 		"selo": selo, "barra": barra, "prog": lbl_prog, "data": ldata, "pontos": lp2,
-		"ic_rec": ic_rec, "feita": feita, "cor": cor,
+		"ic_rec": ic_rec, "lbl_rec": lbl_rec, "feita": feita, "cor": cor, "oculta": oculta,
 	}
 	var reg: Dictionary = linhas[id]
 	_pintar(reg, feita)
@@ -288,8 +292,15 @@ func atualizar() -> void:
 			ldesc.add_theme_color_override("font_color", UI.TEXTO2)
 			var lpts: Label = reg["pontos"]
 			lpts.add_theme_color_override("font_color", UI.OURO)
+			reg["oculta"] = false
 			var ic: Control = reg["icone"]
 			ic.configurar(_icone_de(def), reg["cor"], 26)
+			var rec_nova: Dictionary = def.get("recompensa", {})
+			var ic_rec: Control = reg["ic_rec"]
+			ic_rec.configurar(_icone_recompensa(rec_nova), _cor_recompensa(rec_nova), 14)
+			var lbl_rec: Label = reg["lbl_rec"]
+			lbl_rec.text = _texto_recompensa(rec_nova)
+			lbl_rec.add_theme_color_override("font_color", _cor_recompensa(rec_nova))
 			var barra_nova: ProgressBar = reg["barra"]
 			barra_nova.add_theme_stylebox_override("fill", UI.caixa(UI.VERDE, 4, 0))
 			_pintar(reg, true)
@@ -305,7 +316,10 @@ func atualizar() -> void:
 		barra.value = clampf(atual / alvo, 0.0, 1.0)
 		var lbl_prog: Label = reg["prog"]
 		var tipo := str(cond.get("tipo", ""))
-		lbl_prog.text = "%s / %s" % [_valor(minf(atual, alvo), tipo), _valor(alvo, tipo)]
+		if bool(reg["oculta"]):
+			lbl_prog.text = "meta selada"
+		else:
+			lbl_prog.text = "%s / %s" % [_valor(minf(atual, alvo), tipo), _valor(alvo, tipo)]
 		lbl_prog.add_theme_color_override("font_color", UI.VERDE if feita else UI.TEXTO3)
 		var ldata: Label = reg["data"]
 		if feita:
@@ -334,6 +348,16 @@ func _atualizar_abas() -> void:
 			abas.set_tab_title(i, "%s  %d/%d" % [nome, int(por_cat.get(id, 0)), int(tot_cat.get(id, 0))])
 
 # ------------------------------------------------------------- utilidades
+
+## Descrições seladas variadas — repetir a mesma frase 10 vezes é preguiça.
+func _frase_selada(id: String) -> String:
+	var frases := [
+		"Registro selado. Faça algo estranho o bastante e ele se abre.",
+		"O Comando classificou esta entrada. A barra abaixo é tudo que vazou.",
+		"Ninguém escreveu esta regra. Alguém, um dia, vai tropeçar nela.",
+		"Existe. Conta pontos. Não pergunte mais nada.",
+	]
+	return str(frases[absi(id.hash()) % frases.size()])
 
 func _valor(v: float, tipo: String) -> String:
 	if tipo == "tempoTotal":
@@ -451,9 +475,9 @@ func _texto_recompensa(r: Dictionary) -> String:
 		"nucleos": return "+%s núcleos" % Fmt.inteiro(int(v))
 		"eter": return "+%s éter" % Fmt.inteiro(int(v))
 		"poeira": return "+%s poeira" % Fmt.inteiro(int(v))
-		"ouro": return "+%s ondas de ouro" % Fmt.num(v, 1)
-		"xp": return "+%s ondas de XP" % Fmt.num(v, 1)
-		"pontosTalento": return "+%s ponto(s) de talento" % Fmt.inteiro(int(v))
+		"ouro": return "ouro de %s ondas" % Fmt.num(v, 1)
+		"xp": return "XP de %s ondas" % Fmt.num(v, 1)
+		"pontosTalento": return "+%d ponto de talento" % int(v) if int(v) == 1 else "+%s pontos de talento" % Fmt.inteiro(int(v))
 		"stat":
 			var sd: Dictionary = Dados.stat_defs.get(str(r.get("stat", "")), {})
 			var nome := txt(sd, "nome")

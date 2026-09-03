@@ -18,7 +18,67 @@ func _ready() -> void:
 	get_viewport().size_changed.connect(_ao_redimensionar)
 	_ao_redimensionar()
 	jogo.iniciar()
+	if not _modo_captura():
+		_mostrar_titulo()
 	_talvez_capturar()
+
+func _modo_captura() -> bool:
+	for a in OS.get_cmdline_user_args():
+		if str(a).begins_with("--shot="):
+			return true
+	return false
+
+## ------------------------------------------------------------- telas
+
+func _mostrar_titulo() -> void:
+	jogo.pausado = true
+	var tela := Control.new()
+	tela.name = "Titulo"
+	tela.theme = UI.tema()
+	tela.set_script(load("res://scripts/ui/tela_titulo.gd"))
+	camada_ui.add_child(tela)
+	tela.jogar.connect(func():
+		tela.queue_free()
+		jogo.pausado = false)
+	tela.apagar_e_jogar.connect(func():
+		jogo.apagar_tudo()
+		tela.queue_free()
+		jogo.pausado = false)
+
+func alternar_pausa() -> void:
+	var atual := camada_ui.get_node_or_null("Pausa")
+	if atual != null:
+		atual.queue_free()
+		jogo.pausado = false
+		return
+	if gerente.atual != "":
+		gerente.fechar()
+		return
+	jogo.pausado = true
+	var tela := Control.new()
+	tela.name = "Pausa"
+	tela.theme = UI.tema()
+	tela.set_script(load("res://scripts/ui/tela_pausa.gd"))
+	camada_ui.add_child(tela)
+	tela.retomar.connect(func():
+		tela.queue_free()
+		jogo.pausado = false)
+	tela.abrir_painel.connect(func(nome):
+		tela.queue_free()
+		jogo.pausado = false
+		gerente.abrir(nome))
+
+func _ao_prestigio(camada: String, _ganho: float) -> void:
+	if camada != "transcendencia":
+		return
+	if bool(jogo.s.get("viu_final", false)):
+		return
+	jogo.s["viu_final"] = true
+	var tela := Control.new()
+	tela.name = "Final"
+	tela.theme = UI.tema()
+	tela.set_script(load("res://scripts/ui/tela_final.gd"))
+	camada_ui.add_child(tela)
 
 ## Captura de tela para verificação automatizada:
 ##   godot --path . -- --shot=5 --saida=/tmp/tela.png [--onda=40]
@@ -36,6 +96,8 @@ func _talvez_capturar() -> void:
 			onda = int(a.substr(7))
 		elif a.begins_with("--painel="):
 			_painel_alvo = a.substr(9)
+		elif a.begins_with("--tela="):
+			_tela_alvo = a.substr(7)
 	if segundos < 0.0:
 		return
 	if onda > 0:
@@ -50,9 +112,21 @@ func _talvez_capturar() -> void:
 	_capturar_em(segundos, saida)
 
 var _painel_alvo := ""
+var _tela_alvo := ""
 
 func _capturar_em(segundos: float, saida: String) -> void:
 	await get_tree().create_timer(segundos).timeout
+	if _tela_alvo != "":
+		match _tela_alvo:
+			"titulo": _mostrar_titulo()
+			"pausa": alternar_pausa()
+			"final":
+				jogo.s["prestigio"]["transcendencias"] = 3
+				jogo.s["peregrinos_poupados"] = 4
+				jogo.s["peregrinos_mortos"] = 1
+				jogo.s["viu_final"] = false
+				_ao_prestigio("transcendencia", 0.0)
+		await get_tree().create_timer(segundos * 0.9).timeout
 	if _painel_alvo != "":
 		gerente.abrir(_painel_alvo)
 		await get_tree().create_timer(0.6).timeout
@@ -105,6 +179,7 @@ func _montar() -> void:
 	raiz_ui.add_child(gerente)
 	gerente.raiz = raiz_ui
 	hud.painel_pedido.connect(func(nome): gerente.alternar(nome))
+	Bus.prestigio_feito.connect(_ao_prestigio)
 
 func _ao_redimensionar() -> void:
 	var tam := get_viewport_rect().size
@@ -122,7 +197,7 @@ func _unhandled_input(evento: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 			return
 	if evento.is_action_pressed("ui_pausa"):
-		gerente.fechar_ou_pausar()
+		alternar_pausa()
 	elif evento.is_action_pressed("painel_upgrades"):
 		gerente.alternar("upgrades")
 	elif evento.is_action_pressed("painel_talentos"):

@@ -201,6 +201,18 @@ static func peregrino_morto(j) -> void:
 	var s: Dictionary = j.s
 	s["peregrinos_mortos"] = int(s.get("peregrinos_mortos", 0)) + 1
 
+# ============================================================== DICAS ======
+## As dicas vêm dos dados como objetos {id, icone, tag, texto}. Esta função
+## existe para que ninguém precise lembrar disso na hora de mostrar uma.
+static func dica_aleatoria(semente: int = 0) -> String:
+	if Dados.dicas.is_empty():
+		return ""
+	var i := absi(semente) % Dados.dicas.size()
+	var d = Dados.dicas[i]
+	if d is Dictionary:
+		return Ux.txt(d, "texto", Cfg.ingles())
+	return str(d)
+
 # ========================================================= AGLOMERAÇÃO =====
 ## O teto de entidades vira economia: quanto mais inimigos vivos, mais cada
 ## abate vale. O jogador PERSEGUE a lotação da tela — e 60 fps saem por design.
