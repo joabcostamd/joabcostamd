@@ -195,7 +195,14 @@ func rodar(cena: SceneTree) -> void:
 	# uma razão que dá para verificar: `Bal.contagem_onda` limita a onda a 128
 	# inimigos, então 400 vivos é um cenário que o jogo não produz.
 	var rec0: int = j.stats.recalculos
+	# Perfil POR DENTRO de simular(), na perna que decide o portão. É a única
+	# medida que alcança mecânicas, eventos, automação e autosave sem alterar o
+	# estado do jogo antes de medi-lo.
+	j.perfil = {}
+	j.perfilar = true
 	var e1 := _medir(j, repor, alvo, 600)
+	j.perfilar = false
+	var perfil_interno: Dictionary = j.perfil.duplicate()
 	var rec_por_passo := float(j.stats.recalculos - rec0) / 600.0
 	var e2 := _medir(j, repor, alvo_estresse, 300)
 
@@ -284,6 +291,15 @@ func rodar(cena: SceneTree) -> void:
 		amortizado_total += amort
 		print("  %-12s %8.0f us por chamada | a cada %.2fs | %6.0f us/passo amortizado" % [nome, por_chamada, intervalo, amort])
 	print("  soma amortizada: %.0f us/passo (mas o pico cai TODO num passo so)" % amortizado_total)
+
+	print("")
+	print("--- POR DENTRO de simular(), na perna segurada (us/passo, 600 passos) ---")
+	var soma_interna := 0.0
+	for chave in perfil_interno:
+		var us := float(perfil_interno[chave]) / 600.0
+		soma_interna += us
+		print("  %-20s %8.0f us" % [chave, us])
+	print("  soma: %.0f us/passo (isto SIM cobre simular() inteiro)" % soma_interna)
 	print("  %-12s %8.0f us por chamada | %.2f por passo | %6.0f us/passo" % [
 		"recalculo", custo_recalculo, rec_por_passo, custo_recalculo * rec_por_passo])
 

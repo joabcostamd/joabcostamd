@@ -24,6 +24,26 @@ var silenciado := 0.0
 var fila_misseis = null
 var buraco_negro = null
 var parasitas := 0
+
+## Perfil por bloco, para a ferramenta de desempenho.
+##
+## Um perfil medido de fora só alcança os subsistemas que dá para chamar
+## avulsos; o resto de `simular()` — mecânicas, eventos, automação, autosave —
+## fica invisível, e foi justamente lá que se escondeu o pico que reprovava o
+## portão (passo mediano 2944 us, passo caro 8236 us, e nada no relatório
+## explicando os 5300 us de diferença). Tentar medir essas rotinas por fora
+## também não serve: chamá-las antes muda o estado do jogo, chamá-las depois
+## as pega já sem trabalho para fazer.
+##
+## Quando `perfilar` é falso — que é sempre, no jogo — o custo disto é uma
+## comparação de bool por bloco.
+var perfilar := false
+var perfil := {}
+
+func _marco(chave: String, desde: int) -> int:
+	var agora := Time.get_ticks_usec()
+	perfil[chave] = int(perfil.get(chave, 0)) + (agora - desde)
+	return agora
 var coleta_instantanea := false
 var fenix_usada := false
 ## Quantas recompras (relíquia Contrato de Recompra) já foram gastas nesta onda.
@@ -196,7 +216,10 @@ func _physics_process(dt: float) -> void:
 	simular(dt)
 
 func simular(dt: float) -> void:
+	var _t := Time.get_ticks_usec() if perfilar else 0
 	recalcular()
+	if perfilar:
+		_t = _marco("recalcular", _t)
 
 	var st: Dictionary = s["stats"]
 	st["tempo_total"] = float(st["tempo_total"]) + dt
@@ -226,9 +249,13 @@ func simular(dt: float) -> void:
 		if mudou:
 			marcar_sujo()
 
+	if perfilar:
+		_t = _marco("combo_buffs", _t)
 	Mecanicas.atualizar_purga(dt, self)
 	Mecanicas.atualizar_retomada(dt, self)
 	Mecanicas.decair_adaptacao(dt, self.s)
+	if perfilar:
+		_t = _marco("mecanicas", _t)
 
 	Combate.atualizar_status(dt, self)
 	EnemyAI.atualizar(dt, self)
@@ -243,12 +270,18 @@ func simular(dt: float) -> void:
 	Economia.atualizar_coletaveis(dt, self)
 	Habilidades.atualizar(dt, self)
 	diretor.atualizar(dt)
+	if perfilar:
+		_t = _marco("subsistemas", _t)
 	Eventos.atualizar(dt, self)
+	if perfilar:
+		_t = _marco("eventos", _t)
 
 	parasitas = 0
 	for e in arena.inimigos:
 		if e.grudado:
 			parasitas += 1
+	if perfilar:
+		_t = _marco("parasitas", _t)
 
 	# automação
 	if bool(s["auto"]["comprar"]) and esp["desbloqueios"].has("autoCompra"):
@@ -267,6 +300,9 @@ func simular(dt: float) -> void:
 		if int(s["onda_maxima"]) >= int(s["prestigio"]["auto_ascender_onda"]) and Prestigio.pode_ascender(s):
 			ascender(true)
 
+	if perfilar:
+		_t = _marco("automacao", _t)
+
 	# conquistas e missões (a cada 0,5 s)
 	tempo_amostra += dt
 	if tempo_amostra >= 0.5:
@@ -275,11 +311,16 @@ func simular(dt: float) -> void:
 		Progresso.checar_missoes(self)
 		_amostrar_historico()
 
+	if perfilar:
+		_t = _marco("conquistas_missoes", _t)
+
 	# autosave
 	tempo_autosave += dt
 	if tempo_autosave >= float(Cfg.get_v("autosave_seg", 20.0)):
 		tempo_autosave = 0.0
 		salvar()
+	if perfilar:
+		_marco("autosave", _t)
 
 ## Ponto na curva de progresso da run, para o gráfico do painel Estatísticas.
 ##
