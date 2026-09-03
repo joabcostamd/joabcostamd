@@ -35,6 +35,18 @@ func _conectar() -> void:
 	Bus.onda_iniciou.connect(_ao_onda)
 	Bus.onda_limpa.connect(_ao_onda_limpa)
 	Bus.combo_mudou.connect(_ao_combo)
+	# Eventos que estavam MUDOS: nenhum deles tinha uma linha em scripts/render/.
+	# `overkill` e o mais gritante — matar com dano muito acima do necessario e
+	# das coisas mais satisfatorias do genero, e o jogo nao dizia nada. `chefe_morreu`
+	# tinha som e nenhum visual proprio, entao um chefe caia igual a um grunhido.
+	Bus.overkill.connect(_ao_overkill)
+	Bus.chefe_morreu.connect(_ao_chefe_morreu)
+	Bus.chefe_fase.connect(_ao_chefe_fase)
+	Bus.nivel_subiu.connect(_ao_nivel)
+	Bus.conquista_desbloqueada.connect(func(_id): _celebrar(Color("#fbbf24"), 0.16, 5.0, 0.02))
+	Bus.missao_concluida.connect(func(_id): _celebrar(Color("#4ade80"), 0.12, 4.0, 0.015))
+	Bus.carta_caiu.connect(_ao_carta)
+	Bus.onda_falhou.connect(_ao_onda_falhou)
 	Bus.prestigio_feito.connect(func(_c, _g): particulas.limpar(); numeros.limpar())
 
 func _ao_atingir(e, dano_log: float, critico: bool, elemento: String) -> void:
@@ -89,6 +101,58 @@ func _ao_onda_limpa(_n: int, _tempo: float) -> void:
 func _ao_combo(v: int) -> void:
 	if v > 0 and v % 25 == 0:
 		juice.zoom_punch(0.02)
+
+## Overkill: o excesso de dano vira estilhaco e um anel que cresce com o exagero.
+## O sinal existia, era emitido pela simulacao, e ninguem escutava.
+func _ao_overkill(e, fracao: float) -> void:
+	var f := clampf(fracao, 0.0, 12.0)
+	var forca := clampf(f / 6.0, 0.15, 1.0)
+	particulas.estilhaco(e.pos, e.cor, int(6.0 + forca * 22.0), 220.0 + forca * 420.0)
+	particulas.anel(e.pos, Color(1, 0.95, 0.75, 0.9), e.raio * (3.0 + forca * 5.0), 0.2, 3.5)
+	if forca > 0.45:
+		juice.tremer(3.0 + forca * 7.0, 0.12)
+	if forca > 0.8:
+		juice.zoom_punch(0.02)
+
+## Um chefe caindo tinha som e nenhum visual proprio. Agora ele para o tempo.
+func _ao_chefe_morreu(e) -> void:
+	juice.camera_lenta(0.25, 800.0)
+	juice.flash(Color(1, 1, 1), 0.45)
+	juice.tremer(26.0, 0.8)
+	juice.zoom_punch(0.075)
+	particulas.explosao(e.pos, 240.0, e.cor)
+	for i in 4:
+		particulas.anel(e.pos, Color(1, 1, 1, 0.7 - float(i) * 0.13),
+			90.0 + float(i) * 110.0, 0.35 + float(i) * 0.14, 3.0)
+	particulas.estilhaco(e.pos, e.cor, 40, 520.0)
+
+## Virada de fase: o chefe muda de comportamento e a tela precisa avisar.
+func _ao_chefe_fase(e, _fase: int) -> void:
+	juice.flash(e.cor, 0.3)
+	juice.tremer(12.0, 0.35)
+	particulas.anel(e.pos, e.cor, e.raio * 5.0, 0.45, 4.0)
+	particulas.faisca(e.pos, e.cor, 18, 260.0)
+
+func _ao_nivel(_nivel: int, _pontos: int) -> void:
+	_celebrar(Color("#a78bfa"), 0.18, 5.0, 0.025)
+
+func _ao_carta(_inst) -> void:
+	_celebrar(Color("#38bdf8"), 0.14, 3.5, 0.015)
+
+func _ao_onda_falhou(_n: int) -> void:
+	juice.flash(Color("#f43f5e"), 0.26)
+	juice.tremer(14.0, 0.45)
+
+## Comemoracao curta na torre: anel + faisca + um empurrao de camera. Serve a
+## conquista, missao, nivel e carta — eventos diferentes, mesma gramatica visual,
+## para o jogador aprender a ler "ganhei algo" sem precisar de texto.
+func _celebrar(cor: Color, flash_forca: float, tremor: float, zoom: float) -> void:
+	var c: Vector2 = jogo.arena.centro
+	particulas.anel(c, cor, 200.0, 0.5, 3.5)
+	particulas.faisca(c, cor, 16, 240.0)
+	juice.flash(cor, flash_forca)
+	juice.tremer(tremor, 0.2)
+	juice.zoom_punch(zoom)
 
 ## Aceita cor como Color ou como string "#rrggbb".
 static func _para_cor(v) -> Color:

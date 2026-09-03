@@ -254,6 +254,15 @@ func _ligar_sinais() -> void:
 
 	# progressão
 	Bus.onda_iniciou.connect(func(_n, chefe): tocar("onda", 0.0, 0.92 if chefe else 1.0))
+	# Estes quatro eram MUDOS. Fechar uma onda e o batimento do jogo e nao tinha
+	# som; o overkill, que e o abate mais satisfatorio que existe, tambem nao;
+	# a virada de fase de um chefe acontecia em silencio; e perder uma onda —
+	# a unica coisa ruim que acontece — nao soava diferente de ganhar.
+	Bus.onda_limpa.connect(func(_n, _t): tocar("onda", -3.0, 1.28))
+	Bus.overkill.connect(_ao_overkill)
+	Bus.chefe_fase.connect(func(e, _f): tocar_em("alerta_chefe", _pos(e), -2.0, 1.22))
+	Bus.onda_falhou.connect(func(_n): tocar("erro", 0.0, 0.72))
+	Bus.carta_equipada.connect(func(_uid, _slot): tocar("clique", -2.0, 1.3))
 	Bus.nivel_subiu.connect(func(_n, _p): tocar("nivel"))
 	Bus.conquista_desbloqueada.connect(func(_id): tocar("conquista"))
 	Bus.missao_concluida.connect(func(_id): tocar("missao"))
@@ -335,6 +344,12 @@ func _ao_moeda(chave: String, _valor: float, _fonte: String) -> void:
 	if chave == "ouro":
 		return
 	tocar("moeda", 0.0, 1.0 if chave == "fragmentos" else (0.88 if chave == "nucleos" else 1.12))
+
+## O tom sobe com o exagero do abate: quanto mais dano acima do necessario, mais
+## agudo o estalo. E o ouvido aprende a medir o proprio poder sem ler numero.
+func _ao_overkill(_e, fracao: float) -> void:
+	var f := clampf(fracao, 0.0, 12.0)
+	tocar("impacto", -2.0 + minf(f, 6.0) * 0.5, 1.15 + minf(f, 8.0) * 0.09)
 
 func _ao_carta(inst) -> void:
 	var d: Dictionary = inst if inst is Dictionary else {}

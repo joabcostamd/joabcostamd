@@ -37,6 +37,7 @@ func rodar(cena: SceneTree) -> void:
 	t_economia()
 	t_combate()
 	t_alcancavel()
+	t_nada_mudo()
 	t_elites()
 	t_mira()
 	t_defesa()
@@ -469,6 +470,54 @@ func t_combate() -> void:
 	ok("execucao mata", not e3.vivo())
 
 	jogo.arena.limpar_inimigos()
+
+## ------------------------------------------------- nada acontece mudo
+## Todo evento que o jogador PERCEBE precisa de resposta: visual, sonora, ou as
+## duas. Um mapa dos sinais contra scripts/render/ e scripts/audio/ mostrou que
+## `overkill` — o abate mais satisfatorio que o genero tem — nao tinha NENHUMA
+## das duas, e que um chefe morrendo tinha som mas nenhum visual proprio: caia
+## igual a um grunhido. Este teste existe para que a proxima mecanica nova nao
+## nasca muda.
+func t_nada_mudo() -> void:
+	g("Feedback")
+	var render := ""
+	for arq in _listar_gd("res://scripts/render"):
+		render += FileAccess.get_file_as_string(arq)
+	var audio := ""
+	for arq in _listar_gd("res://scripts/audio"):
+		audio += FileAccess.get_file_as_string(arq)
+	var ui := ""
+	for arq in _listar_gd("res://scripts/ui"):
+		ui += FileAccess.get_file_as_string(arq)
+
+	# Eventos que o jogador vê ou ouve acontecer. Ficam de fora os puramente
+	# internos (config mudou, save ilegível), que não são momento de jogo.
+	var eventos := [
+		"inimigo_morreu", "chefe_morreu", "chefe_surgiu", "chefe_fase", "overkill",
+		"combo_mudou", "nivel_subiu", "conquista_desbloqueada", "missao_concluida",
+		"prestigio_feito", "carta_caiu", "carta_equipada", "upgrade_comprado",
+		"onda_iniciou", "onda_limpa", "onda_falhou", "torre_atingida", "torre_caiu",
+		"inimigo_atingido", "moeda_ganha", "talento_comprado",
+	]
+	var mudos: Array = []
+	for ev in eventos:
+		var tem_visual := render.contains(ev) or ui.contains(ev)
+		var tem_som := audio.contains(ev)
+		if not tem_visual and not tem_som:
+			mudos.append(ev)
+	ok("nenhum evento do jogador acontece sem resposta", mudos.is_empty(),
+		"mudos: %s" % str(mudos))
+
+	# Os momentos GRANDES precisam de resposta visual propria — som sozinho nao
+	# distingue um chefe caindo de um inimigo comum.
+	var grandes := ["chefe_morreu", "chefe_fase", "overkill", "nivel_subiu",
+		"conquista_desbloqueada", "prestigio_feito"]
+	var sem_visual: Array = []
+	for ev in grandes:
+		if not render.contains(ev):
+			sem_visual.append(ev)
+	ok("os momentos grandes tem resposta visual propria", sem_visual.is_empty(),
+		"sem visual: %s" % str(sem_visual))
 
 ## ------------------------------------------------ sistemas alcancaveis
 ## Duas vezes o mesmo defeito: uma funcao que e a UNICA porta para um sistema
