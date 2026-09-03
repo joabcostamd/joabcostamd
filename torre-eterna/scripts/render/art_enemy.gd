@@ -7,6 +7,19 @@ extends RefCounted
 static func desenhar(ci: CanvasItem, e: Inimigo, t: float, detalhe: float = 1.0) -> void:
 	var p := e.pos - Vector2(0, e.altura)
 	var r := e.raio
+	# O GOLPE TEM QUE APARECER NO ALVO. `e.tremor` era escrito a cada acerto
+	# (combat.gd) e decaido uma vez por inimigo por quadro (atualizar_status) —
+	# custo pago todo frame — e NUNCA lido por ninguem que desenha. O inimigo
+	# absorvia o tiro sem se mexer: o impacto acontecia nos numeros e nas
+	# particulas, nunca no corpo de quem apanhou.
+	#
+	# Sacode na horizontal e achata na vertical (squash), que e como um corpo
+	# reage a pancada. Respeita "movimento reduzido" pelo mesmo filtro do tremor
+	# de camera (publicada em `Juice.escala`), senao a opcao continuaria meia-verdade.
+	var tr := e.tremor * Juice.escala
+	if tr > 0.001:
+		p += Vector2(sin(t * 97.0 + e.fase_anim) * tr * 4.5, cos(t * 83.0 + e.fase_anim) * tr * 2.0)
+		r *= 1.0 + tr * 0.10
 	var pulso := 1.0 + sin(t * 3.0 + e.fase_anim) * 0.05
 	var entrada := 1.0
 	if e.entrada > 0.0:

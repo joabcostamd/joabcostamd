@@ -260,7 +260,12 @@ static func avancar(st: Dictionary, quantas: int) -> bool:
 		if i < i_atk:
 			env = float(i) / float(i_atk)
 		elif i < i_dec:
-			env = lerpf(1.0, sus, float(i - i_atk) / float(i_dec - i_atk))
+			# Decaimento QUADRATICO, nao reto. Som real perde energia rapido no
+			# comeco e devagar no fim; a rampa reta soa sintetica e mole, e essa
+			# unica linha muda os 36 efeitos do catalogo de uma vez, sem tocar
+			# em receita nenhuma.
+			var k := 1.0 - float(i - i_atk) / float(i_dec - i_atk)
+			env = sus + (1.0 - sus) * k * k
 		elif i < i_rel:
 			env = sus
 		else:

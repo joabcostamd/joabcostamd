@@ -217,7 +217,7 @@ STATUS: PASS   (kit 1.5.2, 0 falhas)
 | Scripts GDScript | 87 |
 | Linhas de código | 27.155 |
 | Testes da simulação | 368 |
-| Chaves de interface PT/EN | 1.025 |
+| Chaves de interface PT/EN | 1.026 |
 | Textos de conteúdo PT/EN | 1.286 |
 | Imagens no repositório | 1 (`icon.svg`, o ícone do projeto — nenhuma no jogo) |
 | Arquivos de som no repositório | 0 |

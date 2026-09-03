@@ -37,7 +37,15 @@ static func atualizar_purga(dt: float, j) -> void:
 	if not bool(j.s["torre"]["viva"]):
 		return
 	var vel: float = 1.0 / PURGA_TEMPO_BASE * (1.0 + float(j.stats.n("cdr")))
-	p["carga"] = float(p["carga"]) + vel * dt
+	var carga_antes := float(p["carga"])
+	p["carga"] = carga_antes + vel * dt
+	# A JANELA DOURADA ABRIA EM SILÊNCIO. A Purga é a única coisa que o jogo pede
+	# do jogador, a janela perfeita dura ~2 s de um ciclo de 26 s, e os dois
+	# avisos existentes eram visuais e periféricos: um anel no botão, no canto.
+	# Quem estivesse olhando para a arena — que é onde o jogo acontece — perdia a
+	# janela sem nunca saber que ela abriu. Agora ela toca.
+	if carga_antes < PURGA_JANELA_PERFEITA and float(p["carga"]) >= PURGA_JANELA_PERFEITA:
+		Bus.habilidade_pronta.emit("purga")
 	if float(p["brilho"]) > 0.0:
 		p["brilho"] = maxf(0.0, float(p["brilho"]) - dt * 2.0)
 
@@ -84,6 +92,12 @@ static func disparar_purga(j, automatica: bool = false, forcar_qualidade: float 
 	var p := estado_purga(s)
 	var carga := float(p["carga"])
 	if carga < 0.12:
+		# Clicar sem carga fazia SOM DE CLIQUE e nada mais: o jogador não sabia
+		# se o botão estava quebrado, se a habilidade não existia, ou se ele
+		# tinha feito algo errado. Silêncio depois de uma ação é a pior resposta
+		# possível — pior que negar.
+		if not automatica:
+			Bus.toast(Txt.t("purga_sem_carga"), "bloqueado", "nova")
 		return false
 
 	var q := forcar_qualidade

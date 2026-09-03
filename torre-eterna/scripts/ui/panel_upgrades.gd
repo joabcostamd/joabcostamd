@@ -162,7 +162,10 @@ func _icone_de(def: Dictionary) -> String:
 	return "torre"
 
 func _comprar(id: String) -> void:
-	var qtd = "max" if lote < 0 else lote
+	# SHIFT COMPRA O MAXIMO. A acao `comprar_max` esta no InputMap (bootstrap.gd)
+	# e o painel de Configuracoes ANUNCIA o atalho ao jogador, nos dois idiomas
+	# — e nenhum codigo lia a acao. O jogo prometia um atalho que nao existia.
+	var qtd = "max" if (lote < 0 or Input.is_action_pressed("comprar_max")) else lote
 	var n: int = jogo.comprar_upgrade(id, qtd)
 	if n > 0:
 		if linhas.has(id):

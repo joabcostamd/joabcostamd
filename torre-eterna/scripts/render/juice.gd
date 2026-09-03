@@ -25,6 +25,22 @@ var _timer_lenta := 0.0
 ## "Movimento reduzido" promete zerar o tremor e o slider promete camera imovel
 ## em 0%: com dez de onze caminhos escapando, as duas promessas eram falsas.
 ## Filtrar no unico ponto por onde todos passam e o que torna a opcao real.
+## Relogio de parede do juice: ver `atualizar()`.
+var _ms_anterior := Time.get_ticks_msec()
+
+## A escala de tremor, publicada para quem DESENHA.
+##
+## A regra do projeto (cobrada pelo linter) e que `Cfg.forca_tremor()` tenha um
+## unico chamador, aqui — foi assim que "movimento reduzido" deixou de ser meia
+## verdade, quando dez de onze caminhos passavam por fora da opcao. Mas o tremor
+## do CORPO do inimigo e desenhado em `art_enemy.gd`, que e estatico e nao tem a
+## instancia do Juice. Em vez de abrir excecao na regra, o Juice publica o valor
+## e quem desenha le daqui. O ponto unico continua sendo um so.
+static var escala := 1.0
+
+static func atualizar_escala() -> void:
+	escala = Cfg.forca_tremor()
+
 func tremer(amplitude: float, duracao: float) -> void:
 	amplitude *= Cfg.forca_tremor()
 	if amplitude <= 0.001:
@@ -47,9 +63,24 @@ func camera_lenta(escala: float, ms: float) -> void:
 	Engine.time_scale = clampf(escala, 0.05, 8.0)
 	_timer_lenta = ms / 1000.0
 
+## O juice anda em TEMPO REAL, nao em tempo de jogo.
+##
+## `dt` aqui chega de `_process`, ja multiplicado por `Engine.time_scale` — e a
+## camera lenta mexe justamente nesse fator. Com `camera_lenta(0.25, 800)` o
+## relogio que devia contar 0,8 s recebia dt/4 e contava 3,2 s: um chefe morrendo
+## congelava a tela por mais de tres segundos. Do outro lado, com o turbo em 4x
+## o flash e o tremor evaporavam em um quarto do tempo — o jogador acelerava o
+## jogo e o feedback sumia junto, bem quando havia MAIS coisa acontecendo.
+##
+## O motor de audio ja resolvia assim (dt derivado do relogio do sistema); o
+## juice nao. Agora os dois medem o mesmo segundo.
 func atualizar(dt: float, velocidade_base: float) -> void:
+	atualizar_escala()
+	var agora := Time.get_ticks_msec()
+	var dt_real := clampf(float(agora - _ms_anterior) / 1000.0, 0.0, 0.1)
+	_ms_anterior = agora
 	if tremor_t > 0.0:
-		tremor_t -= dt
+		tremor_t -= dt_real
 		var k := clampf(tremor_t / maxf(0.001, tremor_dur), 0.0, 1.0)
 		var amp := tremor_amp * k * k
 		offset = Vector2(rng.entre(-amp, amp), rng.entre(-amp, amp))
@@ -57,14 +88,14 @@ func atualizar(dt: float, velocidade_base: float) -> void:
 			tremor_amp = 0.0
 			offset = Vector2.ZERO
 	else:
-		offset = offset.lerp(Vector2.ZERO, minf(1.0, dt * 12.0))
+		offset = offset.lerp(Vector2.ZERO, minf(1.0, dt_real * 12.0))
 
-	zoom = lerpf(zoom, zoom_alvo, minf(1.0, dt * 9.0))
-	flash_forca = maxf(0.0, flash_forca - dt * 3.2)
-	aberracao = maxf(0.0, aberracao - dt * 4.0)
+	zoom = lerpf(zoom, zoom_alvo, minf(1.0, dt_real * 9.0))
+	flash_forca = maxf(0.0, flash_forca - dt_real * 3.2)
+	aberracao = maxf(0.0, aberracao - dt_real * 4.0)
 
 	if _timer_lenta > 0.0:
-		_timer_lenta -= dt
+		_timer_lenta -= dt_real
 		if _timer_lenta <= 0.0:
 			Engine.time_scale = velocidade_base
 

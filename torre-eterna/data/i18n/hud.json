@@ -82,5 +82,9 @@
   "hud_proximo_dica": {
     "pt": "A conquista mais perto de cair. O jogo tem 85 delas — esta é a que você já está quase alcançando.",
     "en": "The achievement closest to unlocking. The game has 85 — this is the one you are nearly at."
+  },
+  "purga_sem_carga": {
+    "pt": "O núcleo ainda está vazio. Deixe carregar.",
+    "en": "The core is still empty. Let it charge."
   }
 }

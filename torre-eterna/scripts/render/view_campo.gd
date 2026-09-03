@@ -47,6 +47,7 @@ func _conectar() -> void:
 	Bus.missao_concluida.connect(func(_id): _celebrar(Color("#4ade80"), 0.12, 4.0, 0.015))
 	Bus.carta_caiu.connect(_ao_carta)
 	Bus.onda_falhou.connect(_ao_onda_falhou)
+	Bus.combo_quebrou.connect(_ao_combo_quebrou)
 	Bus.prestigio_feito.connect(func(_c, _g): particulas.limpar(); numeros.limpar())
 
 func _ao_atingir(e, dano_log: float, critico: bool, elemento: String) -> void:
@@ -138,6 +139,17 @@ func _ao_nivel(_nivel: int, _pontos: int) -> void:
 
 func _ao_carta(_inst) -> void:
 	_celebrar(Color("#38bdf8"), 0.14, 3.5, 0.015)
+
+## Perder o combo era mudo E invisivel: o unico ouvinte no repositorio inteiro
+## era `_combo = 0` no motor de audio, que so servia para o sino do ouro voltar
+## ao tom grave. O jogador via o multiplicador sumir do HUD sem nada marcando o
+## momento — e perder algo que se estava construindo e justamente o que precisa
+## ser sentido, senao nao ha por que proteger.
+func _ao_combo_quebrou() -> void:
+	var c: Vector2 = jogo.arena.centro
+	particulas.estilhaco(c, Color("#f43f5e"), 14, 260.0)
+	particulas.anel(c, Color(0.55, 0.25, 0.32, 0.75), 60.0, 0.3, 2.0)
+	juice.tremer(5.0, 0.18)
 
 func _ao_onda_falhou(_n: int) -> void:
 	juice.flash(Color("#f43f5e"), 0.26)

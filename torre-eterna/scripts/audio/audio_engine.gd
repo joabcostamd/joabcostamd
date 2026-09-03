@@ -53,6 +53,7 @@ func _ready() -> void:
 	catalogo = Sfx.catalogo()
 	musica = Musica.new(self)
 	_montar_fila()
+	_montar_efeitos()
 	_criar_vozes()
 	_ligar_sinais()
 
@@ -91,6 +92,36 @@ func progresso_geracao() -> float:
 	return clampf(1.0 - float(_fila.size()) / total, 0.0, 1.0)
 
 ## Linha de depuração: o que a trilha está fazendo agora.
+## Efeitos de barramento, montados em codigo.
+##
+## O layout tinha Master, SFX e Musica e NENHUM efeito: `grep AudioEffect` no
+## repositorio inteiro nao devolvia nada. Duas consequencias audiveis: a Purga
+## somando dezenas de vozes recortava no Master (distorcao suja, nao a boa), e
+## os sons soavam colados no rosto — sem nenhuma cauda, o campo de batalha nao
+## tinha tamanho.
+##
+## Montado aqui em vez de no `.tres` porque neste projeto os formatos da engine
+## sao gerados pela engine, nunca editados como texto.
+func _montar_efeitos() -> void:
+	var master := AudioServer.get_bus_index("Master")
+	if master >= 0 and AudioServer.get_bus_effect_count(master) == 0:
+		var lim := AudioEffectLimiter.new()
+		lim.ceiling_db = -1.0
+		lim.threshold_db = -6.0
+		lim.soft_clip_db = 2.0
+		AudioServer.add_bus_effect(master, lim)
+	var sfx := AudioServer.get_bus_index("SFX")
+	if sfx >= 0 and AudioServer.get_bus_effect_count(sfx) == 0:
+		# Cauda curta e discreta: da tamanho ao campo sem embolar o ataque, que
+		# e o que faz um tiro soar preciso.
+		var rev := AudioEffectReverb.new()
+		rev.room_size = 0.55
+		rev.wet = 0.16
+		rev.dry = 1.0
+		rev.damping = 0.6
+		rev.spread = 0.7
+		AudioServer.add_bus_effect(sfx, rev)
+
 func _criar_vozes() -> void:
 	for i in VOZES:
 		var p := AudioStreamPlayer2D.new()
