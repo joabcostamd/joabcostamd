@@ -30,6 +30,7 @@ func _initialize() -> void:
 	t_saque()
 	t_progresso()
 	t_mecanicas()
+	t_eventos()
 	t_save()
 	t_offline()
 	t_habilidades()
@@ -449,6 +450,62 @@ func t_mecanicas() -> void:
 	var mortos_antes := int(s.get("peregrinos_mortos", 0))
 	Mecanicas.peregrino_morto(jogo)
 	ok("matar conta", int(s["peregrinos_mortos"]) == mortos_antes + 1)
+
+## ------------------------------------------------------------ eventos
+func t_eventos() -> void:
+	g("Eventos")
+	var s: Dictionary = jogo.s
+	s["eventos"] = {"ativo": "", "historico": [], "proximo_em": 180.0}
+	var ev := Eventos.estado(s)
+	ok("estado normaliza", ev.has("ativo") and ev.has("historico") and ev.has("proximo_em"))
+	ok("nada pendente no inicio", Eventos.pendente(s).is_empty())
+
+	s["onda_maxima_global"] = 60
+	var def := Eventos.sortear(jogo)
+	ok("sorteia um evento", not def.is_empty())
+	if def.is_empty():
+		return
+	ok("evento tem opcoes", (def.get("opcoes", []) as Array).size() >= 2)
+
+	# resolver aplica algum efeito e limpa o pendente
+	ev["ativo"] = str(def["id"])
+	var ouro_antes: float = s["moedas"]["ouro"]
+	var efeito := Eventos.resolver(jogo, str(def["id"]), 0)
+	ok("resolver devolve efeito", not efeito.is_empty())
+	ok("limpa o evento ativo", str(Eventos.estado(s)["ativo"]) == "")
+	ok("reagenda o proximo", float(Eventos.estado(s)["proximo_em"]) >= Eventos.INTERVALO_MIN - 0.01)
+	ok("registra no historico", (Eventos.estado(s)["historico"] as Array).size() > 0)
+
+	# indice fora da faixa nao quebra
+	ev["ativo"] = str(def["id"])
+	var e2 := Eventos.resolver(jogo, str(def["id"]), 999)
+	ok("indice invalido nao quebra", not e2.is_empty())
+	ev["ativo"] = str(def["id"])
+	var e3 := Eventos.resolver(jogo, "id_que_nao_existe", 0)
+	ok("evento inexistente nao quebra", e3.is_empty() and str(Eventos.estado(s)["ativo"]) == "")
+
+	# eventos unicos nao repetem
+	var unicos := 0
+	for d in Dados.eventos:
+		if bool(d.get("unico", false)):
+			unicos += 1
+	ok("existem eventos unicos", unicos >= 1, str(unicos))
+	# todos os resultados declarados nos dados sao tipos que o motor aplica
+	var tipos_ok := ["ouro", "gemas", "fragmentos", "xp", "buff", "cura", "dano", "carta", "onda", "nada", "poeira"]
+	var desconhecidos: Array = []
+	for d in Dados.eventos:
+		for op in d.get("opcoes", []):
+			var r: Dictionary = op.get("resultado", {})
+			var t := str(r.get("tipo", ""))
+			if t != "" and not tipos_ok.has(t) and not desconhecidos.has(t):
+				desconhecidos.append(t)
+			var risco = op.get("risco", null)
+			if risco is Dictionary:
+				var f: Dictionary = risco.get("falha", {})
+				var tf := str(f.get("tipo", ""))
+				if tf != "" and not tipos_ok.has(tf) and not desconhecidos.has(tf):
+					desconhecidos.append(tf)
+	ok("todo resultado de evento e conhecido", desconhecidos.is_empty(), str(desconhecidos))
 
 ## -------------------------------------------------------------- save
 func t_save() -> void:
