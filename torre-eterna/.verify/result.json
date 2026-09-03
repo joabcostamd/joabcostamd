@@ -9,7 +9,7 @@
   "corrigidas": 0,
   "kit": "1.5.2",
   "modo": "check",
-  "novas_falhas": 1,
-  "status": "FAIL",
-  "total_falhas_conhecidas": 1
+  "novas_falhas": 0,
+  "status": "PASS",
+  "total_falhas_conhecidas": 0
 }

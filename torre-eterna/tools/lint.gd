@@ -52,11 +52,15 @@ func _checar(caminho: String) -> void:
 		if not eh_ferramenta and limpa.begins_with("print(") and not caminho.ends_with("main.gd"):
 			erros.append("%s:%d print() em código de produção" % [caminho, n])
 
-		# 3. caminho res:// que não existe
+		# 3. caminho res:// que não existe (aspas duplas e simples)
+		var aspa := '"'
 		var pos := linha.find('"res://')
+		if pos < 0:
+			pos = linha.find("'res://")
+			aspa = "'"
 		if pos >= 0:
 			var resto := linha.substr(pos + 1)
-			var fim := resto.find('"')
+			var fim := resto.find(aspa)
 			if fim > 0:
 				var alvo := resto.substr(0, fim)
 				if not alvo.contains("%") and not FileAccess.file_exists(alvo) and not DirAccess.dir_exists_absolute(alvo):
@@ -92,7 +96,7 @@ func _checar_paineis() -> void:
 	var texto := f.get_as_text()
 	f.close()
 	var registrados := {}
-	var re := RegEx.create_from_string('res://scripts/ui/(panel_\\w+)\\.gd')
+	var re := RegEx.create_from_string('scripts/ui/(panel_\\w+)\\.gd')
 	for m in re.search_all(texto):
 		registrados[m.get_string(1)] = true
 	var d := DirAccess.open("res://scripts/ui")

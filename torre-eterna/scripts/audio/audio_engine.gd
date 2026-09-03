@@ -145,6 +145,8 @@ func _disparar(nome: String, db: float, pitch: float, pos: Vector2) -> void:
 	_ultimo[nome] = agora
 
 	var p := _voz(agora)
+	if not p.is_inside_tree():
+		return
 	p.stream = fluxo
 	p.global_position = pos
 	var variacao := float(e.get("var", 0.0))

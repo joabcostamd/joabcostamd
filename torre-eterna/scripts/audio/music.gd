@@ -41,6 +41,7 @@ var _ganho := 0.0
 var _ganho_alvo := 1.0
 var _era_pendente := -1
 var _intensidade := 0.0
+var _dt_ctx := 0.016
 var _chefe := false
 
 func _init(no_host: Node) -> void:
@@ -153,6 +154,7 @@ func atualizar(dt: float, ctx: Dictionary) -> void:
 	if not tocando or not pronta():
 		return
 
+	_dt_ctx = dt
 	_aplicar_contexto(ctx)
 
 	var alvo: float = _ganho_alvo if bool(ctx.get("ativo", true)) else _ganho_alvo * 0.45
@@ -172,6 +174,7 @@ func atualizar(dt: float, ctx: Dictionary) -> void:
 		_passo += 1
 
 func _aplicar_contexto(ctx: Dictionary) -> void:
+	# a intensidade sobe e desce em segundos, não em quadros
 	var onda: int = int(ctx.get("onda", 1))
 	var idx: int = Dados.era_da_onda(onda)
 	if idx != _era_idx and _era_pendente < 0:
@@ -189,7 +192,7 @@ func _aplicar_contexto(ctx: Dictionary) -> void:
 		bruta += 0.32
 	if vida < 0.35:
 		bruta += 0.18
-	_intensidade = lerpf(_intensidade, clampf(bruta, 0.0, 1.0), 0.06)
+	_intensidade = lerpf(_intensidade, clampf(bruta, 0.0, 1.0), clampf(_dt_ctx * 2.5, 0.0, 1.0))
 
 func _trocar_era(idx: int) -> void:
 	_era_idx = idx
@@ -265,7 +268,7 @@ func _nota(banco: String, ref_midi: float, midi: float, db: float, tempero: floa
 	if fluxo == null:
 		return
 	var p := _voz_livre()
-	if p == null:
+	if p == null or not p.is_inside_tree():
 		return
 	p.stream = fluxo
 	p.pitch_scale = clampf(pow(2.0, (midi - ref_midi) / 12.0) * tempero, 0.05, 4.0) if ref_midi > 0.0 else clampf(tempero, 0.05, 4.0)
@@ -277,6 +280,8 @@ func _pad(midi: float, db: float) -> void:
 	if fluxo == null:
 		return
 	var p: AudioStreamPlayer = _vozes[_prox_pad()]
+	if not p.is_inside_tree():
+		return
 	p.stream = fluxo
 	p.pitch_scale = clampf(pow(2.0, (midi - REF_PAD) / 12.0), 0.1, 3.0)
 	p.volume_db = db + linear_to_db(clampf(_ganho, 0.001, 1.0))
