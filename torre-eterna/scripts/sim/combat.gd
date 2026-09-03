@@ -5,6 +5,9 @@ extends RefCounted
 ## `j` é sempre o autoload Jogo (tipado como Node para evitar ciclo de tipos).
 
 ## Aplica dano a um inimigo. Devolve { morreu, dano, overkill, absorvido }.
+## Fração do dano que o elite `espinhoso` devolve à torre.
+const ESPINHO_FRACAO := 0.06
+
 static func aplicar_dano(e: Inimigo, dano: float, j, opt: Dictionary = {}) -> Dictionary:
 	if not e.vivo():
 		return {"morreu": false, "dano": Big.ZERO, "overkill": Big.ZERO, "absorvido": false}
@@ -17,6 +20,12 @@ static func aplicar_dano(e: Inimigo, dano: float, j, opt: Dictionary = {}) -> Di
 		dmg = Big.mul_f(dmg, 1.5)
 	if not bool(opt.get("puro", false)) and e.armadura > 0.0:
 		dmg = Big.mul_f(dmg, Bal.fator_armadura(e.armadura, float(opt.get("penetracao", 0.0))))
+	# "Devolve dano em contato" — a promessa estava no JSON, nos dois idiomas,
+	# impressa no codex, e nada no jogo a lia: o modificador só trocava a cor.
+	# Devolve uma fração pequena e fixa; quem reflete o golpe inteiro é o
+	# Guardião do Espelho, e os dois não podem ser a mesma coisa.
+	if e.elite_mod == "espinhoso" and not bool(opt.get("reflexo", false)):
+		j.dano_na_torre(Big.mul_f(dano, ESPINHO_FRACAO), e, {"reflexo": true})
 	if e.elite_mod == "blindado":
 		dmg = Big.mul_f(dmg, 0.55)
 

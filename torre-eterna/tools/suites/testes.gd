@@ -36,6 +36,7 @@ func rodar(cena: SceneTree) -> void:
 	t_modificadores()
 	t_economia()
 	t_combate()
+	t_elites()
 	t_mira()
 	t_defesa()
 	t_ondas()
@@ -466,6 +467,111 @@ func t_combate() -> void:
 	Combate.aplicar_dano(e3, Big.from(1.0), jogo, {"puro": true, "execucao": 0.05})
 	ok("execucao mata", not e3.vivo())
 
+	jogo.arena.limpar_inimigos()
+
+## --------------------------------------------------- elites de verdade
+## Seis dos nove modificadores de elite tinham campo mecânico no JSON ou um
+## ramo no código. Três — espinhoso, magnetico e fantasmal — tinham APENAS id,
+## nome, cor e descrição: eram recolorização pura, e as descrições prometiam
+## mecânica exata ao jogador, nos dois idiomas, impressa no codex. Uma auditoria
+## independente pegou isso com `grep -rn espinhoso scripts/sim/` devolvendo
+## zero. Estes testes existem para que a promessa não volte a ser só cor.
+func t_elites() -> void:
+	g("Elites")
+	var def: Dictionary = Dados.inimigo_por_id["grunhido"]
+
+	# Todo modificador de elite precisa de efeito: ou um campo que muda número,
+	# ou um ramo no código que leia o id. Cor e texto não bastam.
+	var com_efeito := 0
+	var so_cor: Array = []
+	var codigo := ""
+	for arq in ["res://scripts/sim/enemy_ai.gd", "res://scripts/sim/combat.gd",
+			"res://scripts/sim/game.gd", "res://scripts/sim/economy.gd"]:
+		codigo += FileAccess.get_file_as_string(arq)
+	for m in Dados.elites:
+		var id := str(m.get("id", ""))
+		var tem_campo: bool = m.has("hp") or m.has("vel") or m.has("esc") or m.has("ouro")
+		var tem_ramo := codigo.contains('"%s"' % id)
+		if tem_campo or tem_ramo:
+			com_efeito += 1
+		else:
+			so_cor.append(id)
+	ok("todo elite muda o jogo, nao so a cor", so_cor.is_empty(),
+		"so cor e texto: %s" % str(so_cor))
+	ok("os 9 modificadores foram conferidos", com_efeito == Dados.elites.size(),
+		"com efeito=%d de %d" % [com_efeito, Dados.elites.size()])
+
+	# fantasmal: fica intangivel e volta
+	jogo.arena.limpar_inimigos()
+	var fan := EnemyAI.criar(def, 10, jogo, {"elite": true, "elite_mod": "fantasmal"})
+	ok("fantasmal nasce solido", fan != null and fan.intangivel <= 0.0)
+	if fan != null:
+		var virou := false
+		var voltou := false
+		for i in 400:
+			EnemyAI.atualizar(1.0 / 60.0, jogo)
+			if fan.intangivel > 0.0:
+				virou = true
+			elif virou:
+				voltou = true
+				break
+		ok("fantasmal fica intangivel", virou)
+		ok("fantasmal volta a ser solido", voltou)
+		# Enquanto intangivel, a mira nao pode enxerga-lo.
+		fan.intangivel = 1.0
+		fan.pos = Vector2(600.0, 400.0)
+		jogo.arena.reconstruir_grade()
+		ok("intangivel some da mira",
+			jogo.arena.alvo_ids(Vector2(600.0, 400.0), 200.0, {}) == null)
+		fan.intangivel = 0.0
+		jogo.arena.reconstruir_grade()
+		ok("solido volta para a mira",
+			jogo.arena.alvo_ids(Vector2(600.0, 400.0), 200.0, {}) == fan)
+
+	# espinhoso: devolve dano em contato
+	jogo.arena.limpar_inimigos()
+	var esp := EnemyAI.criar(def, 10, jogo, {"elite": true, "elite_mod": "espinhoso"})
+	var comum := EnemyAI.criar(def, 10, jogo, {"elite": true, "elite_mod": "blindado"})
+	if esp != null and comum != null:
+		var torre_s: Dictionary = jogo.s["torre"]
+		torre_s["vida"] = Big.from(1.0e9)
+		torre_s["escudo"] = Big.ZERO
+		jogo.invulneravel = 0.0
+		var vida0: float = torre_s["vida"]
+		Combate.aplicar_dano(esp, Big.from(1000.0), jogo, {"puro": true})
+		var perdeu_com_espinho := Big.lt(torre_s["vida"], vida0)
+		ok("espinhoso devolve dano quando atingido", perdeu_com_espinho)
+		torre_s["vida"] = Big.from(1.0e9)
+		torre_s["escudo"] = Big.ZERO
+		jogo.invulneravel = 0.0
+		var vida1: float = torre_s["vida"]
+		Combate.aplicar_dano(comum, Big.from(1000.0), jogo, {"puro": true})
+		ok("elite comum nao devolve dano", not Big.lt(torre_s["vida"], vida1))
+
+	# magnetico: rouba o ouro do chao
+	jogo.arena.limpar_inimigos()
+	var mag := EnemyAI.criar(def, 10, jogo, {"elite": true, "elite_mod": "magnetico"})
+	if mag != null:
+		mag.pos = Vector2(900.0, 400.0)
+		var centro: Vector2 = jogo.arena.centro
+		var c: Coletavel = jogo.arena.novo_coletavel()
+		c.ativo = true
+		c.pos = Vector2(860.0, 400.0)
+		c.tipo = "ouro"
+		c.valor = Big.from(10.0)
+		c.atraido = false
+		c.t = 0.0
+		c.vel = Vector2.ZERO
+		var perto_do_ima0: float = c.pos.distance_to(mag.pos)
+		var perto_do_centro0: float = c.pos.distance_to(centro)
+		for i in 20:
+			Economia.atualizar_coletaveis(1.0 / 60.0, jogo)
+		var perto_do_ima1: float = c.pos.distance_to(mag.pos)
+		var perto_do_centro1: float = c.pos.distance_to(centro)
+		ok("magnetico puxa o ouro para si", perto_do_ima1 < perto_do_ima0,
+			"antes=%.1f depois=%.1f" % [perto_do_ima0, perto_do_ima1])
+		ok("o ouro roubado se afasta da torre", perto_do_centro1 > perto_do_centro0,
+			"antes=%.1f depois=%.1f" % [perto_do_centro0, perto_do_centro1])
 	jogo.arena.limpar_inimigos()
 
 ## ------------------------------------------------------------- mira

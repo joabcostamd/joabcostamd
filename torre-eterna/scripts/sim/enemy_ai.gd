@@ -97,6 +97,10 @@ static func criar(def: Dictionary, onda: int, j, opt: Dictionary = {}) -> Inimig
 		Bus.chefe_surgiu.emit(e)
 	return e
 
+## Quanto tempo o `fantasmal` passa sólido e quanto passa intocável.
+const FANTASMA_CICLO := 3.0
+const FANTASMA_SOME := 1.0
+
 static func _elite(id: String) -> Dictionary:
 	for m in Dados.elites:
 		if str(m.get("id", "")) == id:
@@ -397,6 +401,19 @@ static func atualizar(dt: float, j) -> void:
 
 		if e.elite_mod == "regenerativo" and Big.lt(e.hp, e.hp_max):
 			e.hp = Big.min_b(Big.add(e.hp, Big.mul_f(e.hp_max, 0.02 * dt)), e.hp_max)
+		# "Fica intangível periodicamente" — a promessa estava escrita no JSON,
+		# em português e em inglês, impressa no codex, e nada no jogo a lia: o
+		# modificador só trocava a cor do inimigo. Três segundos sólido, um
+		# segundo intocável, para sempre.
+		if e.elite_mod == "fantasmal":
+			e.fantasma_t += dt
+			if e.intangivel > 0.0:
+				if e.fantasma_t >= FANTASMA_SOME:
+					e.fantasma_t = 0.0
+					e.intangivel = 0.0
+			elif e.fantasma_t >= FANTASMA_CICLO:
+				e.fantasma_t = 0.0
+				e.intangivel = FANTASMA_SOME
 		if e.escudo_max > Big.LIMIAR_ZERO and e.escudo < e.escudo_max and e.sem_dano_t > 2.5:
 			e.escudo = Big.min_b(e.escudo_max, Big.add(e.escudo, Big.mul_f(e.escudo_max, 0.25 * dt)))
 		e.sem_dano_t += dt

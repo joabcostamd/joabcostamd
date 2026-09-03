@@ -22,10 +22,21 @@ static func soltar_ouro(e: Inimigo, valor: float, j) -> void:
 		c.raio = 8.0 if e.chefe else 6.0
 		c.escala = 0.0
 
+## Alcance com que o elite `magnetico` rouba um coletável da torre.
+const IMA_INIMIGO := 190.0
+
 static func atualizar_coletaveis(dt: float, j) -> void:
 	var raio_ima := 70.0 * float(j.stats.n("coleta"))
 	var lista: Array = j.arena.coletaveis
 	var centro: Vector2 = j.arena.centro
+	# "Puxa o ouro do chão para si" — a promessa estava no JSON, nos dois
+	# idiomas, impressa no codex, e nada no jogo a lia. Os magnéticos vivos são
+	# poucos (elite é raro, e este é 1 dos 9 modificadores), então a lista sai
+	# uma vez por quadro em vez de uma busca por coletável.
+	var imas: Array = []
+	for e in j.arena.inimigos:
+		if e.elite_mod == "magnetico" and e.vivo():
+			imas.append(e)
 	for i in range(lista.size() - 1, -1, -1):
 		var c: Coletavel = lista[i]
 		if not c.ativo:
@@ -35,8 +46,22 @@ static func atualizar_coletaveis(dt: float, j) -> void:
 		if c.escala < 1.0:
 			c.escala = minf(1.0, c.escala + dt * 6.0)
 
-		var delta := centro - c.pos
+		var alvo_pos := centro
+		if not imas.is_empty() and not c.atraido:
+			var melhor := IMA_INIMIGO * IMA_INIMIGO
+			for e in imas:
+				var d2: float = (e.pos - c.pos).length_squared()
+				if d2 < melhor:
+					melhor = d2
+					alvo_pos = e.pos
+		var delta := alvo_pos - c.pos
 		var d := delta.length()
+		# Roubado pelo ímã: anda para o inimigo e não conta como atraído pela
+		# torre, senão ele voltaria a ser puxado para o centro no quadro seguinte.
+		if alvo_pos != centro:
+			c.vel = delta.normalized() * 240.0
+			c.pos += c.vel * dt
+			continue
 		if c.atraido or d < raio_ima or c.t > 3.5:
 			c.atraido = true
 			c.vel = delta.normalized() * (260.0 + c.t * 220.0)

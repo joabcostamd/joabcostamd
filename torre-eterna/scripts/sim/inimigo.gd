@@ -90,6 +90,7 @@ var hab := ""
 
 func limpar() -> void:
 	ativo = false
+	fantasma_t = 0.0
 	chefe = false
 	super_chefe = false
 	elite = false
@@ -126,6 +127,9 @@ func limpar() -> void:
 	piscou = 0.0
 	sem_dano_t = 0.0
 	vel_res = Vector2.ZERO
+
+## Relógio do modificador de elite `fantasmal`.
+var fantasma_t := 0.0
 
 func vivo() -> bool:
 	return ativo and morrendo <= 0.0
