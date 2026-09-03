@@ -28,17 +28,20 @@ const PAINEIS := {
 
 func _ready() -> void:
 	jogo = get_node_or_null("/root/Jogo")
-	# As conexões vêm ANTES do await de propósito. `Jogo.iniciar()` roda no mesmo
-	# quadro em que este nó nasce e emite `relatorio_offline` na hora: conectar
-	# depois do await perdia o sinal, e quem voltava depois de horas fora não via
-	# relatório nenhum.
+	# As conexões vêm ANTES do await de propósito: `Jogo.iniciar()` roda no mesmo
+	# quadro em que este nó nasce e emite `relatorio_offline` na hora, então
+	# conectar depois do await perdia o sinal e quem voltava de horas fora não
+	# via relatório nenhum. Só que a interface do overlay ainda NÃO EXISTE nessa
+	# hora (ela precisa de `raiz`, que main.gd atribui depois do add_child), e
+	# desenhar em cima dela dava erro em execução. Por isso a fila: o sinal é
+	# guardado agora e desenhado assim que houver onde desenhar.
 	Bus.aviso.connect(_toast)
 	Bus.relatorio_offline.connect(_relatorio_offline)
 	Bus.evento_sorteado.connect(abrir_evento)
 	await get_tree().process_frame
 	_montar_overlay()
-	# Cinto e suspensório: se o sinal ainda assim chegou cedo demais, o Jogo
-	# guarda o relatório e a gente pega dele.
+	_escoar_fila_inicial()
+	# Cinto e suspensório: se nem pela fila veio, o Jogo guarda o relatório.
 	if jogo != null and not _offline_mostrado:
 		var guardado: Dictionary = jogo.relatorio_offline
 		if not guardado.is_empty() and bool(guardado.get("aplicado", false)):
@@ -49,9 +52,24 @@ func _ready() -> void:
 		if not pendente.is_empty():
 			abrir_evento(pendente)
 
-## O relatório aparece uma vez por abertura de jogo, venha pelo sinal ou pelo
-## estado guardado.
+## O relatório aparece uma vez por abertura de jogo, venha pelo sinal, pela fila
+## ou do estado guardado no Jogo.
 var _offline_mostrado := false
+
+## Sinais que chegaram antes de existir onde desenhar.
+var _fila_inicial: Array = []
+
+func _pronto_para_desenhar() -> bool:
+	return raiz != null and fundo_escuro != null and caixa_toast != null
+
+func _escoar_fila_inicial() -> void:
+	var fila := _fila_inicial.duplicate()
+	_fila_inicial.clear()
+	for item in fila:
+		var e: Array = item
+		match str(e[0]):
+			"toast": _toast(str(e[1]), str(e[2]), str(e[3]))
+			"offline": _relatorio_offline(e[1])
 
 func _montar_overlay() -> void:
 	fundo_escuro = ColorRect.new()
@@ -81,15 +99,33 @@ func _montar_overlay() -> void:
 ## card e escondia justamente o que o jogador tinha ido ler. Com o painel
 ## fechado essa posição é a melhor que existe; com painel aberto, a única faixa
 ## que sobra é o rodapé. Então a caixa se muda.
+## Quantos avisos cabem sem atrapalhar. Com painel aberto, dois.
+func _teto_toasts() -> int:
+	return 2 if atual != "" else 5
+
 func _posicionar_toasts() -> void:
 	if caixa_toast == null:
 		return
 	var aberto := atual != ""
 	caixa_toast.anchor_top = 1.0 if aberto else 0.0
 	caixa_toast.anchor_bottom = 1.0 if aberto else 0.0
-	caixa_toast.offset_top = -96.0 if aberto else 96.0
-	caixa_toast.offset_bottom = -14.0 if aberto else 300.0
+	# No rodapé a caixa cresce PARA CIMA (senão os últimos avisos saem da tela) e
+	# fica curta de propósito: com o painel aberto só cabem DOIS avisos antes de
+	# começar a cobrir conteúdo, então o teto cai de cinco para dois enquanto o
+	# painel estiver na frente.
+	caixa_toast.offset_top = -110.0 if aberto else 96.0
+	caixa_toast.offset_bottom = -10.0 if aberto else 300.0
+	caixa_toast.grow_vertical = Control.GROW_DIRECTION_BEGIN if aberto else Control.GROW_DIRECTION_END
 	caixa_toast.alignment = BoxContainer.ALIGNMENT_END if aberto else BoxContainer.ALIGNMENT_CENTER
+	# Abrir um painel também precisa aparar o que já estava na tela: avisos
+	# criados antes da abertura ficavam lá, cinco deles, cobrindo o conteúdo.
+	_aparar_toasts()
+
+func _aparar_toasts() -> void:
+	while caixa_toast != null and caixa_toast.get_child_count() > _teto_toasts():
+		var velho := caixa_toast.get_child(0)
+		caixa_toast.remove_child(velho)
+		velho.queue_free()
 
 func alternar(nome: String) -> void:
 	if atual == nome:
@@ -162,7 +198,11 @@ func abrir_evento(def: Dictionary) -> void:
 ## ------------------------------------------------------------- toasts
 
 func _toast(texto: String, tipo: String, icone: String) -> void:
-	if caixa_toast == null:
+	if not _pronto_para_desenhar():
+		# Aviso disparado antes de existir onde desenhar (o boot emite alguns):
+		# guarda na fila em vez de sumir com ele.
+		if _fila_inicial.size() < 8:
+			_fila_inicial.append(["toast", texto, tipo, icone])
 		return
 	var cor := UI.ACENTO
 	match tipo:
@@ -189,15 +229,15 @@ func _toast(texto: String, tipo: String, icone: String) -> void:
 	# avisos a tela enchia. Sem ele o excedente sai de verdade. `queue_free` só
 	# libera no fim do quadro, então tiramos o filho da árvore na hora — senão o
 	# laço veria o mesmo filho para sempre.
-	while caixa_toast.get_child_count() > 5:
-		var velho := caixa_toast.get_child(0)
-		caixa_toast.remove_child(velho)
-		velho.queue_free()
+	_aparar_toasts()
 
 ## ------------------------------------------------- relatório offline
 
 func _relatorio_offline(dados: Dictionary) -> void:
 	if not bool(dados.get("aplicado", false)) or _offline_mostrado:
+		return
+	if not _pronto_para_desenhar():
+		_fila_inicial.append(["offline", dados])
 		return
 	_offline_mostrado = true
 	var janela := UI.painel(UI.PAINEL, 16)

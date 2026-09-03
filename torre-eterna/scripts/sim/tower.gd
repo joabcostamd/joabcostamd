@@ -350,7 +350,7 @@ func levar_dano(dano_log: float, fonte, opt: Dictionary = {}) -> float:
 			torre["vida"] = Big.mul_f(torre["vida_max"], 0.4)
 			iframes = 2.0
 			Bus.celebracao.emit("fenix", {})
-			Bus.toast("A torre renasce das cinzas!", "epico")
+			Bus.toast(Txt.t("sim_fenix"), "epico")
 			return dano
 		torre["vida"] = Big.ZERO
 		torre["viva"] = false

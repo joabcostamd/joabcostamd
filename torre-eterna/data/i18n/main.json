@@ -26,5 +26,45 @@
   "infinito_trancado": {
     "pt": "Desbloqueie o Vazio Infinito na árvore de Éter",
     "en": "Unlock the Infinite Void in the Ether tree"
+  },
+  "sim_purga_estourou": {
+    "pt": "O núcleo estourou sozinho — você perdeu a janela.",
+    "en": "The core burst on its own — you missed the window."
+  },
+  "sim_purga_estourou_1a": {
+    "pt": "O núcleo encheu e estourou. Da próxima, solte você.",
+    "en": "The core filled up and burst. Next time, you release it."
+  },
+  "sim_peregrino_chegou": {
+    "pt": "Algo atravessa a arena sem olhar para você.",
+    "en": "Something crosses the arena without looking at you."
+  },
+  "sim_peregrino_poupado": {
+    "pt": "O Peregrino seguiu em frente. A torre registrou.",
+    "en": "The Pilgrim moved on. The tower took note."
+  },
+  "sim_consagrado": {
+    "pt": "{n} consagrado. As cartas se foram; o poder ficou.",
+    "en": "{n} consecrated. The cards are gone; the power stayed."
+  },
+  "sim_retomada_superada": {
+    "pt": "Você já passou de onde parou. E ainda está acelerando.",
+    "en": "You are already past where you stopped. And still accelerating."
+  },
+  "sim_silencio": {
+    "pt": "O Silêncio bloqueou suas habilidades!",
+    "en": "The Silence has blocked your abilities!"
+  },
+  "sim_album": {
+    "pt": "Álbum de Ecos: {n} registrado para sempre.",
+    "en": "Album of Echoes: {n} recorded forever."
+  },
+  "sim_nova_habilidade": {
+    "pt": "Nova habilidade: {n}",
+    "en": "New ability: {n}"
+  },
+  "sim_fenix": {
+    "pt": "A torre renasce das cinzas!",
+    "en": "The tower rises from the ashes!"
   }
 }

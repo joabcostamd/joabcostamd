@@ -3,7 +3,7 @@
 
   "ger_offline_titulo": {"pt": "A torre continuou lutando", "en": "The tower kept fighting"},
   "ger_offline_fora": {"pt": "Você ficou fora por {n}.", "en": "You were away for {n}."},
-  "ger_offline_teto": {"pt": "Limite de acúmulo: {n} (o resto se perdeu).", "en": "Accrual cap: {n} (the rest was lost)."},
+  "ger_offline_teto": {"pt": "Limite de acúmulo: {n} (o resto se perdeu).", "en": "Offline cap: {n} (the rest was lost)."},
   "ger_offline_eficiencia": {"pt": "Eficiência offline: {n}", "en": "Offline efficiency: {n}"},
 
   "ger_caixa_titulo": {"pt": "CAIXA DA VIGÍLIA", "en": "VIGIL CACHE"},

@@ -97,9 +97,9 @@ func _reconstruir() -> void:
 func _linha_bloqueada(def: Dictionary) -> void:
 	var l := linha("cadeado", UI.TEXTO3)
 	var req: Dictionary = def.get("requer", {})
-	var motivo: String = Txt.f("upg_onda_n", {"n": int(req.get("onda", 0))}) if req.has("onda") else Txt.t("requer") + ": " + str(req.get("upgrade", "?"))
+	var motivo: String = Txt.f("upg_desbloqueia_onda", {"n": int(req.get("onda", 0))}) if req.has("onda") else Txt.f("upg_desbloqueia_upg", {"u": str(req.get("upgrade", "?"))})
 	l["textos"].add_child(UI.rotulo("???", 15, UI.TEXTO3))
-	l["textos"].add_child(UI.rotulo(Txt.f("upg_desbloqueia_em", {"m": motivo}), 12, UI.TEXTO3))
+	l["textos"].add_child(UI.rotulo(motivo, 12, UI.TEXTO3))
 	lista.add_child(l["caixa"])
 
 func _linha_upgrade(def: Dictionary) -> void:

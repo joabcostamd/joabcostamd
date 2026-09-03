@@ -248,6 +248,7 @@ func _montar() -> void:
 	var celebra := Control.new()
 	celebra.set_script(load("res://scripts/ui/celebracao.gd"))
 	camada_ui.add_child(celebra)
+	celebra.gerente = gerente
 
 	# --- tutorial: balões que aparecem na hora certa e somem sozinhos ---
 	var tutorial := Control.new()
@@ -266,8 +267,21 @@ func _ao_redimensionar() -> void:
 	if fundo:
 		fundo.preparar(tam)
 
+## Existe uma tela modal na frente? Título, Pausa, Fim de jogo ou diálogo de
+## evento. Enquanto houver, o teclado do jogo fica calado.
+func _tela_modal() -> bool:
+	for nome in ["Titulo", "Pausa", "Final"]:
+		if camada_ui != null and camada_ui.get_node_or_null(nome) != null:
+			return true
+	return gerente != null and gerente.dialogo != null and is_instance_valid(gerente.dialogo)
+
 func _unhandled_input(evento: InputEvent) -> void:
 	if not (evento is InputEventKey) or not evento.pressed or evento.echo:
+		return
+	# Com a tela de Título ou de Fim de jogo aberta, apertar Q abria o painel de
+	# Melhorias ATRÁS dela e 1–0 disparava habilidades numa partida que o
+	# jogador nem começou. Só o Esc continua passando, para poder sair.
+	if _tela_modal() and not evento.is_action_pressed("ui_pausa"):
 		return
 	for i in range(0, 10):
 		var acao := "hab_%d" % i

@@ -1,13 +1,13 @@
 {
   "upg_auto": {"pt": "Auto", "en": "Auto"},
-  "upg_auto_dica": {"pt": "Compra automática (desbloqueada na árvore de Fragmentos)", "en": "Automatic buying (unlocked in the Shard tree)"},
+  "upg_auto_dica": {"pt": "Compra automática (desbloqueada na árvore de Fragmentos)", "en": "Auto-buy (unlocked in the Shard tree)"},
   "upg_auto_bloqueado": {"pt": "Compre 'Servo Automático' na árvore de Fragmentos", "en": "Buy 'Auto Servitor' in the Shard tree"},
 
   "upg_max_curto": {"pt": "MÁX", "en": "MAX"},
   "upg_nv": {"pt": "Nv {n}", "en": "Lv {n}"},
 
-  "upg_onda_n": {"pt": "Onda {n}", "en": "Wave {n}"},
-  "upg_desbloqueia_em": {"pt": "Desbloqueia em {m}", "en": "Unlocks at {m}"},
+  "upg_desbloqueia_onda": {"pt": "Desbloqueia na onda {n}", "en": "Unlocks at wave {n}"},
+  "upg_desbloqueia_upg": {"pt": "Desbloqueia com {u}", "en": "Unlocks with {u}"},
 
   "upg_efeito_flat": {"pt": "{s} +{v} (agora {t})", "en": "{s} +{v} (now {t})"},
   "upg_efeito_pct": {"pt": "{s} +{v} (agora +{t})", "en": "{s} +{v} (now +{t})"},

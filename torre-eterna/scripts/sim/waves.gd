@@ -38,7 +38,7 @@ func iniciar_onda(n: int) -> void:
 	var novas: Array = Habilidades.desbloquear_por_progresso(s)
 	if not novas.is_empty():
 		for def in novas:
-			Bus.toast("Nova habilidade: %s" % Ux.txt(def, "nome", Cfg.ingles()), "epico")
+			Bus.toast(Txt.f("sim_nova_habilidade", {"n": Ux.txt(def, "nome", Cfg.ingles())}), "epico")
 		Bus.ui_atualizar.emit(false)
 	var era_antes := int(s["era"])
 	var era_agora := Dados.era_da_onda(n)

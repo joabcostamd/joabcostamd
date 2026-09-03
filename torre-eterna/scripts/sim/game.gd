@@ -334,7 +334,7 @@ func atualizar_chefe(e: Inimigo, dt: float) -> void:
 			if e.cd <= 0.0:
 				e.cd = 12.0
 				silenciado = 5.0
-				Bus.toast("O Silêncio bloqueou suas habilidades!", "ruim", "cadeado")
+				Bus.toast(Txt.t("sim_silencio"), "ruim", "cadeado")
 		"teleporte_drenar":
 			e.cd -= dt
 			if e.cd <= 0.0:

@@ -44,9 +44,9 @@ static func atualizar_purga(dt: float, j) -> void:
 		# o primeiro estouro não pune: nesse ponto o jogo ainda nem explicou
 		if int(p["estourou"]) > 1:
 			j.torre.cd_tiro = maxf(j.torre.cd_tiro, 1.2)
-			Bus.toast("O núcleo estourou sozinho — você perdeu a janela.", "ruim")
+			Bus.toast(Txt.t("sim_purga_estourou"), "ruim")
 		else:
-			Bus.toast("O núcleo encheu e estourou. Da próxima, solte você.", "info")
+			Bus.toast(Txt.t("sim_purga_estourou_1a"), "info")
 
 ## Qualidade da purga pela carga atual.
 static func qualidade_purga(carga: float) -> float:
@@ -193,13 +193,13 @@ static func talvez_peregrino(onda: int, j) -> void:
 		return
 	e.ouro = Big.mul_f(e.ouro, PEREGRINO_OURO)
 	e.peregrino = true
-	Bus.toast("Algo atravessa a arena sem olhar para você.", "info")
+	Bus.toast(Txt.t("sim_peregrino_chegou"), "info")
 
 ## Chamado quando o peregrino sai da tela sem ser morto.
 static func peregrino_poupado(j) -> void:
 	var s: Dictionary = j.s
 	s["peregrinos_poupados"] = int(s.get("peregrinos_poupados", 0)) + 1
-	Bus.toast("O Peregrino seguiu em frente. A torre registrou.", "info")
+	Bus.toast(Txt.t("sim_peregrino_poupado"), "info")
 
 static func peregrino_morto(j) -> void:
 	var s: Dictionary = j.s
@@ -251,7 +251,7 @@ static func consagrar(j, conjunto_id: String) -> bool:
 	p[conjunto_id] = int(p.get(conjunto_id, 0)) + 1
 	j.marcar_sujo()
 	Bus.celebracao.emit("panteao", {"conjunto": conjunto_id, "nivel": int(p[conjunto_id])})
-	Bus.toast("%s consagrado. As cartas se foram; o poder ficou." % str(conj.get("nome", "")), "epico")
+	Bus.toast(Txt.f("sim_consagrado", {"n": Ux.txt(conj, "nome", Cfg.ingles())}), "epico")
 	return true
 
 static func bonus_panteao(s: Dictionary) -> Dictionary:
@@ -333,7 +333,7 @@ static func atualizar_retomada(dt: float, j) -> void:
 	if int(j.s["onda"]) > int(r["alvo"]) and not bool(r["superou"]):
 		r["superou"] = true
 		Bus.celebracao.emit("retomada_superada", {"onda": int(j.s["onda"])})
-		Bus.toast("Você já passou de onde parou. E ainda está acelerando.", "epico")
+		Bus.toast(Txt.t("sim_retomada_superada"), "epico")
 
 	r["restante"] = float(r["restante"]) - dt / maxf(0.001, RETOMADA_VELOCIDADE)
 	if float(r["restante"]) <= 0.0 or bool(r["superou"]):

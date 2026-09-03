@@ -31,6 +31,10 @@ const RECEITAS := {
 	"retomada_superada": {"titulo": "cel_retomada_ok", "cor": "#4ade80", "icone": "trofeu", "som": "conquista", "peso": 1.0},
 }
 
+## Quem manda os painéis. `main.gd` entrega no momento da montagem — caminho de
+## nó escrito na mão apodrece na primeira vez que alguém renomeia um nó.
+var gerente: Node
+
 var fila: Array = []
 var atual: Dictionary = {}
 var t := 0.0
@@ -55,9 +59,17 @@ func _ao_celebrar(tipo: String, dados: Dictionary) -> void:
 		return
 	fila.append({"tipo": tipo, "receita": receita, "dados": dados})
 
+## Com um painel aberto a comemoração espera. Ela é desenhada acima de tudo (a
+## camada de UI inteira) e, sem esta guarda, cobria o painel que o jogador
+## estava lendo — o oposto do que uma comemoração deve fazer.
+func _ocupado() -> bool:
+	if gerente != null and is_instance_valid(gerente) and str(gerente.atual) != "":
+		return true
+	return get_tree().paused
+
 func _process(dt: float) -> void:
 	if atual.is_empty():
-		if fila.is_empty():
+		if fila.is_empty() or _ocupado():
 			return
 		atual = fila.pop_front()
 		t = 0.0

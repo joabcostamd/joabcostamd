@@ -79,7 +79,7 @@ static func criar_carta(j, id_forcado: String = "", garantir_boa: bool = false) 
 	# Álbum de Ecos: ver a carta já é progresso permanente, imune a prestígio.
 	if Mecanicas.registrar_no_album(s, str(inst["id"])):
 		j.marcar_sujo()
-		Bus.toast("Álbum de Ecos: %s registrado para sempre." % str(def.get("nome", "")), "epico")
+		Bus.toast(Txt.f("sim_album", {"n": Ux.txt(def, "nome", Cfg.ingles())}), "epico")
 	s["cartas"]["novas"].append(inst["uid"])
 	s["stats"]["cartas_obtidas"] = int(s["stats"]["cartas_obtidas"]) + 1
 	if raridade == "lendario" or raridade == "mitico":
