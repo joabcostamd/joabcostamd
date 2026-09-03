@@ -44,6 +44,7 @@ func rodar(cena: SceneTree) -> void:
 	t_nada_mudo()
 	t_elites()
 	t_mira()
+	t_celebracao()
 	t_painel_melhorias()
 	t_rodape()
 	t_teto()
@@ -89,7 +90,7 @@ func rodar(cena: SceneTree) -> void:
 		"Mods": 19, "Numeros de dano": 2, "Offline": 6,
 		"Ondas": 12, "Pista de ouro": 3, "Prestígio": 25,
 		"Progresso": 14, "Saque": 8, "Save": 41,
-		"Painel de melhorias": 20, "Rodape": 26, "Sistemas": 6, "StatEngine": 5, "Teto": 25, "Áudio": 16,
+		"Celebracao": 25, "Painel de melhorias": 20, "Rodape": 26, "Sistemas": 6, "StatEngine": 5, "Teto": 25, "Áudio": 16,
 	}
 	for nome_g in minimo_por_grupo:
 		var rodou := int(por_grupo.get(nome_g, 0))
@@ -1267,6 +1268,77 @@ func t_mira() -> void:
 		arena.alvo_ids(Vector2(610.0, 400.0), 400.0, {}) == longe_e)
 	perto_e.intangivel = 0.0
 	arena.limpar_inimigos()
+
+## ------------------------------------------------------------- comemoracoes
+func t_celebracao() -> void:
+	g("Celebracao")
+	var C := load("res://scripts/ui/celebracao.gd") as GDScript
+	ok("celebracao.gd carrega", C != null)
+	if C == null:
+		return
+	var cel = C.new()
+	# AS DEZ ERAS NUNCA DIZIAM O NOME. `Bus.era_mudou` tinha um unico ouvinte, o
+	# pintor de fundo. Cada era traz nome e regra escritos nos dois idiomas.
+	var era: Dictionary = Dados.era_atual(120)
+	ok("a era 120 existe e tem nome", not era.is_empty() and str(era.get("nome", "")) != "")
+	cel.atual = {"tipo": "era", "receita": C.RECEITAS["era"], "dados": {"era": era}}
+	var titulo_era: String = cel._titulo()
+	ok("a comemoracao da era diz o NOME da era",
+		titulo_era != "" and titulo_era == Ux.txt(era, "nome", Cfg.ingles()).to_upper())
+	var sub_era: String = cel._subtitulo()
+	ok("...e o subtitulo traz a REGRA dela", sub_era != "")
+	var regra: Dictionary = era.get("regra", {})
+	if not regra.is_empty():
+		ok("a regra mostrada e a do JSON", sub_era == Ux.txt(regra, "texto", Cfg.ingles()))
+	# Toda era tem que ter titulo e algum texto: se alguem acrescentar a decima
+	# primeira sem `regra` nem `descricao`, a comemoracao sai muda.
+	for e in Dados.eras:
+		cel.atual = {"tipo": "era", "receita": C.RECEITAS["era"], "dados": {"era": e}}
+		ok("a era '%s' tem o que dizer" % str(e.get("id", "")),
+			cel._titulo() != "" and cel._subtitulo() != "")
+
+	# ASCENDER PESAVA MENOS QUE UMA PURGA, e o banner mostrava o id cru.
+	var def_asc: Dictionary = {}
+	for c in Dados.camadas_prestigio:
+		if str((c as Dictionary).get("id", "")) == "ascensao":
+			def_asc = c
+	ok("a camada ascensao existe", not def_asc.is_empty())
+	cel.atual = {"tipo": "prestigio", "receita": C.RECEITAS["prestigio"],
+		"dados": {"camada": "ascensao", "ganho": Big.from(2917.0), "def": def_asc}}
+	var titulo_asc: String = cel._titulo()
+	ok("a ascensao diz o nome traduzido, nao o id",
+		titulo_asc == Ux.txt(def_asc, "nome", Cfg.ingles()).to_upper() and titulo_asc != "ASCENSAO")
+	ok("o subtitulo da ascensao traz o ganho", cel._subtitulo().contains("2"))
+	ok("ascender pesa mais que uma Purga",
+		float(C.RECEITAS["prestigio"]["peso"]) > float(C.RECEITAS["purga_perfeita"]["peso"]))
+	ok("...e mais que qualquer outra comemoracao", _maior_peso(C) == "prestigio")
+
+	# O subtitulo longo (a regra de era e uma frase) tem que caber na tela.
+	var linhas_q: Array = C._quebrar(
+		"uma frase bem comprida que nao cabe de jeito nenhum numa linha so desta largura",
+		ThemeDB.fallback_font, 17, 200.0, 3)
+	ok("o subtitulo longo quebra em varias linhas", linhas_q.size() > 1)
+	ok("...e nunca passa do limite de linhas", linhas_q.size() <= 3)
+	var curto: Array = C._quebrar("curto", ThemeDB.fallback_font, 17, 400.0, 3)
+	ok("o subtitulo curto continua numa linha", curto.size() == 1 and str(curto[0]) == "curto")
+
+	var txt_cel := _ler("res://scripts/ui/celebracao.gd")
+	ok("a camada de comemoracao escuta a troca de era", txt_cel.contains("Bus.era_mudou.connect"))
+	ok("...e o prestigio", txt_cel.contains("Bus.prestigio_feito.connect(_ao_prestigio)"))
+	var txt_fl := _ler("res://scripts/render/view_flash.gd")
+	ok("o banner nao mostra mais o identificador cru",
+		not txt_fl.contains("banner_nome = camada.to_upper()"))
+	cel.free()
+
+func _maior_peso(C: GDScript) -> String:
+	var melhor := ""
+	var peso := -1.0
+	for k in C.RECEITAS:
+		var p := float((C.RECEITAS[k] as Dictionary).get("peso", 0.0))
+		if p > peso:
+			peso = p
+			melhor = str(k)
+	return melhor
 
 ## --------------------------------------------------------- painel de melhorias
 func t_painel_melhorias() -> void:

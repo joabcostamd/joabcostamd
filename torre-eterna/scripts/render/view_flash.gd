@@ -28,10 +28,20 @@ func _ao_chefe(e) -> void:
 	Bus.banner_cinematico.emit(banner_t)
 
 func _ao_prestigio(camada: String, ganho: float) -> void:
-	banner_nome = camada.to_upper()
-	banner_sub = "+" + Fmt.big(ganho)
-	banner_cor = Color("#a855f7")
-	banner_t = 2.6
+	# O MOMENTO MAIOR DO JOGO MOSTRAVA O IDENTIFICADOR CRU. `camada.to_upper()`
+	# escrevia "ASCENSAO", sem acento e sem traducao, num banner que o jogador
+	# ve talvez dez vezes na vida. O nome, a cor e a lore ja estao no JSON das
+	# camadas desde sempre — em portugues e em ingles.
+	var def: Dictionary = {}
+	for c in Dados.camadas_prestigio:
+		if str((c as Dictionary).get("id", "")) == camada:
+			def = c
+			break
+	banner_nome = Ux.txt(def, "nome", Cfg.ingles()).to_upper() if not def.is_empty() else camada.to_upper()
+	var moeda := str(def.get("moeda", ""))
+	banner_sub = "+%s %s" % [Fmt.big(ganho), Txt.t("m_" + moeda) if moeda != "" else ""]
+	banner_cor = Color.html(str(def.get("cor", "#a855f7")))
+	banner_t = 3.4
 	Bus.banner_cinematico.emit(banner_t)
 
 func _process(delta: float) -> void:

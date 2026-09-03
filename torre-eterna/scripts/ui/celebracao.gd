@@ -29,6 +29,17 @@ const RECEITAS := {
 	"temporada":      {"titulo": "cel_temporada", "cor": "#38bdf8", "icone": "estrela", "som": "conquista", "peso": 0.85},
 	"retomada":       {"titulo": "cel_retomada", "cor": "#f97316", "icone": "alvo", "som": "alerta_chefe", "peso": 0.8},
 	"retomada_superada": {"titulo": "cel_retomada_ok", "cor": "#4ade80", "icone": "trofeu", "som": "conquista", "peso": 1.0},
+	# ASCENDER PESAVA MENOS NA TELA QUE UMA PURGA. A decisao mais dificil do
+	# jogo — largar tudo o que voce construiu — dava um banner de 2,6 s com o
+	# identificador cru escrito nele, enquanto uma Purga bem cronometrada (que
+	# acontece a cada poucos minutos) ganhava a camada inteira de comemoracao.
+	# Peso 1,6: e o maior do catalogo, e e para ser.
+	"prestigio":      {"titulo": "", "cor": "#a855f7", "icone": "prestigio", "som": "prestigio", "peso": 1.6},
+	# AS DEZ ERAS NUNCA DIZIAM O NOME. `Bus.era_mudou` tinha um unico ouvinte, o
+	# pintor de fundo: o mundo mudava de cor e ninguem explicava por que. Cada
+	# era traz `nome` e `regra.texto` escritos e revisados nos dois idiomas, e
+	# nenhum dos dois chegava aos olhos de quem joga.
+	"era":            {"titulo": "", "cor": "#38bdf8", "icone": "nova", "som": "conquista", "peso": 1.35},
 }
 
 ## Quem manda os painéis. `main.gd` entrega no momento da montagem — caminho de
@@ -46,8 +57,27 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	Bus.celebracao.connect(_ao_celebrar)
-	Bus.prestigio_feito.connect(func(_c, _g): fila.clear(); atual = {}; queue_redraw())
+	# A ordem importa: o prestigio limpa a fila (as comemoracoes da corrida que
+	# acabou nao fazem mais sentido) e SO ENTAO entra a dele.
+	Bus.prestigio_feito.connect(_ao_prestigio)
+	Bus.era_mudou.connect(_ao_era)
 	set_process(true)
+
+func _ao_prestigio(camada: String, ganho: float) -> void:
+	fila.clear()
+	atual = {}
+	queue_redraw()
+	var def: Dictionary = {}
+	for c in Dados.camadas_prestigio:
+		if str((c as Dictionary).get("id", "")) == camada:
+			def = c
+			break
+	_ao_celebrar("prestigio", {"camada": camada, "ganho": ganho, "def": def})
+
+func _ao_era(_indice: int, era: Dictionary) -> void:
+	if era.is_empty():
+		return
+	_ao_celebrar("era", {"era": era})
 
 func _ao_celebrar(tipo: String, dados: Dictionary) -> void:
 	var receita: Dictionary = RECEITAS.get(tipo, {})
@@ -97,7 +127,7 @@ func _draw() -> void:
 	if atual.is_empty():
 		return
 	var receita: Dictionary = atual["receita"]
-	var cor := Color.html(str(receita.get("cor", "#ffffff")))
+	var cor := _cor_do_momento(receita)
 	var peso := float(receita.get("peso", 1.0))
 	var tam := size
 	var centro := tam * 0.5
@@ -158,7 +188,7 @@ func _draw() -> void:
 
 	# título
 	var fonte := ThemeDB.fallback_font
-	var titulo := Txt.t(str(receita.get("titulo", "")))
+	var titulo := _titulo()
 	var tam_fonte := int(round((34.0 + 10.0 * peso) * (1.0 if reduzido else pop)))
 	var larg := fonte.get_string_size(titulo, HORIZONTAL_ALIGNMENT_LEFT, -1, tam_fonte).x
 	var pos_t := centro + Vector2(-larg * 0.5, raio + 62.0)
@@ -172,11 +202,70 @@ func _draw() -> void:
 	# subtítulo: o detalhe concreto do que acabou de acontecer
 	var sub := _subtitulo()
 	if sub != "":
-		var ls := fonte.get_string_size(sub, HORIZONTAL_ALIGNMENT_LEFT, -1, 17).x
-		var ps := centro + Vector2(-ls * 0.5, raio + 92.0)
+		# A REGRA DA ERA E UMA FRASE INTEIRA, nao um numero. O subtitulo era uma
+		# linha so, centrada e sem limite: numa janela estreita ela saia pelos
+		# dois lados da tela. Quebra em ate tres linhas dentro da largura util.
+		var util := minf(tam.x - 80.0, 760.0)
+		var linhas_sub := _quebrar(sub, fonte, 17, util, 3)
 		var cs := Color(0.92, 0.95, 1.0, 0.86 * a)
-		draw_string(fonte, ps + Vector2(1, 1), sub, HORIZONTAL_ALIGNMENT_LEFT, -1, 17, Color(0, 0, 0, 0.7 * a))
-		draw_string(fonte, ps, sub, HORIZONTAL_ALIGNMENT_LEFT, -1, 17, cs)
+		var y := raio + 92.0
+		for linha_s in linhas_sub:
+			var ls := fonte.get_string_size(linha_s, HORIZONTAL_ALIGNMENT_LEFT, -1, 17).x
+			var ps := centro + Vector2(-ls * 0.5, y)
+			draw_string(fonte, ps + Vector2(1, 1), linha_s, HORIZONTAL_ALIGNMENT_LEFT, -1, 17, Color(0, 0, 0, 0.7 * a))
+			draw_string(fonte, ps, linha_s, HORIZONTAL_ALIGNMENT_LEFT, -1, 17, cs)
+			y += 23.0
+
+## Quebra por palavra dentro de `largura`, no maximo `maxlin` linhas. A ultima
+## linha ganha reticencias se sobrar texto — melhor cortar do que vazar.
+static func _quebrar(texto: String, fonte: Font, tamanho: int, largura: float, maxlin: int) -> Array:
+	var saida: Array = []
+	var atual_l := ""
+	for palavra in texto.split(" ", false):
+		var tentativa := palavra if atual_l == "" else atual_l + " " + palavra
+		if fonte.get_string_size(tentativa, HORIZONTAL_ALIGNMENT_LEFT, -1, tamanho).x <= largura:
+			atual_l = tentativa
+			continue
+		if atual_l != "":
+			saida.append(atual_l)
+		atual_l = palavra
+		if saida.size() >= maxlin:
+			break
+	if atual_l != "" and saida.size() < maxlin:
+		saida.append(atual_l)
+	if saida.size() >= maxlin and not saida.is_empty():
+		var ultima := str(saida[saida.size() - 1])
+		if not texto.ends_with(ultima):
+			saida[saida.size() - 1] = ultima + "…"
+	return saida
+
+## O título: fixo por receita, ou o nome que vem no evento (era, camada de
+## prestígio). Cor também: a era e a camada trazem a sua.
+func _titulo() -> String:
+	var d: Dictionary = atual.get("dados", {})
+	match str(atual.get("tipo", "")):
+		"era":
+			return Ux.txt(d.get("era", {}), "nome", Cfg.ingles()).to_upper()
+		"prestigio":
+			var def: Dictionary = d.get("def", {})
+			if def.is_empty():
+				return str(d.get("camada", "")).to_upper()
+			return Ux.txt(def, "nome", Cfg.ingles()).to_upper()
+	return Txt.t(str((atual.get("receita", {}) as Dictionary).get("titulo", "")))
+
+func _cor_do_momento(receita: Dictionary) -> Color:
+	var d: Dictionary = atual.get("dados", {})
+	match str(atual.get("tipo", "")):
+		"era":
+			var era: Dictionary = d.get("era", {})
+			var pal: Dictionary = era.get("paleta", {})
+			if pal.has("acento2"):
+				return Color.html(str(pal["acento2"]))
+		"prestigio":
+			var def: Dictionary = d.get("def", {})
+			if def.has("cor"):
+				return Color.html(str(def["cor"]))
+	return Color.html(str(receita.get("cor", "#ffffff")))
 
 ## O número que dá peso ao momento. Sem ele a celebração é genérica.
 func _subtitulo() -> String:
@@ -199,4 +288,16 @@ func _subtitulo() -> String:
 			return Txt.f("cel_retomada_sub", {"n": int(d.get("alvo", 0))})
 		"retomada_superada":
 			return Txt.f("cel_retomada_ok_sub", {"n": int(d.get("onda", 0))})
+		"prestigio":
+			var def: Dictionary = d.get("def", {})
+			var moeda := str(def.get("moeda", ""))
+			var nome_moeda := Txt.t("m_" + moeda) if moeda != "" else ""
+			return "+%s %s" % [Fmt.big(float(d.get("ganho", Big.ZERO))), nome_moeda]
+		"era":
+			# A REGRA da era, que e a unica coisa que muda o jogo. Se a era nao
+			# tiver regra (a primeira nao tem), fica a descricao.
+			var era: Dictionary = d.get("era", {})
+			var regra: Dictionary = era.get("regra", {})
+			var t_regra := Ux.txt(regra, "texto", Cfg.ingles()) if not regra.is_empty() else ""
+			return t_regra if t_regra != "" else Ux.txt(era, "descricao", Cfg.ingles())
 	return ""

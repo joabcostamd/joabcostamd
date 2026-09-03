@@ -137,8 +137,6 @@ func _talvez_capturar() -> void:
 		for b in Dados.chefes + Dados.super_chefes:
 			jogo.s["codex"]["chefes"][str(b["id"])] = 3
 		Bus.ui_atualizar.emit(true)
-	if _celebrar_debug != "":
-		Bus.celebracao.emit(_celebrar_debug, {"mortos": 47, "nivel": 3, "alvo": 210, "onda": 211})
 	if onda > 0:
 		jogo.s["onda_maxima"] = onda
 		jogo.s["onda_maxima_global"] = onda
@@ -148,6 +146,24 @@ func _talvez_capturar() -> void:
 			jogo.comprar_upgrade("cadencia", 4)
 			jogo.comprar_upgrade("vida", 8)
 			jogo.ganhar_ouro(Big.mul_f(Bal.ouro_onda(onda), 400.0), "debug", true)
+	# DEPOIS do salto de onda, senao `ir_para()` sorteia um evento e o dialogo
+	# cobre justamente o que a captura veio provar.
+	if _celebrar_debug != "":
+		jogo.s["eventos"]["proximo_em"] = 9999.0
+		jogo.s["eventos"]["ativo"] = ""
+		# A era e a camada de prestigio trazem o proprio nome, cor e texto: sem
+		# eles a comemoracao sai em branco e a captura nao prova nada.
+		var dados_cel := {"mortos": 47, "nivel": 3, "alvo": 210, "onda": 211}
+		if _celebrar_debug == "era":
+			dados_cel["era"] = Dados.era_atual(120)
+		elif _celebrar_debug == "prestigio":
+			dados_cel["camada"] = "ascensao"
+			dados_cel["ganho"] = Big.from(2917.0)
+			for c in Dados.camadas_prestigio:
+				if str((c as Dictionary).get("id", "")) == "ascensao":
+					dados_cel["def"] = c
+					break
+		Bus.celebracao.emit(_celebrar_debug, dados_cel)
 	_capturar_em(segundos, saida)
 
 var _painel_alvo := ""
