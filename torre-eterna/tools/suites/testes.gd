@@ -1669,6 +1669,43 @@ func t_celebracao() -> void:
 		fonte_cartas.contains("var grupo_ordem := UI.hbox(8)"),
 		"solto no fluxo, o rotulo fica orfao no fim de uma linha")
 
+	# DOIS PAINEIS ESTOURAVAM A LARGURA DA JANELA, E SO EM PORTUGUES.
+	#
+	# As frases em portugues sao mais longas que as inglesas, e as duas telas
+	# abaixo dimensionam por texto. Medido em capturas de 1280x720: o painel de
+	# Conquistas cortava o contador de pontos ("50 / 2.0"), o bonus global
+	# ("+2,5% de dan") e a ultima aba, e deixava barra de rolagem horizontal; o
+	# Codex deixava a mesma barra e escondia uma coluna do bestiario.
+	var fonte_conq := _ler("res://scripts/ui/panel_conquistas.gd")
+	ok("as abas de conquista tem a largura inteira",
+		fonte_conq.contains("abas.size_flags_horizontal = Control.SIZE_EXPAND_FILL"),
+		"sem expandir, o TabBar encolhe para uma aba e esconde as outras seis")
+	ok("e o TabBar tem rede contra transbordo", fonte_conq.contains("abas.clip_tabs = true"),
+		"clip_tabs = false faz o painel inteiro ficar mais largo que a tela")
+	ok("o filtro 'so as que faltam' desce para linha propria",
+		fonte_conq.contains("var linha_faltam := UI.hbox(10)"),
+		"na mesma linha das abas, ele rouba a largura delas")
+	# O Codex: a conta que decide as duas grades.
+	var CX := load("res://scripts/ui/panel_codex.gd") as GDScript
+	ok("codex.gd carrega", CX != null)
+	if CX != null:
+		# A coluna da esquerda e o painel menos a ficha de detalhe e as folgas.
+		var larg_esq: float = 1230.0 - float(CX.LARG_DETALHE) - 40.0
+		# Ficha de inimigo em portugues, medida em captura: ~158 px.
+		var larg_ficha := 158.0
+		var usado_grade: float = float(CX.COLUNAS) * larg_ficha + float(CX.COLUNAS - 1) * 8.0
+		ok("a grade do bestiario cabe na coluna",
+			usado_grade <= larg_esq,
+			"%.0f px de grade em %.0f px de coluna" % [usado_grade, larg_esq])
+		# Ficha de elite: 190 px de descricao + icone + folgas + moldura.
+		var larg_chip := 290.0
+		var usado_elite := 2.0 * larg_chip + 6.0
+		ok("as fichas de elite cabem na coluna", usado_elite <= larg_esq,
+			"%.0f px de fichas em %.0f px de coluna" % [usado_elite, larg_esq])
+		ok("e sao duas por linha, nao tres",
+			_ler("res://scripts/ui/panel_codex.gd").contains("g2.columns = 2"),
+			"tres fichas de elite somam ~880 px e estouram a coluna")
+
 	# COMEMORACAO EM ANDAMENTO NAO PODE ESCREVER POR CIMA DE PAINEL ABERTO.
 	#
 	# A guarda existia e so impedia de COMECAR. Uma que ja estava rodando seguia

@@ -14,7 +14,17 @@ const LARG_INDICE := 316.0
 const TILE_W := 126.0
 const TILE_H := 128.0
 const ART_TILE := 60.0
-const COLUNAS := 5
+## Quantas fichas de inimigo por linha no bestiario.
+##
+## Eram cinco, e cinco so cabiam em ingles. A largura da ficha nao e fixa: ela e
+## o maior dos minimos dos filhos, e o nome do inimigo esta entre eles. Em
+## portugues os nomes sao mais longos ("Teleportador" por "Blinker",
+## "Sanguessuga" por "Leech") e a ficha passou de ~124 px para ~158; cinco
+## delas somam 790 px numa coluna de 730, entao a grade ganhava barra de
+## rolagem horizontal e a quinta coluna ficava cortada atras do painel de
+## detalhe. Quatro cabem nos dois idiomas com folga — e a grade rola na
+## vertical de qualquer jeito, entao a densidade perdida nao custa nada.
+const COLUNAS := 4
 
 var abas: TabBar
 var conteudo: HBoxContainer
@@ -174,8 +184,16 @@ func _montar_bestiario() -> void:
 		coluna.add_child(UI.separador())
 		coluna.add_child(_titulo_secao(Txt.t("cdx_variantes_elite"), "estrela", UI.ACENTO2,
 			Txt.t("cdx_variantes_elite_dica")))
+		# DUAS POR LINHA, NAO TRES.
+		#
+		# A ficha de elite tem uma descricao com 190 px de largura minima, mais
+		# icone, espacamentos e a moldura: da uns 240 px em ingles e uns 290 em
+		# portugues, onde as frases sao mais longas. Tres delas somam ~880 px
+		# numa coluna de 720, e era ISSO que deixava a barra de rolagem
+		# horizontal no bestiario — nao a grade de inimigos, que eu tinha
+		# acusado primeiro. Duas cabem nos dois idiomas com folga larga.
 		var g2 := GridContainer.new()
-		g2.columns = 3
+		g2.columns = 2
 		g2.add_theme_constant_override("h_separation", 6)
 		g2.add_theme_constant_override("v_separation", 6)
 		coluna.add_child(g2)

@@ -79,9 +79,35 @@ func montar(c: VBoxContainer) -> void:
 	c.add_child(topo)
 
 	# ---- abas + filtro ----
-	var barra_filtro := UI.hbox(10)
+	# ESTA FILA PRECISA QUEBRAR, NAO EMPURRAR.
+	#
+	# `clip_tabs = false` faz o TabBar exigir a largura natural das sete abas
+	# (com os contadores dentro), e o interruptor "so as que faltam" vinha
+	# depois na mesma linha. Somados passavam da largura da janela e o painel
+	# INTEIRO ficava mais largo que a tela: o contador de pontos virava
+	# "50 / 2,0", o bonus global virava "+2.5% dama", a ultima aba ficava
+	# cortada e sobrava uma barra de rolagem horizontal no rodape. Em portugues
+	# os nomes sao mais longos.
+	#
+	# Num container que quebra, o interruptor desce para a linha de baixo quando
+	# nao cabe, e as abas ficam inteiras. O `clip_tabs` volta a ser verdadeiro
+	# como ultima rede: se um dia as abas sozinhas nao couberem, o TabBar mostra
+	# as setas dele em vez de arrastar o painel para fora da tela.
+	# As abas ficam com a LARGURA INTEIRA do painel, e o interruptor desce.
+	#
+	# Primeira tentativa foi um container que quebra com os dois na mesma fila.
+	# Consertou o transbordo e criou coisa pior: sem largura para expandir, o
+	# TabBar encolheu para uma aba so e escondeu as outras seis atras de duas
+	# setinhas. Sumir com "Combate", "Economia" e "Segredos" e pior do que o
+	# defeito original.
+	#
+	# Com o interruptor numa linha propria, as sete abas tem os ~1.150 px do
+	# painel inteiro — cabem em portugues e em ingles. O `clip_tabs` fica
+	# verdadeiro como ultima rede: se um dia nao couberem nem assim, o TabBar
+	# usa as setas dele em vez de arrastar o painel para fora da tela.
+	var barra_filtro := UI.vbox(6)
 	abas = TabBar.new()
-	abas.clip_tabs = false
+	abas.clip_tabs = true
 	abas.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	cats = [{"id": "todas", "nome": Txt.t("cqt_cat_todas")}]
 	for item in Dados.categorias_conquista:
@@ -101,7 +127,10 @@ func montar(c: VBoxContainer) -> void:
 	check_faltam.toggled.connect(func(v):
 		so_faltam = bool(v)
 		_reconstruir())
-	barra_filtro.add_child(check_faltam)
+	var linha_faltam := UI.hbox(10)
+	linha_faltam.add_child(UI.espacador())
+	linha_faltam.add_child(check_faltam)
+	barra_filtro.add_child(linha_faltam)
 	c.add_child(barra_filtro)
 
 	# ---- lista ----

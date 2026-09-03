@@ -8,7 +8,7 @@
 ![GDScript](https://img.shields.io/badge/GDScript-2.0-478CBF)
 ![Arte](https://img.shields.io/badge/Arte-100%25%20procedural-a855f7)
 ![Áudio](https://img.shields.io/badge/Áudio-sintetizado-f472b6)
-![Testes](https://img.shields.io/badge/Testes-750%2F750-4ade80)
+![Testes](https://img.shields.io/badge/Testes-757%2F757-4ade80)
 ![Idiomas](https://img.shields.io/badge/Idiomas-PT--BR%20%C2%B7%20EN-38bdf8)
 
 ---
@@ -44,7 +44,7 @@ cd torre-eterna
 # Verificação estrutural (todo script compila? dados presentes?)
 godot --headless --path . -s res://tools/verificar.gd
 
-# Suíte de testes da simulação — 750 testes, sem mocks
+# Suíte de testes da simulação — 757 testes, sem mocks
 godot --headless --path . -s res://tools/testes.gd
 
 # Convenções do projeto (emoji na interface, print solto, painel órfão, mídia)
@@ -137,7 +137,7 @@ entidades vira economia, e a tela cheia rende mais em vez de render menos.
 - **40** entradas de lore em 8 capítulos · **30** dicas
 - **6** moedas · **6** raridades · **39** atributos de torre
 - **1.058** chaves de interface e **1.286** textos de conteúdo, em português e inglês
-- **750** testes da simulação · **0** arquivo de som · a única imagem do repositório é `icon.svg`, o ícone do projeto
+- **757** testes da simulação · **0** arquivo de som · a única imagem do repositório é `icon.svg`, o ícone do projeto
 
 ---
 

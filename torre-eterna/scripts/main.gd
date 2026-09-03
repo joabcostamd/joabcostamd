@@ -109,6 +109,12 @@ func _talvez_capturar() -> void:
 			_celebrar_debug = a.substr(11)
 		elif a == "--en":
 			Cfg.set_v("idioma", "en")
+		elif a == "--pt":
+			# O par de `--en`. Sem ele, conferir o layout em portugues dependia
+			# do idioma que a maquina da captura estivesse configurada — e as
+			# frases em portugues sao mais longas que as inglesas, que e
+			# exatamente o caso que estoura caixa.
+			Cfg.set_v("idioma", "pt")
 		elif a.begins_with("--daltonismo="):
 			Cfg.set_v("daltonismo", int(a.substr(13)))
 		elif a == "--contraste":
