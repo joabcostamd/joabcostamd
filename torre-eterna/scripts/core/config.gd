@@ -61,6 +61,7 @@ func aplicar() -> void:
 	Fmt.notacao = int(v["notacao"]) as Fmt.Notacao
 	Fmt.casas = int(v["casas"])
 	Fmt.ingles = v["idioma"] == "en"
+	Txt.definir_idioma(v["idioma"] == "en")
 
 	var master := AudioServer.get_bus_index("Master")
 	if master >= 0:

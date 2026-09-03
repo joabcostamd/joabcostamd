@@ -23,6 +23,7 @@ var tocando := false
 
 var _vozes: Array[AudioStreamPlayer] = []
 var _prox_livre := 0
+var _pad_i := 0
 var _t := 0.0
 var _passo := 0
 var _rng := RandomNumberGenerator.new()
@@ -258,8 +259,6 @@ func _pad(midi: float, db: float) -> void:
 	p.pitch_scale = clampf(pow(2.0, (midi - REF_PAD) / 12.0), 0.1, 3.0)
 	p.volume_db = db + linear_to_db(clampf(_ganho, 0.001, 1.0))
 	p.play()
-
-var _pad_i := 0
 
 func _prox_pad() -> int:
 	_pad_i = (_pad_i + 1) % VOZES_PAD

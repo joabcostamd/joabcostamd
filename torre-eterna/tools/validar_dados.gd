@@ -1,5 +1,10 @@
 extends SceneTree
 
+## preload garante que a classe esteja carregada em tempo de parse: em modo
+## `-s` a resolução tardia de class_name já deixou esta checagem passar em
+## silêncio uma vez, o que é pior do que falhar.
+const Textos := preload("res://scripts/core/textos.gd")
+
 ## Validador do conteúdo em data/*.json — o JSON é a FONTE DA VERDADE do jogo.
 ##   godot --headless --path . -s res://tools/validar_dados.gd
 ## Falha se algum dado quebrar o contrato que o motor espera.
@@ -49,11 +54,11 @@ func _initialize() -> void:
 
 ## O seletor de idioma só é honesto se cada chave da interface tiver par em EN.
 func _i18n() -> void:
-	var faltando := Txt.chaves_sem_en()
+	var faltando := Textos.chaves_sem_en()
 	if not faltando.is_empty():
 		erros.append("interface sem tradução em EN: %s" % str(faltando))
-	for k in Txt.EN.keys():
-		if not Txt.PT.has(k):
+	for k in Textos.EN.keys():
+		if not Textos.PT.has(k):
 			avisos.append("chave de interface só em EN: %s" % str(k))
 
 func _contagens() -> void:

@@ -111,9 +111,17 @@ const EN := {
 	"save_importado": "Save imported", "save_invalido": "Invalid save code",
 }
 
+## Idioma atual da interface. Quem manda aqui é o Cfg (que chama `definir_idioma`)
+## — esta classe NÃO depende do autoload, para poder ser usada por ferramentas
+## de linha de comando, onde autoloads não resolvem.
+static var ingles := false
+
+static func definir_idioma(usar_ingles: bool) -> void:
+	ingles = usar_ingles
+
 ## Texto da interface na língua atual.
 static func t(chave: String) -> String:
-	if Cfg.ingles():
+	if ingles:
 		var en = EN.get(chave, null)
 		if en != null:
 			return str(en)
