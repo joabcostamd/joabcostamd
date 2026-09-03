@@ -130,3 +130,11 @@ Para não repetir trabalho — cada um com teste que reprova se voltar:
 - **`bonus_permanentes` crescia sem parar** — uma linha nova por missão diária concluída, numa lista lida em todo recálculo
 - **O soak dizia PASS com o jogo sem conseguir gravar** — ele nunca tinha olhado para o disco
 - **As quatro ferramentas escreviam no mesmo arquivo de save** e brigavam quando rodavam juntas
+- **A comemoração desenhava por cima de painel aberto** — a guarda só impedia de começar, não de continuar
+- **Painéis de Cartas, Conquistas, Codex e Relíquias estouravam a largura da tela em português** — botão "Comprar" virando "Com", abas cortadas, barra de rolagem horizontal
+- **O overkill estava congelado no piso do clamp**: dois ramos de feedback eram código morto, e matar com mil vezes o dano necessário dava a mesma imagem que matar com 26% de sobra
+- **O tiro de rotina tremia a tela sem parar** e, pela guarda de amplitude, engolia o tremor do crítico e o da morte de dourado
+- **"Movimento reduzido" não desligava o zoom da câmera** — o movimento que mais provoca enjoo
+- **O hitstop contava no relógio escalado**: 0,64 s de tela parada com câmera lenta, 40 ms com o turbo
+- **Desligar "Flashes" apagava a apresentação inteira do chefe**, e com ela a dica tática
+- **A torre voltava a viver em silêncio visual** — a queda tinha tudo, a volta tinha um som
