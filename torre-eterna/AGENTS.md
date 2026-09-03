@@ -12,14 +12,21 @@ cd torre-eterna
 godot --headless --path . -s res://tools/verificar.gd       # todo script compila, dados presentes
 godot --headless --path . -s res://tools/lint.gd            # convenções do projeto
 godot --headless --path . -s res://tools/validar_dados.gd   # conteúdo obedece ao contrato
-godot --headless --path . -s res://tools/testes.gd          # 325 testes da simulação
+godot --headless --path . -s res://tools/testes.gd          # 330 testes da simulação
 godot --headless --path . -s res://tools/perf.gd -- 400      # custo de um passo com a arena cheia
 godot --headless --path . -s res://agent_verify.gd          # verificação estrutural do kit
 
 # E o portão que os testes não cobrem: uma hora de jogo de verdade, com a
 # automação ligada, procurando erro em tempo de execução. Os testes chamam
 # funções isoladas; só o simulador roda o laço inteiro por horas.
-godot --headless --path . -s res://tools/sim_balance.gd -- 1 auto 2>&1 | grep -c "SCRIPT ERROR"   # tem que dar 0
+godot --headless --path . -s res://tools/sim_balance.gd -- 2 auto   # faixas de balanceamento
+
+# E o portão que NENHUM dos outros faz: desenhar. Todos rodam `--headless`, que
+# usa um renderizador burro — as chamadas de desenho nunca executam, e um erro
+# de renderização é invisível para eles. Foi assim que 48 `triangulation failed`
+# por 30 s de jogo viveram aqui sem ninguém reclamar. Precisa de tela:
+xvfb-run -a -s "-screen 0 1280x720x24" godot --path . -- --shot=12 --onda=20 2>&1 \
+  | grep -E "^ERROR:|SCRIPT ERROR" | grep -v audio_driver_alsa   # tem que dar vazio
 ```
 
 Só `===STATUS=== PASS` conta. Ignore o código de saída do processo — o bloco é o contrato.
@@ -30,6 +37,14 @@ máquina antes de julgar o jogo: uma conta fixa roda no começo e no fim do laç
 e o orçamento de 4000 us estica na mesma proporção (piso 1,0x, teto 3,0x). Ao
 comparar duas medidas, use a linha **normalizado**, não o custo bruto — o bruto
 muda com quem mais está usando a CPU, o normalizado não.
+
+Ele tem **duas pernas, e as duas reprovam**: 10 min de jogo real, e a população
+segurada no teto que `Bal.contagem_onda` sabe criar. O estresse muito além
+desse teto é publicado como folga e não reprova, porque o jogo não produz aquela
+população. Isto está escrito porque já foi feito errado: a primeira correção
+desta ferramenta tirou do contrato justamente a perna que falhava, o que é
+afrouxar o portão com outro nome. **Se uma perna estourar, otimize — não mexa
+na régua.**
 
 Antes de mexer em balanceamento, tire uma medida de base:
 ```bash

@@ -1,0 +1,145 @@
+{
+  "_leia": "Os elos entre sistemas do critério 6, cada um com a PROVA no código: o arquivo e o símbolo que fazem o elo existir. A suíte confere que cada prova está lá. Sem isso o critério é prosa, e cada avaliador conta diferente.",
+  "elos": [
+    {
+      "de": "Combate",
+      "para": "Purga",
+      "efeito": "cada abate adianta a carga da Purga",
+      "arquivo": "scripts/sim/mecanicas.gd",
+      "prova": "func creditar_abate_purga"
+    },
+    {
+      "de": "Purga",
+      "para": "Habilidades",
+      "efeito": "disparar a Purga recarrega as habilidades",
+      "arquivo": "scripts/sim/mecanicas.gd",
+      "prova": "PURGA_JANELA_PERFEITA"
+    },
+    {
+      "de": "Combate",
+      "para": "Adaptação",
+      "efeito": "o elemento mais usado cria resistência no Enxame",
+      "arquivo": "scripts/sim/mecanicas.gd",
+      "prova": "func decair_adaptacao"
+    },
+    {
+      "de": "Adaptação",
+      "para": "Combate",
+      "efeito": "a resistência reduz o dano daquele elemento",
+      "arquivo": "scripts/sim/combat.gd",
+      "prova": "Mecanicas.fator_elemento"
+    },
+    {
+      "de": "Aglomeração",
+      "para": "Economia",
+      "efeito": "mais inimigos vivos, mais ouro por abate",
+      "arquivo": "scripts/sim/combat.gd",
+      "prova": "Mecanicas.fator_aglomeracao"
+    },
+    {
+      "de": "Combo",
+      "para": "Economia",
+      "efeito": "o combo multiplica o ouro e o dano",
+      "arquivo": "scripts/sim/combat.gd",
+      "prova": "combo"
+    },
+    {
+      "de": "Cartas",
+      "para": "Atributos",
+      "efeito": "carta equipada entra no cálculo de atributos",
+      "arquivo": "scripts/sim/modifiers.gd",
+      "prova": "equipadas"
+    },
+    {
+      "de": "Álbum de Ecos",
+      "para": "Atributos",
+      "efeito": "carta VISTA vira bônus permanente",
+      "arquivo": "scripts/sim/mecanicas.gd",
+      "prova": "func registrar_no_album"
+    },
+    {
+      "de": "Panteão",
+      "para": "Atributos",
+      "efeito": "consagrar um conjunto dá multiplicador eterno",
+      "arquivo": "scripts/sim/mecanicas.gd",
+      "prova": "func bonus_panteao"
+    },
+    {
+      "de": "Desafios vencidos",
+      "para": "Atributos",
+      "efeito": "a recompensa permanente entra no recálculo",
+      "arquivo": "scripts/sim/modifiers.gd",
+      "prova": "completos"
+    },
+    {
+      "de": "Sequência diária",
+      "para": "Ganho de XP",
+      "efeito": "dias seguidos multiplicam o XP",
+      "arquivo": "scripts/sim/modifiers.gd",
+      "prova": "mult_xp_sequencia"
+    },
+    {
+      "de": "Missões e conquistas",
+      "para": "Atributos",
+      "efeito": "recompensa do tipo stat vira bônus permanente",
+      "arquivo": "scripts/sim/modifiers.gd",
+      "prova": "bonus_permanentes"
+    },
+    {
+      "de": "Prestígio",
+      "para": "Atributos",
+      "efeito": "as três árvores entram no cálculo",
+      "arquivo": "scripts/sim/modifiers.gd",
+      "prova": "arvore_fragmentos"
+    },
+    {
+      "de": "Relíquias",
+      "para": "Passivas",
+      "efeito": "relíquia liga passiva que outros sistemas leem",
+      "arquivo": "scripts/sim/modifiers.gd",
+      "prova": "reliquia_por_id"
+    },
+    {
+      "de": "Prestígio",
+      "para": "Retomada",
+      "efeito": "depois do reset o jogo reconstrói contra o fantasma",
+      "arquivo": "scripts/sim/mecanicas.gd",
+      "prova": "func iniciar_retomada"
+    },
+    {
+      "de": "Offline",
+      "para": "Caixa da Vigília",
+      "efeito": "o loot offline chega lacrado para abrir",
+      "arquivo": "scripts/sim/offline.gd",
+      "prova": "Mecanicas.selar_offline"
+    },
+    {
+      "de": "Eventos",
+      "para": "Economia e Torre",
+      "efeito": "a escolha do evento mexe em ouro, vida e onda",
+      "arquivo": "scripts/sim/events_sim.gd",
+      "prova": "func aplicar"
+    },
+    {
+      "de": "Desafios ativos",
+      "para": "Regras da partida",
+      "efeito": "modificadores trocam HP, ouro, densidade e XP",
+      "arquivo": "scripts/sim/game.gd",
+      "prova": "mods_dif"
+    },
+    {
+      "de": "Peregrino",
+      "para": "Epílogo",
+      "efeito": "matar ou poupar é contado para sempre e aparece no final",
+      "arquivo": "scripts/sim/mecanicas.gd",
+      "prova": "peregrinos_poupados"
+    },
+    {
+      "de": "Modo Infinito",
+      "para": "Ondas",
+      "efeito": "o último nó do Éter muda a contagem e a escala das ondas",
+      "arquivo": "scripts/data/balance.gd",
+      "prova": "func escala_infinito"
+    }
+  ]
+}

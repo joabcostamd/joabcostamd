@@ -9,6 +9,8 @@ var angulo_canhao := -PI * 0.5
 var recuo := 0.0
 var pulso := 0.0
 var iframes := 0.0
+## Reusado a cada quadro para achar o segundo alvo sem alocar Dicionário novo.
+var _ids_alvo := {}
 var tempo_sem_dano := 0.0
 var orbes: Array = []                 # [{ang, raio, cd, pos}]
 var orbes_extra := 0
@@ -84,11 +86,21 @@ func atualizar(dt: float) -> void:
 	var cadencia: float = maxf(0.05, j.stats.n("cadencia"))
 	cd_tiro -= dt
 	var tiros := 0
+	# O segundo alvo é calculado UMA vez por quadro, aqui, e não por disparo.
+	# `disparar` chamava `arena.alvo()` de novo a cada tiro — uma varredura da
+	# lista inteira de inimigos — e com cadência alta são até doze varreduras
+	# por quadro para receber quase sempre a MESMA resposta que a mira já tinha.
+	# Com 160 vivos isso era o maior custo isolado do passo de simulação.
+	var segundo: Inimigo = null
+	if alvo != null and int(j.stats.n("projeteis")) > 1:
+		_ids_alvo.clear()
+		_ids_alvo[alvo.id] = true
+		segundo = j.arena.alvo_ids(j.arena.centro, alcance, "proximo", _ids_alvo)
 	while cd_tiro <= 0.0 and tiros < 12:
 		cd_tiro += 1.0 / cadencia
 		if alvo == null:
 			break
-		disparar(alvo)
+		disparar(alvo, segundo)
 		tiros += 1
 	if cd_tiro < 0.0:
 		cd_tiro = 0.0
@@ -97,22 +109,16 @@ func atualizar(dt: float) -> void:
 
 ## ------------------------------------------------------------ disparo
 
-func disparar(alvo: Inimigo) -> void:
+func disparar(alvo: Inimigo, segundo: Inimigo = null) -> void:
 	var n: int = maxi(1, int(j.stats.n("projeteis")))
 	var espalhamento: float = minf(0.6, 0.06 * float(n)) if n > 1 else 0.0
 	var centro_b: Vector2 = j.arena.centro
 	var base := (alvo.pos - centro_b).angle()
 	var alcance: float = j.stats.n("alcance")
 
-	# `arena.alvo` varre a lista inteira de inimigos. Chamar dentro do laco fazia
-	# uma varredura por projetil extra para receber SEMPRE a mesma resposta —
-	# com 8 projeteis eram 7 varreduras jogadas fora por disparo, e os projeteis
-	# ja eram 46% do custo do passo de simulacao. Uma vez basta.
-	var alvo_extra: Inimigo = alvo
-	if n > 1:
-		var outro: Inimigo = j.arena.alvo(centro_b, alcance, "proximo")
-		if outro != null:
-			alvo_extra = outro
+	# O segundo alvo vem pronto de `atualizar`: uma varredura por quadro, nao uma
+	# por tiro. Se nao houver um segundo inimigo, os extras acompanham o primeiro.
+	var alvo_extra: Inimigo = segundo if segundo != null else alvo
 
 	for i in n:
 		var t := 0.0 if n == 1 else (float(i) / float(n - 1) - 0.5) * 2.0

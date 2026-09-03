@@ -44,6 +44,21 @@ PASS/FAIL (critérios 1, 2, 3, 4, 5, 7, 13, 15). **11 pontos** são medida com
 comparação manual (10 e 12). **38 pontos** são juízo (6, 8, 9, 11, 14) — e
 enquanto forem, a nota deles vale o que vale a pessoa que avalia.
 
+## Sobre medir FPS neste ambiente
+
+Um crítico ligou o contador de FPS do próprio jogo sob Xvfb e mediu 35 fps com
+24 inimigos e 39 fps com 1 — quase o mesmo número com carga muito diferente. A
+observação está certa e a conclusão precisa da peça que falta: o ambiente não
+tem GPU. O Godot cai no **llvmpipe**, o rasterizador por software do Mesa, que
+desenha cada pixel na CPU. Custo praticamente fixo com a população é a
+assinatura de estar limitado por preenchimento de tela, não pela simulação.
+
+Por isso o contrato de desempenho deste projeto é o **custo do passo de
+simulação**, que não depende de GPU e é medido pelo critério 4 nas duas pernas.
+FPS medido sob llvmpipe não diz nada sobre a máquina de quem joga — nem a favor
+nem contra. Quem quiser um número de FPS honesto precisa rodar numa máquina com
+GPU de verdade; aqui, o que dá para afirmar é quanto custa a simulação.
+
 ## O que derruba a nota na hora
 
 - Um portão desativado para "fazer passar".
@@ -97,7 +112,7 @@ $ godot --headless --path . -s res://tools/validar_dados.gd
 ===STATUS=== PASS
 
 $ godot --headless --path . -s res://tools/testes.gd
-===TESTES=== passou=325 falhou=0
+===TESTES=== passou=330 falhou=0
 ===STATUS=== PASS
 
 $ godot --headless --path . -s res://tools/perf.gd -- 400
@@ -136,7 +151,7 @@ STATUS: PASS   (kit 1.5.2, 0 falhas)
 |---|---:|
 | Scripts GDScript | 85 |
 | Linhas de código | 24.098 |
-| Testes da simulação | 325 |
+| Testes da simulação | 330 |
 | Chaves de interface PT/EN | 1.012 |
 | Textos de conteúdo PT/EN | 1.286 |
 | Imagens no repositório | 1 (`icon.svg`, o ícone do projeto — nenhuma no jogo) |

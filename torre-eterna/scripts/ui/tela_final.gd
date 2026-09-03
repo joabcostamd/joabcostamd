@@ -8,9 +8,30 @@ var fonte: Font
 var jogo: Node
 var linhas: Array = []
 
+## O que a tela esconde enquanto estiver na frente, para devolver depois.
+var _escondidos: Array[Node] = []
+
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_STOP
+	# O fim do jogo desenhava POR CIMA do HUD vivo e do balão de tutorial: o
+	# epílogo aparecia atravessado por barra de vida, contador de ouro e botões
+	# de painel. É o último texto do jogo, e era o mais bagunçado. Agora ele vai
+	# para a frente de tudo e apaga o resto da interface enquanto durar — e
+	# devolve na saída, porque o jogo continua depois dele.
+	move_to_front()
+	var raiz := get_parent()
+	if raiz != null:
+		for irmao in raiz.get_children():
+			if irmao == self or not (irmao is CanvasItem):
+				continue
+			if (irmao as CanvasItem).visible:
+				(irmao as CanvasItem).visible = false
+				_escondidos.append(irmao)
+	tree_exiting.connect(func():
+		for n in _escondidos:
+			if is_instance_valid(n):
+				(n as CanvasItem).visible = true)
 	fonte = ThemeDB.fallback_font
 	jogo = get_node_or_null("/root/Jogo")
 	var poupados := int(jogo.s.get("peregrinos_poupados", 0))

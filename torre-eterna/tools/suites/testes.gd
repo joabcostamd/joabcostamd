@@ -49,6 +49,7 @@ func rodar(cena: SceneTree) -> void:
 	t_chaves_dinamicas()
 	t_pista_de_ouro()
 	t_icones()
+	t_sistemas()
 	t_dicas()
 	t_audio()
 	t_save()
@@ -1157,6 +1158,46 @@ func t_dicas() -> void:
 	ok("no sem dica continua ignorando", mudo.mouse_filter == Control.MOUSE_FILTER_IGNORE)
 	raiz.free()
 	raiz2.free()
+
+## O criterio 6 pede ">=10 sistemas que se afetam mutuamente" e nao tinha
+## ferramenta nenhuma: era oito pontos de prosa, satisfeitos por quem contasse,
+## e cada avaliador contava diferente. `data/systems.json` declara cada elo com
+## a PROVA — arquivo e simbolo que fazem o elo existir — e este teste confere.
+## Elo que sumir do codigo reprova; elo que ninguem declarou nao conta.
+func t_sistemas() -> void:
+	g("Sistemas")
+	var f := FileAccess.open("res://data/systems.json", FileAccess.READ)
+	ok("o arquivo de sistemas existe", f != null)
+	if f == null:
+		return
+	var bruto = JSON.parse_string(f.get_as_text())
+	f.close()
+	ok("systems.json e um objeto", bruto is Dictionary)
+	if not (bruto is Dictionary):
+		return
+	var elos: Array = bruto.get("elos", [])
+	ok("ha pelo menos 10 elos declarados", elos.size() >= 10, "%d elos" % elos.size())
+	var sem_prova: Array = []
+	var sistemas := {}
+	for item in elos:
+		if not (item is Dictionary):
+			continue
+		var elo: Dictionary = item
+		sistemas[str(elo.get("de", ""))] = true
+		sistemas[str(elo.get("para", ""))] = true
+		var arq := "res://" + str(elo.get("arquivo", ""))
+		var prova := str(elo.get("prova", ""))
+		var fa := FileAccess.open(arq, FileAccess.READ)
+		if fa == null:
+			sem_prova.append("%s (arquivo sumiu)" % arq)
+			continue
+		var texto := fa.get_as_text()
+		fa.close()
+		if not texto.contains(prova):
+			sem_prova.append("%s -> %s: '%s' nao existe em %s" % [
+				str(elo.get("de", "")), str(elo.get("para", "")), prova, arq])
+	ok("todo elo declarado tem prova no codigo", sem_prova.is_empty(), str(sem_prova.slice(0, 3)))
+	ok("ha pelo menos 10 sistemas distintos", sistemas.size() >= 10, "%d sistemas" % sistemas.size())
 
 ## O campo `icone` de `data/*.json` guarda emoji, e a regra de glifo do linter
 ## so varre `scripts/` e `tools/`. A pergunta que importa nao e "ha emoji no
