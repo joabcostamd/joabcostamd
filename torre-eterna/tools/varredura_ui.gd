@@ -27,6 +27,18 @@ extends RefCounted
 ##      "Com": o botao continua la, so que sem espaco para o texto dele.
 ##
 ## A tolerancia de 1 px existe porque o motor arredonda posicoes.
+## As tres telas que a varredura precisa cobrir, e por que cada uma.
+##
+## 1280x720 e o alvo de desktop. 900x1600 e celular em retrato — o caso que
+## MAIS aperta, porque `window/stretch/aspect="expand"` transforma tela estreita
+## em viewport logico estreito, e foi la que a grade de cartas se denunciou.
+## 1600x720 e celular deitado (20:9), onde sobra largura e falta altura.
+##
+## A varredura roda em UMA resolucao por processo (a janela e criada antes de
+## este codigo existir), entao quem chama passa `--resolution`; a lista abaixo
+## esta aqui para o portao do CI e a documentacao concordarem sobre quais sao.
+const AUD_RESOLUCOES := ["1280x720", "900x1600", "1600x720"]
+
 const AUD_IDIOMAS := ["pt", "en"]
 const AUD_ESCALAS := [1.0, 1.25]
 const AUD_FOLGA := 1.0
@@ -36,6 +48,28 @@ func rodar(main: Node, gerente, jogo) -> void:
 	var falhas: Array = []
 	var conferidos := 0
 	print("=== VARREDURA DE LAYOUT ===")
+	# UMA RESOLUCAO POR PROCESSO, E O RELATORIO DIZ QUAL.
+	#
+	# A janela nasce antes deste codigo, entao quem chama escolhe com
+	# `--resolution`. Sem esta linha o relatorio dizia "48 conferidos" sem
+	# dizer 48 conferidos EM QUE TELA — e uma varredura que so roda em 16:9
+	# passa verde num jogo que quebra no celular. Declarar as tres aqui tambem
+	# e o que deixa o portao do CI e a documentacao concordarem sobre a lista.
+	# JANELA e VIEWPORT LOGICO sao numeros diferentes, e a diferenca importa.
+	#
+	# Com `stretch/mode="canvas_items"` e `aspect="expand"`, uma janela de
+	# 900x1600 vira um viewport logico de 1142x2031: o motor escala para caber a
+	# base de 1280x720 e devolve o resto como espaco logico extra. Quem escreve
+	# layout trabalha no numero LOGICO; quem escolhe a tela no CI trabalha no
+	# numero da JANELA. O relatorio imprime os dois, senao a lista declarada
+	# parece nao bater com a realidade — foi o que aconteceu na primeira vez.
+	var janela := DisplayServer.window_get_size()
+	var tela_janela := "%dx%d" % [janela.x, janela.y]
+	var logico: Vector2 = main.get_viewport_rect().size
+	print("janela %s -> viewport logico %dx%d %s" % [
+		tela_janela, int(logico.x), int(logico.y),
+		"(declarada)" if AUD_RESOLUCOES.has(tela_janela) else "(fora da lista)"])
+	print("as outras telas precisam de execucao propria: %s" % ", ".join(AUD_RESOLUCOES))
 	for idioma in AUD_IDIOMAS:
 		for escala in AUD_ESCALAS:
 			Cfg.set_v("idioma", str(idioma))

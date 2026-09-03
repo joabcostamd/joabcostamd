@@ -3701,6 +3701,17 @@ func _conferir_ci() -> int:
 	if not fonte_vr.contains("const AUD_ESCALAS := [1.0, 1.25]"):
 		print("  FALHOU [doc] a varredura de layout precisa cobrir as escalas que o jogo oferece")
 		erros += 1
+	# E AS TRES TELAS. `window/stretch/aspect="expand"` faz tela estreita virar
+	# viewport logico estreito: 900x1600 (celular em pe) aperta mais que
+	# qualquer escala, e foi la que a grade de cartas se denunciou. Varredura
+	# que roda so em 16:9 passa verde num jogo que quebra no celular.
+	for res in ["1280x720", "900x1600", "1600x720"]:
+		if not fonte_vr.contains(str(res)):
+			print("  FALHOU [doc] a varredura nao declara a resolucao '%s'" % res)
+			erros += 1
+		if not ci.contains(str(res)):
+			print("  FALHOU [doc] o CI nao roda a varredura em '%s'" % res)
+			erros += 1
 	# Os argumentos que a rubrica publica tem que ser os que o CI usa: portao
 	# que roda com numero menor no CI e portao afrouxado.
 	var qual := _ler("res://docs/QUALIDADE.md")

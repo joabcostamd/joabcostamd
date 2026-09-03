@@ -145,6 +145,15 @@ imagens. Ela não olha: mede quatro coisas.
 | Controle espremido abaixo do próprio mínimo | É o "Comprar" que vira "Com": o botão continua lá, sem espaço para o texto |
 | Centro da arena contra centro da janela | A torre é o único ponto fixo da tela. Trocar de escala é a condição exata que a deslocava |
 
+E depois **três telas**, não uma. `window/stretch/aspect="expand"` transforma
+tela estreita em viewport lógico estreito, então um celular em pé aperta mais
+que qualquer escala de interface. Rodando a varredura a 900×1600 pela primeira
+vez, 11 dos 12 painéis já passavam e o décimo segundo se denunciou com número:
+a grade de cartas pedia 776 px numa faixa de 750, porque o divisor da conta de
+colunas era 96 e a carta tem 104. A 1600×720 (celular deitado) sobrou um caso de
+9 px no painel de Melhorias — uma linha de efeito que não quebrava. Hoje são
+**12 painéis × 2 idiomas × 2 escalas × 3 telas = 144 combinações**, todas verdes.
+
 Duas lições ficaram no código, porque as duas custaram tempo:
 
 **Falso positivo custa mais que falso negativo.** A primeira versão acusou 1.366
@@ -402,7 +411,7 @@ STATUS: PASS   (3418 ms)
 | | |
 |---|---:|
 | Scripts GDScript | 88 |
-| Linhas de código | 33.461 |
+| Linhas de código | 33.528 |
 | Testes da simulação | 794 |
 | Chaves de interface PT/EN | 1.058 |
 | Textos de conteúdo PT/EN | 1.286 |

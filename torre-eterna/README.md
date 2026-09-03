@@ -65,9 +65,12 @@ godot --headless --path . -s res://tools/perf.gd -- 412
 # Verificação estrutural do kit (KIT-GODOT-V1)
 godot --headless --path . -s res://agent_verify.gd
 
-# Varredura de layout: 12 painéis × 2 idiomas × 2 escalas, medidos, em ~30 s
-xvfb-run -a --server-args="-screen 0 1280x720x24" godot --path . \
-  --resolution 1280x720 -- --auditar-ui
+# Varredura de layout: 12 painéis × 2 idiomas × 2 escalas, medidos, em ~30 s.
+# Rode nas três telas — a estreita (celular em pé) é a que mais aperta.
+for r in 1280x720 900x1600 1600x720; do
+  xvfb-run -a --server-args="-screen 0 ${r}x24" godot --path . \
+    --resolution $r -- --auditar-ui
+done
 
 # Captura de tela automatizada (precisa de xvfb num servidor sem monitor)
 xvfb-run -a --server-args="-screen 0 1280x720x24" godot --path . --resolution 1280x720 \

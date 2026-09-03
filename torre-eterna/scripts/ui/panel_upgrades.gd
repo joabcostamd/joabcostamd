@@ -169,7 +169,16 @@ func _linha_upgrade(def: Dictionary) -> void:
 	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	desc.custom_minimum_size.x = 330
 	l["textos"].add_child(desc)
+	# A LINHA DO EFEITO NAO PODE EXIGIR LARGURA.
+	#
+	# Ela e preenchida em tempo de execucao com frases como "Vida da Torre x1,4
+	# (agora x2,3)" — e sem quebra o minimo dela e a frase inteira, 397 px em
+	# portugues. Numa tela larga e baixa (celular deitado, 1600x720) isso
+	# estourava a faixa por 9 px e a lista ganhava rolagem horizontal. Ela
+	# quebra em duas linhas quando precisar, como a descricao logo acima.
 	var efeito := UI.rotulo("", 12, UI.VERDE)
+	efeito.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	efeito.custom_minimum_size.x = 200
 	l["textos"].add_child(efeito)
 	# O PROXIMO MARCO. As 39 melhorias eram "+X%" e nada mais: comprava-se a
 	# mais barata, sempre, e a ordem nao importava. O marco entrega uma coisa
@@ -177,6 +186,8 @@ func _linha_upgrade(def: Dictionary) -> void:
 	# QUAL degrau perseguir primeiro vira a decisao que faltava. Aqui fica a
 	# antecipacao: o que falta e o que vem.
 	var marco := UI.rotulo("", 12, UI.OURO)
+	marco.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	marco.custom_minimum_size.x = 200
 	l["textos"].add_child(marco)
 
 	var col := UI.vbox(1)

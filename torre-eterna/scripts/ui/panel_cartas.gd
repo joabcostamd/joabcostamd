@@ -25,8 +25,19 @@ func _larg_texto_dir() -> float:
 	return maxf(150.0, _larg_dir() - 62.0)
 
 ## Sete colunas de carta só cabem numa janela larga.
+## Quantas cartas cabem por linha na largura que EXISTE.
+##
+## O divisor era 96 e a carta tem 104 de largura: em tela larga sobrava espaco e
+## ninguem notava, mas em viewport estreito — celular em retrato — a conta
+## pedia uma coluna a mais do que cabia, e o piso de 3 colunas cravava 3 cartas
+## de 104 mesmo quando so davam 2. A grade ganhava rolagem horizontal e a
+## coluna de detalhe era cortada. Medido a 900x1600: conteudo 776 numa faixa de
+## 750.
+##
+## Agora o divisor e a carta de verdade mais a separacao, e o piso e 2 — abaixo
+## disso a grade deixa de ser grade, e a resposta certa passa a ser a lista.
 func _colunas() -> int:
-	return clampi(int(_larg_esq() / 96.0), 3, COLUNAS)
+	return clampi(int((_larg_esq() + 8.0) / (CARTA_W + 8.0)), 2, COLUNAS)
 const CARTA_W := 104.0
 const CARTA_H := 140.0
 const SLOT_H := 188.0

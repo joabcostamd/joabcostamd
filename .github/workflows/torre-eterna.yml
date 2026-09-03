@@ -147,10 +147,24 @@ jobs:
         working-directory: torre-eterna
         run: |
           set -euo pipefail
-          saida=$(xvfb-run -a -s "-screen 0 1280x720x24" \
-            godot --path . --resolution 1280x720 -- --auditar-ui 2>&1) || true
-          echo "$saida"
-          echo "$saida" | grep -q "===STATUS=== PASS"
+          # TRES TELAS, nao uma. `window/stretch/aspect="expand"` faz tela
+          # estreita virar viewport logico estreito: 900x1600 (celular em pe) e
+          # o caso que mais aperta, e foi la que a grade de cartas se denunciou
+          # com 776 px de conteudo numa faixa de 750. 1600x720 e celular
+          # deitado, onde sobra largura e falta altura.
+          falhou=0
+          for res in 1280x720 900x1600 1600x720; do
+            saida=$(xvfb-run -a -s "-screen 0 ${res}x24" \
+              godot --path . --resolution $res -- --auditar-ui 2>&1) || true
+            if echo "$saida" | grep -q "===STATUS=== PASS"; then
+              echo "ok: $res"
+            else
+              echo "::error::layout estoura em $res"
+              echo "$saida" | grep -E "FALHA|VARREDURA===" | head -20
+              falhou=1
+            fi
+          done
+          exit $falhou
 
       - name: Portão 8 — o jogo DESENHA sem erro de motor
         working-directory: torre-eterna
