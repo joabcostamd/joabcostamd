@@ -5,14 +5,15 @@ As regras genéricas do **KIT-GODOT-V1** valem aqui; abaixo estão as **regras d
 
 ---
 
-## Portões — rode os cinco antes de dizer que terminou
+## Portões — rode todos antes de dizer que terminou
 
 ```bash
 cd torre-eterna
 godot --headless --path . -s res://tools/verificar.gd       # todo script compila, dados presentes
 godot --headless --path . -s res://tools/lint.gd            # convenções do projeto
 godot --headless --path . -s res://tools/validar_dados.gd   # conteúdo obedece ao contrato
-godot --headless --path . -s res://tools/testes.gd          # 195 testes da simulação
+godot --headless --path . -s res://tools/testes.gd          # 257 testes da simulação
+godot --headless --path . -s res://tools/perf.gd -- 400      # custo de um passo com a arena cheia
 godot --headless --path . -s res://agent_verify.gd          # verificação estrutural do kit
 
 # E o portão que os testes não cobrem: uma hora de jogo de verdade, com a
@@ -23,6 +24,12 @@ godot --headless --path . -s res://tools/sim_balance.gd -- 1 auto 2>&1 | grep -c
 
 Só `===STATUS=== PASS` conta. Ignore o código de saída do processo — o bloco é o contrato.
 Se um portão falhar em algo que você não tocou, isso é **regressão real**: investigue antes de seguir.
+
+O portão de desempenho é o único que depende da máquina, então ele mede a
+máquina antes de julgar o jogo: uma conta fixa roda no começo e no fim do laço,
+e o orçamento de 4000 us estica na mesma proporção (piso 1,0x, teto 3,0x). Ao
+comparar duas medidas, use a linha **normalizado**, não o custo bruto — o bruto
+muda com quem mais está usando a CPU, o normalizado não.
 
 Antes de mexer em balanceamento, tire uma medida de base:
 ```bash

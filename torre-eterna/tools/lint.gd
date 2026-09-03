@@ -42,7 +42,12 @@ func _checar(caminho: String) -> void:
 		return
 	arquivos += 1
 	var n := 0
-	var eh_ferramenta := caminho.begins_with("res://tools")
+	# Ferramenta é o que roda fora do jogo: tools/ e os .gd soltos na raiz
+	# (`agent_verify.gd`). Nenhum código de jogo mora na raiz — tudo que é
+	# jogado vive em scripts/ —, então `print()` ali é saída de portão, não
+	# depuração esquecida.
+	var eh_ferramenta := caminho.begins_with("res://tools") \
+		or caminho.get_slice_count("/") == 3
 	while not f.eof_reached():
 		var linha := f.get_line()
 		n += 1
@@ -72,7 +77,12 @@ func _checar(caminho: String) -> void:
 			var fim := resto.find(aspa)
 			if fim > 0:
 				var alvo := resto.substr(0, fim)
-				if not alvo.contains("%") and not FileAccess.file_exists(alvo) and not DirAccess.dir_exists_absolute(alvo):
+				# O Godot esconde de `res://` tudo que começa com ponto, então
+				# `.gitignore` e `.verify/` existem no disco e somem daqui. A
+				# regra não pode acusar de inexistente o que ela não consegue
+				# enxergar.
+				var oculto := alvo.contains("/.")
+				if not alvo.contains("%") and not oculto and not FileAccess.file_exists(alvo) and not DirAccess.dir_exists_absolute(alvo):
 					erros.append("%s:%d caminho inexistente: %s" % [caminho, n, alvo])
 
 		# 4. pendência deixada para trás (a busca é montada em pedaços de
@@ -160,6 +170,17 @@ func _todos_gd() -> Array:
 	var out: Array = []
 	for p in PASTAS:
 		_coletar(p, out)
+	# Os .gd soltos na raiz também: `agent_verify.gd` mora lá e escapava do
+	# linter só por causa de onde está. Sem descer, senão repetiria as pastas.
+	var d := DirAccess.open("res://")
+	if d != null:
+		d.list_dir_begin()
+		var nome := d.get_next()
+		while nome != "":
+			if not d.current_is_dir() and nome.ends_with(".gd"):
+				out.append("res://" + nome)
+			nome = d.get_next()
+		d.list_dir_end()
 	return out
 
 func _coletar(pasta: String, out: Array) -> void:

@@ -14,6 +14,10 @@ func _initialize() -> void:
 	else:
 		alvos = _todos("res://scripts")
 		alvos.append_array(_todos("res://tools"))
+		# A raiz também: `agent_verify.gd` mora lá e passava fora do portão de
+		# compilação, que só olhava scripts/ e tools/. Um .gd que não compila
+		# não pode escapar por causa de onde está.
+		alvos.append_array(_raiz())
 
 	var falhas: Array = []
 	for caminho in alvos:
@@ -36,6 +40,21 @@ func _initialize() -> void:
 		print("  FALHA: ", f)
 	print("===STATUS=== ", "PASS" if falhas.is_empty() and faltando.is_empty() else "FAIL")
 	quit(0 if falhas.is_empty() else 1)
+
+## Só os .gd soltos na raiz — sem descer, senão repetiria scripts/ e tools/.
+func _raiz() -> Array:
+	var out: Array = []
+	var d := DirAccess.open("res://")
+	if d == null:
+		return out
+	d.list_dir_begin()
+	var nome := d.get_next()
+	while nome != "":
+		if not d.current_is_dir() and nome.ends_with(".gd"):
+			out.append("res://" + nome)
+		nome = d.get_next()
+	d.list_dir_end()
+	return out
 
 func _todos(pasta: String, ext: String = ".gd") -> Array:
 	var out: Array = []
