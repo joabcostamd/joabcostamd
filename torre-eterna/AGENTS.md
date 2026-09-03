@@ -12,7 +12,7 @@ cd torre-eterna
 godot --headless --path . -s res://tools/verificar.gd       # todo script compila, dados presentes
 godot --headless --path . -s res://tools/lint.gd            # convenções do projeto
 godot --headless --path . -s res://tools/validar_dados.gd   # conteúdo obedece ao contrato
-godot --headless --path . -s res://tools/testes.gd          # 112 testes da simulação
+godot --headless --path . -s res://tools/testes.gd          # 195 testes da simulação
 godot --headless --path . -s res://agent_verify.gd          # verificação estrutural do kit
 ```
 
@@ -41,6 +41,14 @@ E compare depois. Se o tempo até a onda 25 / 50 mudar muito, foi você.
 5. **Conteúdo em `data/*.json`, nunca no código.** Novo inimigo, carta, conquista ou era
    é um objeto no JSON; o código só ganha um `case` quando surge um comportamento novo.
 6. **`.uid` acompanha o `.gd`.** Ao mover ou renomear script, o `.uid` vai junto.
+6b. **Ferramenta `-s` não cita classe do jogo.** O Godot compila o script de entrada
+   *antes* de registrar os autoloads, então uma classe que use `Bus`/`Cfg` falha a
+   compilar — e falha de forma intermitente, que é pior. A entrada em `tools/` fica
+   magra; o corpo mora em `tools/suites/` e é carregado dentro de `_initialize()`.
+   O linter cobra isso.
+6c. **Nenhuma string de interface escrita no código.** Sempre `Txt.t("chave")`.
+   Chave nova vai em `data/i18n/<arquivo>.json` (um arquivo por painel), com `pt` e
+   `en`. O linter recusa chave sem tradução e o validador recusa `pt` sem `en`.
 7. **`.godot/` nunca vai para o git.**
 8. **Nunca desative um teste, um portão ou um aviso para fazer algo passar.**
    Portão errado é informação: conserte o portão, não o contorne.

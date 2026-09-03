@@ -434,8 +434,21 @@ func auto_comprar() -> void:
 		if Big.lte(c, s["moedas"]["ouro"]) and c < melhor_custo:
 			melhor_custo = c
 			melhor = def
-	if not melhor.is_empty():
-		comprar_upgrade(str(melhor["id"]), 1)
+	if melhor.is_empty():
+		return
+	# Comprar 1 nivel por vez parece prudente e e o contrario disso: no meio do
+	# jogo o ouro chega a 1e70 e a compra automatica so consegue gastar tres
+	# niveis por segundo, entao a economia inteira vira enfeite. Compramos o
+	# maximo que cabe numa FATIA do ouro — sobra dinheiro para as proximas
+	# melhorias e o progresso acompanha o que o jogador ganha.
+	var orcamento := Big.mul_f(s["moedas"]["ouro"], Bal.FATIA_AUTOCOMPRA)
+	var id_alvo := str(melhor["id"])
+	var nivel_alvo := int(s["upgrades"].get(id_alvo, 0))
+	var maxn_alvo := int(melhor.get("max", -1))
+	var teto := 1000000 if maxn_alvo < 0 else maxn_alvo - nivel_alvo
+	var quantos := mini(teto, Big.max_afford(
+		orcamento, float(melhor.get("base", 1)), float(melhor.get("cresc", 1.1)), nivel_alvo))
+	comprar_upgrade(id_alvo, maxi(1, quantos))
 
 func custo_talento(def: Dictionary, nivel: int) -> int:
 	return int(def.get("custo", 1)) + nivel / 5

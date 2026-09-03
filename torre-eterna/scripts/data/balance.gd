@@ -174,5 +174,11 @@ const POEIRA := {"comum": 5, "incomum": 14, "raro": 45, "epico": 160, "lendario"
 # ========================================================== AUTOMAÇÃO ====
 const INTERVALO_AUTOCOMPRA := 0.35
 
+## Quanto do cofre a compra automatica pode gastar de uma vez. Um terco: alto o
+## bastante para acompanhar a inflacao do idle (o ouro cresce em ordens de
+## grandeza), baixo o bastante para nao despejar tudo numa melhoria so e deixar
+## as outras paradas.
+const FATIA_AUTOCOMPRA := 0.34
+
 static func velocidade_max(nucleos_log: float) -> float:
 	return minf(6.0, 1.0 + floor(maxf(0.0, nucleos_log) * 2.0))
