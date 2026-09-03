@@ -212,12 +212,15 @@ func primeiro_colidindo(pos: Vector2, raio: float, ignorar: Dictionary) -> Inimi
 	for cx in range(cx0, cx1 + 1):
 		var base := cx * 4096
 		for cy in range(cy0, cy1 + 1):
-			var k := base + cy
-			if not _grade.has(k):
+			var celula = _grade.get(base + cy)
+			if celula == null:
 				continue
-			for item in _grade[k]:
+			for item in celula:
 				var e: Inimigo = item
-				if e.intangivel > 0.0 or ignorar.has(e.id) or not e.vivo():
+				# `vivo()` inline: é `ativo and morrendo <= 0.0`. Este teste roda
+				# uma vez por inimigo por projétil por quadro — a chamada custa
+				# mais que a conta que ela faz.
+				if not e.ativo or e.morrendo > 0.0 or e.intangivel > 0.0 or ignorar.has(e.id):
 					continue
 				var dx := e.pos.x - px
 				var dy := e.pos.y - py
@@ -337,12 +340,12 @@ func alvo_ids(origem: Vector2, alcance: float, ids: Dictionary) -> Inimigo:
 				# Só a casca do anel: o miolo já foi varrido nos anéis de dentro.
 				if not borda_x and absi(cy - c0y) != anel:
 					continue
-				var k := base + cy
-				if not _grade.has(k):
+				var celula = _grade.get(base + cy)
+				if celula == null:
 					continue
-				for item in _grade[k]:
+				for item in celula:
 					var e: Inimigo = item
-					if not e.vivo() or e.intangivel > 0.0 or ids.has(e.id):
+					if not e.ativo or e.morrendo > 0.0 or e.intangivel > 0.0 or ids.has(e.id):
 						continue
 					var ddx := e.pos.x - ox2
 					var ddy := e.pos.y - oy2
