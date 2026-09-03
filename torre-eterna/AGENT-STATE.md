@@ -7,10 +7,10 @@
 
 | item | valor |
 |---|---|
-| engine | 4.4.1-stable (official) |
+| engine | 4.7.2-stable (official) |
 | kit | 1.5.2 |
 | binario | `/usr/local/bin/godot` |
-| instalado em | 2026-09-03T02:21:35 |
+| instalado em | 2026-09-03T09:27:05 |
 | metodo de deteccao | reload |
 | deteccao — detalhe | GDScript.reload(true) devolve erro em script quebrado |
 
@@ -34,11 +34,13 @@ _A IA deve consultar esta secao antes de criar qualquer coisa nova, para nao rei
 - `Audio`
 - `Jogo`
 
-### Acoes de input (102)
+### Acoes de input (115)
 
 - `ui_accept`
 - `ui_select`
 - `ui_cancel`
+- `ui_close_dialog`
+- `ui_close_dialog.macos`
 - `ui_focus_next`
 - `ui_focus_prev`
 - `ui_left`
@@ -49,8 +51,10 @@ _A IA deve consultar esta secao antes de criar qualquer coisa nova, para nao rei
 - `ui_page_down`
 - `ui_home`
 - `ui_end`
+- `ui_accessibility_drag_and_drop`
 - `ui_cut`
 - `ui_copy`
+- `ui_focus_mode`
 - `ui_paste`
 - `ui_undo`
 - `ui_redo`
@@ -110,10 +114,19 @@ _A IA deve consultar esta secao antes de criar qualquer coisa nova, para nao rei
 - `ui_unicode_start`
 - `ui_graph_duplicate`
 - `ui_graph_delete`
+- `ui_graph_follow_left`
+- `ui_graph_follow_left.macos`
+- `ui_graph_follow_right`
+- `ui_graph_follow_right.macos`
+- `ui_filedialog_delete`
 - `ui_filedialog_up_one_level`
 - `ui_filedialog_refresh`
 - `ui_filedialog_show_hidden`
+- `ui_filedialog_find`
+- `ui_filedialog_focus_path`
+- `ui_filedialog_focus_path.macos`
 - `ui_swap_input_direction`
+- `ui_colorpicker_delete_preset`
 - `ui_pausa`
 - `hab_1`
 - `hab_2`
@@ -252,13 +265,11 @@ _Isto e a foto do que ja falhava. Nao alarma. So mudanca em relacao a isto alarm
 <!-- BASELINE-JSON-START -->
 ```json
 {
-  "baseline": {
-
-  },
+  "baseline": {},
   "meta": {
     "binario": "/usr/local/bin/godot",
-    "engine": "4.4.1-stable (official)",
-    "instalado_em": "2026-09-03T02:21:35",
+    "engine": "4.7.2-stable (official)",
+    "instalado_em": "2026-09-03T09:27:05",
     "kit_version": "1.5.2",
     "probe": {
       "detalhe": "GDScript.reload(true) devolve erro em script quebrado",

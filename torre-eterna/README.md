@@ -4,7 +4,7 @@
 > infinitas vindo de todos os lados, e três camadas de prestígio para você
 > recomeçar mais forte — de novo, e de novo, e de novo.
 
-![Godot](https://img.shields.io/badge/Godot-4.4%2B-478CBF?logo=godot-engine&logoColor=white)
+![Godot](https://img.shields.io/badge/Godot-4.7%2B-478CBF?logo=godot-engine&logoColor=white)
 ![GDScript](https://img.shields.io/badge/GDScript-2.0-478CBF)
 ![Arte](https://img.shields.io/badge/Arte-100%25%20procedural-a855f7)
 ![Áudio](https://img.shields.io/badge/Áudio-sintetizado-f472b6)
@@ -30,7 +30,7 @@ A revelação, se você chegar lá: o Enxame são as versões anteriores da pró
 ## Como rodar
 
 ```bash
-# Godot 4.4 ou superior
+# Godot 4.7 ou superior
 godot --path torre-eterna
 
 # ou abra a pasta torre-eterna/ no editor do Godot e pressione F5
