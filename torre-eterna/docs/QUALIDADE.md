@@ -132,6 +132,10 @@ O que a faixa continua protegendo é o que importa: nada de progresso trivial
 ## Medições atuais
 
 Saída crua dos portões, colada de execução — nunca de memória.
+Motor: **Godot 4.7.2**. O projeto rodava em 4.4.1 até esta coleta — não por
+escolha, mas porque era o binário que veio na imagem do container. Subir de
+versão pagou sozinho: além de ~15% de folga a mais no p90, expôs um defeito
+real no save (ver `scripts/core/save_system.gd`, `_tem_nao_finito`).
 Última coleta: depois da segunda rodada de correções da auditoria.
 
 ```
@@ -140,7 +144,7 @@ $ godot --headless --path . -s res://tools/verificar.gd
 ===STATUS=== PASS
 
 $ godot --headless --path . -s res://tools/lint.gd
-===LINT=== arquivos=85 linhas=26674 erros=0 avisos=0
+===LINT=== arquivos=85 linhas=27155 erros=0 avisos=0
 ===STATUS=== PASS
 
 $ godot --headless --path . -s res://tools/validar_dados.gd
@@ -154,59 +158,49 @@ $ godot --headless --path . -s res://tools/testes.gd
 
 $ godot --headless --path . -s res://tools/perf.gd -- 400
 === DESEMPENHO ===
-projeteis/s: 40.0 | orbes: 19 | elementos ativos: sim
-maquina: 36208 us na conta de referencia (39000 esperado) -> fator 1.00x
+projeteis/s: 40.0 | orbes: 16 | elementos ativos: sim
+maquina: 35221 us na conta de referencia (39000 esperado) -> fator 1.00x
 
---- PORTAO: 10 min de jogo real (onda 238 ao fim, automacao ligada) ---
+--- PORTAO: 10 min de jogo real (onda 209 ao fim, automacao ligada) ---
   vivos medios 7 | pico de projeteis 800
-  media   1592 | p50   1288 | p90   3700 | p99   7988 | pior  23746  (us)
-  270 fps no p90
-  normalizado p90: 3700 us  (orcamento 4000 us = 4000 x 1.00)
+  media   2334 | p50   2445 | p90   3206 | p99   4868 | pior  14397  (us)
+  312 fps no p90
+  normalizado p90: 3206 us  (orcamento 4000 us = 4000 x 1.00)
 
 --- PORTAO 2: 160 inimigos vivos SEGURADOS (teto do jogo + 25%) ---
-  vivos medios 157 | pico de projeteis 235
-  media   1975 | p50   1710 | p90   3247 | p99   5430 | pior   6752  (us)
-  308 fps no p90
-  normalizado p90: 3247 us  (orcamento 4000 us)
-
---- FOLGA (nao reprova): 400 vivos, alem do que o jogo cria ---
-  vivos medios 391 | pico de projeteis 225
-  media   3398 | p50   2377 | p90   6679 | p99  12501 | pior  14203  (us)
-  150 fps no p90
+  vivos medios 156 | pico de projeteis 324
+  media   2150 | p50   2005 | p90   3095 | p99   4541 | pior   5998  (us)
+  323 fps no p90
+  lotacao da grade: 8 na celula mais cheia | 2.9 por celula ocupada | 55 celulas
+  nos 10% mais caros vs o resto -> mortes 3.1/5.5 | projeteis 177/143 | vivos 159/156
+  normalizado p90: 3095 us  (orcamento 4000 us)
 
 --- perfil por subsistema a 160 vivos (us/passo, SUBCONJUNTO de simular()) ---
-  grade             84 us
-  status            55 us
-  inimigos         493 us
-  torre            284 us
-  projeteis        750 us
-  coletaveis       214 us
-  habilidades       65 us
-  diretor            6 us
-  (soma 1952 us; o resto de simular() — eventos, automacao, conquistas,
-   missoes, autosave — esta na media acima, nao aqui)
-recalculos de atributos: 2448
+  grade             87 us | status  66 us | inimigos 659 us | torre   362 us
+  projeteis        904 us | coletaveis 219 us | habilidades 72 us | diretor 6 us
+
+--- POR DENTRO de simular(), na perna segurada (us/passo, 600 passos) ---
+  recalcular 19 | combo_buffs 6 | mecanicas 60 | subsistemas 2203 | eventos 5
+  parasitas 15 | automacao 32 | conquistas_missoes 9 | autosave 2
+  soma: 2351 us/passo (isto SIM cobre simular() inteiro)
 ===STATUS=== PASS
 
 $ godot --headless --path . -s res://tools/sim_balance.gd -- 1.2 auto
 === MARCOS (tempo para chegar) ===
   onda   10 -> 2m 43s
-  onda   25 -> 7m 29s
-  onda   50 -> 14m 56s
-  onda   75 -> 22m 11s
-  onda  100 -> 29m 38s
-  onda  150 -> 43m 20s
-  onda  200 -> 56m 04s
+  onda   25 -> 7m 27s
+  onda   50 -> 15m 57s
+  onda   75 -> 23m 24s
+  onda  100 -> 30m 56s
+  onda  150 -> 44m 36s
+  onda  200 -> 57m 18s
 
 === RESUMO ===
-onda maxima: 266
-mortes: 0 | inimigos mortos: 9918 | chefes: 26
-ouro total: 5,13e50 | dano max: 1,77e40
-cartas: 178 | conquistas: 44
-fragmentos se ascender agora: 20,42 T
-pico de entidades: 22 inimigos, 800 projeteis
-desempenho: 158089 ms para 259200 passos (609.91 us/passo, 27x tempo real)
-melhorias no teto: 33 de 33 com teto (onda 266)
+onda maxima: 261
+mortes: 0 | inimigos mortos: 9548 | chefes: 26
+ouro total: 6,87e49 | dano max: 338,3 No
+pico de entidades: 22 inimigos, 609 projeteis
+melhorias no teto: 33 de 33 com teto (onda 261)
 ===STATUS=== PASS
 
 (duas execuções seguidas do mesmo commit dão marcos idênticos linha a linha —
@@ -221,7 +215,7 @@ STATUS: PASS   (kit 1.5.2, 0 falhas)
 | | |
 |---|---:|
 | Scripts GDScript | 85 |
-| Linhas de código | 26.788 |
+| Linhas de código | 27.155 |
 | Testes da simulação | 348 |
 | Chaves de interface PT/EN | 1.012 |
 | Textos de conteúdo PT/EN | 1.286 |
