@@ -1654,6 +1654,72 @@ func t_celebracao() -> void:
 		if float((C.RECEITAS[chave_p] as Dictionary).get("peso", 0.0)) <= 0.0:
 			sem_peso.append(str(chave_p))
 	ok("toda receita tem peso", sem_peso.is_empty(), str(sem_peso))
+	# A LINHA DE CONTROLES DAS CARTAS PRECISA QUEBRAR, NAO TRANSBORDAR.
+	#
+	# Era um `HBoxContainer`, que empurra em vez de quebrar. O botao "reciclar
+	# duplicadas" so aparece quando ha duplicada — e quando aparecia, o painel
+	# inteiro ficava mais largo que a janela: a coluna da direita era cortada e
+	# o rotulo "ordenar por" sumia atras do primeiro botao de ordem. Em
+	# portugues os textos sao mais longos ainda.
+	var fonte_cartas := _ler("res://scripts/ui/panel_cartas.gd")
+	ok("a linha de controles das cartas quebra",
+		fonte_cartas.contains("var controles_inv := HFlowContainer.new()"),
+		"HBoxContainer nessa linha volta a estourar a largura")
+	ok("e o rotulo de ordem viaja junto com os botoes dele",
+		fonte_cartas.contains("var grupo_ordem := UI.hbox(8)"),
+		"solto no fluxo, o rotulo fica orfao no fim de uma linha")
+
+	# COMEMORACAO EM ANDAMENTO NAO PODE ESCREVER POR CIMA DE PAINEL ABERTO.
+	#
+	# A guarda existia e so impedia de COMECAR. Uma que ja estava rodando seguia
+	# desenhando por cima do painel que abrisse no meio dela — e virar de era e
+	# abrir as melhorias para gastar o ouro da onda e a sequencia mais natural
+	# do jogo. Nas capturas, o nome da era ficou atravessado em cima da lista de
+	# melhorias, das cartas e da arvore de talentos. Agora ela congela: para o
+	# relogio, some da tela, e volta de onde parou.
+	var fonte_cel := _ler("res://scripts/ui/celebracao.gd")
+	ok("o desenho da comemoracao respeita a guarda",
+		fonte_cel.contains("func _draw() -> void:\n\t# Nada na tela enquanto houver painel aberto"),
+		"_draw precisa sair cedo quando ocupado")
+	ok("e o relogio dela para junto",
+		fonte_cel.contains("var ocupado := _ocupado()") and fonte_cel.contains("if ocupado:"),
+		"_process precisa congelar, nao so bloquear o inicio")
+	# Medido de verdade: com o gerente dizendo que ha painel aberto, o tempo
+	# nao anda; com ele fechado, anda.
+	var falso_gerente := Node.new()
+	falso_gerente.set_script(GDScript.new())
+	cel.gerente = null
+	cel.atual = {"tipo": "era", "receita": C.RECEITAS["era"], "dados": {}}
+	cel.t = 0.0
+	cel._process(0.1)
+	ok("sem painel, a comemoracao anda", cel.t > 0.0, "t=%.3f" % cel.t)
+	var t_antes_cel: float = cel.t
+	cel.gerente = _gerente_falso("upgrades")
+	cel._process(0.1)
+	ok("com painel aberto, ela congela", perto(cel.t, t_antes_cel, 1e-9),
+		"t foi de %.3f para %.3f" % [t_antes_cel, cel.t])
+	cel.gerente = _gerente_falso("")
+	cel._process(0.1)
+	ok("e volta a andar quando o painel fecha", cel.t > t_antes_cel,
+		"t=%.3f" % cel.t)
+	falso_gerente.free()
+
+	# A COMEMORACAO NAO PODE ESCREVER EM CIMA DO RODAPE.
+	#
+	# O titulo sai `raio + 62` abaixo do centro e o subtitulo desce mais 23 por
+	# linha. Com o centro da comemoracao no centro da tela, isso caia bem em
+	# cima da fileira de habilidades e dos botoes de painel — a comemoracao e a
+	# barra que ela cobria ficavam ilegiveis ao mesmo tempo. A conta abaixo e a
+	# mesma do desenho, feita aqui para reprovar se alguem mexer numa das duas.
+	var altura_tela := 720.0
+	var centro_y: float = altura_tela * 0.5 - C.ALTURA_RODAPE * 0.5
+	var raio_cel := 74.0 * 1.6      # raio base x o maior peso do catalogo
+	var base_titulo := centro_y + raio_cel + 62.0
+	var base_sub := base_titulo + 30.0 + 23.0 * 2.0   # titulo + duas linhas
+	ok("o texto da comemoracao termina antes do rodape",
+		base_sub < altura_tela - 130.0,
+		"o subtitulo termina em y=%.0f e o rodape comeca em %.0f" % [base_sub, altura_tela - 130.0])
+	ok("e a altura do rodape esta declarada", C.ALTURA_RODAPE >= 120.0)
 	# AS DEZ ERAS NUNCA DIZIAM O NOME. `Bus.era_mudou` tinha um unico ouvinte, o
 	# pintor de fundo. Cada era traz nome e regra escritos nos dois idiomas.
 	var era: Dictionary = Dados.era_atual(120)
@@ -4292,6 +4358,18 @@ func t_save() -> void:
 	save.apagar()
 	ok("apagar nao deixa arquivo para tras",
 		not FileAccess.file_exists(save.cam()) and not FileAccess.file_exists(save.cam_corrompido()))
+
+## Um gerente de paineis de mentira, so com o campo que a comemoracao consulta.
+## O gerente de verdade monta a interface inteira; a comemoracao so pergunta
+## "tem painel aberto?", e essa pergunta cabe num objeto de tres linhas.
+func _gerente_falso(aberto: String) -> Node:
+	var n := Node.new()
+	var gs := GDScript.new()
+	gs.source_code = "extends Node\nvar atual := \"\"\n"
+	gs.reload()
+	n.set_script(gs)
+	n.atual = aberto
+	return n
 
 ## ------------------------------------------------------------ offline
 ## Le um arquivo inteiro, ou "" se nao der. So para os testes de save.

@@ -14,6 +14,10 @@ extends Control
 ## - respeita "movimento reduzido" (sem tremor de escala) e "flashes"
 ## - tudo desenhado, nada de asset
 
+## Quanto o rodape (fileira de habilidades + botoes de painel) ocupa embaixo.
+## A comemoracao sobe metade disso para nao escrever em cima deles.
+const ALTURA_RODAPE := 180.0
+
 const DUR_ENTRADA := 0.34
 const DUR_SEGURA := 1.5
 const DUR_SAIDA := 0.5
@@ -100,9 +104,35 @@ func _ocupado() -> bool:
 		return true
 	return get_tree().paused
 
+## Estava ocupado no quadro anterior? Serve só para limpar o desenho UMA vez
+## quando o painel abre, em vez de pedir redesenho a cada quadro parado.
+var _estava_ocupado := false
+
 func _process(dt: float) -> void:
+	# A GUARDA VALE PARA A COMEMORAÇÃO EM ANDAMENTO, NÃO SÓ PARA A PRÓXIMA.
+	#
+	# A guarda só impedia de COMEÇAR. Uma comemoração que já estava rodando
+	# continuava desenhando por cima do painel que abrisse no meio dela — e é
+	# fácil cair nisso, porque virar de era e abrir o painel de melhorias para
+	# gastar o ouro da onda é a sequência mais natural do jogo. Nas capturas de
+	# tela o nome da era ficou escrito atravessado em cima da lista de
+	# melhorias, das cartas e da árvore de talentos.
+	#
+	# Agora ela CONGELA: para de contar o tempo e some da tela enquanto o painel
+	# estiver aberto, e volta de onde parou quando ele fechar. Deixar o relógio
+	# correndo escondido seria pior — a pessoa perderia a comemoração inteira
+	# sem nunca vê-la.
+	var ocupado := _ocupado()
+	if ocupado:
+		if not _estava_ocupado:
+			_estava_ocupado = true
+			queue_redraw()
+		return
+	if _estava_ocupado:
+		_estava_ocupado = false
+		queue_redraw()
 	if atual.is_empty():
-		if fila.is_empty() or _ocupado():
+		if fila.is_empty():
 			return
 		atual = fila.pop_front()
 		t = 0.0
@@ -127,13 +157,25 @@ func _semear_raios() -> void:
 		})
 
 func _draw() -> void:
+	# Nada na tela enquanto houver painel aberto ou o jogo pausado: é a mesma
+	# guarda do `_process`, aplicada onde a tinta acontece.
+	if _ocupado():
+		return
 	if atual.is_empty():
 		return
 	var receita: Dictionary = atual["receita"]
 	var cor := _cor_do_momento(receita)
 	var peso := float(receita.get("peso", 1.0))
 	var tam := size
-	var centro := tam * 0.5
+	# O CENTRO DA COMEMORACAO NAO E O CENTRO DA TELA.
+	#
+	# O titulo sai `raio + 62` abaixo do centro e o subtitulo mais 23 por linha:
+	# numa tela de 720 isso caia em cima da barra de habilidades e do rodape de
+	# botoes, e as duas coisas ficavam ilegiveis ao mesmo tempo — a comemoracao
+	# e a barra que ela cobria. O rodape ocupa os ultimos `UI.RODAPE_FOLGA` mais
+	# a fileira de habilidades; subir o bloco inteiro resolve sem encolher
+	# nenhuma letra.
+	var centro := Vector2(tam.x * 0.5, tam.y * 0.5 - ALTURA_RODAPE * 0.5)
 
 	# curva: entra rápido, segura, sai suave
 	var a := 0.0

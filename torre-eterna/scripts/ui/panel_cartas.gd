@@ -135,7 +135,21 @@ func montar(c: VBoxContainer) -> void:
 	var linha_inv := UI.hbox(8)
 	lbl_inv = UI.rotulo(Txt.t("car_inventario"), 15, UI.TEXTO2)
 	linha_inv.add_child(lbl_inv)
-	linha_inv.add_child(UI.espacador())
+	# ESTA LINHA PRECISA QUEBRAR, NAO TRANSBORDAR.
+	#
+	# Era um `HBoxContainer`, que nao quebra: ele empurra. O botao "reciclar
+	# duplicadas" so aparece quando ha duplicada, e quando aparecia os 200 px
+	# dele somados ao interruptor, ao rotulo "ordenar por" e aos tres botoes de
+	# ordem estouravam a largura — o painel inteiro ficava mais largo que a
+	# janela, a coluna da direita era cortada e o rotulo "ordenar por" sumia
+	# atras do primeiro botao. Em portugues os textos sao ainda mais longos.
+	# Um container que quebra resolve para qualquer idioma e qualquer largura.
+	var controles_inv := HFlowContainer.new()
+	controles_inv.alignment = FlowContainer.ALIGNMENT_END
+	controles_inv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	controles_inv.add_theme_constant_override("h_separation", 8)
+	controles_inv.add_theme_constant_override("v_separation", 6)
+	linha_inv.add_child(controles_inv)
 
 	# Reciclagem automática: a relíquia Bocarra Recicladora desbloqueia, e não
 	# havia interruptor em lugar nenhum para ligar o que ela desbloqueava.
@@ -150,7 +164,7 @@ func montar(c: VBoxContainer) -> void:
 			return
 		jogo.s["auto"]["reciclar"] = v
 		jogo.marcar_sujo())
-	linha_inv.add_child(check_reciclar)
+	controles_inv.add_child(check_reciclar)
 
 	# RECICLAR DUPLICADAS DE UMA VEZ. O criterio (`_descartavel`) ja existia e so
 	# rodava no instante em que a carta cai. Quem nao comprou a automacao juntava
@@ -159,9 +173,13 @@ func montar(c: VBoxContainer) -> void:
 	b_reciclar_dups = UI.botao("", _reciclar_duplicadas)
 	b_reciclar_dups.custom_minimum_size = Vector2(200, 32)
 	b_reciclar_dups.tooltip_text = Txt.t("car_reciclar_dups_dica")
-	linha_inv.add_child(b_reciclar_dups)
+	controles_inv.add_child(b_reciclar_dups)
 
-	linha_inv.add_child(UI.rotulo(Txt.t("car_ordenar_por"), 12, UI.TEXTO3))
+	# O rotulo e os tres botoes viajam JUNTOS na quebra. Soltos no mesmo fluxo,
+	# o "ordenar por" ficava no fim de uma linha e os botoes dele na seguinte —
+	# um rotulo orfao, apontando para nada.
+	var grupo_ordem := UI.hbox(8)
+	grupo_ordem.add_child(UI.rotulo(Txt.t("car_ordenar_por"), 12, UI.TEXTO3))
 	for par in [["raridade", Txt.t("car_ord_raridade")], ["nivel", Txt.t("nivel")], ["nome", Txt.t("car_ord_nome")]]:
 		var chave := str(par[0])
 		var b := UI.botao(str(par[1]), func(): _definir_ordem(chave))
@@ -169,8 +187,9 @@ func montar(c: VBoxContainer) -> void:
 		b.button_pressed = chave == ordem
 		b.custom_minimum_size = Vector2(84, 30)
 		b.add_theme_font_size_override("font_size", 13)
-		linha_inv.add_child(b)
+		grupo_ordem.add_child(b)
 		botoes_ordem.append({"botao": b, "chave": chave})
+	controles_inv.add_child(grupo_ordem)
 	esq.add_child(linha_inv)
 
 	# --- grade ---
