@@ -257,6 +257,23 @@ func t_defesa() -> void:
 		chefao.cd_contato -= 1.0 / 60.0
 	ok("chefe bate no maximo 2x por segundo", golpes <= 2)
 
+	# Escudo e regeneracao sao PARCELA da vida maxima: se fossem numeros soltos,
+	# um multiplicador de vida (Forja x1,4 por nivel) deixaria os dois para tras
+	# e a categoria Defesa inteira envelheceria mal.
+	var mdef := StatEngine.new()
+	mdef.zerar()
+	mdef.add_flat("vidaMax", 1000.0)
+	mdef.add_flat("escudoMax", 2000.0)
+	mdef.calcular()
+	var esc_simples := Big.mul_f(Big.mul(mdef.b("escudoMax"), mdef.b("vidaMax")), Bal.ESCUDO_POR_PONTO)
+	mdef.zerar()
+	mdef.add_flat("vidaMax", 1000.0)
+	mdef.add_flat("escudoMax", 2000.0)
+	mdef.add_mult("vidaMax", 50.0)
+	mdef.calcular()
+	var esc_forjado := Big.mul_f(Big.mul(mdef.b("escudoMax"), mdef.b("vidaMax")), Bal.ESCUDO_POR_PONTO)
+	ok("escudo acompanha multiplicador de vida", Big.gt(esc_forjado, Big.mul_f(esc_simples, 40.0)))
+
 	# Escudo do inimigo em log10, igual ao HP. Era linear: com hp_max acima de
 	# 1e308 o Big.to_f virava INF e o escudo nunca mais descia.
 	var blindado := Inimigo.new()

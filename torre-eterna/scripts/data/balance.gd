@@ -92,6 +92,21 @@ const DANO_CONTATO_FRAC := 0.013
 const DANO_CONTATO_CHEFE := 0.040
 const DANO_CONTATO_PISO_BASE := 2.0
 const DANO_CONTATO_PISO_ONDA := 0.45
+## O escudo e a regeneração são PARCELAS da vida máxima, não números soltos.
+##
+## Enquanto foram absolutos (+45 de escudo por nível, teto 2025; +0,65 de regen
+## por nível), e a vida ganhou multiplicadores em seis lugares diferentes (Forja
+## ×1,4 por nível, talento Fortaleza, relíquia Costela, nó af_vida, cartas), o
+## escudo e a regeneração viravam pó no meio do jogo — e a categoria Defesa
+## inteira deixava de valer a compra. Como parcela, herdam TODOS os
+## multiplicadores de vida, inclusive o ×0 da carta Espelho do Enxame.
+##
+## Nos números de hoje, investimento máximo dá ~60% de vida extra em escudo e
+## ~1,8% de vida por segundo de regeneração.
+const ESCUDO_POR_PONTO := 0.0003
+const REGEN_POR_PONTO := 0.0004
+const ESCUDO_REGEN_POR_PONTO := 0.002
+
 const IFRAMES := 0.35
 const RESPAWN := 3.0
 const PENALIDADE_MORTE := 1

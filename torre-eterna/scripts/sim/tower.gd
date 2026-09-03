@@ -52,12 +52,15 @@ func atualizar(dt: float) -> void:
 	tempo_sem_dano += dt
 
 	# regeneração (bloqueada por parasitas grudados)
+	# Regeneração como parcela da vida máxima — ver Bal.REGEN_POR_PONTO.
 	var regen: float = j.stats.b("regen")
 	if not Big.is_zero(regen) and j.parasitas == 0 and Big.lt(torre["vida"], torre["vida_max"]):
-		torre["vida"] = Big.min_b(torre["vida_max"], Big.add(torre["vida"], Big.mul_f(regen, dt)))
+		var cura := Big.mul_f(Big.mul(regen, torre["vida_max"]), Bal.REGEN_POR_PONTO * dt)
+		torre["vida"] = Big.min_b(torre["vida_max"], Big.add(torre["vida"], cura))
 	var esc_regen: float = j.stats.b("escudoRegen")
 	if not Big.is_zero(esc_regen) and Big.lt(torre["escudo"], torre["escudo_max"]) and tempo_sem_dano > 2.0:
-		torre["escudo"] = Big.min_b(torre["escudo_max"], Big.add(torre["escudo"], Big.mul_f(esc_regen, dt)))
+		var recarga := Big.mul_f(Big.mul(esc_regen, torre["escudo_max"]), Bal.ESCUDO_REGEN_POR_PONTO * dt)
+		torre["escudo"] = Big.min_b(torre["escudo_max"], Big.add(torre["escudo"], recarga))
 
 	# juros sobre o ouro guardado, com teto (ver Bal.juros_teto)
 	var juros: float = j.stats.n("jurosOuro")

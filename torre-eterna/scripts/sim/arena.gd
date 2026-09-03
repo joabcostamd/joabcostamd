@@ -259,3 +259,14 @@ func fora_da_arena(p: Vector2, margem: float = 140.0) -> bool:
 ## Antes isso varria a lista inteira a cada abate — O(n²) numa onda cheia.
 func contagem_viva() -> int:
 	return vivos
+
+## Contagem viva AGORA, varrendo de verdade. Só para quem não pode conviver
+## com um quadro de atraso: o diretor fecha a onda com base nisto e, com o
+## número em cache, um inimigo que nasceu neste mesmo quadro ficava de fora da
+## conta — a onda fechava com ele vivo e ele vazava para a onda seguinte.
+func contagem_viva_agora() -> int:
+	var n := 0
+	for e in inimigos:
+		if e.vivo():
+			n += 1
+	return n

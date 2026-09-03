@@ -60,8 +60,11 @@ func atualizar(dt: float) -> void:
 				cd_spawn = Bal.intervalo_spawn(int(s["onda"]))
 				EnemyAI.spawn_onda(int(s["onda"]), j)
 				spawnados += 1
-			# a onda fecha quando TUDO que nasceu foi resolvido (morto ou chegou na torre)
-			if spawnados >= int(s["necessarios"]) and j.arena.contagem_viva() == 0:
+			# A onda fecha quando TUDO que nasceu foi resolvido (morto ou chegou na
+			# torre). A contagem tem que ser a de AGORA: com o número em cache,
+			# o inimigo que nasceu três linhas acima não entrava na conta e a
+			# onda fechava com ele vivo, vazando para a onda seguinte.
+			if spawnados >= int(s["necessarios"]) and j.arena.contagem_viva_agora() == 0:
 				concluir()
 		"chefe":
 			if chefe_atual == null:

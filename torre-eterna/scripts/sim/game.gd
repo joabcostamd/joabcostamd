@@ -115,9 +115,10 @@ func _aplicar_mods_desafio() -> void:
 func sincronizar_torre(cheia: bool) -> void:
 	var t: Dictionary = s["torre"]
 	var novo_max := stats.b("vidaMax")
-	var esc_max := stats.b("escudoMax")
 	if Big.is_zero(novo_max):
 		return
+	# escudo como parcela da vida máxima — ver Bal.ESCUDO_POR_PONTO
+	var esc_max := Big.mul_f(Big.mul(stats.b("escudoMax"), novo_max), Bal.ESCUDO_POR_PONTO)
 	var frac_antes := Big.frac(t["vida"], t["vida_max"])
 	var did := str(s["desafios"]["ativo"])
 	if did != "":
