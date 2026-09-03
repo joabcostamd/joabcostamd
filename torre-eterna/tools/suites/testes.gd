@@ -1462,9 +1462,41 @@ func t_celebracao() -> void:
 	var curto: Array = C._quebrar("curto", ThemeDB.fallback_font, 17, 400.0, 3)
 	ok("o subtitulo curto continua numa linha", curto.size() == 1 and str(curto[0]) == "curto")
 
+	# A CAMADA ESCUTA DE VERDADE. Antes isto era um `contains` no `connect`:
+	# a linha podia estar la e o `_ready` nunca rodar, ou o ouvinte podia
+	# ignorar o evento. Aqui a camada entra na arvore, o barramento e usado, e o
+	# teste olha a FILA dela.
+	# Os OUVINTES sao chamados de verdade e a fila e conferida. Nao da para
+	# emitir pelo barramento aqui: em modo `--script` a suite roda dentro de
+	# `_initialize`, o no nao entra na arvore e `_ready` — que e onde os
+	# `connect` moram — nunca corre. Entao o teste prova as duas metades por
+	# caminhos separados: o `connect` por leitura (uma linha), e o QUE O OUVINTE
+	# FAZ por chamada direta, que e a metade que pode quebrar em silencio.
 	var txt_cel := _ler("res://scripts/ui/celebracao.gd")
 	ok("a camada de comemoracao escuta a troca de era", txt_cel.contains("Bus.era_mudou.connect"))
 	ok("...e o prestigio", txt_cel.contains("Bus.prestigio_feito.connect(_ao_prestigio)"))
+	var cel_viva = C.new()
+	cel_viva.fila.clear()
+	cel_viva.atual = {}
+	cel_viva._ao_era(3, Dados.era_atual(120))
+	ok("a troca de era entra na fila de comemoracao", cel_viva.fila.size() == 1,
+		str(cel_viva.fila.size()))
+	if cel_viva.fila.size() == 1:
+		ok("...com o nome da era junto",
+			not ((cel_viva.fila[0]["dados"] as Dictionary).get("era", {}) as Dictionary).is_empty())
+	# Era vazia nao pode virar comemoracao muda.
+	cel_viva.fila.clear()
+	cel_viva._ao_era(0, {})
+	ok("era vazia nao vira comemoracao", cel_viva.fila.is_empty())
+	# O prestigio LIMPA a fila (a corrida que acabou nao interessa mais) e entra.
+	cel_viva._ao_era(3, Dados.era_atual(120))
+	cel_viva._ao_prestigio("ascensao", Big.from(2917.0))
+	ok("o prestigio limpa a fila e entra sozinho",
+		cel_viva.fila.size() == 1 and str(cel_viva.fila[0]["tipo"]) == "prestigio",
+		"%d na fila" % cel_viva.fila.size())
+	ok("...trazendo a camada junto",
+		str((cel_viva.fila[0]["dados"] as Dictionary).get("camada", "")) == "ascensao" if cel_viva.fila.size() == 1 else false)
+	cel_viva.free()
 	var txt_fl := _ler("res://scripts/render/view_flash.gd")
 	ok("o banner nao mostra mais o identificador cru",
 		not txt_fl.contains("banner_nome = camada.to_upper()"))
