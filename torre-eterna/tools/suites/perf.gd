@@ -177,6 +177,42 @@ func rodar(cena: SceneTree) -> void:
 		custo["diretor"] += Time.get_ticks_usec() - f5
 		repor.call(alvo)
 
+	# --- rotinas periódicas: o custo que o perfil por subsistema NÃO via ---
+	#
+	# O perfil acima mede oito subsistemas e admite, no rodapé, que o resto de
+	# `simular()` fica de fora. Esse "resto" é justamente o que fazia o p90 ser
+	# 2,7x o p50: automação a cada 0,35 s e conquistas/missões a cada 0,5 s dão
+	# ~8% dos passos, e o p90 corta em 10% — então os passos caros ESTAVAM
+	# dentro da janela que reprova, invisíveis para o relatório. Cada rotina é
+	# medida por chamada e depois amortizada na frequência real com que o jogo
+	# a executa, que é a forma de comparar com o orçamento por passo.
+	var periodicas := {}
+	var n_amostras := 40
+	var t0 := Time.get_ticks_usec()
+	for i in n_amostras:
+		j.auto_comprar()
+	periodicas["autocompra"] = [float(Time.get_ticks_usec() - t0) / n_amostras, Bal.INTERVALO_AUTOCOMPRA]
+	t0 = Time.get_ticks_usec()
+	for i in n_amostras:
+		Progresso.checar_conquistas(j)
+	periodicas["conquistas"] = [float(Time.get_ticks_usec() - t0) / n_amostras, 0.5]
+	t0 = Time.get_ticks_usec()
+	for i in n_amostras:
+		Progresso.checar_missoes(j)
+	periodicas["missoes"] = [float(Time.get_ticks_usec() - t0) / n_amostras, 0.5]
+
+	print("")
+	print("--- rotinas periodicas (custo por chamada e amortizado por passo) ---")
+	var amortizado_total := 0.0
+	for nome in periodicas:
+		var par: Array = periodicas[nome]
+		var por_chamada: float = par[0]
+		var intervalo: float = par[1]
+		var amort := por_chamada * DT / intervalo
+		amortizado_total += amort
+		print("  %-12s %8.0f us por chamada | a cada %.2fs | %6.0f us/passo amortizado" % [nome, por_chamada, intervalo, amort])
+	print("  soma amortizada: %.0f us/passo (o pico real cai TODO num passo so)" % amortizado_total)
+
 	# O PORTÃO tem DUAS pernas, e as duas reprovam.
 	#
 	# Um crítico independente pegou a versão anterior desta ferramenta fazendo
