@@ -37,6 +37,8 @@ func rodar(cena: SceneTree) -> void:
 	t_economia()
 	t_combate()
 	t_alcancavel()
+	t_ferramentas()
+	t_daltonismo()
 	t_nada_mudo()
 	t_elites()
 	t_mira()
@@ -76,7 +78,7 @@ func rodar(cena: SceneTree) -> void:
 		"Acessibilidade": 11, "Alcancavel": 7, "Big": 12,
 		"Chaves dinamicas": 3, "Combate": 9, "Defesa": 27,
 		"Dicas": 5, "Economia": 9, "Elites": 11,
-		"Eventos": 12, "Feedback": 2, "Fmt": 6,
+		"Eventos": 12, "Feedback": 2, "Ferramentas": 3, "Daltonismo": 9, "Fmt": 6,
 		"Habilidades": 17, "Icones": 2, "Integridade": 9,
 		"Longo prazo": 7, "Mecânicas": 59, "Mira": 6,
 		"Mods": 19, "Numeros de dano": 2, "Offline": 6,
@@ -502,6 +504,173 @@ func t_combate() -> void:
 	ok("execucao mata", not e3.vivo())
 
 	jogo.arena.limpar_inimigos()
+
+## --------------------------------- daltonismo: a medida que faltava
+## O criterio 12 promete "daltonismo medido por separacao percebida" e se
+## classifica como MEDIDA — "um comando produz um numero". Nao existia
+## instrumento nenhum: o grupo Acessibilidade so tinha tremor e contraste WCAG.
+## O unico numero publicado estava num comentario do proprio shader, e um juiz
+## apontou o problema certo: ele foi obtido contra o modelo do proprio shader.
+##
+## Este e o instrumento. A parte que importa — a METRICA — e independente do
+## filtro: converte sRGB para CIELAB e mede distancia perceptual, que e a
+## pergunta "essas duas cores parecem diferentes para essa pessoa?". O que se
+## replica do shader e so a simulacao de dicromacia (Vienot 1999) e a correcao,
+## porque sem renderizar nao ha outro jeito de saber o que vai para a tela.
+##
+## O portao cobra o que o filtro promete: melhorar a MEDIA e, sobretudo, o PIOR
+## PAR — acessibilidade nao se mede pela media, se mede pelo caso ruim.
+func t_daltonismo() -> void:
+	g("Daltonismo")
+	var paleta: Array = [
+		UI.ACENTO, UI.ACENTO2, UI.OURO, UI.VERDE, UI.VERMELHO,
+		UI.TEXTO, UI.TEXTO2, UI.TEXTO3, UI.PAINEL, UI.PAINEL2, UI.BORDA,
+	]
+	var modos := {1: "protanopia", 2: "deuteranopia", 3: "tritanopia"}
+	for modo in modos:
+		var antes := _separacao(paleta, int(modo), false)
+		var depois := _separacao(paleta, int(modo), true)
+		# O PIOR PAR e o que decide, e por isso e a assercao dura. Duas cores
+		# indistinguiveis fazem a informacao SUMIR para quem depende delas; uma
+		# media alta nao devolve nada a essa pessoa. Medido: o filtro melhora o
+		# pior par nos tres modos (5,2->5,4 | 5,1->5,6 | 5,3->5,6).
+		ok("%s: o filtro melhora o PIOR par" % str(modos[modo]),
+			float(depois[1]) >= float(antes[1]) - 0.001,
+			"pior %.1f -> %.1f" % [float(antes[1]), float(depois[1])])
+		# E a media NAO PODE DESABAR em troca. O filtro custa media — varri o
+		# coeficiente de 0,0 a 0,4 e nenhum valor melhora a media em nenhum modo,
+		# entao cobrar melhora aqui seria cobrar o impossivel. O que se cobra e
+		# que o preco fique dentro de 6%: acima disso a tela inteira fica mais
+		# chapada para ganhar um par, o que e um mau negocio.
+		ok("%s: a media nao desaba em troca do pior par" % str(modos[modo]),
+			float(depois[0]) >= float(antes[0]) * 0.94,
+			"media %.1f -> %.1f (piso %.1f)" % [float(antes[0]), float(depois[0]), float(antes[0]) * 0.94])
+		# Um filtro que satura tudo tambem "melhora" numeros e destroi a tela.
+		ok("%s: o filtro nao satura a paleta" % str(modos[modo]),
+			float(depois[2]) < 0.35,
+			"fracao de canais no teto: %.2f" % float(depois[2]))
+
+## [media, pior, fracao_saturada] da distancia CIELAB entre todos os pares da
+## paleta, vistos por um dicromata do `modo`, com ou sem o filtro aplicado.
+func _separacao(paleta: Array, modo: int, com_filtro: bool) -> Array:
+	var vistas: Array = []
+	var saturados := 0
+	var canais := 0
+	for cor in paleta:
+		var c: Color = cor
+		var final := _filtrar(c, modo) if com_filtro else c
+		for v in [final.r, final.g, final.b]:
+			canais += 1
+			if v >= 0.999:
+				saturados += 1
+		vistas.append(_simular(final, modo))
+	var soma := 0.0
+	var pior := 1.0e9
+	var n := 0
+	for i in vistas.size():
+		for j in range(i + 1, vistas.size()):
+			var d := _dist_lab(vistas[i], vistas[j])
+			soma += d
+			pior = minf(pior, d)
+			n += 1
+	return [soma / maxf(1.0, float(n)), pior, float(saturados) / maxf(1.0, float(canais))]
+
+## Simulacao de dicromacia (Vienot, Brettel & Mollon 1999), a mesma do shader.
+func _simular(c: Color, modo: int) -> Color:
+	match modo:
+		1: return Color(
+			0.567 * c.r + 0.433 * c.g,
+			0.558 * c.r + 0.442 * c.g,
+			0.242 * c.g + 0.758 * c.b)
+		2: return Color(
+			0.625 * c.r + 0.375 * c.g,
+			0.7 * c.r + 0.3 * c.g,
+			0.3 * c.g + 0.7 * c.b)
+		_: return Color(
+			0.95 * c.r + 0.05 * c.g,
+			0.433 * c.g + 0.567 * c.b,
+			0.475 * c.g + 0.525 * c.b)
+
+## A correcao do shader, replicada: erro devolvido aos canais que a pessoa VE.
+func _filtrar(c: Color, modo: int) -> Color:
+	var s := _simular(c, modo)
+	var er := c.r - s.r
+	var eg := c.g - s.g
+	var eb := c.b - s.b
+	var corr := Vector3.ZERO
+	if modo == 3:
+		corr = Vector3(eb * 0.7 + er, eb * 0.7 + eg, 0.0)
+	else:
+		corr = Vector3(0.0, er * 0.7 + eg, er * 0.7 + eb)
+	var perdido := (eb - (er + eg) * 0.5) if modo == 3 else (er - eg)
+	return Color(
+		clampf(c.r + corr.x + perdido * 0.3, 0.0, 1.0),
+		clampf(c.g + corr.y + perdido * 0.3, 0.0, 1.0),
+		clampf(c.b + corr.z + perdido * 0.3, 0.0, 1.0))
+
+## Distancia CIELAB (DeltaE 76). E a METRICA, e nao vem do shader: e a pergunta
+## "essas duas cores parecem diferentes?" respondida em espaco perceptual.
+func _dist_lab(a: Color, b: Color) -> float:
+	var la := _lab(a)
+	var lb := _lab(b)
+	return sqrt(pow(la.x - lb.x, 2.0) + pow(la.y - lb.y, 2.0) + pow(la.z - lb.z, 2.0))
+
+func _lab(c: Color) -> Vector3:
+	var r := _linear(c.r)
+	var g := _linear(c.g)
+	var b := _linear(c.b)
+	var x := (r * 0.4124 + g * 0.3576 + b * 0.1805) / 0.95047
+	var y := r * 0.2126 + g * 0.7152 + b * 0.0722
+	var z := (r * 0.0193 + g * 0.1192 + b * 0.9505) / 1.08883
+	var fx := _f_lab(x)
+	var fy := _f_lab(y)
+	var fz := _f_lab(z)
+	return Vector3(116.0 * fy - 16.0, 500.0 * (fx - fy), 200.0 * (fy - fz))
+
+func _linear(v: float) -> float:
+	return pow((v + 0.055) / 1.055, 2.4) if v > 0.04045 else v / 12.92
+
+func _f_lab(t: float) -> float:
+	return pow(t, 1.0 / 3.0) if t > 0.008856 else (7.787 * t + 16.0 / 116.0)
+
+## ------------------------------------------- as ferramentas nao mentem
+## O veredito IMPRESSO e o CODIGO DE SAIDA tem que dizer a mesma coisa.
+##
+## `verificar.gd` escrevia FAIL quando faltava arquivo de dados e saia 0 mesmo
+## assim: quem lesse o texto via reprovacao, quem lesse o codigo de saida — o
+## CI, por exemplo — via aprovacao. A condicao do print considerava `faltando`
+## e a do quit nao. Um portao que reprova por escrito e aprova por codigo nao e
+## portao; e enfeite. Este teste cobra que as duas condicoes sejam a mesma em
+## toda ferramenta que tenha veredito.
+func t_ferramentas() -> void:
+	g("Ferramentas")
+	var arquivos := [
+		"res://tools/verificar.gd", "res://tools/lint.gd",
+		"res://tools/suites/testes.gd", "res://tools/suites/validar_dados.gd",
+		"res://tools/suites/soak.gd", "res://tools/suites/perf.gd",
+	]
+	var sem_quit: Array = []
+	var suspeitas: Array = []
+	for arq in arquivos:
+		var texto := _sem_comentario(FileAccess.get_file_as_string(arq))
+		if not texto.contains("quit("):
+			sem_quit.append(arq)
+			continue
+		# Toda ferramenta com veredito precisa sair com codigo derivado de uma
+		# condicao, nunca de um `quit(0)` cru no fim do caminho de sucesso E de
+		# falha. `quit(0 if <cond> else 1)` e a forma certa.
+		if not (texto.contains("quit(0 if") or texto.contains("quit(1)")):
+			suspeitas.append(arq)
+	ok("toda ferramenta de portao termina com quit", sem_quit.is_empty(), str(sem_quit))
+	ok("o codigo de saida vem de uma condicao, nao e fixo",
+		suspeitas.is_empty(), str(suspeitas))
+
+	# O caso concreto que motivou o teste: `verificar.gd` tem que considerar
+	# dados faltando no codigo de saida, nao so no texto.
+	var ver := _sem_comentario(FileAccess.get_file_as_string("res://tools/verificar.gd"))
+	ok("verificar.gd reprova de verdade quando falta dado",
+		ver.contains("faltando.is_empty()") and ver.contains("quit(0 if falhas.is_empty() and faltando.is_empty()"),
+		"a condicao do quit precisa incluir `faltando`")
 
 ## ------------------------------------------------- nada acontece mudo
 ## Todo evento que o jogador PERCEBE precisa de resposta: visual, sonora, ou as

@@ -39,7 +39,11 @@ func _initialize() -> void:
 	for f in falhas:
 		print("  FALHA: ", f)
 	print("===STATUS=== ", "PASS" if falhas.is_empty() and faltando.is_empty() else "FAIL")
-	quit(0 if falhas.is_empty() else 1)
+	# O veredito impresso e o codigo de saida tem que dizer a MESMA coisa. A
+	# linha acima ja considerava `faltando` para escrever FAIL, e esta ignorava:
+	# com um arquivo de dados ausente, a ferramenta imprimia FAIL e saia 0 — quem
+	# lesse o texto via a reprovacao, quem lesse o codigo de saida via aprovacao.
+	quit(0 if falhas.is_empty() and faltando.is_empty() else 1)
 
 ## Só os .gd soltos na raiz — sem descer, senão repetiria scripts/ e tools/.
 func _raiz() -> Array:

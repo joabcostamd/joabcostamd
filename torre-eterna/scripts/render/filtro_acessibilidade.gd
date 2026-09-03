@@ -53,12 +53,23 @@ void fragment() {
 		// luminância — então o par confundido também é separado por claro e
 		// escuro, no sentido do erro que o olho perdeu.
 		//
-		// Medido sobre a paleta real da UI (11 cores, todos os pares, distância
-		// vista pelo olho do dicromata): 0,3 melhora a média E o pior par nos
-		// três modos — protanopia 101,5/15,3 -> 113,5/20,2; deuteranopia
-		// 106,9/14,3 -> 119,6/19,3; tritanopia 121,0/10,8 -> 136,9/18,9.
-		// Acima disso a média sobe e o PIOR par desaba (0,6 leva o mínimo a
-		// ~1), que é o oposto do que acessibilidade quer.
+		// A nota anterior dizia que 0,3 melhorava a media E o pior par nos tres
+		// modos. Nao procede: foi medida contra o proprio modelo deste shader. Medido de novo com
+		// instrumento independente (CIELAB, DeltaE 76, em tools/suites/testes.gd,
+		// grupo Daltonismo), sobre a mesma paleta de 11 cores e todos os pares:
+		//
+		//   protanopia    média 59,1 -> 56,8 | pior par 5,2 -> 5,4
+		//   deuteranopia  média 62,2 -> 60,0 | pior par 5,1 -> 5,6
+		//   tritanopia    média 54,0 -> 52,2 | pior par 5,3 -> 5,6
+		//
+		// O filtro troca media por pior caso, e essa e a troca certa: duas cores
+		// indistinguiveis fazem a informacao sumir para quem depende delas, e uma
+		// media alta nao devolve nada a essa pessoa. Varrido de 0,0 a 0,4: nenhum
+		// valor melhora a media em nenhum modo, e 0,3 e o que melhora o pior par
+		// nos tres de uma vez, pagando cerca de 4% de media.
+		//
+		// O portao cobra as duas coisas: pior par melhora, media nao cai mais
+		// que 6%.
 		float perdido = (modo == 3) ? (erro.b - (erro.r + erro.g) * 0.5) : (erro.r - erro.g);
 		c = clamp(daltonizada + vec3(perdido * 0.3), vec3(0.0), vec3(1.0));
 	}
