@@ -28,10 +28,11 @@ static func xp_onda(w: int) -> float:
 
 static func contagem_onda(w: int, infinito: bool = false) -> int:
 	if infinito:
-		# Sem teto: a onda continua engordando para sempre. O limite passa a ser
-		# o teto de entidades da arena, que é a mecânica da Aglomeração — tela
-		# cheia rende mais.
-		return 8 + w / 3
+		# Teto muito mais alto (128 em vez de 30), não teto nenhum: sem limite,
+		# a onda 10.000 pediria 3.341 inimigos e levaria doze minutos só para
+		# nascer. A dificuldade do Modo Infinito vem de `escala_infinito`, que
+		# não para nunca; a contagem só precisa encher a tela.
+		return 8 + mini(120, w / 3)
 	return 8 + mini(22, w / 3)
 
 ## No Modo Infinito o inimigo também não para de crescer: o expoente da vida

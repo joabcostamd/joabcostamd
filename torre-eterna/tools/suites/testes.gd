@@ -335,7 +335,8 @@ func t_ondas() -> void:
 	ok("contagem sobe", Bal.contagem_onda(60) > Bal.contagem_onda(5))
 	# Modo Infinito: a contagem perde o teto e a vida do inimigo continua subindo.
 	ok("contagem tem teto no modo normal", Bal.contagem_onda(400) == Bal.contagem_onda(200))
-	ok("infinito tira o teto", Bal.contagem_onda(400, true) > Bal.contagem_onda(200, true))
+	ok("infinito sobe muito mais", Bal.contagem_onda(360, true) > Bal.contagem_onda(200, true))
+	ok("infinito ainda tem teto sao", Bal.contagem_onda(100000, true) <= 130)
 	ok("infinito escala a vida", Bal.escala_infinito(500, true) > Bal.escala_infinito(100, true))
 	ok("fora do infinito nada muda", perto(Bal.escala_infinito(500, false), 1.0))
 	ok("intervalo tem piso", Bal.intervalo_spawn(9999) >= 0.22)
