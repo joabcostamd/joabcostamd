@@ -275,7 +275,7 @@ STATUS: PASS   (3418 ms)
 | | |
 |---|---:|
 | Scripts GDScript | 87 |
-| Linhas de código | 31.928 |
+| Linhas de código | 31.951 |
 | Testes da simulação | 720 |
 | Chaves de interface PT/EN | 1.058 |
 | Textos de conteúdo PT/EN | 1.286 |

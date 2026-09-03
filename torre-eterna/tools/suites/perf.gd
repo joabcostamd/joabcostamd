@@ -79,7 +79,7 @@ func rodar(cena: SceneTree) -> void:
 	arvore = cena
 	root = cena.root
 	# roda num save separado: a suite nao pode apagar o progresso de quem joga
-	SaveSys.prefixo = "_ferramenta_"
+	SaveSys.prefixo = "_ferramenta_perf_"
 	Dados.carregar(true)
 	var args := OS.get_cmdline_user_args()
 	# Alvo do PORTÃO: a maior população que o jogo consegue produzir de fato,

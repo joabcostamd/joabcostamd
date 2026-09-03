@@ -33,7 +33,7 @@ func rodar(cena: SceneTree) -> void:
 	arvore = cena
 	root = cena.root
 	# roda num save separado: a suite nao pode apagar o progresso de quem joga
-	SaveSys.prefixo = "_ferramenta_"
+	SaveSys.prefixo = "_ferramenta_soak_"
 	Dados.carregar(true)
 	var args := OS.get_cmdline_user_args()
 	var horas := 2.0
@@ -111,6 +111,7 @@ func rodar(cena: SceneTree) -> void:
 		# salvar/carregar no meio da partida
 		if i % 108000 == 0 and i > 0:
 			_checar_roundtrip()
+			_checar_disco()
 
 	print("\n=== PICOS ===")
 	print("inimigos %d · projeteis %d · coletaveis %d · buffs %d · inventario %d" % [
@@ -166,6 +167,28 @@ func _checar_invariantes(t: float) -> void:
 		_falha("buffs acumulando: %d" % s["buffs"].size())
 	if s["cartas"]["equipadas"].size() > 8:
 		_falha("slots de carta demais: %d" % s["cartas"]["equipadas"].size())
+
+## O disco e a unica coisa que sobrevive ao jogo fechar, e o soak nunca tinha
+## olhado para ele.
+##
+## Uma rodada inteira passou com PASS enquanto o console gritava "a gravacao do
+## save saiu incompleta" a cada vinte segundos: o `_checar_roundtrip` so
+## exercita a caixa de texto (exportar/importar), que nao encosta em arquivo
+## nenhum. Um soak que diz PASS enquanto o jogo nao consegue gravar esta
+## medindo a coisa errada.
+func _checar_disco() -> void:
+	var save = root.get_node_or_null("SaveSys")
+	var onda_agora := int(jogo.s["onda"])
+	if not jogo.salvar():
+		_falha("o autosave falhou no disco: %s" % save.ultimo_erro)
+		return
+	var do_disco: Dictionary = save.carregar()
+	if do_disco.is_empty():
+		_falha("gravou e nao leu de volta")
+		return
+	if int(do_disco.get("onda", -1)) != onda_agora:
+		_falha("o disco voltou com onda %d, e a partida esta na %d" % [
+			int(do_disco.get("onda", -1)), onda_agora])
 
 func _checar_roundtrip() -> void:
 	var save = root.get_node_or_null("SaveSys")
