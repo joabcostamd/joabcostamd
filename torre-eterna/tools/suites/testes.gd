@@ -1850,8 +1850,26 @@ func t_custo_do_quadro() -> void:
 	var txt_ar := _ler("res://scripts/sim/arena.gd")
 	ok("em_area troca a grade pela lista quando o raio e grande",
 		txt_ar.contains("if lado * lado >= inimigos.size():"))
-	ok("o pool de projeteis recicla em anel, sem memmove",
-		txt_ar.contains("_anel_p = (_anel_p + 1)") and not txt_ar.contains("projeteis.remove_at(0)"))
+	ok("o pool de projeteis nao usa mais remove_at(0)",
+		not txt_ar.contains("projeteis.remove_at(0)"))
+	# ...e a reciclagem em anel e MEDIDA: com o pool cheio, criar mais nao pode
+	# fazer a lista crescer, nao pode devolver o mesmo slot duas vezes seguidas,
+	# e tem que devolver um projetil que ja estava na lista (reaproveitado).
+	var arena_p: Arena = jogo.arena
+	arena_p.limpar_tudo()
+	var teto_p: int = arena_p.max_projeteis
+	for i in teto_p:
+		arena_p.novo_projetil()
+	ok("o pool enche ate o teto", arena_p.projeteis.size() == teto_p, str(arena_p.projeteis.size()))
+	var antes_p: int = arena_p.projeteis.size()
+	var r1 = arena_p.novo_projetil()
+	var r2 = arena_p.novo_projetil()
+	ok("com o pool cheio a lista nao cresce", arena_p.projeteis.size() == antes_p,
+		str(arena_p.projeteis.size()))
+	ok("a reciclagem devolve slots diferentes em sequencia", r1 != r2)
+	ok("...e devolve um projetil que ja estava na lista",
+		arena_p.projeteis.has(r1) and arena_p.projeteis.has(r2))
+	arena_p.limpar_tudo()
 
 ## ------------------------------------------------------------ teto de nivel
 func t_teto() -> void:
@@ -1906,9 +1924,38 @@ func t_teto() -> void:
 	ok("o teto de projeteis existe e e sensato",
 		Bal.PROJETEIS_TETO >= 16 and Bal.PROJETEIS_TETO <= 128)
 	ok("o teto de orbes existe e e sensato", Bal.ORBES_TETO >= 12 and Bal.ORBES_TETO <= 64)
-	var txt_t := _ler("res://scripts/sim/tower.gd")
-	ok("o disparo usa o teto de projeteis", txt_t.contains("Bal.PROJETEIS_TETO"))
-	ok("os orbes usam o teto de orbes", txt_t.contains("Bal.ORBES_TETO"))
+	# AS REDES DE SEGURANCA SAO MEDIDAS, nao lidas. Injeto um numero absurdo pelo
+	# caminho que o jogo usa de verdade (`bonus_permanentes`, que e como missao,
+	# conquista e desafio dao atributo) e conto o que a torre CRIA.
+	jogo.arena.limpar_tudo()
+	var bonus_lista: Array = jogo.s["bonus_permanentes"]
+	var quantos_antes := bonus_lista.size()
+	bonus_lista.append({"stat": "projeteis", "tipo": "flat", "valor": 9999.0})
+	jogo.marcar_sujo()
+	jogo.recalcular()
+	ok("o atributo absurdo entrou", jogo.stats.n("projeteis") > 1000.0,
+		"%.0f" % jogo.stats.n("projeteis"))
+	var alvo_teto = EnemyAI.criar(Dados.inimigo_por_id["grunhido"], 5, jogo, {})
+	if alvo_teto != null:
+		alvo_teto.pos = jogo.arena.centro + Vector2(100.0, 0.0)
+		jogo.arena.reconstruir_grade()
+		jogo.torre.disparar(alvo_teto)
+		ok("o disparo respeita o teto de projeteis",
+			jogo.arena.projeteis.size() <= Bal.PROJETEIS_TETO,
+			"%d criados, teto %d" % [jogo.arena.projeteis.size(), Bal.PROJETEIS_TETO])
+	while bonus_lista.size() > quantos_antes:
+		bonus_lista.remove_at(bonus_lista.size() - 1)
+	jogo.marcar_sujo()
+	jogo.recalcular()
+	jogo.arena.limpar_tudo()
+	# ...e o mesmo para os orbes, pelo contador que a Sobrecarga usa.
+	var extra_antes: int = jogo.torre.orbes_extra
+	jogo.torre.orbes_extra = 9999
+	jogo.torre.atualizar_orbes(1.0 / 60.0)
+	ok("os orbes respeitam o teto", jogo.torre.orbes.size() <= Bal.ORBES_TETO,
+		"%d orbes, teto %d" % [jogo.torre.orbes.size(), Bal.ORBES_TETO])
+	jogo.torre.orbes_extra = extra_antes
+	jogo.torre.atualizar_orbes(1.0 / 60.0)
 
 	# O RAIO DE AREA NUNCA PASSA DA DIAGONAL DA ARENA. `em_area` varre celulas da
 	# grade dentro do quadrado do raio: o custo e o raio AO QUADRADO. Medido, a
