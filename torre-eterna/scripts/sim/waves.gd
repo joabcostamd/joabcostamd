@@ -29,12 +29,17 @@ func iniciar_onda(n: int) -> void:
 		s["onda_maxima"] = n
 	if n > int(s["onda_maxima_global"]):
 		s["onda_maxima_global"] = n
-		# recordes novos podem liberar habilidades — avise o jogador na hora
-		var novas: Array = Habilidades.desbloquear_por_progresso(s)
-		if not novas.is_empty():
-			for def in novas:
-				Bus.toast("Nova habilidade: %s" % Ux.txt(def, "nome", Cfg.ingles()), "epico")
-			Bus.ui_atualizar.emit(false)
+	# A checagem roda em TODA onda, não só quando o recorde sobe. Antes ficava
+	# atrás do `if` do recorde e bastava um caminho que mexesse no recorde por
+	# fora (carregar um save, um salto de onda, um talento que empurra a onda
+	# inicial) para a habilidade ficar presa: o painel dizia "requisito
+	# cumprido" e mostrava cadeado ao mesmo tempo. São dez habilidades — custa
+	# nada conferir sempre.
+	var novas: Array = Habilidades.desbloquear_por_progresso(s)
+	if not novas.is_empty():
+		for def in novas:
+			Bus.toast("Nova habilidade: %s" % Ux.txt(def, "nome", Cfg.ingles()), "epico")
+		Bus.ui_atualizar.emit(false)
 	var era_antes := int(s["era"])
 	var era_agora := Dados.era_da_onda(n)
 	if era_agora != era_antes:

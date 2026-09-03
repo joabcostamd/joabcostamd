@@ -771,6 +771,19 @@ func t_offline() -> void:
 ## -------------------------------------------------------- habilidades
 func t_habilidades() -> void:
 	g("Habilidades")
+	# O desbloqueio precisa rodar em toda onda, nao so quando o recorde sobe:
+	# um save carregado, um salto de onda ou a onda inicial de um talento mexem
+	# no recorde por fora e a habilidade ficava presa com "requisito cumprido"
+	# escrito ao lado do cadeado.
+	jogo.s["habilidades"] = {}
+	jogo.s["onda_maxima_global"] = 300
+	jogo.diretor.iniciar_onda(50)              # 50 < 300: o recorde NAO sobe
+	var abertas := 0
+	for id in jogo.s["habilidades"].keys():
+		if bool(jogo.s["habilidades"][id]["desbloqueada"]):
+			abertas += 1
+	ok("habilidade abre mesmo sem recorde novo", abertas >= 5, str(abertas))
+
 	var s: Dictionary = jogo.s
 	s["onda_maxima_global"] = 200
 	Habilidades.desbloquear_por_progresso(s)
