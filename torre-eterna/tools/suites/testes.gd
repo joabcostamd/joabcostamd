@@ -222,6 +222,24 @@ func t_defesa() -> void:
 	ok("chefe bate mais forte", Big.gt(Bal.dano_contato(hp10, 10, true, 1.0), d10))
 	ok("piso protege o comeco", Big.gt(Bal.dano_contato(Bal.hp_onda(1), 1, false, 1.0), Big.mul_f(Bal.hp_onda(1), 0.02)))
 
+	# Chefe encostado na torre: o inimigo comum morre no impacto, o chefe fica.
+	# Sem recarga ele batia a cada passo de fisica — 60 golpes por segundo.
+	ok("contato tem recarga", Bal.CD_CONTATO >= 0.5)
+	var chefao := Inimigo.new()
+	chefao.ativo = true
+	chefao.chefe = true
+	chefao.hp_max = Bal.hp_onda(50)
+	chefao.hp = chefao.hp_max
+	chefao.escala = 1.0
+	chefao.cd_contato = 0.0
+	var golpes := 0
+	for i in 60:                                  # um segundo de fisica
+		if chefao.cd_contato <= 0.0:
+			golpes += 1
+			chefao.cd_contato = Bal.CD_CONTATO
+		chefao.cd_contato -= 1.0 / 60.0
+	ok("chefe bate no maximo 2x por segundo", golpes <= 2)
+
 	var s: Dictionary = jogo.s
 	s["torre"]["vida_max"] = Big.from(1000.0)
 	s["torre"]["vida"] = Big.from(1000.0)

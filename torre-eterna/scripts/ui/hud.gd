@@ -200,8 +200,11 @@ func _construir() -> void:
 	caixa_hab.anchor_right = 0.5
 	caixa_hab.anchor_top = 1.0
 	caixa_hab.anchor_bottom = 1.0
-	caixa_hab.offset_top = -78
-	caixa_hab.offset_bottom = -14
+	# Uma linha ACIMA do menu de painéis. As duas barras ficavam na mesma faixa
+	# (menu em x 14..620, habilidades centradas em 240..1040): com o menu
+	# adicionado depois, ele ficava por cima e roubava o clique das habilidades.
+	caixa_hab.offset_top = -138
+	caixa_hab.offset_bottom = -74
 	caixa_hab.offset_left = -400
 	caixa_hab.offset_right = 400
 	caixa_hab.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -216,7 +219,7 @@ func _construir() -> void:
 	menu.offset_top = -58
 	menu.offset_bottom = -14
 	menu.offset_left = 14
-	menu.offset_right = 620
+	menu.offset_right = 680
 	add_child(menu)
 	var paineis := [
 		["upgrades", "espada", Txt.t("p_upgrades") + " (Q)", UI.VERMELHO],
@@ -228,6 +231,7 @@ func _construir() -> void:
 		["desafios", "desafio", Txt.t("p_desafios"), UI.ROSA],
 		["conquistas", "trofeu", Txt.t("p_conquistas") + " (T)", UI.OURO],
 		["codex", "livro", Txt.t("p_codex"), UI.TEXTO2],
+		["habilidades", "raio", Txt.t("p_habilidades"), UI.ACENTO],
 		["stats", "stats", Txt.t("p_stats"), UI.TEXTO2],
 		["config", "engrenagem", Txt.t("p_config") + " (O)", UI.TEXTO2],
 	]

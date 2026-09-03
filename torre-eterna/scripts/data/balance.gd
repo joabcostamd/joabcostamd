@@ -172,6 +172,11 @@ const GEMAS_SUPER := 25
 const POEIRA := {"comum": 5, "incomum": 14, "raro": 45, "epico": 160, "lendario": 600, "mitico": 2400}
 
 # ========================================================== AUTOMAÇÃO ====
+## Recarga entre dois golpes de contato do MESMO inimigo. So o chefe sobrevive
+## ao proprio impacto e fica encostado; sem esta recarga ele batia a cada passo
+## de fisica, ou seja, 60 golpes por segundo em vez de um.
+const CD_CONTATO := 0.9
+
 ## O inimigo "refletir" devolve uma fracao do golpe na torre. Fica aqui, e nao
 ## solto no codigo da torre, porque ja passou uma vez em unidade errada: o valor
 ## LINEAR foi entregue onde se esperava log10 e a torre morria num tiro.

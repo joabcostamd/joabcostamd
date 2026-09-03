@@ -9,7 +9,7 @@ extends RefCounted
 
 const MAX := 160
 const RAIO_FUNDIR := 30.0    ## distância em que um golpe novo entra no número que já está lá
-const JANELA_FUNDIR := 0.32  ## por quanto tempo um número aceita somar
+const JANELA_FUNDIR := 0.55  ## por quanto tempo um número aceita somar
 
 var pool: Array = []
 var fonte: Font
@@ -55,7 +55,9 @@ func adicionar(pos: Vector2, texto: String, cor: Color, critico: bool = false, e
 	alvo["valor"] = valor_log
 	alvo["somas"] = 0
 	alvo["nascido"] = 0.0
-	alvo["pos"] = pos + Vector2(randf_range(-9.0, 9.0), randf_range(-6.0, 2.0))
+	# Espalha mais na horizontal do que na vertical: os números sobem, então é
+	# na largura que eles deixam de se cobrir.
+	alvo["pos"] = pos + Vector2(randf_range(-26.0, 26.0), randf_range(-6.0, 2.0))
 	alvo["vel"] = Vector2(randf_range(-22.0, 22.0), -62.0 - (34.0 if critico else 0.0))
 	alvo["texto"] = texto
 	alvo["cor"] = cor

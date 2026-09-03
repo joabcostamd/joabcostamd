@@ -61,6 +61,9 @@ var sem_dano_t := 0.0
 # --- comportamento ---
 var t := 0.0
 var cd := 0.0
+## Recarga do golpe de contato. Inimigo comum morre ao encostar, mas o chefe
+## fica — e sem isto ele batia a cada passo de fisica, 60 vezes por segundo.
+var cd_contato := 0.0
 var estado := 0
 var fase_anim := 0.0
 var grudado := false
@@ -109,6 +112,7 @@ func limpar() -> void:
 	altura = 0.0
 	t = 0.0
 	cd = 0.0
+	cd_contato = 0.0
 	estado = 0
 	fase = 0
 	grudado = false

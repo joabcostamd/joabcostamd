@@ -364,6 +364,8 @@ static func atualizar(dt: float, j) -> void:
 			continue
 
 		e.t += dt
+		if e.cd_contato > 0.0:
+			e.cd_contato -= dt
 		if e.entrada > 0.0:
 			e.entrada -= dt
 		if e.piscou > 0.0:
@@ -412,5 +414,8 @@ static func atualizar(dt: float, j) -> void:
 				e.grudado = true
 				e.ang_grude = (e.pos - centro).angle()
 				e.pos = centro + Vector2(cos(e.ang_grude), sin(e.ang_grude)) * (Bal.RAIO_TORRE + e.raio * 0.5)
-			elif not e.grudado:
+			elif not e.grudado and e.cd_contato <= 0.0:
+				# O inimigo comum morre no impacto, entao a recarga so pesa para
+				# o chefe — que ficava encostado batendo a cada passo de fisica.
+				e.cd_contato = Bal.CD_CONTATO
 				j.impacto_na_torre(e)
