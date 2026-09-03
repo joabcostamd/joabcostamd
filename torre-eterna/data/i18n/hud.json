@@ -86,5 +86,9 @@
   "purga_sem_carga": {
     "pt": "O núcleo ainda está vazio. Deixe carregar.",
     "en": "The core is still empty. Let it charge."
+  },
+  "hud_chefe_em": {
+    "pt": "Chefe na onda {n}",
+    "en": "Boss on wave {n}"
   }
 }

@@ -20,6 +20,7 @@ var lbl_vida: Label
 var barra_escudo: ProgressBar
 var barra_xp: ProgressBar
 var barra_alvo: ProgressBar
+var _faixa_vida := -1
 var rotulo_alvo: Label
 var caixa_alvo: Control
 var lbl_nivel: Label
@@ -484,7 +485,11 @@ func _atualizar_alvo() -> void:
 	var def: Dictionary = prox["def"]
 	var frac := float(prox["frac"])
 	rotulo_alvo.text = "%s · %s" % [Txt.t("hud_proximo_alvo"), Ux.txt(def, "nome", Cfg.ingles())]
-	barra_alvo.value = frac * 100.0
+	# `UI.barra` nasce com max_value = 1.0, como TODAS as outras barras deste
+	# arquivo (onda, vida, xp, chefe). Multiplicar por 100 aqui deixava a barra
+	# saturada em 100% desde o segundo zero — o único alvo visível do jogo
+	# nascia mentindo que estava cheio.
+	barra_alvo.value = frac
 	# Perto de cair, a barra esquenta: o jogador vê que falta pouco sem ler nada.
 	barra_alvo.modulate = Color(1.0, 1.0, 1.0) if frac < 0.85 else Color(1.25, 1.15, 0.7)
 
@@ -509,7 +514,11 @@ func _atualizar_lento() -> void:
 	if bool(s.get("modo_infinito", false)):
 		lbl_onda.text += "  · " + Txt.t("hud_infinito")
 	var nec := maxi(1, int(s["necessarios"]))
-	barra_onda.value = clampf(float(s["mortos_na_onda"]) / float(nec), 0.0, 1.0)
+	var mortos := int(s["mortos_na_onda"])
+	barra_onda.value = clampf(float(mortos) / float(nec), 0.0, 1.0)
+	# O JOGO NUNCA DIZIA QUANTO FALTA, em lugar nenhum. A barra da onda subia
+	# sem número, e "faltam 3" é a frase que segura alguém por mais um minuto.
+	lbl_onda.text += "   %d / %d" % [mini(mortos, nec), nec]
 	if bool(s["em_chefe"]):
 		var chefe := Dados.chefe_da_onda(onda)
 		lbl_chefe.text = Ux.txt(chefe, "nome", Cfg.ingles())
@@ -524,13 +533,32 @@ func _atualizar_lento() -> void:
 			barra_chefe.visible = false
 			lbl_chefe_fase.text = ""
 	else:
-		lbl_chefe.text = ""
+		# O chefe a cada 10 ondas e o maior premio dos primeiros minutos, e
+		# chegava sem UM aviso previo. `lbl_chefe` ja existe e fica vazio fora
+		# da luta: passa a contar a chegada nas tres ondas anteriores.
+		var faltam_chefe := 10 - (onda % 10)
+		if faltam_chefe <= 3 and faltam_chefe > 0:
+			lbl_chefe.text = Txt.f("hud_chefe_em", {"n": onda + faltam_chefe})
+			lbl_chefe.add_theme_color_override("font_color", UI.VERMELHO)
+		else:
+			lbl_chefe.text = ""
 		barra_chefe.visible = false
 		lbl_chefe_fase.text = ""
 		barra_onda.add_theme_stylebox_override("fill", UI.caixa(UI.ACENTO, 3, 0))
 
 	var torre: Dictionary = s["torre"]
-	barra_vida.value = Big.frac(torre["vida"], torre["vida_max"])
+	var frac_vida := Big.frac(torre["vida"], torre["vida_max"])
+	barra_vida.value = frac_vida
+	# A BARRA DE VIDA FICAVA VERDE A 5%. Ela nascia UI.VERDE e nunca trocava de
+	# cor, enquanto a torre no centro da tela JÁ pinta de vermelho quando cai
+	# (art_tower.gd) — dois canais dizendo coisas opostas sobre a mesma coisa, e
+	# o que o jogador lê para decidir se corre ou se aguenta era o que mentia.
+	# Troca só na mudança de faixa, não a cada quadro.
+	var faixa_v := 2 if frac_vida > 0.5 else (1 if frac_vida > 0.25 else 0)
+	if faixa_v != _faixa_vida:
+		_faixa_vida = faixa_v
+		var cor_v := UI.VERDE if faixa_v == 2 else (UI.OURO if faixa_v == 1 else UI.VERMELHO)
+		barra_vida.add_theme_stylebox_override("fill", UI.caixa(cor_v, 4, 0))
 	lbl_vida.text = "%s / %s" % [Fmt.big(torre["vida"]), Fmt.big(torre["vida_max"])]
 	var tem_escudo: bool = not Big.is_zero(torre["escudo_max"])
 	barra_escudo.visible = tem_escudo
