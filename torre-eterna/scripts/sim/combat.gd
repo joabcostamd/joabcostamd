@@ -133,11 +133,20 @@ static func aplicar_elemento(e: Inimigo, elemento: String, dano_base_bruto: floa
 			e.veneno_dano = Big.mul_f(dano_base, float(d["dot"]))
 			e.veneno_t = float(d["duracao"])
 		"gelo":
+			# A ADAPTACAO VALE AQUI TAMBEM. `dano_base` ja traz o fator, mas gelo
+			# e vazio nao dependem de dano: eles entregam lentidao e ampliacao.
+			# Como estes dois ramos ignoravam `dano_base`, o Enxame nunca se
+			# adaptava a eles — e mesmo assim o HUD mostrava a resistencia
+			# subindo ate -62% para os CINCO elementos. Dois dos cinco numeros
+			# na tela eram falsos, e a build que o jogador montava para fugir da
+			# adaptacao fugia de um problema que ele nao tinha.
+			var f_gelo := Mecanicas.fator_elemento(j.s, elemento)
 			e.gelo = float(d["duracao"])
-			e.gelo_forca = minf(0.75, float(d["lentidao"]) * (1.0 + float(j.stats.n("danoGelo"))))
+			e.gelo_forca = minf(0.75, float(d["lentidao"]) * (1.0 + float(j.stats.n("danoGelo"))) * f_gelo)
 		"vazio":
+			var f_vazio := Mecanicas.fator_elemento(j.s, elemento)
 			e.fissura = float(d["duracao"])
-			e.fissura_forca = minf(1.2, float(d["ampliacao"]) * (1.0 + float(j.stats.n("danoVazio"))))
+			e.fissura_forca = minf(1.2, float(d["ampliacao"]) * (1.0 + float(j.stats.n("danoVazio"))) * f_vazio)
 		"raio":
 			corrente(e, dano_base, int(d["corrente"]), j, {})
 

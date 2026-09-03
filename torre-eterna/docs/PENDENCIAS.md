@@ -32,18 +32,18 @@ suíte reprovou):
 | 1.6 | `verificar.gd` escrevia FAIL e saía 0 quando faltava dado | Veredito e código de saída concordam, cobrado por teste em todas as ferramentas |
 | 1.7 | Critério 12 prometia "separação percebida medida" sem instrumento nenhum | Instrumento em CIELAB (ΔE 76). **Desmentiu o comentário do shader**: a média piora nos três modos; o filtro troca média por pior caso, e é o pior caso que importa |
 
-## 2. Promessas que o jogo faz e não cumpre
+## 2. Promessas que o jogo faz e não cumpre — 6 de 8 resolvidas
 
-| # | Pendência | Prova |
+| # | Pendência | Estado |
 |---|---|---|
-| 2.1 | **`autoPurga` custa 120 fragmentos e não tem interruptor.** `p["auto"]` nasce `false` e nenhum ponto da árvore escreve nele. É a compra mais cara do começo da árvore entregando nada. | `scripts/sim/mecanicas.gd`, `data/prestige.json` |
-| 2.2 | **`sinergia` é decorativa em 12 das 30 cartas** — só existe como rótulo colorido na UI, zero efeito na simulação. | `scripts/ui/panel_cartas.gd` |
-| 2.3 | **`semMorrer` não tem leitor.** Duas missões anunciam a regra ao jogador e pagam 8 pontos de talento de graça. | `data/missions.json` |
-| 2.4 | **Os 2 super-chefes são o mesmo chefe com duas peles** — `mecanica`, `fases` e `invoca` idênticos, um único braço no código. A dica de um deles cita mecânica que a luta não tem. | `data/enemies.json`, `scripts/sim/game.gd` |
-| 2.5 | **`cuspir` e `ondaMax` declarados e não implementados.** | `data/enemies.json` |
-| 2.6 | **`salvamento_travado`**: trava de mão única, sem ouvinte e sem destravar. | `scripts/core/save_system.gd` |
-| 2.7 | **O Peregrino não é escolha.** Poupar rende nada, não há cessar-fogo nem filtro de mira que o exclua — a decisão que o README vende não existe. | `scripts/sim/arena.gd` |
-| 2.8 | **Adaptação não afeta Gelo e Vazio**, mas o HUD mostra −62% para os cinco elementos. | `scripts/sim/combat.gd` |
+| 2.1 | `autoPurga` custava 120 fragmentos e a flag era lida e **nunca escrita** | ✅ Interruptor no HUD. `t_alcancavel` cobra a classe: todo desbloqueio pago precisa de quem o ligue |
+| 2.2 | `sinergia` decorativa em 12 de 30 cartas | ✅ A dupla equipada paga +12% dano e +8% ouro |
+| 2.3 | `semMorrer` sem leitor: dava para morrer toda onda e faturar 8 pontos de talento | ✅ Cair zera a contagem |
+| 2.4 | Os 2 super-chefes eram o mesmo chefe com duas peles, e a dica prometia fissuras inexistentes | ✅ Trono Vazio ganhou luta própria (drena escudo, silencia desde a fase 1). Teste proíbe assinatura repetida |
+| 2.7 | Peregrino: a mira nunca o excluía, então **poupar era impossível** | ✅ Escolha real, botão só quando ele está na tela, respeitada até pelo projétil no ar |
+| 2.8 | Adaptação não afetava Gelo e Vazio, mas o HUD mostrava −62% para os cinco | ✅ Vale para os cinco; teste prova |
+| 2.5 | `cuspir` e `ondaMax` declarados e não implementados | ⬜ pendente |
+| 2.6 | `salvamento_travado`: trava de mão única, sem ouvinte e sem destravar | ⬜ pendente |
 
 ## 3. Economia e ritmo (o mais caro de consertar, e o que mais decide)
 

@@ -82,7 +82,7 @@ func rodar(cena: SceneTree) -> void:
 		"Dicas": 5, "Economia": 9, "Elites": 11,
 		"Eventos": 12, "Feedback": 2, "Ferramentas": 3, "Daltonismo": 9, "Tempo": 5, "Conteudo lido": 11, "Fmt": 6,
 		"Habilidades": 17, "Icones": 2, "Integridade": 9,
-		"Longo prazo": 7, "Mecânicas": 59, "Mira": 6,
+		"Longo prazo": 7, "Mecânicas": 61, "Mira": 6,
 		"Mods": 19, "Numeros de dano": 2, "Offline": 6,
 		"Ondas": 12, "Pista de ouro": 3, "Prestígio": 25,
 		"Progresso": 14, "Saque": 8, "Save": 41,
@@ -1677,6 +1677,30 @@ func t_mecanicas() -> void:
 	ok("a partir do estado REAL, usar um elemento cria resistencia",
 		Mecanicas.fator_elemento(s_novo, "fogo") < 0.85,
 		"fator=%s" % str(Mecanicas.fator_elemento(s_novo, "fogo")))
+
+	# A ADAPTACAO TEM QUE VALER PARA OS CINCO ELEMENTOS.
+	# `gelo` e `vazio` nao dependem de dano — entregam lentidao e ampliacao — e
+	# os dois ramos ignoravam o fator, entao o Enxame nunca se adaptava a eles.
+	# O HUD, enquanto isso, mostrava a resistencia subindo ate -62% para os
+	# CINCO: dois dos cinco numeros na tela eram falsos.
+	var def_alvo: Dictionary = Dados.inimigo_por_id["grunhido"]
+	for elem in ["gelo", "vazio"]:
+		jogo.arena.limpar_inimigos()
+		var s_el: Dictionary = jogo.s
+		s_el["adaptacao"] = {"fogo": 0.0, "gelo": 0.0, "raio": 0.0, "veneno": 0.0, "vazio": 0.0}
+		var e_limpo := EnemyAI.criar(def_alvo, 10, jogo, {})
+		Combate.aplicar_elemento(e_limpo, elem, Big.from(1000.0), jogo)
+		var forte: float = e_limpo.gelo_forca if elem == "gelo" else e_limpo.fissura_forca
+		# Satura a adaptacao naquele elemento e aplica de novo.
+		for i in 200:
+			Mecanicas.registrar_elemento(s_el, elem)
+		var e_adap := EnemyAI.criar(def_alvo, 10, jogo, {})
+		Combate.aplicar_elemento(e_adap, elem, Big.from(1000.0), jogo)
+		var fraco: float = e_adap.gelo_forca if elem == "gelo" else e_adap.fissura_forca
+		ok("o Enxame se adapta a %s como aos outros" % elem, fraco < forte,
+			"antes=%.3f depois=%.3f" % [forte, fraco])
+	jogo.arena.limpar_inimigos()
+	jogo.s["adaptacao"] = {"fogo": 0.0, "gelo": 0.0, "raio": 0.0, "veneno": 0.0, "vazio": 0.0}
 
 	ok("sem adaptacao o fator e 1", perto(Mecanicas.fator_elemento(s, "fogo"), 1.0, 1e-9))
 	for i in 30:
