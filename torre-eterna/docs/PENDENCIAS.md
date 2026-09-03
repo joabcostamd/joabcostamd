@@ -138,3 +138,10 @@ Para não repetir trabalho — cada um com teste que reprova se voltar:
 - **O hitstop contava no relógio escalado**: 0,64 s de tela parada com câmera lenta, 40 ms com o turbo
 - **Desligar "Flashes" apagava a apresentação inteira do chefe**, e com ela a dica tática
 - **A torre voltava a viver em silêncio visual** — a queda tinha tudo, a volta tinha um som
+- **Com escala de interface salva, a torre nascia fora do centro** — o autoload aplica a escala antes de o Main perguntar o tamanho da janela, e quem mexesse uma vez no controle abria assim em toda sessão seguinte
+- **A Adaptação do Enxame era binária**: marcava um booleano por quadro, então todo elemento usado ia ao teto de 62% e ficava. Diversificar só somava elementos a −62% — o oposto do que o jogo promete em dois lugares
+- **A Sombra aparecia como quadro vazio no Codex** — o alfa de inimigo invisível vazava para o bestiário, e era justamente o bicho que mais precisa ser estudado com calma
+- **O bloco de vitais do HUD não tinha véu**: com um inimigo atrás, a vida da torre caía para 1,44:1 de contraste
+- **O README dizia que a automação da Purga é "40% pior"**; ela é 53% pior e ainda nunca conta como perfeita, então nunca paga o ouro nem a recarga
+- **O README vendia a Aglomeração como algo que o jogador persegue**; ela não tem alavanca nenhuma dele
+- **Quatro painéis rolavam na horizontal na escala 1,25**, escondendo conteúdo — achados pela varredura de layout, não a olho
