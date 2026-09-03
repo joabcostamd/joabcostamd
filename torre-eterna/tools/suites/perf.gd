@@ -177,42 +177,6 @@ func rodar(cena: SceneTree) -> void:
 		custo["diretor"] += Time.get_ticks_usec() - f5
 		repor.call(alvo)
 
-	# --- rotinas periódicas: o custo que o perfil por subsistema NÃO via ---
-	#
-	# O perfil acima mede oito subsistemas e admite, no rodapé, que o resto de
-	# `simular()` fica de fora. Esse "resto" é justamente o que fazia o p90 ser
-	# 2,7x o p50: automação a cada 0,35 s e conquistas/missões a cada 0,5 s dão
-	# ~8% dos passos, e o p90 corta em 10% — então os passos caros ESTAVAM
-	# dentro da janela que reprova, invisíveis para o relatório. Cada rotina é
-	# medida por chamada e depois amortizada na frequência real com que o jogo
-	# a executa, que é a forma de comparar com o orçamento por passo.
-	var periodicas := {}
-	var n_amostras := 40
-	var t0 := Time.get_ticks_usec()
-	for i in n_amostras:
-		j.auto_comprar()
-	periodicas["autocompra"] = [float(Time.get_ticks_usec() - t0) / n_amostras, Bal.INTERVALO_AUTOCOMPRA]
-	t0 = Time.get_ticks_usec()
-	for i in n_amostras:
-		Progresso.checar_conquistas(j)
-	periodicas["conquistas"] = [float(Time.get_ticks_usec() - t0) / n_amostras, 0.5]
-	t0 = Time.get_ticks_usec()
-	for i in n_amostras:
-		Progresso.checar_missoes(j)
-	periodicas["missoes"] = [float(Time.get_ticks_usec() - t0) / n_amostras, 0.5]
-
-	print("")
-	print("--- rotinas periodicas (custo por chamada e amortizado por passo) ---")
-	var amortizado_total := 0.0
-	for nome in periodicas:
-		var par: Array = periodicas[nome]
-		var por_chamada: float = par[0]
-		var intervalo: float = par[1]
-		var amort := por_chamada * DT / intervalo
-		amortizado_total += amort
-		print("  %-12s %8.0f us por chamada | a cada %.2fs | %6.0f us/passo amortizado" % [nome, por_chamada, intervalo, amort])
-	print("  soma amortizada: %.0f us/passo (o pico real cai TODO num passo so)" % amortizado_total)
-
 	# O PORTÃO tem DUAS pernas, e as duas reprovam.
 	#
 	# Um crítico independente pegou a versão anterior desta ferramenta fazendo
@@ -232,6 +196,35 @@ func rodar(cena: SceneTree) -> void:
 	# inimigos, então 400 vivos é um cenário que o jogo não produz.
 	var e1 := _medir(j, repor, alvo, 600)
 	var e2 := _medir(j, repor, alvo_estresse, 300)
+
+	# --- rotinas periódicas: o custo que o perfil por subsistema NÃO via ---
+	#
+	# O perfil por subsistema mede oito chamadas e admite, no rodapé, que o
+	# resto de `simular()` fica de fora — automação, conquistas, missões,
+	# autosave. Como essas rodam em cadência (0,35 s e 0,5 s), elas caem em
+	# ~8% dos passos, e o p90 corta em 10%: os passos caros estavam DENTRO da
+	# janela que decide o portão e fora do relatório que explica o portão.
+	#
+	# Medidas DEPOIS das duas pernas, e a ordem aqui não é estética. Medi-las
+	# antes já custou uma leitura falsa: `auto_comprar()` GASTA OURO e compra
+	# melhorias, então as 40 chamadas de amostragem mudavam a torre antes das
+	# pernas rodarem — a perna segurada caiu de 7542 us para 2118 us sem uma
+	# linha do jogo ter mudado, e o portão "passou" por obra da ferramenta que
+	# deveria estar só olhando. Instrumento que altera o que mede não mede.
+	var periodicas := {}
+	var n_amostras := 40
+	var t0 := Time.get_ticks_usec()
+	for i in n_amostras:
+		j.auto_comprar()
+	periodicas["autocompra"] = [float(Time.get_ticks_usec() - t0) / n_amostras, Bal.INTERVALO_AUTOCOMPRA]
+	t0 = Time.get_ticks_usec()
+	for i in n_amostras:
+		Progresso.checar_conquistas(j)
+	periodicas["conquistas"] = [float(Time.get_ticks_usec() - t0) / n_amostras, 0.5]
+	t0 = Time.get_ticks_usec()
+	for i in n_amostras:
+		Progresso.checar_missoes(j)
+	periodicas["missoes"] = [float(Time.get_ticks_usec() - t0) / n_amostras, 0.5]
 
 	var ref := maxf(ref_antes, medir_maquina())
 	var fator := clampf(ref / REF_US, FATOR_MIN, FATOR_MAX)
@@ -264,6 +257,17 @@ func rodar(cena: SceneTree) -> void:
 	print("  (soma %.0f us; o resto de simular() — eventos, automacao, conquistas," % soma_perfil)
 	print("   missoes, autosave — esta na media acima, nao aqui)")
 	print("recalculos de atributos: %d" % j.stats.recalculos)
+	print("")
+	print("--- rotinas periodicas (medidas DEPOIS das pernas; ver comentario) ---")
+	var amortizado_total := 0.0
+	for nome in periodicas:
+		var par: Array = periodicas[nome]
+		var por_chamada: float = par[0]
+		var intervalo: float = par[1]
+		var amort := por_chamada * DT / intervalo
+		amortizado_total += amort
+		print("  %-12s %8.0f us por chamada | a cada %.2fs | %6.0f us/passo amortizado" % [nome, por_chamada, intervalo, amort])
+	print("  soma amortizada: %.0f us/passo (mas o pico cai TODO num passo so)" % amortizado_total)
 
 	# O p90 é quem reprova: média esconde engasgo. E as DUAS pernas contam.
 	var ok_real := so_segurado or float(g["p90"]) <= orcamento
