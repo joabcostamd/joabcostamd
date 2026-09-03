@@ -194,7 +194,9 @@ func rodar(cena: SceneTree) -> void:
 	# Só o estresse muito além do teto (`alvo_estresse`) segue informativo, e por
 	# uma razão que dá para verificar: `Bal.contagem_onda` limita a onda a 128
 	# inimigos, então 400 vivos é um cenário que o jogo não produz.
+	var rec0: int = j.stats.recalculos
 	var e1 := _medir(j, repor, alvo, 600)
+	var rec_por_passo := float(j.stats.recalculos - rec0) / 600.0
 	var e2 := _medir(j, repor, alvo_estresse, 300)
 
 	# --- rotinas periódicas: o custo que o perfil por subsistema NÃO via ---
@@ -225,6 +227,20 @@ func rodar(cena: SceneTree) -> void:
 	for i in n_amostras:
 		Progresso.checar_missoes(j)
 	periodicas["missoes"] = [float(Time.get_ticks_usec() - t0) / n_amostras, 0.5]
+	# `recalcular()` sai cedo quando o estado não está sujo, então o que importa
+	# não é o custo dele isolado, é o custo VEZES quantas vezes o jogo suja o
+	# estado por passo — e isso só a perna medida sabe dizer.
+	t0 = Time.get_ticks_usec()
+	for i in n_amostras:
+		j.marcar_sujo()
+		j.recalcular()
+	var custo_recalculo := float(Time.get_ticks_usec() - t0) / n_amostras
+	# A automação de habilidades roda a 4 Hz e cada disparo pode bater em toda a
+	# arena. É a cadência mais alta do jogo depois do próprio passo.
+	t0 = Time.get_ticks_usec()
+	for i in n_amostras:
+		Habilidades.auto_usar(j)
+	periodicas["auto_habilidade"] = [float(Time.get_ticks_usec() - t0) / n_amostras, 0.25]
 
 	var ref := maxf(ref_antes, medir_maquina())
 	var fator := clampf(ref / REF_US, FATOR_MIN, FATOR_MAX)
@@ -268,6 +284,8 @@ func rodar(cena: SceneTree) -> void:
 		amortizado_total += amort
 		print("  %-12s %8.0f us por chamada | a cada %.2fs | %6.0f us/passo amortizado" % [nome, por_chamada, intervalo, amort])
 	print("  soma amortizada: %.0f us/passo (mas o pico cai TODO num passo so)" % amortizado_total)
+	print("  %-12s %8.0f us por chamada | %.2f por passo | %6.0f us/passo" % [
+		"recalculo", custo_recalculo, rec_por_passo, custo_recalculo * rec_por_passo])
 
 	# O p90 é quem reprova: média esconde engasgo. E as DUAS pernas contam.
 	var ok_real := so_segurado or float(g["p90"]) <= orcamento
@@ -313,17 +331,55 @@ func _medir(j, repor: Callable, quantos: int, passos: int) -> Dictionary:
 
 	var amostras: Array[float] = []
 	amostras.resize(passos)
+	# Quantos inimigos MORRERAM em cada passo. O p90 desta perna era 2,7x o p50
+	# e nenhuma rotina periódica explicava a diferença: somadas, elas dão 59
+	# us/passo contra os ~4700 us que separam o passo mediano do caro. Em vez de
+	# seguir chutando candidato, a ferramenta passa a guardar o que muda de um
+	# passo para o outro e a dizer, no fim, o que os passos caros têm de
+	# diferente. `repor` só roda depois da medida, então a queda na população
+	# dentro do passo é exatamente o número de mortes daquele passo.
+	var mortes: Array[float] = []
+	mortes.resize(passos)
+	var projs: Array[float] = []
+	projs.resize(passos)
+	var vivs: Array[float] = []
+	vivs.resize(passos)
 	var soma_vivos := 0
 	var pico_p := 0
 	for i in passos:
+		var vivos_antes: int = j.arena.inimigos.size()
 		var a := Time.get_ticks_usec()
 		j.simular(DT)
 		amostras[i] = float(Time.get_ticks_usec() - a)
+		mortes[i] = float(maxi(0, vivos_antes - j.arena.inimigos.size()))
+		projs[i] = float(j.arena.projeteis.size())
+		vivs[i] = float(j.arena.inimigos.size())
 		soma_vivos += j.arena.inimigos.size()
 		pico_p = maxi(pico_p, j.arena.projeteis.size())
 		repor.call(quantos)
 
-	return _resumir(amostras, soma_vivos / passos, pico_p)
+	var r := _resumir(amostras, soma_vivos / passos, pico_p)
+	r["mortes_caros"] = _media_dos_caros(amostras, mortes, true)
+	r["mortes_resto"] = _media_dos_caros(amostras, mortes, false)
+	r["projs_caros"] = _media_dos_caros(amostras, projs, true)
+	r["projs_resto"] = _media_dos_caros(amostras, projs, false)
+	r["vivos_caros"] = _media_dos_caros(amostras, vivs, true)
+	r["vivos_resto"] = _media_dos_caros(amostras, vivs, false)
+	return r
+
+## Média de `valores` nos 10% de passos mais caros (`caros = true`) ou nos 90%
+## restantes. É o que responde "o que os passos caros têm de diferente".
+func _media_dos_caros(custos: Array[float], valores: Array[float], caros: bool) -> float:
+	var ordem := custos.duplicate()
+	ordem.sort()
+	var corte: float = ordem[int(float(ordem.size()) * 0.9)]
+	var soma := 0.0
+	var n := 0
+	for i in custos.size():
+		if (custos[i] >= corte) == caros:
+			soma += valores[i]
+			n += 1
+	return soma / maxf(1.0, float(n))
 
 func _resumir(amostras: Array[float], vivos: int, proj: int) -> Dictionary:
 	var ordenado := amostras.duplicate()
@@ -347,3 +403,8 @@ func _relatar(d: Dictionary, fator: float) -> void:
 	print("  media %6.0f | p50 %6.0f | p90 %6.0f | p99 %6.0f | pior %6.0f  (us)" % [
 		float(d["media"]), float(d["p50"]), float(d["p90"]), float(d["p99"]), float(d["pior"])])
 	print("  %.0f fps no p90" % (1000000.0 / maxf(1.0, float(d["p90"]) / fator)))
+	if d.has("mortes_caros"):
+		print("  nos 10%% mais caros vs o resto -> mortes %.1f/%.1f | projeteis %.0f/%.0f | vivos %.0f/%.0f" % [
+			float(d["mortes_caros"]), float(d["mortes_resto"]),
+			float(d["projs_caros"]), float(d["projs_resto"]),
+			float(d["vivos_caros"]), float(d["vivos_resto"])])
