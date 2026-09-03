@@ -201,6 +201,101 @@ static func peregrino_morto(j) -> void:
 	var s: Dictionary = j.s
 	s["peregrinos_mortos"] = int(s.get("peregrinos_mortos", 0)) + 1
 
+# ============================================================ O PANTEÃO ====
+## Consagrar um conjunto completo DESTRÓI aquelas cartas para sempre em troca
+## de um multiplicador eterno, imune a todos os prestígios. É o único sistema
+## do jogo em que você perde algo de verdade — e por isso o único em que a
+## decisão pesa.
+const PANTEAO_DANO := 1.18
+const PANTEAO_OURO := 1.12
+
+static func estado_panteao(s: Dictionary) -> Dictionary:
+	if not s.has("panteao"):
+		s["panteao"] = {}
+	return s["panteao"]
+
+## O jogador tem todas as cartas do conjunto no inventário?
+static func pode_consagrar(s: Dictionary, conjunto_id: String) -> bool:
+	var conj := _conjunto(conjunto_id)
+	if conj.is_empty():
+		return false
+	for id in conj.get("cartas", []):
+		if _achar_carta_por_id(s, str(id)).is_empty():
+			return false
+	return true
+
+static func consagrar(j, conjunto_id: String) -> bool:
+	var s: Dictionary = j.s
+	if not pode_consagrar(s, conjunto_id):
+		return false
+	var conj := _conjunto(conjunto_id)
+	# destrói uma cópia de cada carta do conjunto — de verdade, sem volta
+	for id in conj.get("cartas", []):
+		var inst := _achar_carta_por_id(s, str(id))
+		if inst.is_empty():
+			continue
+		var uid := str(inst["uid"])
+		for i in s["cartas"]["equipadas"].size():
+			if str(s["cartas"]["equipadas"][i]) == uid:
+				s["cartas"]["equipadas"][i] = ""
+		var inv: Array = s["cartas"]["inventario"]
+		for i in inv.size():
+			if str(inv[i]["uid"]) == uid:
+				inv.remove_at(i)
+				break
+	var p := estado_panteao(s)
+	p[conjunto_id] = int(p.get(conjunto_id, 0)) + 1
+	j.marcar_sujo()
+	Bus.celebracao.emit("panteao", {"conjunto": conjunto_id, "nivel": int(p[conjunto_id])})
+	Bus.toast("%s consagrado. As cartas se foram; o poder ficou." % str(conj.get("nome", "")), "epico")
+	return true
+
+static func bonus_panteao(s: Dictionary) -> Dictionary:
+	var total := 0
+	for k in estado_panteao(s).keys():
+		total += int(s["panteao"][k])
+	return {"n": total, "dano": pow(PANTEAO_DANO, float(total)), "ouro": pow(PANTEAO_OURO, float(total))}
+
+static func _conjunto(id: String) -> Dictionary:
+	for c in Dados.conjuntos:
+		if str(c.get("id", "")) == id:
+			return c
+	return {}
+
+static func _achar_carta_por_id(s: Dictionary, id_carta: String) -> Dictionary:
+	for c in s["cartas"]["inventario"]:
+		if str(c.get("id", "")) == id_carta:
+			return c
+	return {}
+
+# ==================================================== CAIXA DA VIGÍLIA =====
+## O saque offline chega LACRADO. Você abre uma carta por vez, com o momento
+## que o progresso offline normalmente assassina.
+const CAIXA_SEG_POR_CARTA := 900.0
+const CAIXA_MAX := 12
+
+static func estado_caixa(s: Dictionary) -> Dictionary:
+	if not s.has("caixa"):
+		s["caixa"] = {"seladas": 0, "abertas": 0}
+	return s["caixa"]
+
+static func selar_offline(s: Dictionary, segundos: float, sorte: float) -> int:
+	var n := int(floor(segundos / CAIXA_SEG_POR_CARTA * maxf(0.5, sorte)))
+	n = clampi(n, 0, CAIXA_MAX)
+	if n <= 0:
+		return 0
+	var c := estado_caixa(s)
+	c["seladas"] = mini(CAIXA_MAX * 3, int(c["seladas"]) + n)
+	return n
+
+static func abrir_caixa(j) -> Dictionary:
+	var c := estado_caixa(j.s)
+	if int(c["seladas"]) <= 0:
+		return {}
+	c["seladas"] = int(c["seladas"]) - 1
+	c["abertas"] = int(c["abertas"]) + 1
+	return Saque.criar_carta(j, "", true)
+
 # =========================================================== A RETOMADA ====
 ## Depois de um prestígio, o jogo acelera sozinho e reconstrói o império
 ## enquanto você assiste — com a marca da run anterior na tela para ser

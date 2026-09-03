@@ -391,6 +391,36 @@ func t_mecanicas() -> void:
 	ok("tela cheia bonifica", Mecanicas.fator_aglomeracao(40) > 1.2, str(Mecanicas.fator_aglomeracao(40)))
 	ok("ganho e sublinear", Mecanicas.fator_aglomeracao(80) < Mecanicas.fator_aglomeracao(40) * 2.0)
 
+	# --- O Panteão ---
+	s["panteao"] = {}
+	s["cartas"]["inventario"] = []
+	s["cartas"]["equipadas"] = ["", "", ""]
+	ok("panteao comeca vazio", int(Mecanicas.bonus_panteao(s)["n"]) == 0)
+	if not Dados.conjuntos.is_empty():
+		var conj: Dictionary = Dados.conjuntos[0]
+		var cid := str(conj.get("id", ""))
+		ok("nao consagra sem as cartas", not Mecanicas.pode_consagrar(s, cid))
+		for id_carta in conj.get("cartas", []):
+			Saque.criar_carta(jogo, str(id_carta), false)
+		ok("pode consagrar com o conjunto", Mecanicas.pode_consagrar(s, cid))
+		var inv_antes: int = s["cartas"]["inventario"].size()
+		ok("consagra", Mecanicas.consagrar(jogo, cid))
+		var inv_depois: int = s["cartas"]["inventario"].size()
+		ok("destroi as cartas de verdade", inv_depois < inv_antes, "%d -> %d" % [inv_antes, inv_depois])
+		var bp := Mecanicas.bonus_panteao(s)
+		ok("da multiplicador eterno", float(bp["dano"]) > 1.0 and float(bp["ouro"]) > 1.0)
+		ok("nao consagra duas vezes sem repor", not Mecanicas.pode_consagrar(s, cid))
+
+	# --- Caixa da Vigília ---
+	s["caixa"] = {"seladas": 0, "abertas": 0}
+	ok("caixa vazia nao abre", Mecanicas.abrir_caixa(jogo).is_empty())
+	var n_sel := Mecanicas.selar_offline(s, 3600.0, 1.0)
+	ok("offline sela cartas", n_sel > 0, str(n_sel))
+	ok("tem teto", Mecanicas.selar_offline(s, 3600.0 * 999.0, 1.0) <= Mecanicas.CAIXA_MAX)
+	var antes_caixa: int = int(s["caixa"]["seladas"])
+	var carta := Mecanicas.abrir_caixa(jogo)
+	ok("abre uma por vez", not carta.is_empty() and int(s["caixa"]["seladas"]) == antes_caixa - 1)
+
 	# --- A Retomada ---
 	s["retomada"] = null
 	s.erase("retomada")

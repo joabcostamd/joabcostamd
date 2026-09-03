@@ -321,6 +321,7 @@ func _mostrar_ficha() -> void:
 		detalhe.add_child(falta)
 		var pista := _bloco("Onde procurar", "alvo", UI.TEXTO2)
 		pista.add_child(_texto_corpo(_texto_aparicao(def, chefe), UI.TEXTO2))
+		_marcar_selecao()
 		return
 
 	# --- nome e abates ---

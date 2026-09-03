@@ -27,6 +27,8 @@ static func calcular(j, segundos: float) -> Dictionary:
 	Economia.ganhar_ouro(ouro, j, "offline", true)
 	Economia.ganhar_xp(xp, j)
 	s["stats"]["tempo_offline"] = float(s["stats"]["tempo_offline"]) + usado
+	# a Caixa da Vigília: o saque offline chega lacrado, para ser aberto na mão
+	var seladas := Mecanicas.selar_offline(s, usado, float(j.stats.n("chanceDrop")))
 
 	return {
 		"segundos": segundos,
@@ -35,5 +37,6 @@ static func calcular(j, segundos: float) -> Dictionary:
 		"eficiencia": eficiencia,
 		"ouro": ouro,
 		"xp": xp,
+		"seladas": seladas,
 		"aplicado": true,
 	}

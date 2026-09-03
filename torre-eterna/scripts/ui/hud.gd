@@ -24,6 +24,8 @@ var lbl_fps: Label
 var caixa_hab: HBoxContainer
 var botoes_hab := {}
 var caixa_buffs: HBoxContainer
+var caixa_adapt: HBoxContainer
+var rotulos_adapt := {}
 var botoes_painel := {}
 var lbl_velocidade: Label
 var aviso_pontos: Label
@@ -125,6 +127,23 @@ func _construir() -> void:
 	caixa_buffs = UI.hbox(4)
 	caixa_buffs.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	vitais.add_child(caixa_buffs)
+
+	# adaptação do Enxame: o jogador precisa VER o mundo aprendendo
+	caixa_adapt = UI.hbox(6)
+	caixa_adapt.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vitais.add_child(caixa_adapt)
+	for chave in ["fogo", "gelo", "raio", "veneno", "vazio"]:
+		var linha_a := UI.hbox(2)
+		linha_a.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var ic_a := Control.new()
+		ic_a.set_script(load("res://scripts/ui/icone_control.gd"))
+		linha_a.add_child(ic_a)
+		ic_a.configurar(chave if chave != "vazio" else "vazio", Color.html(str(Bal.ELEMENTOS[chave]["cor"])), 13)
+		var l_a := UI.rotulo("", 11, UI.TEXTO3)
+		linha_a.add_child(l_a)
+		caixa_adapt.add_child(linha_a)
+		linha_a.visible = false
+		rotulos_adapt[chave] = {"linha": linha_a, "label": l_a}
 
 	# ---------- direita: combo / dps / fps ----------
 	var dir := UI.vbox(2)
@@ -362,7 +381,24 @@ func _atualizar_lento() -> void:
 	lbl_velocidade.text = "×%d" % int(jogo.velocidade)
 
 	_atualizar_buffs()
+	_atualizar_adaptacao()
 	botoes_painel["talentos"].modulate = UI.OURO if pts > 0 else Color.WHITE
+
+## Mostra só os elementos em que o Enxame já criou resistência.
+func _atualizar_adaptacao() -> void:
+	var a: Dictionary = Mecanicas.estado_adaptacao(jogo.s)
+	var algum := false
+	for chave in rotulos_adapt.keys():
+		var r := float(a.get(chave, 0.0))
+		var ref: Dictionary = rotulos_adapt[chave]
+		var mostrar := r > 0.04
+		ref["linha"].visible = mostrar
+		if mostrar:
+			algum = true
+			ref["label"].text = "-" + Fmt.pct(r, 0)
+			var quente := clampf(r / Mecanicas.ADAPT_TETO, 0.0, 1.0)
+			ref["label"].add_theme_color_override("font_color", UI.TEXTO3.lerp(UI.VERMELHO, quente))
+	caixa_adapt.tooltip_text = "O Enxame se adapta ao que você mais usa.\nDiversifique os elementos para o dano voltar ao normal." if algum else ""
 
 func _atualizar_buffs() -> void:
 	var buffs: Array = jogo.s["buffs"]

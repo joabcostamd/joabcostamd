@@ -184,6 +184,12 @@ static func recalcular(s: Dictionary, m: StatEngine) -> Dictionary:
 		m.add_pct("multiplicador", float(album["dano"]), "Álbum de Ecos")
 		m.add_pct("ganhoOuro", float(album["ouro"]), "Álbum de Ecos")
 
+	# ---------------------------------------------------- O Panteão
+	var pant := Mecanicas.bonus_panteao(s)
+	if int(pant["n"]) > 0:
+		m.add_mult("multiplicador", float(pant["dano"]), "Panteão")
+		m.add_mult("ganhoOuro", float(pant["ouro"]), "Panteão")
+
 	# desbloqueios permanentes guardados no estado
 	for k in s["desbloqueios"].keys():
 		esp["desbloqueios"][str(k)] = true
