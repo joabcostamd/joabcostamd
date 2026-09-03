@@ -36,6 +36,7 @@ func rodar(cena: SceneTree) -> void:
 	t_modificadores()
 	t_economia()
 	t_combate()
+	t_alcancavel()
 	t_elites()
 	t_mira()
 	t_defesa()
@@ -468,6 +469,57 @@ func t_combate() -> void:
 	ok("execucao mata", not e3.vivo())
 
 	jogo.arena.limpar_inimigos()
+
+## ------------------------------------------------ sistemas alcancaveis
+## Duas vezes o mesmo defeito: uma funcao que e a UNICA porta para um sistema
+## inteiro, com teste proprio passando, e zero chamadores fora dos testes. O
+## Modo Infinito foi consertado primeiro; o Modo Farm, irmao ao lado, ficou
+## quebrado mais tempo justamente porque ninguem perguntou de novo. E o Panteao
+## — que o README vende como "o unico sistema em que voce perde algo de verdade"
+## — nao tinha botao, tecla nem string: o jogador nao tinha como chegar nele.
+##
+## Este teste faz a pergunta uma vez por todas: toda funcao que abre um sistema
+## precisa de um chamador FORA de tools/. Teste que passa sozinho nao prova que
+## o jogador alcanca a coisa.
+func t_alcancavel() -> void:
+	g("Alcancavel")
+	var portas := {
+		"consagrar": "o Panteao",
+		"alternar_farm": "o Modo Farm",
+		"alternar_infinito": "o Modo Infinito",
+		"disparar_purga": "a Purga",
+		"ascender": "a Ascensao",
+		"colapsar": "a Singularidade",
+		"transcender": "a Transcendencia",
+	}
+	var codigo_ui := ""
+	for arq in _listar_gd("res://scripts"):
+		codigo_ui += FileAccess.get_file_as_string(arq)
+	for nome in portas:
+		var alcancavel := codigo_ui.contains(nome + "(")
+		# `contains(nome + "(")` acha tanto a definicao quanto a chamada, entao
+		# so vale se aparecer MAIS de uma vez: uma e a propria declaracao.
+		var vezes := codigo_ui.count(nome + "(")
+		ok("%s tem porta no jogo" % str(portas[nome]), alcancavel and vezes >= 2,
+			"%s aparece %d vez(es) em scripts/" % [nome, vezes])
+
+## Todo `.gd` sob um diretorio, recursivo.
+func _listar_gd(raiz: String) -> Array:
+	var saida: Array = []
+	var d := DirAccess.open(raiz)
+	if d == null:
+		return saida
+	d.list_dir_begin()
+	var nome := d.get_next()
+	while nome != "":
+		var caminho := raiz + "/" + nome
+		if d.current_is_dir():
+			saida.append_array(_listar_gd(caminho))
+		elif nome.ends_with(".gd"):
+			saida.append(caminho)
+		nome = d.get_next()
+	d.list_dir_end()
+	return saida
 
 ## --------------------------------------------------- elites de verdade
 ## Seis dos nove modificadores de elite tinham campo mecânico no JSON ou um

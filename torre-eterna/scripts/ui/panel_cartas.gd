@@ -785,6 +785,26 @@ func _fazer_reciclar(uid: String, ganho: float) -> void:
 	else:
 		Bus.toast(Txt.t("car_toast_esta_equipada"), "ruim")
 
+## Consagrar destrói cartas para sempre, então nunca acontece num clique só.
+func _tentar_consagrar(conjunto_id: String) -> void:
+	if not Mecanicas.pode_consagrar(jogo.s, conjunto_id):
+		Bus.toast(Txt.t("car_cons_faltam"), "ruim")
+		return
+	var conj: Dictionary = {}
+	for c in Dados.conjuntos:
+		if str(c.get("id", "")) == conjunto_id:
+			conj = c
+			break
+	var nome := txt(conj, "nome")
+	_confirmar(Txt.f("car_cons_titulo", {"nome": nome}),
+		Txt.f("car_cons_texto", {
+			"d": Fmt.num((Mecanicas.PANTEAO_DANO - 1.0) * 100.0, 0),
+			"o": Fmt.num((Mecanicas.PANTEAO_OURO - 1.0) * 100.0, 0)}),
+		func():
+			if Mecanicas.consagrar(jogo, conjunto_id):
+				Bus.toast(Txt.f("car_cons_feito", {"nome": nome}), "epico", "trofeu")
+				_reconstruir())
+
 func _confirmar(titulo: String, texto: String, ao_confirmar: Callable) -> void:
 	if overlay != null and is_instance_valid(overlay):
 		overlay.queue_free()
@@ -863,8 +883,18 @@ func _montar_conjuntos() -> void:
 		lb.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		lb.custom_minimum_size.x = _larg_texto_dir()
 		v.add_child(lb)
+		# O PANTEÃO. `Mecanicas.consagrar` existia, tinha teste, e não tinha UM
+		# chamador fora dele: nenhum botão, nenhuma tecla, nenhuma string. O
+		# README vende o Panteão como "o único sistema em que você perde algo de
+		# verdade" e o jogador não tinha como chegar nele. Este botão é a porta.
+		var lcons := UI.rotulo("", 11, UI.OURO)
+		v.add_child(lcons)
+		var bcons := UI.botao(Txt.t("car_consagrar"), func(): _tentar_consagrar(str(conj.get("id", ""))))
+		bcons.tooltip_text = Txt.t("car_consagrar_dica")
+		v.add_child(bcons)
 		caixa_conjuntos.add_child(cx)
-		conjuntos_ui.append({"def": conj, "caixa": cx, "nome": ln, "contagem": lc, "pecas": pecas, "bonus": lb, "cor": cor, "completo": false})
+		conjuntos_ui.append({"def": conj, "caixa": cx, "nome": ln, "contagem": lc, "pecas": pecas,
+			"bonus": lb, "cor": cor, "completo": false, "botao": bcons, "consagrado": lcons})
 
 func _atualizar_conjuntos() -> void:
 	var equipados := _ids_equipados()
@@ -894,6 +924,15 @@ func _atualizar_conjuntos() -> void:
 		lc.add_theme_color_override("font_color", UI.VERDE if completo else UI.TEXTO3)
 		var lb: Label = r["bonus"]
 		lb.add_theme_color_override("font_color", UI.VERDE if completo else UI.TEXTO3)
+		var conj_def: Dictionary = r["def"]
+		var cid_conj := str(conj_def.get("id", ""))
+		var bcons: Button = r["botao"]
+		# Consagrar precisa das cartas NO INVENTÁRIO, não equipadas: é isso que
+		# `Mecanicas.pode_consagrar` cobra, e o botão tem de contar igual.
+		bcons.disabled = not Mecanicas.pode_consagrar(jogo.s, cid_conj)
+		var lcons: Label = r["consagrado"]
+		var vezes := int(jogo.s["panteao"].get(cid_conj, 0))
+		lcons.text = Txt.f("car_consagrado", {"n": vezes}) if vezes > 0 else ""
 		if bool(r["completo"]) != completo:
 			r["completo"] = completo
 			var cx: PanelContainer = r["caixa"]

@@ -226,5 +226,33 @@
   "car_auto_reciclar_bloqueado": {
     "pt": "Desbloqueie a Bocarra Recicladora nas Relíquias",
     "en": "Unlock the Recycling Maw in Relics"
+  },
+  "car_consagrar": {
+    "pt": "Consagrar",
+    "en": "Consecrate"
+  },
+  "car_consagrar_dica": {
+    "pt": "Destrói uma cópia de cada carta do conjunto, para sempre, em troca de um multiplicador eterno.",
+    "en": "Destroys one copy of every card in the set, forever, in exchange for an eternal multiplier."
+  },
+  "car_consagrado": {
+    "pt": "Consagrado ×{n}",
+    "en": "Consecrated ×{n}"
+  },
+  "car_cons_titulo": {
+    "pt": "Consagrar {nome}?",
+    "en": "Consecrate {nome}?"
+  },
+  "car_cons_texto": {
+    "pt": "As cartas do conjunto serão destruídas para sempre. Em troca, o Panteão dá +{d}% de dano e +{o}% de ouro, e o bônus nunca é perdido — nem na Transcendência.",
+    "en": "The set's cards will be destroyed forever. In exchange, the Pantheon grants +{d}% damage and +{o}% gold, and the bonus is never lost — not even at Transcendence."
+  },
+  "car_cons_feito": {
+    "pt": "{nome} consagrado. O Panteão lembra.",
+    "en": "{nome} consecrated. The Pantheon remembers."
+  },
+  "car_cons_faltam": {
+    "pt": "Você precisa de uma cópia de cada carta do conjunto.",
+    "en": "You need one copy of every card in the set."
   }
 }

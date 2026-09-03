@@ -33,6 +33,7 @@ var botoes_painel := {}
 var lbl_velocidade: Label
 var b_mira: Button
 var b_infinito: Button
+var b_farm: Button
 var aviso_pontos: Label
 var ic_pontos: Control
 
@@ -294,6 +295,13 @@ func _construir() -> void:
 	# porta nenhuma no jogo. Agora tem: o botao so aparece quando o no e comprado.
 	b_infinito = _botao_com_icone("nova", Txt.t("hud_infinito_dica"), UI.ACENTO2, _alternar_infinito)
 	acoes.add_child(b_infinito)
+	# O Modo Farm tinha o MESMO defeito do Infinito, e eu consertei o Infinito
+	# sem perceber que o irmão ao lado estava igual: `alternar_farm` era a única
+	# função capaz de ligar o modo e não tinha um chamador em todo o repositório.
+	# O jogador comprava o desbloqueio por 35 fragmentos, o HUD sabia desenhar o
+	# aviso de "onda travada", e não havia como chegar lá.
+	b_farm = _botao_com_icone("ampulheta", Txt.t("hud_farm_dica"), UI.OURO, _alternar_farm)
+	acoes.add_child(b_farm)
 	acoes.add_child(_botao_com_icone("salvar", Txt.t("salvar_agora") + " (F5)", UI.TEXTO2, _salvar_agora))
 
 	# a Purga fica à esquerda da barra de habilidades, com destaque próprio
@@ -532,6 +540,9 @@ func _atualizar_lento() -> void:
 	if b_infinito != null:
 		b_infinito.visible = jogo.esp["desbloqueios"].has("modoInfinito")
 		b_infinito.modulate = UI.ACENTO2 if bool(jogo.s.get("modo_infinito", false)) else Color.WHITE
+	if b_farm != null:
+		b_farm.visible = jogo.esp["desbloqueios"].has("modoFarm")
+		b_farm.modulate = UI.OURO if bool(jogo.s["modo_farm"]) else Color.WHITE
 
 ## Mostra só os elementos em que o Enxame já criou resistência.
 func _atualizar_adaptacao() -> void:
@@ -611,6 +622,18 @@ func _alternar_infinito() -> void:
 	if not jogo.alternar_infinito():
 		Bus.toast(Txt.t("hud_infinito_trancado"), "info", "cadeado")
 
+func _alternar_farm() -> void:
+	if not jogo.esp["desbloqueios"].has("modoFarm"):
+		Bus.toast(Txt.t("hud_farm_trancado"), "info", "cadeado")
+		return
+	var ligou: bool = jogo.alternar_farm()
+	jogo.marcar_sujo()
+	Bus.ui_atualizar.emit(false)
+	if ligou:
+		Bus.toast(Txt.f("hud_farm_ligado", {"n": int(jogo.s["onda_farm"])}), "bom", "ampulheta")
+	else:
+		Bus.toast(Txt.t("hud_farm_desligado"), "info", "ampulheta")
+
 func _alternar_mira() -> void:
 	var modos: Array = TorreSim.MODOS_MIRA
 	var atual := str(jogo.s["torre"]["mira"])
@@ -632,6 +655,8 @@ func _retraduzir() -> void:
 	_atualizar_dica_mira()
 	if b_infinito != null and is_instance_valid(b_infinito):
 		b_infinito.tooltip_text = Txt.t("hud_infinito_dica")
+	if b_farm != null and is_instance_valid(b_farm):
+		b_farm.tooltip_text = Txt.t("hud_farm_dica")
 
 func _atualizar_dica_mira() -> void:
 	if b_mira == null:

@@ -58,5 +58,21 @@
   "hud_infinito_trancado": {
     "pt": "Desbloqueie o Vazio Infinito na árvore de Éter",
     "en": "Unlock the Infinite Void in the Ether tree"
+  },
+  "hud_farm_dica": {
+    "pt": "Modo Farm: trava a onda atual e repete para sempre",
+    "en": "Farm Mode: locks the current wave and repeats it forever"
+  },
+  "hud_farm_trancado": {
+    "pt": "O Modo Farm ainda não foi desbloqueado.",
+    "en": "Farm Mode is not unlocked yet."
+  },
+  "hud_farm_ligado": {
+    "pt": "Modo Farm ligado na onda {n}.",
+    "en": "Farm Mode on at wave {n}."
+  },
+  "hud_farm_desligado": {
+    "pt": "Modo Farm desligado.",
+    "en": "Farm Mode off."
   }
 }
