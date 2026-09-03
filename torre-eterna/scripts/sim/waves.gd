@@ -46,6 +46,7 @@ func iniciar_onda(n: int) -> void:
 				h["cd"] = 0.0
 	# as recompras do Contrato são por onda
 	j.recompras_usadas = 0
+	j.revives_usados = 0
 
 	var novas: Array = Habilidades.desbloquear_por_progresso(s)
 	if not novas.is_empty():

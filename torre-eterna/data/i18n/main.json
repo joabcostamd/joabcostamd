@@ -82,5 +82,9 @@
   "sim_recompra": {
     "pt": "Contrato de Recompra: onda mantida. Restam {n} nesta onda.",
     "en": "Buyback Contract: wave kept. {n} left this wave."
+  },
+  "sim_revive_extra": {
+    "pt": "Segundo fôlego. Restam {n} nesta onda.",
+    "en": "Second wind. {n} left this wave."
   }
 }

@@ -86,7 +86,31 @@ static func criar_carta(j, id_forcado: String = "", garantir_boa: bool = false) 
 		s["stats"]["lendarios"] = int(s["stats"]["lendarios"]) + 1
 		Bus.celebracao.emit("lendario", {"carta": inst})
 	Bus.carta_caiu.emit(inst)
+
+	# Bocarra Recicladora: "desbloqueia a reciclagem automática de cartas
+	# duplicadas e abaixo do filtro". O desbloqueio existia no JSON e no painel
+	# de Relíquias, e nada no jogo o lia.
+	if bool(s["auto"].get("reciclar", false)) and j.esp["desbloqueios"].has("autoReciclagem"):
+		if _descartavel(s, inst):
+			reciclar(j, str(inst["uid"]))
+			return {}
 	return inst
+
+## Duplicata de carta que o jogador já tem em raridade igual ou melhor, e que
+## não está equipada. É o critério da reciclagem automática: nunca joga fora
+## algo novo nem algo melhor do que o que está no inventário.
+static func _descartavel(s: Dictionary, inst: Dictionary) -> bool:
+	if s["cartas"]["equipadas"].has(str(inst["uid"])):
+		return false
+	var minha := _ordem(str(inst["raridade"]))
+	for outra in s["cartas"]["inventario"]:
+		if str(outra["uid"]) == str(inst["uid"]):
+			continue
+		if str(outra["id"]) != str(inst["id"]):
+			continue
+		if _ordem(str(outra["raridade"])) >= minha:
+			return true
+	return false
 
 static func _ordem(r: String) -> int:
 	match r:

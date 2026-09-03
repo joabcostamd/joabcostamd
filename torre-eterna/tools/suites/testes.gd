@@ -167,6 +167,24 @@ func t_modificadores() -> void:
 				pas_sem_leitor.append("%s:%s" % [rel["id"], ef["chave"]])
 	ok("toda passiva de reliquia chega em pas", pas_sem_leitor.is_empty(), str(pas_sem_leitor))
 
+	# Rerrolagem de missao: o Dado Viciado promete "+1 rerroll diario em
+	# missoes" e nao havia nem leitor do especial nem botao para gastar.
+	jogo.s["relicas"] = {"dado_viciado": 2}
+	jogo.marcar_sujo()
+	jogo.recalcular()
+	jogo.s["missoes"]["rerrolagens_usadas"] = 0
+	ok("Dado Viciado da rerrolagens", Progresso.rerrolagens_restantes(jogo) == 2)
+	Progresso.gerar_missoes(jogo, true)
+	var antes_id := str(jogo.s["missoes"]["diarias"][0]["id"])
+	ok("rerrolagem troca a missao", Progresso.rerrolar_missao(jogo, "diarias", 0))
+	ok("missao mudou", str(jogo.s["missoes"]["diarias"][0]["id"]) != antes_id)
+	ok("rerrolagem foi cobrada", Progresso.rerrolagens_restantes(jogo) == 1)
+	Progresso.rerrolar_missao(jogo, "diarias", 0)
+	ok("acaba quando acaba", not Progresso.rerrolar_missao(jogo, "diarias", 0))
+	jogo.s["relicas"] = {}
+	jogo.marcar_sujo()
+	jogo.recalcular()
+
 	# talento com passiva
 	s["talentos"]["f_sede"] = 1
 	s["combo"]["atual"] = 10

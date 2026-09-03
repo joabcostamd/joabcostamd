@@ -72,6 +72,7 @@ static func novo() -> Dictionary:
 		"missoes": {
 			"diarias": [], "semanais": [],
 			"reset_diario": 0, "reset_semanal": 0, "sequencia": 0, "ultimo_dia": 0,
+			"rerrolagens_usadas": 0,
 		},
 		"desafios": {"ativo": "", "completos": {}, "tentativas": {}},
 		"eventos": {"ativo": "", "historico": [], "proximo_em": 180.0},

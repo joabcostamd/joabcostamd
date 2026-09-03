@@ -25,6 +25,7 @@ func _initialize() -> void:
 	_checar_i18n()
 	_checar_sons()
 	_checar_passivas()
+	_checar_especiais()
 
 	print("===LINT=== arquivos=%d linhas=%d erros=%d avisos=%d" % [arquivos, linhas, erros.size(), avisos.size()])
 	for e in erros:
@@ -393,3 +394,57 @@ func _coletar_passivas(o, arquivo: String, saida: Dictionary) -> void:
 	elif o is Array:
 		for v in o:
 			_coletar_passivas(v, arquivo, saida)
+
+## Mesmo raciocínio das passivas, para os "especiais" (slotsCartas, rerolls,
+## revivesExtra, ondaInicial...). `slotsHabilidade` estava declarado numa
+## relíquia comprável e pressupunha um sistema de slots de habilidade que este
+## jogo nunca teve: a relíquia custava núcleos e não fazia absolutamente nada.
+func _checar_especiais() -> void:
+	var declarados := {}
+	var d := DirAccess.open("res://data")
+	if d == null:
+		return
+	d.list_dir_begin()
+	var arq := d.get_next()
+	while arq != "":
+		if arq.ends_with(".json"):
+			var f := FileAccess.open("res://data/" + arq, FileAccess.READ)
+			if f != null:
+				var bruto = JSON.parse_string(f.get_as_text())
+				f.close()
+				_coletar_especiais(bruto, arq, declarados)
+		arq = d.get_next()
+	d.list_dir_end()
+
+	var lidos := ""
+	for caminho in _todos_gd():
+		if not caminho.begins_with("res://scripts/sim") and not caminho.begins_with("res://scripts/core"):
+			continue
+		var f2 := FileAccess.open(caminho, FileAccess.READ)
+		if f2 == null:
+			continue
+		lidos += _sem_comentarios(f2.get_as_text())
+		f2.close()
+
+	for chave in declarados.keys():
+		var k := str(chave)
+		if k == "desbloqueio" or lidos.contains('"%s"' % k):
+			continue
+		erros.append("especial declarado em %s e nunca lido pela simulação: \"%s\"" % [
+			str(declarados[chave]), k])
+
+func _coletar_especiais(o, arquivo: String, saida: Dictionary) -> void:
+	if o is Dictionary:
+		var ef = o.get("efeito", null)
+		if ef is Array:
+			for item in ef:
+				if not (item is Dictionary):
+					continue
+				var esp = item.get("especial", null)
+				if esp is String and str(esp) != "":
+					saida[str(esp)] = arquivo
+		for v in o.values():
+			_coletar_especiais(v, arquivo, saida)
+	elif o is Array:
+		for v in o:
+			_coletar_especiais(v, arquivo, saida)

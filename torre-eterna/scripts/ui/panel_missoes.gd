@@ -187,9 +187,16 @@ func _linha_missao(grupo: String, indice: int) -> void:
 	lp.add_child(lxp)
 	l["textos"].add_child(lp)
 
+	var coluna := UI.vbox(4)
 	var b := UI.botao(Txt.t("coletar"), func(): _coletar(grupo, indice))
-	b.custom_minimum_size = Vector2(126, 44)
-	l["direita"].add_child(b)
+	b.custom_minimum_size = Vector2(126, 40)
+	coluna.add_child(b)
+	# Rerrolagem: o Dado Viciado promete "+1 rerroll diário ... em missões" e
+	# não havia botão nenhum para gastar a rerrolagem que ele dava.
+	var br := UI.botao(Txt.t("mis_rerrolar"), func(): _rerrolar(grupo, indice))
+	br.custom_minimum_size = Vector2(126, 26)
+	coluna.add_child(br)
+	l["direita"].add_child(coluna)
 
 	if grupo == "diarias":
 		caixa_diarias.add_child(l["caixa"])
@@ -197,8 +204,15 @@ func _linha_missao(grupo: String, indice: int) -> void:
 		caixa_semanais.add_child(l["caixa"])
 	missoes["%s:%d" % [grupo, indice]] = {
 		"grupo": grupo, "indice": indice, "def": def, "caixa": l["caixa"],
-		"barra": barra, "prog": lbl_prog, "botao": b, "cor": cor,
+		"barra": barra, "prog": lbl_prog, "botao": b, "rerrolar": br, "cor": cor,
 	}
+
+func _rerrolar(grupo: String, indice: int) -> void:
+	if Progresso.rerrolar_missao(jogo, grupo, indice):
+		Bus.toast(Txt.f("mis_rerrolada", {"n": Progresso.rerrolagens_restantes(jogo)}), "bom", "missao")
+		_reconstruir_missoes()
+	else:
+		Bus.toast(Txt.t("mis_sem_rerroll"), "info", "cadeado")
 
 func _coletar(grupo: String, indice: int) -> void:
 	if not Progresso.coletar_missao(jogo, grupo, indice):
@@ -390,6 +404,12 @@ func _atualizar_missoes() -> void:
 		else:
 			b.text = Txt.t("mis_em_curso")
 			b.tooltip_text = Txt.f("mis_dica_em_curso", {"n": Fmt.pct(f)})
+
+		var br2: Button = reg["rerrolar"]
+		var sobrando := Progresso.rerrolagens_restantes(jogo)
+		br2.visible = sobrando > 0 and not coletada and not pronta
+		br2.text = Txt.f("mis_rerrolar_n", {"n": sobrando})
+		br2.tooltip_text = Txt.t("mis_dica_rerrolar")
 
 		var cx: PanelContainer = reg["caixa"]
 		var cor: Color = reg["cor"]

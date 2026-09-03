@@ -28,6 +28,8 @@ var coleta_instantanea := false
 var fenix_usada := false
 ## Quantas recompras (relíquia Contrato de Recompra) já foram gastas nesta onda.
 var recompras_usadas := 0
+## Renascimentos extras (relíquia Vela do Segundo Fôlego) gastos nesta onda.
+var revives_usados := 0
 var tempo_autosave := 0.0
 var tempo_autohab := 0.0
 var tempo_autocompra := 0.0

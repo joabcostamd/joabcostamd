@@ -122,10 +122,53 @@ static func gerar_missoes(j, forcar: bool = false) -> void:
 		m["ultimo_dia"] = dia
 		m["reset_diario"] = t
 		m["diarias"] = _sortear(Dados.missoes_diarias, 3, progresso, j)
+		m["rerrolagens_usadas"] = 0
 
 	if forcar or t - int(m["reset_semanal"]) >= SEG_SEMANA or m["semanais"].is_empty():
 		m["reset_semanal"] = t
 		m["semanais"] = _sortear(Dados.missoes_semanais, 2, progresso, j)
+
+## Troca UMA missão por outra do mesmo grupo, gastando uma rerrolagem.
+##
+## O Dado Viciado promete "+1 rerroll diário em lojas, cartas e missões por
+## nível" e o especial `rerolls` não tinha um único leitor: a relíquia era
+## compravel, aparecia no painel e não fazia nada. As rerrolagens gastas ficam
+## no estado das missões e zeram junto com o dia.
+static func rerrolar_missao(j, grupo: String, indice: int) -> bool:
+	var s: Dictionary = j.s
+	var m: Dictionary = s["missoes"]
+	if not m.has(grupo) or indice < 0 or indice >= m[grupo].size():
+		return false
+	var mi: Dictionary = m[grupo][indice]
+	if bool(mi["pronta"]) or bool(mi["coletada"]):
+		return false
+	if rerrolagens_restantes(j) <= 0:
+		return false
+	var modelos: Array = Dados.missoes_diarias if grupo == "diarias" else Dados.missoes_semanais
+	var usados := {}
+	for outra in m[grupo]:
+		if outra != mi:
+			usados[str(outra["id"])] = true
+	usados[str(mi["id"])] = true
+	var pool: Array = []
+	for def in modelos:
+		if not usados.has(str(def.get("id", ""))):
+			pool.append(def)
+	if pool.is_empty():
+		return false
+	var nova: Array = _sortear([j.rng.escolher(pool)], 1,
+		maxi(1, int(s["onda_maxima_global"])), j)
+	if nova.is_empty():
+		return false
+	m[grupo][indice] = nova[0]
+	m["rerrolagens_usadas"] = int(m.get("rerrolagens_usadas", 0)) + 1
+	j.marcar_sujo()
+	return true
+
+## Quantas rerrolagens ainda cabem hoje.
+static func rerrolagens_restantes(j) -> int:
+	var total := int(j.esp.get("rerolls", 0.0))
+	return maxi(0, total - int(j.s["missoes"].get("rerrolagens_usadas", 0)))
 
 static func _sortear(modelos: Array, qtd: int, progresso: int, j) -> Array:
 	if modelos.is_empty():

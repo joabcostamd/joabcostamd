@@ -35,6 +35,7 @@ const COLUNAS := 7
 var lbl_poeira: Label
 var lbl_slots: Label
 var lbl_inv: Label
+var check_reciclar: CheckButton
 var caixa_slots: HBoxContainer
 var grade: GridContainer
 var lbl_grade_vazia: Label
@@ -111,6 +112,22 @@ func montar(c: VBoxContainer) -> void:
 	lbl_inv = UI.rotulo(Txt.t("car_inventario"), 15, UI.TEXTO2)
 	linha_inv.add_child(lbl_inv)
 	linha_inv.add_child(UI.espacador())
+
+	# Reciclagem automática: a relíquia Bocarra Recicladora desbloqueia, e não
+	# havia interruptor em lugar nenhum para ligar o que ela desbloqueava.
+	check_reciclar = CheckButton.new()
+	check_reciclar.text = Txt.t("car_auto_reciclar")
+	check_reciclar.tooltip_text = Txt.t("car_auto_reciclar_dica")
+	check_reciclar.button_pressed = bool(jogo.s["auto"].get("reciclar", false))
+	check_reciclar.toggled.connect(func(v):
+		if not jogo.esp["desbloqueios"].has("autoReciclagem"):
+			check_reciclar.button_pressed = false
+			Bus.toast(Txt.t("car_auto_reciclar_bloqueado"), "info", "cadeado")
+			return
+		jogo.s["auto"]["reciclar"] = v
+		jogo.marcar_sujo())
+	linha_inv.add_child(check_reciclar)
+
 	linha_inv.add_child(UI.rotulo(Txt.t("car_ordenar_por"), 12, UI.TEXTO3))
 	for par in [["raridade", Txt.t("car_ord_raridade")], ["nivel", Txt.t("nivel")], ["nome", Txt.t("car_ord_nome")]]:
 		var chave := str(par[0])

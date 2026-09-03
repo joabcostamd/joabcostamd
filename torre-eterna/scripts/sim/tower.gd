@@ -371,6 +371,17 @@ func levar_dano(dano_log: float, fonte, opt: Dictionary = {}) -> float:
 			Bus.celebracao.emit("fenix", {})
 			Bus.toast(Txt.t("sim_fenix"), "epico")
 			return dano
+		# Vela do Segundo Fôlego: "+1 renascimento extra por onda (revive com
+		# 50% da vida)". O especial `revivesExtra` existia no JSON, aparecia no
+		# painel de Relíquias e não tinha um único leitor na simulação.
+		var extras := int(j.esp.get("revives", 0.0))
+		if extras > 0 and j.revives_usados < extras:
+			j.revives_usados += 1
+			torre["vida"] = Big.mul_f(torre["vida_max"], 0.5)
+			iframes = 2.0
+			Bus.celebracao.emit("fenix", {})
+			Bus.toast(Txt.f("sim_revive_extra", {"n": extras - j.revives_usados}), "epico")
+			return dano
 		torre["vida"] = Big.ZERO
 		torre["viva"] = false
 		torre["tempo_morta"] = Bal.RESPAWN
