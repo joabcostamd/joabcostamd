@@ -8,6 +8,7 @@ e rodado no Godot 4.7.2; todas as afirmações têm um número medido atrás.
 
 | Arquivo | O que é |
 |---|---|
+| **`DECISOES.md`** | **o livro-razão: tudo o que foi aprovado, tudo o que foi reprovado, e o número que decidiu cada um. Comece por aqui** |
 | `01-AUDITORIA.md` | O jogo é simples de aprender, simples de jogar e viciante? 2.000 mesas por política |
 | `02-NUCLEO-POLIDO.md` | Coringas, cascata e escalada: o que entrou, o que foi reprovado e por quê |
 | `03-NOTAS-DA-SONDA.md` | Notas de quem implementou o núcleo: ambiguidades e contradições encontradas nas regras |
@@ -15,6 +16,7 @@ e rodado no Godot 4.7.2; todas as afirmações têm um número medido atrás.
 | `bancada-2.md` | Bancada da cascata / reação em cadeia |
 | `bancada-3.md` | Bancada da escalada, tetos e variedade |
 | `metricas-base.json` | Medições brutas do núcleo sem ajuste |
+| `sonda/` | O protótipo headless do núcleo em GDScript, validado no Godot 4.7.2 — o instrumento que produziu todas as medições |
 
 ## As três conclusões que decidem o projeto
 
@@ -26,3 +28,9 @@ e rodado no Godot 4.7.2; todas as afirmações têm um número medido atrás.
    a jogada que mais paga na hora, então duas linhas nunca ficam em 4/5 ao mesmo tempo.
    O gargalo é de *ordem*, não de carta nem de preço — nenhum coringa e nenhum
    multiplicador conserta. Falta resolver isso antes de construir.
+
+## Regra da casa
+
+Nenhuma decisão de design entra sem um número medido atrás. Antes de propor mudança,
+leia `DECISOES.md`: metade das boas ideias deste projeto já foi testada e morreu com um
+número específico, e a seção de erros de medição existe para não repetirmos os nossos.
