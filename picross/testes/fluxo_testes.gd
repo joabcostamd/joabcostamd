@@ -17,7 +17,9 @@ func _rodar() -> void:
     await _montar("menu")
     await _montar("capitulos")
     await _montar("fases", {"capitulo": 0})
-    await _montar("fases", {"capitulo": 4})   # capítulo grande, com rolagem
+    var trancado := await _montar("fases", {"capitulo": 4})
+    _ok("pedir um capítulo fechado cai para o último aberto",
+        trancado != null and trancado.get("_capitulo") == 0)
     await _jogar_fase_1()
     await _montar("revelacao", {"fase": 1, "tempo": 40.0, "estrelas": 3})
     await _montar("galeria")

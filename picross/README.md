@@ -76,7 +76,7 @@ SOLUCIONADOR OK              12 testes
 ── núcleo do jogo ──
 NÚCLEO OK — 56/56 testes
 ── fluxo das telas ──
-FLUXO OK — 27/27 verificações
+FLUXO OK — 28/28 verificações
 ```
 
 ## Gravar o jogo em vídeo

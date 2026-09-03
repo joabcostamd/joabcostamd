@@ -22,15 +22,31 @@ func _rodar() -> void:
     await _esperar(2.2)
 
     Navegacao.ir_para("fases", {"capitulo": 1})
-    await _esperar(2.4)
+    await _esperar(3.2)
 
     Navegacao.ir_para("jogo", {"fase": FASE})
     await _esperar(1.4)
     await _jogar()
 
-    await _esperar(7.5)                       # revelação inteira
+    await _esperar(7.0)                       # revelação inteira
+
     Navegacao.ir_para("galeria")
-    await _esperar(3.2)
+    await _esperar(3.0)
+    Navegacao.ir_para("conquistas")
+    await _esperar(3.0)
+    Navegacao.ir_para("estatisticas")
+    await _esperar(3.0)
+
+    # Mostra o tema claro, e volta ao escuro no fim.
+    Progresso.opcoes["tema_claro"] = true
+    Progresso.aplicar_aparencia()
+    Navegacao.ir_para("fases", {"capitulo": 1})
+    await _esperar(3.4)
+    Navegacao.ir_para("menu")
+    await _esperar(2.4)
+    Progresso.opcoes["tema_claro"] = false
+    Progresso.aplicar_aparencia()
+
     get_tree().quit()
 
 ## Resolve a fase pintando célula a célula, com um erro proposital no meio
@@ -72,7 +88,8 @@ func _achar_vazia(partida: Partida, lado: int) -> Vector2i:
     return Vector2i(-1, -1)
 
 func _preparar_progresso() -> void:
-    var estrelas := [3, 2, 3, 1, 3, 3, 2, 3, 3, 2, 3, 1]
+    var estrelas := [3, 2, 3, 1, 3, 3, 2, 3, 3, 2, 3, 1, 3, 2, 3, 3, 1, 2, 3, 3,
+                     3, 2, 3, 1, 3, 3, 2]
     for i in estrelas.size():
         var fase := Catalogo.fase(i + 1)
         if fase != null:

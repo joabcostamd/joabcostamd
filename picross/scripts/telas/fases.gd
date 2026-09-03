@@ -15,7 +15,7 @@ var _botoes_filtro: Array[Button] = []
 var _vazio: Label
 
 func _ready() -> void:
-    _capitulo = int(Navegacao.parametro("capitulo", 0))
+    _capitulo = _capitulo_valido(int(Navegacao.parametro("capitulo", 0)))
     Estilo.aplicar(self, _capitulo)
     set_anchors_preset(Control.PRESET_FULL_RECT)
 
@@ -64,6 +64,16 @@ func _ready() -> void:
 
     _preencher()
     Juice.entrada(coluna)
+
+## Um capítulo ainda fechado não pode ser aberto nem por parâmetro: cai para
+## o último aberto, senão a aba aparece com cadeado e o conteúdo aparece junto.
+func _capitulo_valido(pedido: int) -> int:
+    if Progresso.capitulo_aberto(pedido):
+        return pedido
+    for i in range(Catalogo.capitulos.size() - 1, -1, -1):
+        if Progresso.capitulo_aberto(i):
+            return i
+    return 0
 
 ## Uma aba por capítulo: dá para pular entre eles sem voltar ao mapa.
 func _montar_abas() -> Control:
