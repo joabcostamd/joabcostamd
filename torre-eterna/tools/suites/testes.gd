@@ -133,6 +133,14 @@ func _conferir_doc(total_testes: int) -> int:
 		"chaves_i18n": _contar_i18n(),
 		"imagens": _contar_por_extensao(["png", "jpg", "jpeg", "webp"]),
 		"sons": _contar_por_extensao(["wav", "ogg", "mp3"]),
+		"upgrades": Dados.upgrades.size(),
+		"talentos": Dados.talentos.size(),
+		"cartas": Dados.cartas.size(),
+		"reliquias": Dados.reliquias.size(),
+		"conquistas": Dados.conquistas.size(),
+		"eras": Dados.eras.size(),
+		"habilidades": Dados.habilidades.size(),
+		"efeitos_audio": Sfx.nomes().size(),
 	}
 	# arquivo -> [[regex, chave], ...]. O grupo 1 do regex e o numero.
 	var alvos := {
@@ -146,9 +154,34 @@ func _conferir_doc(total_testes: int) -> int:
 			["(?m)^# Su[ií]te de testes da simula[cç][aã]o — ([\\d.]+) testes", "testes"],
 			["(?m)^- \\*\\*([\\d.]+)\\*\\* testes da simula[cç][aã]o", "testes"],
 			["(?m)^- \\*\\*([\\d.]+)\\*\\* chaves de interface", "chaves_i18n"],
+			# O SELO DA PRIMEIRA TELA. Ele dizia 195/195 enquanto o portao media
+			# centenas: e o primeiro numero que qualquer pessoa ve do projeto, e
+			# era o mais velho de todos. Agora ele tambem responde ao portao.
+			["!\\[Testes\\]\\(https://img\\.shields\\.io/badge/Testes-([\\d.]+)%2F", "testes"],
+			["!\\[Testes\\]\\(https://img\\.shields\\.io/badge/Testes-[\\d.]+%2F([\\d.]+)-", "testes"],
 		],
 		"res://AGENTS.md": [
 			["testes\\.gd\\s+# ([\\d.]+) testes da simula[cç][aã]o", "testes"],
+		],
+		# O PLANO ESTAVA FORA DO PORTAO e apodreceu em quatro numeros — dizia
+		# 191 testes quando o portao media centenas, e 31 efeitos de audio.
+		# Documento vivo que ninguem confere e pior que documento nenhum: ele
+		# mente com a autoridade de estar no repositorio.
+		"res://docs/PLANO.md": [
+			["\\| ([\\d.]+) testes \\|", "testes"],
+			["`testes` \\(([\\d.]+)\\)", "testes"],
+			["([\\d.]+) efeitos \\+ m[uú]sica adaptativa", "efeitos_audio"],
+			["(?m)^([\\d.]+) inimigos · ", "inimigos"],
+			[" · ([\\d.]+) elites · ", "elites"],
+			[" · ([\\d.]+) chefes · ", "chefes"],
+			[" · ([\\d.]+) super-chefes · ", "super_chefes"],
+			[" · ([\\d.]+) melhorias · ", "upgrades"],
+			["([\\d.]+)\\s*\\ntalentos · ", "talentos"],
+			[" · ([\\d.]+) cartas · ", "cartas"],
+			[" · ([\\d.]+) rel[ií]quias · ", "reliquias"],
+			[" · ([\\d.]+) conquistas · ", "conquistas"],
+			[" · ([\\d.]+) eras · ", "eras"],
+			["([\\d.]+) habilidades\\.", "habilidades"],
 		],
 		"res://docs/QUALIDADE.md": [
 			["===TESTES=== passou=([\\d.]+)", "testes"],
@@ -177,6 +210,8 @@ func _conferir_doc(total_testes: int) -> int:
 			if dito != real:
 				print("  FALHOU [doc] %s diz %s=%d e o real e %d" % [arquivo, str(par[1]), dito, real])
 				erros += 1
+	erros += _conferir_contagem_honesta()
+
 	# Caminho citado na documentacao viva tem que existir.
 	#
 	# O GDD apontava para `tools/sim_balance.mjs`, `js/core/big.js` e
@@ -2495,6 +2530,56 @@ func _assinatura_som(receita: Dictionary) -> String:
 			float(c.get("atk", 0.0)), float(c.get("dec", 0.0)),
 			str(c.get("fm_ratio", "-"))])
 	return "|".join(partes)
+
+## A ARITMETICA DO DOCUMENTO SOBRE HONESTIDADE tem que fechar.
+##
+## `QUALIDADE.md` afirma quantos dos 100 pontos sao portao, medida e juizo. Os
+## numeros vinham escritos a mao e estavam errados — diziam 59/11/30 quando a
+## propria tabela logo acima soma 61/11/28. Aqui a soma sai da tabela: cada
+## linha traz o peso e o tipo, e a afirmacao e conferida contra eles.
+func _conferir_contagem_honesta() -> int:
+	var texto := _ler("res://docs/QUALIDADE.md")
+	if texto == "":
+		print("  FALHOU [doc] nao consegui ler QUALIDADE.md")
+		return 1
+	# | N | **Nome** | Peso | TIPO | ...
+	var re_linha := RegEx.create_from_string(
+		"(?m)^\\|\\s*\\d+\\s*\\|[^|]+\\|\\s*(\\d+)\\s*\\|\\s*(PORT[ÃA]O|MEDIDA|JU[ÍI]ZO)\\s*\\|")
+	var soma := {"portao": 0, "medida": 0, "juizo": 0}
+	var linhas := 0
+	for m in re_linha.search_all(texto):
+		linhas += 1
+		var peso := int(m.get_string(1))
+		var tipo := m.get_string(2)
+		if tipo.begins_with("PORT"):
+			soma["portao"] += peso
+		elif tipo == "MEDIDA":
+			soma["medida"] += peso
+		else:
+			soma["juizo"] += peso
+	var erros := 0
+	if linhas < 15:
+		print("  FALHOU [doc] a tabela da rubrica tem %d criterios, esperava 15" % linhas)
+		erros += 1
+	var total: int = int(soma["portao"]) + int(soma["medida"]) + int(soma["juizo"])
+	if total != 100:
+		print("  FALHOU [doc] os pesos da rubrica somam %d, nao 100" % total)
+		erros += 1
+	var re_diz := RegEx.create_from_string(
+		"Contagem honesta: \\*\\*(\\d+) dos 100 pontos\\*\\*[\\s\\S]{0,200}?\\*\\*(\\d+) pontos\\*\\*[\\s\\S]{0,120}?\\*\\*(\\d+) pontos\\*\\*")
+	var md := re_diz.search(texto)
+	if md == null:
+		print("  FALHOU [doc] QUALIDADE.md nao declara mais a contagem honesta")
+		return erros + 1
+	var ditos := [int(md.get_string(1)), int(md.get_string(2)), int(md.get_string(3))]
+	var reais_c := [int(soma["portao"]), int(soma["medida"]), int(soma["juizo"])]
+	var rotulos := ["portao", "medida", "juizo"]
+	for i in 3:
+		if ditos[i] != reais_c[i]:
+			print("  FALHOU [doc] a contagem honesta diz %d ponto(s) de %s e a tabela soma %d" % [
+				ditos[i], rotulos[i], reais_c[i]])
+			erros += 1
+	return erros
 
 ## Le um script do projeto como texto. Devolve "" se nao abrir — quem chama
 ## afirma sobre o conteudo, entao um arquivo faltando reprova de qualquer jeito.

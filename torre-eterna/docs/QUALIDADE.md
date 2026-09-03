@@ -45,10 +45,15 @@ rodando na máquina (ver a observação sobre medir desempenho no `AGENTS.md`).
 | 14 | **Originalidade** | 4 | JUÍZO | leitura das mecânicas | ≥3 mecânicas com torque próprio, e o texto do README não pode vender como inédito o que é convenção do gênero |
 | 15 | **Documentação e portões** | 4 | PORTÃO | `tools/testes.gd` (grupo doc) + `.github/workflows/` | os números da documentação batem com a medida real, todo caminho citado existe, e o CI roda os oito portões sem afrouxar nenhum |
 
-Contagem honesta: **59 dos 100 pontos** são decididos por um comando que imprime
+Contagem honesta: **61 dos 100 pontos** são decididos por um comando que imprime
 PASS/FAIL (critérios 1, 2, 3, 4, 5, 6, 7, 13, 15). **11 pontos** são medida com
-comparação manual (10 e 12). **30 pontos** são juízo (8, 9, 11, 14) — e enquanto
+comparação manual (10 e 12). **28 pontos** são juízo (8, 9, 11, 14) — e enquanto
 forem, a nota deles vale o que vale a pessoa que avalia.
+
+Estes três números são somados da própria tabela acima pelo grupo `doc` da
+suíte, e a soma tem que fechar em 100. Eles já estiveram errados — diziam
+59/11/30 num documento cuja tese é honestidade — e a aritmética de um documento
+sobre honestidade é exatamente o tipo de coisa que ninguém confere duas vezes.
 
 Quando esta rubrica foi reescrita, o critério 6 ainda era juízo. Ele virou
 portão porque `data/systems.json` passou a declarar cada elo com a prova, e
