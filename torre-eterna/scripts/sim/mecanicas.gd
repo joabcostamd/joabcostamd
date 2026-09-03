@@ -166,7 +166,8 @@ static func bonus_album(s: Dictionary) -> Dictionary:
 # ========================================================== ADAPTAÇÃO ======
 ## O Enxame aprende. Use fogo o tempo todo e o fogo passa a doer menos.
 ## Diversificar elementos é uma decisão real, não um detalhe.
-const ADAPT_GANHO := 0.010
+## Ganho de resistencia por SEGUNDO de uso do elemento (nao por acerto).
+const ADAPT_GANHO_SEG := 0.012
 const ADAPT_DECAI := 0.0016
 const ADAPT_TETO := 0.62
 
@@ -190,18 +191,44 @@ static func estado_adaptacao(s: Dictionary) -> Dictionary:
 		s["adaptacao"] = {"fogo": 0.0, "gelo": 0.0, "raio": 0.0, "veneno": 0.0, "vazio": 0.0}
 	return s["adaptacao"]
 
+## Marca que o elemento foi usado NESTE quadro. Nao sobe a adaptacao aqui.
+##
+## Subia: `+ADAPT_GANHO` por ACERTO. Com a torre no meio do jogo acertando
+## centenas de vezes por segundo, isso levava a resistencia ao teto de 62% em
+## menos de um segundo e a mantinha la para sempre — a Adaptacao nao era uma
+## curva, era um interruptor. Enquanto a mecanica estava morta ninguem notou;
+## consertada, ela derrubou a onda maxima do simulador de 261 para 97, e o
+## motivo nao era o jogo ser difícil: era a resistencia estar sempre no maximo.
+##
+## Agora o ganho e por TEMPO de uso (ver `decair_adaptacao`), que e o que a
+## mecanica sempre quis dizer: "o mundo cria resistencia ao elemento que voce
+## MAIS USA" fala de habito, nao de cadencia de tiro.
 static func registrar_elemento(s: Dictionary, elemento: String) -> void:
 	if elemento == "":
 		return
 	var a := estado_adaptacao(s)
 	if not a.has(elemento):
 		return
-	a[elemento] = minf(ADAPT_TETO, float(a[elemento]) + ADAPT_GANHO)
+	var usados: Dictionary = s.get("_adapt_uso", {})
+	usados[elemento] = true
+	s["_adapt_uso"] = usados
 
+## Sobe o que foi usado neste quadro, desce o resto. Roda uma vez por quadro,
+## com `dt` — e por isso a curva anda no relogio e nao na contagem de acertos.
+##
+## Com ADAPT_GANHO_SEG = 0.012, saturar leva ~52 s de uso continuo; com
+## ADAPT_DECAI = 0.0016, esquecer leva ~6,5 min sem usar. Isso e uma curva que
+## o jogador consegue ler e contornar, que e o ponto da mecanica.
 static func decair_adaptacao(dt: float, s: Dictionary) -> void:
 	var a := estado_adaptacao(s)
+	var usados: Dictionary = s.get("_adapt_uso", {})
 	for k in a.keys():
-		a[k] = maxf(0.0, float(a[k]) - ADAPT_DECAI * dt)
+		if usados.has(k):
+			a[k] = minf(ADAPT_TETO, float(a[k]) + ADAPT_GANHO_SEG * dt)
+		else:
+			a[k] = maxf(0.0, float(a[k]) - ADAPT_DECAI * dt)
+	if not usados.is_empty():
+		s["_adapt_uso"] = {}
 
 ## Multiplicador de dano do elemento depois da adaptação.
 static func fator_elemento(s: Dictionary, elemento: String) -> float:

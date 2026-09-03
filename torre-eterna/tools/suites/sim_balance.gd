@@ -291,13 +291,41 @@ func _jogar_o_resto(j) -> void:
 		if j.comprar_reliquia(str(def.get("id", "")), 1) > 0:
 			break
 
+## O AGENTE FOGE DA ADAPTACAO, como um jogador faria.
+##
+## A Adaptacao do Enxame estava MORTA (semeador que nunca semeava), e a faixa
+## deste portao foi calibrada com a mecanica-assinatura desligada. Consertada, a
+## onda maxima caiu de 261 para 97 — mas nao porque o jogo ficou ruim: porque o
+## agente investia no elemento que ja estava com 62% de resistencia e continuava
+## batendo nele. Um jogador olha o numero e troca; a mecanica existe justamente
+## para forcar isso.
+##
+## Devolve o stat de elemento que o agente deve EVITAR agora, ou "".
+func _stat_a_evitar(j) -> String:
+	var par: Array = Mecanicas.elemento_mais_adaptado(j.s)
+	if str(par[0]) == "" or float(par[1]) < 0.25:
+		return ""
+	return str(TorreSim.CHAVES_ELEMENTO.get(str(par[0]), ""))
+
+## O upgrade mexe no stat que o agente esta evitando?
+func _mexe_no_stat(def: Dictionary, stat: String) -> bool:
+	if stat == "":
+		return false
+	for item in def.get("efeito", []):
+		if item is Dictionary and str(item.get("stat", "")) == stat:
+			return true
+	return false
+
 func _comprar_como_jogador(j) -> void:
 	_jogar_o_resto(j)
+	var evitar := _stat_a_evitar(j)
 	for k in 6:
 		var melhor := ""
 		var melhor_custo := INF
 		for def in Dados.upgrades:
 			if not j.upgrade_disponivel(def):
+				continue
+			if _mexe_no_stat(def, evitar):
 				continue
 			var id := str(def["id"])
 			var nivel: int = int(j.s["upgrades"].get(id, 0))

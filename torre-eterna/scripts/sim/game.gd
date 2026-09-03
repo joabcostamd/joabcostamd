@@ -716,12 +716,37 @@ func comprar_upgrade(id: String, qtd = 1) -> int:
 	Bus.upgrade_comprado.emit(id, n, nivel + n)
 	return n
 
+## O upgrade mexe no stat que a automacao esta evitando?
+func _mexe_no_stat(def: Dictionary, stat: String) -> bool:
+	for item in def.get("efeito", []):
+		if item is Dictionary and str(item.get("stat", "")) == stat:
+			return true
+	return false
+
 func auto_comprar() -> void:
 	var modo := str(s["auto"]["comprar_modo"])
 	var melhor: Dictionary = {}
 	var melhor_custo := INF
+	# A AUTOMACAO FOGE DA ADAPTACAO, como um jogador faria.
+	#
+	# A Adaptacao do Enxame cria ate 62% de resistencia ao elemento mais usado —
+	# e existe justamente para forcar a troca de build. A compra automatica
+	# ignorava isso: continuava investindo no elemento saturado, jogando ouro num
+	# dano que o Enxame ja aprendeu a absorver. Quando a mecanica foi consertada
+	# (ela estava morta), isso ficou visivel de imediato: a onda maxima do
+	# simulador caiu de 261 para 97, e a culpa nao era do jogo — era da
+	# automacao insistindo no elemento errado.
+	#
+	# Abaixo de 25% de resistencia nao vale trocar (o custo de espalhar
+	# investimento e maior que a perda); acima disso, evita.
+	var evitar := ""
+	var par_adap: Array = Mecanicas.elemento_mais_adaptado(s)
+	if str(par_adap[0]) != "" and float(par_adap[1]) >= 0.25:
+		evitar = str(TorreSim.CHAVES_ELEMENTO.get(str(par_adap[0]), ""))
 	for def in Dados.upgrades:
 		if not upgrade_disponivel(def):
+			continue
+		if evitar != "" and _mexe_no_stat(def, evitar):
 			continue
 		var id := str(def.get("id", ""))
 		var nivel := int(s["upgrades"].get(id, 0))

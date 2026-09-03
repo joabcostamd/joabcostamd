@@ -708,6 +708,15 @@ func t_conteudo_lido() -> void:
 			float(mi["prog"]) <= prog1 + 0.001,
 			"prog %s -> %s" % [str(prog1), str(mi["prog"])])
 
+## Usa um elemento por `segundos`, como o jogo faz: marca o uso e deixa o
+## relogio andar. A adaptacao sobe por TEMPO, nao por numero de acertos.
+func _usar_elemento(estado: Dictionary, elemento: String, segundos: float) -> void:
+	var passo := 1.0 / 60.0
+	var n := int(segundos / passo)
+	for i in n:
+		Mecanicas.registrar_elemento(estado, elemento)
+		Mecanicas.decair_adaptacao(passo, estado)
+
 ## Envelope minimo para exercitar `Progresso` sem subir o jogo inteiro.
 func _jogo_falso(estado: Dictionary):
 	var j := JogoFalso.new()
@@ -1736,8 +1745,10 @@ func t_mecanicas() -> void:
 	ok("o estado novo do jogo produz adaptacao utilizavel",
 		not (s_novo["adaptacao"] as Dictionary).is_empty()
 			or not Mecanicas.estado_adaptacao(s_novo).is_empty())
-	for i in 30:
-		Mecanicas.registrar_elemento(s_novo, "fogo")
+	# A adaptacao anda no RELOGIO, nao na contagem de acertos: usar o elemento
+	# e deixar o tempo passar. Antes subia por acerto, e centenas de acertos por
+	# segundo cravavam a resistencia no teto em menos de um segundo.
+	_usar_elemento(s_novo, "fogo", 20.0)
 	ok("a partir do estado REAL, usar um elemento cria resistencia",
 		Mecanicas.fator_elemento(s_novo, "fogo") < 0.85,
 		"fator=%s" % str(Mecanicas.fator_elemento(s_novo, "fogo")))
@@ -1756,8 +1767,7 @@ func t_mecanicas() -> void:
 		Combate.aplicar_elemento(e_limpo, elem, Big.from(1000.0), jogo)
 		var forte: float = e_limpo.gelo_forca if elem == "gelo" else e_limpo.fissura_forca
 		# Satura a adaptacao naquele elemento e aplica de novo.
-		for i in 200:
-			Mecanicas.registrar_elemento(s_el, elem)
+		_usar_elemento(s_el, elem, 90.0)
 		var e_adap := EnemyAI.criar(def_alvo, 10, jogo, {})
 		Combate.aplicar_elemento(e_adap, elem, Big.from(1000.0), jogo)
 		var fraco: float = e_adap.gelo_forca if elem == "gelo" else e_adap.fissura_forca
@@ -1767,8 +1777,7 @@ func t_mecanicas() -> void:
 	jogo.s["adaptacao"] = {"fogo": 0.0, "gelo": 0.0, "raio": 0.0, "veneno": 0.0, "vazio": 0.0}
 
 	ok("sem adaptacao o fator e 1", perto(Mecanicas.fator_elemento(s, "fogo"), 1.0, 1e-9))
-	for i in 30:
-		Mecanicas.registrar_elemento(s, "fogo")
+	_usar_elemento(s, "fogo", 30.0)
 	ok("uso repetido cria resistencia", Mecanicas.fator_elemento(s, "fogo") < 0.85, str(Mecanicas.fator_elemento(s, "fogo")))
 	ok("outro elemento continua limpo", perto(Mecanicas.fator_elemento(s, "gelo"), 1.0, 1e-9))
 	ok("resistencia tem teto", Mecanicas.fator_elemento(s, "fogo") >= 1.0 - Mecanicas.ADAPT_TETO - 1e-9)
