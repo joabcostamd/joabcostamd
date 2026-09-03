@@ -93,8 +93,8 @@ static func desenhar(ci: CanvasItem, e: Inimigo, t: float, detalhe: float = 1.0)
 		_: _circulo(ci, p, r, cor, cor2, alfa)
 
 	# escudo pessoal
-	if e.escudo > 0.0 and e.escudo_max > 0.0:
-		var f := clampf(e.escudo / e.escudo_max, 0.0, 1.0)
+	if e.escudo > Big.LIMIAR_ZERO and e.escudo_max > Big.LIMIAR_ZERO:
+		var f := Big.frac(e.escudo, e.escudo_max)
 		ci.draw_arc(p, r * 1.28, -PI * 0.5, -PI * 0.5 + TAU * f, 28, Color(0.45, 0.8, 1.0, 0.75 * alfa), 2.5, true)
 
 	# status

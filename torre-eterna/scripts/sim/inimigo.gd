@@ -54,8 +54,10 @@ var marcado := 0.0
 var intangivel := 0.0
 var revelado := false
 
-var escudo := 0.0
-var escudo_max := 0.0
+## Escudo em log10, igual ao HP. Era linear: com hp_max acima de 1e308 o
+## `Big.to_f` virava INF e o escudo nunca mais caia.
+var escudo := Big.ZERO
+var escudo_max := Big.ZERO
 var sem_dano_t := 0.0
 
 # --- comportamento ---
@@ -103,8 +105,8 @@ func limpar() -> void:
 	marcado = 0.0
 	intangivel = 0.0
 	revelado = false
-	escudo = 0.0
-	escudo_max = 0.0
+	escudo = Big.ZERO
+	escudo_max = Big.ZERO
 	flash = 0.0
 	tremor = 0.0
 	morrendo = 0.0

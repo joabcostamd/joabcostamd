@@ -21,15 +21,14 @@ static func aplicar_dano(e: Inimigo, dano: float, j, opt: Dictionary = {}) -> Di
 		dmg = Big.mul_f(dmg, 0.55)
 
 	var absorvido := false
-	if e.escudo > 0.0:
-		var esc := Big.from(e.escudo)
-		if Big.gte(esc, dmg):
-			e.escudo = Big.to_f(Big.sub(esc, dmg))
+	if e.escudo > Big.LIMIAR_ZERO:
+		if Big.gte(e.escudo, dmg):
+			e.escudo = Big.sub(e.escudo, dmg)
 			e.flash = maxf(e.flash, 0.12)
 			Bus.inimigo_atingido.emit(e, dmg, bool(opt.get("crit", false)), str(opt.get("elemento", "")))
 			return {"morreu": false, "dano": dmg, "overkill": Big.ZERO, "absorvido": true}
-		dmg = Big.sub(dmg, esc)
-		e.escudo = 0.0
+		dmg = Big.sub(dmg, e.escudo)
+		e.escudo = Big.ZERO
 		absorvido = true
 
 	# execução

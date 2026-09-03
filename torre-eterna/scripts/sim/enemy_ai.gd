@@ -76,7 +76,7 @@ static func criar(def: Dictionary, onda: int, j, opt: Dictionary = {}) -> Inimig
 		e.cor2 = Color.html("#92400e")
 
 	if def.has("escudoFrac"):
-		e.escudo_max = Big.to_f(Big.mul_f(hp, float(def["escudoFrac"])))
+		e.escudo_max = Big.mul_f(hp, float(def["escudoFrac"]))
 		e.escudo = e.escudo_max
 	if e.chefe:
 		var fases := maxi(1, int(def.get("fases", 1)))
@@ -380,8 +380,8 @@ static func atualizar(dt: float, j) -> void:
 
 		if e.elite_mod == "regenerativo" and Big.lt(e.hp, e.hp_max):
 			e.hp = Big.min_b(Big.add(e.hp, Big.mul_f(e.hp_max, 0.02 * dt)), e.hp_max)
-		if e.escudo_max > 0.0 and e.escudo < e.escudo_max and e.sem_dano_t > 2.5:
-			e.escudo = minf(e.escudo_max, e.escudo + e.escudo_max * 0.25 * dt)
+		if e.escudo_max > Big.LIMIAR_ZERO and e.escudo < e.escudo_max and e.sem_dano_t > 2.5:
+			e.escudo = Big.min_b(e.escudo_max, Big.add(e.escudo, Big.mul_f(e.escudo_max, 0.25 * dt)))
 		e.sem_dano_t += dt
 
 		if not e.grudado and vel > 0.0:

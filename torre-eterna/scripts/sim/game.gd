@@ -321,7 +321,8 @@ func atualizar_chefe(e: Inimigo, dt: float) -> void:
 				tremor(10.0, 0.3)
 		"escudo_regen":
 			if e.sem_dano_t > 1.5:
-				e.escudo = minf(maxf(e.escudo_max, Big.to_f(Big.mul_f(e.hp_max, 0.3))), e.escudo + Big.to_f(Big.mul_f(e.hp_max, 0.06)) * dt)
+				var teto := Big.max_b(e.escudo_max, Big.mul_f(e.hp_max, 0.3))
+				e.escudo = Big.min_b(teto, Big.add(e.escudo, Big.mul_f(e.hp_max, 0.06 * dt)))
 		"silenciar":
 			e.cd -= dt
 			if e.cd <= 0.0:

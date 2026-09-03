@@ -190,11 +190,11 @@ func t_combate() -> void:
 
 	# escudo absorve antes da vida
 	var e2 := EnemyAI.criar(def, 10, jogo, {})
-	e2.escudo = 1000.0
-	e2.escudo_max = 1000.0
+	e2.escudo = Big.from(1000.0)
+	e2.escudo_max = e2.escudo
 	var hp2 := e2.hp
 	Combate.aplicar_dano(e2, Big.from(100.0), jogo, {"puro": true})
-	ok("escudo absorve", perto(e2.hp, hp2, 1e-9) and e2.escudo < 1000.0)
+	ok("escudo absorve", perto(e2.hp, hp2, 1e-9) and Big.lt(e2.escudo, Big.from(1000.0)))
 
 	# execucao
 	var e3 := EnemyAI.criar(def, 10, jogo, {})
@@ -239,6 +239,19 @@ func t_defesa() -> void:
 			chefao.cd_contato = Bal.CD_CONTATO
 		chefao.cd_contato -= 1.0 / 60.0
 	ok("chefe bate no maximo 2x por segundo", golpes <= 2)
+
+	# Escudo do inimigo em log10, igual ao HP. Era linear: com hp_max acima de
+	# 1e308 o Big.to_f virava INF e o escudo nunca mais descia.
+	var blindado := Inimigo.new()
+	blindado.ativo = true
+	blindado.hp_max = 400.0                        # 10^400 de vida: fora do float
+	blindado.hp = blindado.hp_max
+	blindado.escudo_max = Big.mul_f(blindado.hp_max, 0.5)
+	blindado.escudo = blindado.escudo_max
+	ok("escudo do inimigo nao vira INF", not is_inf(blindado.escudo) and blindado.escudo < 401.0)
+	var antes_esc := blindado.escudo
+	Combate.aplicar_dano(blindado, Big.mul_f(blindado.escudo_max, 0.1), jogo, {})
+	ok("escudo do inimigo desce quando apanha", blindado.escudo < antes_esc)
 
 	var s: Dictionary = jogo.s
 	s["torre"]["vida_max"] = Big.from(1000.0)
