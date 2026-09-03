@@ -49,7 +49,7 @@ suíte reprovou):
 | 2.7 | Peregrino: a mira nunca o excluía, então **poupar era impossível** | ✅ Escolha real, botão só quando ele está na tela, respeitada até pelo projétil no ar |
 | 2.8 | Adaptação não afetava Gelo e Vazio, mas o HUD mostrava −62% para os cinco | ✅ Vale para os cinco; teste prova |
 | 2.5 | `cuspir` anunciada no codex e sem braço — o inimigo chamado "atirador" nunca atirou. `ondaMax` era a linha de chegada de 12 dos 14 desafios e ninguém lia: `encerrar_desafio(true)` não tinha chamador, então o desafio **nunca terminava** e a recompensa era inalcançável | ✅ |
-| 2.6 | `salvamento_travado`: o boot trancava, o sinal `save_ilegivel` não tinha ouvinte e **não existia caminho para religar** — quem tivesse save corrompido jogava para sempre sem gravar, sem saber por quê | ✅ Avisa e oferece a chave em Configurações |
+| 2.6 | `salvamento_travado`: o boot trancava, o sinal `save_ilegivel` não tinha ouvinte e **não existia caminho para religar** — quem tivesse save corrompido jogava para sempre sem gravar, sem saber por quê | ✅ Avisa e oferece a chave em Configurações. A trava agora é **medida**, não lida: travado o jogo recusa gravar e não encosta no disco, `destravar_salvamento` desliga e grava na hora, chamar sem trava não faz nada, e o boot com os dois arquivos ilegíveis levanta a bandeira |
 
 ## 3. Economia e ritmo — 🟡 PARCIAL (só a camada 3 do prestígio em aberto)
 

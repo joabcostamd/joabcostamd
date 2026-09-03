@@ -41,7 +41,7 @@
    "para": "Economia",
    "efeito": "o combo multiplica o ouro e o dano",
    "arquivo": "scripts/sim/combat.gd",
-   "prova": "combo"
+   "prova": "bonus_combo"
   },
   {
    "de": "Cartas",

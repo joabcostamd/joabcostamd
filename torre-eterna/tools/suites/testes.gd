@@ -518,6 +518,32 @@ func t_modificadores() -> void:
 	var r3 := Mods.recalcular(s, m)
 	ok("passiva registrada", r3["passivas"].has("sede_de_sangue"))
 
+	# O elo "Combo -> Economia" era declarado em systems.json com a prova
+	# `combo` — a palavra existe em `combat.gd` de mil jeitos, entao dava para
+	# apagar a multiplicacao do ouro e o portao continuava verde. Prova de elo
+	# tem que ser MEDIDA, nao lida: mesmo inimigo, mesma onda, so muda o combo.
+	# O ouro do abate cai como orbe na arena, entao a medida vem do sinal que o
+	# proprio jogo emite quando o inimigo morre.
+	var visto_combo := [Big.ZERO]
+	var escuta_combo := func(_e, ouro_c: float) -> void: visto_combo[0] = ouro_c
+	Bus.inimigo_morreu.connect(escuta_combo)
+	var combo_antes := int(jogo.s["combo"]["atual"])
+	var ouro_por_combo := func(nivel: int) -> float:
+		jogo.arena.limpar_tudo()
+		jogo.s["combo"]["atual"] = nivel
+		visto_combo[0] = Big.ZERO
+		var vitima = EnemyAI.criar(Dados.inimigo_por_id["grunhido"], 10, jogo, {})
+		vitima.pos = jogo.arena.centro + Vector2(120.0, 0.0)
+		Combate.matar(vitima, jogo)
+		return float(visto_combo[0])
+	var ouro_c0: float = ouro_por_combo.call(0)
+	var ouro_c30: float = ouro_por_combo.call(30)
+	Bus.inimigo_morreu.disconnect(escuta_combo)
+	ok("combo alto rende mais ouro pelo MESMO inimigo", ouro_c30 > ouro_c0 + 0.02,
+		"combo 0 -> %.4f, combo 30 -> %.4f (log10)" % [ouro_c0, ouro_c30])
+	jogo.s["combo"]["atual"] = combo_antes
+	jogo.arena.limpar_tudo()
+
 ## ------------------------------------------------------------ economia
 func t_economia() -> void:
 	g("Economia")
@@ -730,6 +756,34 @@ func t_conteudo_lido() -> void:
 		codigo_ui2.contains("save_ilegivel"), "ninguem escuta o sinal")
 	ok("o save travado tem como destravar",
 		codigo_ui2.contains("destravar_salvamento("), "sem caminho de volta")
+	# E as duas linhas acima so provam que as PALAVRAS existem. A trava em si
+	# nunca foi medida: se `salvar()` parasse de olhar para ela, ou se
+	# `destravar_salvamento` parasse de gravar, os dois portoes continuariam
+	# verdes e o jogo voltaria a apagar o save de quem so precisava de ajuda.
+	var save_tv = root.get_node_or_null("SaveSys")
+	save_tv.apagar()
+	jogo.salvamento_travado = true
+	ok("travado, o jogo se recusa a gravar", not jogo.salvar())
+	ok("e nao encosta no disco", not FileAccess.file_exists(save_tv.cam()))
+	jogo.destravar_salvamento()
+	ok("destravar desliga a trava", not jogo.salvamento_travado)
+	ok("e grava na hora, sem esperar o autosave", FileAccess.file_exists(save_tv.cam()))
+	# Chamar com a trava desligada nao pode virar um save extra a cada clique.
+	save_tv.apagar()
+	jogo.destravar_salvamento()
+	ok("destravar sem trava nao faz nada", not FileAccess.file_exists(save_tv.cam()))
+	save_tv.apagar()
+	# E o boot: dois arquivos ilegiveis tem que ligar a trava, nao comecar
+	# partida nova por cima do que talvez de para recuperar.
+	for cam_tv in [save_tv.cam(), save_tv.cam_backup()]:
+		var ftv := FileAccess.open(cam_tv, FileAccess.WRITE)
+		ftv.store_string("[[[isso nao e json")
+		ftv.close()
+	save_tv.carregar()
+	ok("boot com os dois arquivos ilegiveis levanta a bandeira", save_tv.falhou_ao_ler)
+	ok("e o codigo do boot liga a trava com essa bandeira",
+		_ler("res://scripts/sim/game.gd").contains("if SaveSys.falhou_ao_ler:\n\t\t\tsalvamento_travado = true"))
+	save_tv.apagar()
 
 	# ANTECIPAR A ONDA: a decisao que devolve o ritmo ao jogador.
 	# O ritmo era do spawner — comprar poder nao encurtava nada dentro de uma
@@ -1418,6 +1472,30 @@ func t_celebracao() -> void:
 	if C == null:
 		return
 	var cel = C.new()
+	# O comentario da receita afirma que a ascensao tem o MAIOR peso do
+	# catalogo, e o peso e o que decide o tamanho da comemoracao. Era uma
+	# afirmacao de regua: bastava alguem entrar com 1,8 numa receita nova e o
+	# comentario virava mentira sem nada reprovar. Regua declarada em
+	# comentario tem que ser medida.
+	var maior_peso := 0.0
+	var dono_do_maior := ""
+	for chave_c in C.RECEITAS:
+		var receita: Dictionary = C.RECEITAS[chave_c]
+		var pc := float(receita.get("peso", 0.0))
+		if pc > maior_peso:
+			maior_peso = pc
+			dono_do_maior = str(chave_c)
+	ok("a ascensao e a maior comemoracao do catalogo", dono_do_maior == "prestigio",
+		"o maior e '%s' com peso %.2f" % [dono_do_maior, maior_peso])
+	ok("e o comentario diz o numero certo",
+		_ler("res://scripts/ui/celebracao.gd").contains("Peso %s" % String.num(maior_peso, 1).replace(".", ",")),
+		"peso real %.2f" % maior_peso)
+	# Toda receita precisa de peso, senao a comemoracao nasce sem tamanho.
+	var sem_peso: Array = []
+	for chave_p in C.RECEITAS:
+		if float((C.RECEITAS[chave_p] as Dictionary).get("peso", 0.0)) <= 0.0:
+			sem_peso.append(str(chave_p))
+	ok("toda receita tem peso", sem_peso.is_empty(), str(sem_peso))
 	# AS DEZ ERAS NUNCA DIZIAM O NOME. `Bus.era_mudou` tinha um unico ouvinte, o
 	# pintor de fundo. Cada era traz nome e regra escritos nos dois idiomas.
 	var era: Dictionary = Dados.era_atual(120)
