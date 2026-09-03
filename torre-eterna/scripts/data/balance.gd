@@ -173,14 +173,24 @@ static func mul_contato(e, onda: int, mult: float, vida_max_log: float = Big.ZER
 ## O teto agora acompanha o recorde. Como o custo cresce geométrico, os níveis
 ## além do teto original custam muito mais — o sink continua aberto sem que
 ## nada fique barato. Abaixo da onda 50 nada muda: o começo do jogo é o mesmo.
-## 0,006 era pouco: com ele, o simulador chegou à onda 264 com as 33 melhorias
-## com teto TODAS no máximo de novo — o catálogo esvaziava igual, só um pouco
-## mais tarde. O problema é que o ouro cresce muito mais rápido que 0,6% de teto
-## por onda. Com 0,02 o teto vira 5,3× o original na onda 264 e 20× na onda
-## 1.000, o que mantém decisão na tela sem baratear nada: o custo continua
-## geométrico, então cada nível além do teto original custa muito mais.
+## Eu subi este número de 0,006 para 0,02 dizendo que 0,006 deixava o catálogo
+## esvaziar cedo demais. Medido nos três valores, com semente fixa:
+##
+##   0,006 -> catalogo esvazia na onda 264 | p90 a 160 vivos: 3387 us
+##   0,010 -> catalogo esvazia na onda 261 | p90 a 160 vivos: 3633 us
+##   0,020 -> catalogo esvazia na onda 266 | p90 a 160 vivos: 8532 us
+##
+## Ou seja: o teto NÃO controla quando o catálogo esvazia — os três valores dão
+## a mesma onda dentro do ruído, porque o ouro cresce rápido demais para que
+## 2% de teto por onda facam diferenca. A subida para 0,02 nao entregou nada do
+## que prometia e custou 2,3x de CPU, o bastante para reprovar o portao de
+## desempenho. Fica em 0,01: passa nos dois portoes e da um pouco mais de teto
+## que o valor original, sem pagar por uma promessa que o parametro nao cumpre.
+##
+## Esvaziar o catalogo mais tarde continua sendo trabalho em aberto, e a solucao
+## nao esta aqui: esta na curva de custo, nao no teto.
 const TETO_ONDA_LIVRE := 50
-const TETO_CRESCE_POR_ONDA := 0.02
+const TETO_CRESCE_POR_ONDA := 0.01
 
 static func teto_upgrade(teto_base: int, recorde: int) -> int:
 	if teto_base < 0:
