@@ -204,47 +204,72 @@ func _sortear_elemento() -> String:
 
 ## ---------------------------------------------------------- projéteis
 
+## O laço mais quente do jogo: até 800 projéteis, 60 vezes por segundo.
+##
+## Em GDScript o que pesa aqui não é a conta, é a CHAMADA — cada `arena.x.y()`
+## paga busca de propriedade mais despacho de método. A versão anterior fazia
+## seis dessas por projétil por quadro (`j.arena` quatro vezes, `fora_da_arena`,
+## `vivo()`, `ang_lerp`, `_colisao`) e um `distance_to` com raiz quadrada. A
+## 800 projéteis isso é meio milhão de chamadas por segundo só de cerimônia.
+##
+## Tudo que dava foi içado para fora do laço ou escrito inline. As contas são
+## as mesmas — a comparação de distância virou quadrado contra quadrado, que é
+## a mesma desigualdade sem a raiz. O jogo não mudou; só parou de pagar pedágio.
 func atualizar_projeteis(dt: float) -> void:
-	var lista: Array = j.arena.projeteis
-	var centro: Vector2 = j.arena.centro
+	var arena = j.arena
+	var lista: Array = arena.projeteis
+	var centro: Vector2 = arena.centro
+	var cx := centro.x
+	var cy := centro.y
+	var raio_torre2 := Bal.RAIO_TORRE * Bal.RAIO_TORRE
+	# `fora_da_arena` inline: os limites não mudam durante o quadro.
+	var margem := 140.0
+	var lim_x0 := -margem
+	var lim_y0 := -margem
+	var lim_x1: float = arena.largura + margem
+	var lim_y1: float = arena.altura + margem
+	var t_lerp := minf(1.0, dt * 12.0)
 	for i in range(lista.size() - 1, -1, -1):
 		var p: Projetil = lista[i]
 		if not p.ativo:
-			j.arena.soltar_projetil(i)
+			arena.soltar_projetil(i)
 			continue
 		p.t += dt
 		p.vida -= dt
 		if p.vida <= 0.0:
-			j.arena.soltar_projetil(i)
+			arena.soltar_projetil(i)
 			continue
 
 		if p.origem == "inimigo":
 			p.pos += p.vel * dt
-			if p.pos.distance_to(centro) < Bal.RAIO_TORRE:
+			var idx := p.pos.x - cx
+			var idy := p.pos.y - cy
+			if idx * idx + idy * idy < raio_torre2:
 				j.dano_na_torre(p.dano_torre, null, {"projetil": true})
-				j.arena.soltar_projetil(i)
-			elif j.arena.fora_da_arena(p.pos):
-				j.arena.soltar_projetil(i)
+				arena.soltar_projetil(i)
+			elif p.pos.x < lim_x0 or p.pos.y < lim_y0 or p.pos.x > lim_x1 or p.pos.y > lim_y1:
+				arena.soltar_projetil(i)
 			continue
 
 		var alvo := p.alvo
-		if alvo != null and alvo.vivo() and alvo.intangivel <= 0.0:
+		# `alvo.vivo()` inline: é `ativo and morrendo <= 0.0`.
+		if alvo != null and alvo.ativo and alvo.morrendo <= 0.0 and alvo.intangivel <= 0.0:
 			var ang := (alvo.pos - p.pos).angle()
-			p.ang = Ux.ang_lerp(p.ang, ang, minf(1.0, dt * 12.0))
-			p.vel = Vector2(cos(p.ang), sin(p.ang)) * p.velocidade
+			# `Ux.ang_lerp` inline: leva o ângulo pelo caminho curto.
+			var d := fposmod(ang - p.ang + PI, TAU) - PI
+			var na := p.ang + d * t_lerp
+			p.ang = na
+			p.vel = Vector2(cos(na), sin(na)) * p.velocidade
 		p.pos += p.vel * dt
 
-		if j.arena.fora_da_arena(p.pos):
-			j.arena.soltar_projetil(i)
+		if p.pos.x < lim_x0 or p.pos.y < lim_y0 or p.pos.x > lim_x1 or p.pos.y > lim_y1:
+			arena.soltar_projetil(i)
 			continue
 
-		var atingido := _colisao(p)
+		var atingido: Inimigo = arena.primeiro_colidindo(p.pos, p.raio, p.atingidos)
 		if atingido != null:
 			if _impacto(p, atingido):
-				j.arena.soltar_projetil(i)
-
-func _colisao(p: Projetil) -> Inimigo:
-	return j.arena.primeiro_colidindo(p.pos, p.raio, p.atingidos)
+				arena.soltar_projetil(i)
 
 func _impacto(p: Projetil, alvo: Inimigo) -> bool:
 	var opt := {
