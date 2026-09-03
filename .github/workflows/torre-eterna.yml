@@ -91,7 +91,18 @@ jobs:
           echo "$saida"
           echo "$saida" | grep -q "===STATUS=== PASS"
 
-      - name: Relatório de balanceamento (informativo)
+      # O simulador é o único portão que roda o jogo por horas seguidas com a
+      # automação ligada. Erro em tempo de execução não aparece nos testes (que
+      # chamam funções isoladas) e aparece aqui — já pegou um `Invalid access`
+      # que rodava 21.600 vezes numa partida.
+      - name: Portão 7 — uma hora de jogo sem erro em tempo de execução
         working-directory: torre-eterna
-        continue-on-error: true
-        run: godot --headless --path . -s res://tools/sim_balance.gd -- 1 2>&1 | tail -30
+        run: |
+          set -euo pipefail
+          saida=$(godot --headless --path . -s res://tools/sim_balance.gd -- 1 auto 2>&1)
+          echo "$saida" | tail -30
+          if echo "$saida" | grep -q "SCRIPT ERROR"; then
+            echo "::error::o simulador emitiu SCRIPT ERROR"
+            echo "$saida" | grep -A1 "SCRIPT ERROR" | head -20
+            exit 1
+          fi

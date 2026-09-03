@@ -577,6 +577,9 @@ func t_mecanicas() -> void:
 	Mecanicas.encerrar_retomada(jogo)
 	ok("encerrar devolve a compra automatica", not bool(jogo.s["auto"]["comprar"]))
 	ok("encerrar limpa o estado", not Mecanicas.em_retomada(jogo.s))
+	# Estado padrao tem `retomada` vazia: `em_retomada` nao pode confundir a
+	# chave existir com a Retomada estar acontecendo.
+	ok("estado novo nao esta em retomada", not Mecanicas.em_retomada(GameState.novo()))
 
 	var s: Dictionary = jogo.s
 

@@ -14,6 +14,11 @@ godot --headless --path . -s res://tools/lint.gd            # convenções do pr
 godot --headless --path . -s res://tools/validar_dados.gd   # conteúdo obedece ao contrato
 godot --headless --path . -s res://tools/testes.gd          # 195 testes da simulação
 godot --headless --path . -s res://agent_verify.gd          # verificação estrutural do kit
+
+# E o portão que os testes não cobrem: uma hora de jogo de verdade, com a
+# automação ligada, procurando erro em tempo de execução. Os testes chamam
+# funções isoladas; só o simulador roda o laço inteiro por horas.
+godot --headless --path . -s res://tools/sim_balance.gd -- 1 auto 2>&1 | grep -c "SCRIPT ERROR"   # tem que dar 0
 ```
 
 Só `===STATUS=== PASS` conta. Ignore o código de saída do processo — o bloco é o contrato.

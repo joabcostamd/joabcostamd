@@ -336,9 +336,9 @@ static func iniciar_retomada(j, onda_anterior: int) -> void:
 	Bus.celebracao.emit("retomada", {"alvo": onda_anterior})
 
 static func atualizar_retomada(dt: float, j) -> void:
-	var r = j.s.get("retomada", null)
-	if not (r is Dictionary):
+	if not em_retomada(j.s):
 		return
+	var r: Dictionary = j.s["retomada"]
 	# a compra automática da Retomada não depende de desbloqueio: é cortesia da casa
 	j.auto_comprar()
 	j.auto_comprar()
@@ -354,16 +354,21 @@ static func atualizar_retomada(dt: float, j) -> void:
 		encerrar_retomada(j)
 
 static func encerrar_retomada(j) -> void:
-	var r = j.s.get("retomada", null)
-	if not (r is Dictionary):
+	if not em_retomada(j.s):
 		return
+	var r: Dictionary = j.s["retomada"]
 	j.s["auto"]["comprar"] = bool(r["auto_antes"])
 	j.velocidade = float(r["velocidade_antes"])
 	Engine.time_scale = j.velocidade
-	j.s.erase("retomada")
+	j.s["retomada"] = {}
 
+## Estar em Retomada é ter um ALVO, não ter a chave. Enquanto `retomada` só
+## nascia quando começava, `has` bastava; agora que ela é campo de primeira
+## classe do estado (e portanto existe vazia desde o início), a pergunta certa é
+## se ela tem conteúdo.
 static func em_retomada(s: Dictionary) -> bool:
-	return s.get("retomada", null) is Dictionary
+	var r = s.get("retomada", null)
+	return r is Dictionary and r.has("alvo")
 
 # ============================================================== DICAS ======
 ## As dicas vêm dos dados como objetos {id, icone, tag, texto}. Esta função
