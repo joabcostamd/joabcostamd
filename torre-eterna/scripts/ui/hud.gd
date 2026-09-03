@@ -274,8 +274,8 @@ func _construir() -> void:
 	menu.anchor_right = 0.0
 	menu.anchor_top = 1.0
 	menu.anchor_bottom = 1.0
-	menu.offset_top = -58
-	menu.offset_bottom = -14
+	menu.offset_top = int(UI.RODAPE_TOPO)
+	menu.offset_bottom = int(UI.RODAPE_BASE)
 	menu.offset_left = 14
 	menu.offset_right = 858
 	add_child(menu)
@@ -310,8 +310,8 @@ func _construir() -> void:
 	acoes.anchor_right = 1.0
 	acoes.anchor_top = 1.0
 	acoes.anchor_bottom = 1.0
-	acoes.offset_top = -58
-	acoes.offset_bottom = -14
+	acoes.offset_top = int(UI.RODAPE_TOPO)
+	acoes.offset_bottom = int(UI.RODAPE_BASE)
 	acoes.offset_left = -418
 	acoes.offset_right = -14
 	acoes.alignment = BoxContainer.ALIGNMENT_END

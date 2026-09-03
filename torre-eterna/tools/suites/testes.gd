@@ -83,7 +83,7 @@ func rodar(cena: SceneTree) -> void:
 	# Agora cada grupo tem o proprio minimo. Perder um bloco reprova NOMEANDO o
 	# bloco, e acrescentar teste continua nunca reprovando.
 	var minimo_por_grupo := {
-		"Acessibilidade": 17, "Alcancavel": 8, "Big": 12,
+		"Acessibilidade": 22, "Alcancavel": 8, "Big": 12,
 		"Chaves dinamicas": 3, "Combate": 9, "Defesa": 27,
 		"Dicas": 5, "Economia": 9, "Elites": 11,
 		"Eventos": 12, "Feedback": 2, "Ferramentas": 3, "Daltonismo": 9, "Tempo": 5, "Conteudo lido": 21, "Fmt": 6,
@@ -2623,6 +2623,20 @@ func t_acessibilidade() -> void:
 		if linha_cfg.contains("focus_mode = Control.FOCUS_NONE"):
 			sem_foco += 1
 	ok("nenhum controle de Configuracoes fica fora do teclado", sem_foco == 0, str(sem_foco))
+	# O QUE FLUTUA TEM QUE PARAR ACIMA DA BARRA. Quatro vezes o mesmo defeito:
+	# os avisos aprenderam a fugir do painel, do banner e do dialogo de evento, e
+	# na quarta o lugar para onde eles fugiam — o rodape — ficou ocupado pelos
+	# doze botoes com rotulo. A faixa agora e uma constante so, e os dois lados
+	# tem que le-la.
+	ok("a faixa do rodape e uma constante do kit", UI.RODAPE_TOPO < UI.RODAPE_BASE)
+	ok("...com folga declarada", UI.RODAPE_FOLGA > 0.0)
+	var txt_pm := _ler("res://scripts/ui/panel_manager.gd")
+	ok("os avisos param acima da barra", txt_pm.contains("UI.RODAPE_TOPO - UI.RODAPE_FOLGA"))
+	var txt_h3 := _ler("res://scripts/ui/hud.gd")
+	ok("a barra usa a mesma constante", txt_h3.contains("int(UI.RODAPE_TOPO)"))
+	ok("...nos dois lados do rodape",
+		txt_h3.count("int(UI.RODAPE_TOPO)") >= 2 and txt_h3.count("int(UI.RODAPE_BASE)") >= 2)
+
 	# O rodape do HUD continua SEM foco de proposito: e barra de ferramentas por
 	# cima da arena e tem atalho proprio. Se alguem ligar foco la, isto avisa.
 	var txt_hud2 := _ler("res://scripts/ui/hud.gd")

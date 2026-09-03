@@ -152,8 +152,15 @@ func _posicionar_toasts() -> void:
 	# fica curta de propósito: com o painel aberto só cabem DOIS avisos antes de
 	# começar a cobrir conteúdo, então o teto cai de cinco para dois enquanto o
 	# painel estiver na frente.
-	caixa_toast.offset_top = -110.0 if aberto else 96.0
-	caixa_toast.offset_bottom = -10.0 if aberto else 300.0
+	# QUARTA vez que o mesmo defeito aparece, agora pelo outro lado: os avisos
+	# fugiam para o rodape e o rodape ficou OCUPADO. Desde que os doze botoes de
+	# painel ganharam rotulo, a faixa de -110 a -10 e exatamente onde eles vivem
+	# (-58 a -14), e numa captura da onda 93 o aviso e os rotulos "Conquistas",
+	# "Codex" e "Habilidades" saiam impressos um por cima do outro, os dois
+	# ilegiveis. A caixa agora para ACIMA da barra, com folga.
+	var teto_toast := UI.RODAPE_TOPO - UI.RODAPE_FOLGA
+	caixa_toast.offset_top = (teto_toast - 110.0) if aberto else 96.0
+	caixa_toast.offset_bottom = teto_toast if aberto else 300.0
 	caixa_toast.grow_vertical = Control.GROW_DIRECTION_BEGIN if aberto else Control.GROW_DIRECTION_END
 	caixa_toast.alignment = BoxContainer.ALIGNMENT_END if aberto else BoxContainer.ALIGNMENT_CENTER
 	# Abrir um painel também precisa aparar o que já estava na tela: avisos

@@ -48,6 +48,19 @@ const MOEDA_ICONE := {
 	"nucleos": "nucleo", "eter": "eter", "poeira": "poeira",
 }
 
+## A FAIXA DO RODAPE, num lugar so.
+##
+## O rodape de paineis e a barra de acoes vivem entre estas duas linhas, e os
+## avisos (toasts) precisam parar ACIMA delas quando se mudam para baixo. Ja
+## deu errado quatro vezes por serem numeros soltos em arquivos diferentes: na
+## ultima, os avisos e os rotulos "Conquistas", "Codex" e "Habilidades" saiam
+## impressos um por cima do outro. Quem mexer na altura da barra mexe aqui, e
+## os avisos acompanham sozinhos.
+const RODAPE_TOPO := -58.0
+const RODAPE_BASE := -14.0
+## Folga entre o que flutua e a barra.
+const RODAPE_FOLGA := 12.0
+
 # --------------------------------------------------------------- contraste
 
 ## Luminancia relativa da WCAG 2.1. Vive aqui, e nao so na suite, porque a
