@@ -1758,22 +1758,27 @@ func t_custo_do_quadro() -> void:
 	if alvo_f != null:
 		alvo_f.pos = jogo.arena.centro + Vector2(120.0, 0.0)
 		jogo.arena.reconstruir_grade()
-		# Sem critico, senao a rolagem mascara a comparacao.
+		# MESMA SEMENTE nas duas salvas: o critico e sorteado, e sem fixar a
+		# semente a comparacao mede a sorte em vez de medir a forca. A primeira
+		# versao deste teste passou por acaso e reprovou na execucao seguinte,
+		# com 0,25 em vez de 4 — porque uma salva tirou critico e a outra nao.
 		var crit_antes: float = jogo.stats.n("critChance")
+		var rng_antes = jogo.rng
+		jogo.rng = RngX.new(4242)
 		jogo.torre.disparar(alvo_f, null, 1.0)
 		var d1 := 0.0
 		for pp in jogo.arena.projeteis:
-			if not (pp as Projetil).critico:
-				d1 = (pp as Projetil).dano
-				break
-		jogo.arena.limpar_tudo()
-		jogo.arena.reconstruir_grade()
+			d1 = maxf(d1, (pp as Projetil).dano)
+		var alvo_pos: Vector2 = alvo_f.pos
+		for i in range(jogo.arena.projeteis.size() - 1, -1, -1):
+			jogo.arena.soltar_projetil(i)
+		jogo.rng = RngX.new(4242)
+		alvo_f.pos = alvo_pos
 		jogo.torre.disparar(alvo_f, null, 4.0)
 		var d4 := 0.0
 		for pp2 in jogo.arena.projeteis:
-			if not (pp2 as Projetil).critico:
-				d4 = (pp2 as Projetil).dano
-				break
+			d4 = maxf(d4, (pp2 as Projetil).dano)
+		jogo.rng = rng_antes
 		ok("a salva com forca 4 sai com 4x o dano",
 			d1 > Big.LIMIAR_ZERO and d4 > Big.LIMIAR_ZERO
 			and perto(Big.to_f(Big.div(d4, d1)), 4.0, 0.05),
@@ -3340,10 +3345,26 @@ func t_audio() -> void:
 		Sfx.nomes().has("hab_purga_perfeita"))
 	ok("...e nao e o mesmo da Purga comum",
 		_assinatura_som(cat.get("hab_purga_perfeita", {})) != _assinatura_som(cat.get("hab_purga", {})))
-	var txt_bus := _ler("res://scripts/core/event_bus.gd")
-	ok("o barramento carrega a qualidade da Purga", txt_bus.contains("signal purga_usada"))
-	var txt_mec := _ler("res://scripts/sim/mecanicas.gd")
-	ok("a Purga emite a qualidade que teve", txt_mec.contains("Bus.purga_usada.emit(q, perfeita)"))
+	# ...e o CAMINHO INTEIRO, medido: disparar a Purga com carga cheia e com
+	# carga estourada tem que chegar no barramento com qualidades diferentes.
+	# Antes isto era um `contains` no texto do arquivo, que aprova quem quebra o
+	# comportamento mantendo a linha.
+	var recebidas: Array = []
+	var ouvinte := func(q, perfeita): recebidas.append({"q": q, "perfeita": perfeita})
+	Bus.purga_usada.connect(ouvinte)
+	var p_est: Dictionary = Mecanicas.estado_purga(jogo.s)
+	p_est["carga"] = 1.0
+	Mecanicas.disparar_purga(jogo)
+	p_est["carga"] = 0.2
+	Mecanicas.disparar_purga(jogo)
+	Bus.purga_usada.disconnect(ouvinte)
+	ok("a Purga avisa o barramento a cada uso", recebidas.size() == 2, str(recebidas.size()))
+	if recebidas.size() == 2:
+		ok("a Purga na janela dourada e perfeita", bool(recebidas[0]["perfeita"]))
+		ok("a Purga estourada NAO e perfeita", not bool(recebidas[1]["perfeita"]))
+		ok("...e chega com qualidade menor",
+			float(recebidas[1]["q"]) < float(recebidas[0]["q"]),
+			"%.2f vs %.2f" % [float(recebidas[1]["q"]), float(recebidas[0]["q"])])
 	var txt_ae := _ler("res://scripts/audio/audio_engine.gd")
 	ok("o audio escuta a qualidade", txt_ae.contains("Bus.purga_usada.connect(_ao_purga)"))
 	ok("...e escolhe outro som quando e perfeita",
@@ -3416,7 +3437,33 @@ func t_audio() -> void:
 	ok("o impacto tem variantes", Sfx.variantes("impacto") >= 2)
 	ok("som raro nao paga variante", Sfx.variantes("prestigio") == 1)
 	ok("o gerador enfileira as variantes", txt_ae.contains("_enfileirar_sfx"))
-	ok("...e nunca repete a ultima", txt_ae.contains("_sortear_variante"))
+	# ...e o rodizio e MEDIDO: com tres variantes na mao, cem sorteios nao podem
+	# repetir a mesma duas vezes seguidas — que e justamente o que faz vinte
+	# tiros por segundo soarem como britadeira.
+	var motor_v = A.new()
+	var falsas: Array = []
+	for i in 3:
+		var w := AudioStreamWAV.new()
+		w.data = PackedByteArray([i, i])
+		falsas.append(w)
+	motor_v._variantes["tiro"] = falsas
+	var anterior_v = null
+	var repetiu := false
+	for i in 100:
+		var escolhida = motor_v._sortear_variante("tiro")
+		if escolhida == null:
+			repetiu = true
+			break
+		if escolhida == anterior_v:
+			repetiu = true
+			break
+		anterior_v = escolhida
+	ok("o sorteio nunca repete a variante anterior", not repetiu)
+	# ...e com uma variante so, ele devolve aquela mesma, sem quebrar.
+	motor_v._variantes.clear()
+	motor_v.bancos["tiro"] = falsas[0]
+	ok("com uma variante so, devolve a unica", motor_v._sortear_variante("tiro") == falsas[0])
+	motor_v.free()
 	# Variante de verdade e OUTRA ONDA, nao a mesma com outro nome.
 	var motor = A.new()
 	var base: Array = (cat.get("tiro", {}) as Dictionary).get("camadas", [])
@@ -3437,11 +3484,57 @@ func t_audio() -> void:
 	var txt_mu := _ler("res://scripts/audio/music.gd")
 	ok("a trilha semeia uma vez por COMPASSO, nao por passo",
 		txt_mu.contains("if compasso != _compasso_semeado:"))
-	ok("a trilha sabe da Purga", txt_mu.contains("func marcar_purga("))
-	ok("...e da janela dourada", txt_mu.contains("func marcar_purga_pronta("))
-	ok("a vida entra na intensidade de forma continua",
-		txt_mu.contains("bruta += (1.0 - vida) * 0.30"))
-	ok("...e nao como degrau unico", not txt_mu.contains("if vida < 0.35:"))
+	# A TRILHA E MEDIDA, nao lida. Instancio a musica e pergunto o que ela faz
+	# com a vida da torre e com a Purga — que era exatamente o que o `contains`
+	# nao provava.
+	var M := load("res://scripts/audio/music.gd") as GDScript
+	ok("music.gd carrega", M != null)
+	if M != null:
+		var mus = M.new(null)
+		# Cinco por cento de vida e cem por cento tem que dar intensidades
+		# diferentes. Antes a vida era um degrau em 35%: os dois lados do degrau
+		# soavam identicos.
+		var ctx := {"onda": 10, "inimigos": 4, "vida": 1.0, "chefe": false, "ativo": true}
+		mus._dt_ctx = 1.0
+		mus._intensidade = 0.0
+		mus._aplicar_contexto(ctx)
+		var i_cheia: float = mus._intensidade
+		ctx["vida"] = 0.5
+		mus._intensidade = 0.0
+		mus._aplicar_contexto(ctx)
+		var i_meia: float = mus._intensidade
+		ctx["vida"] = 0.05
+		mus._intensidade = 0.0
+		mus._aplicar_contexto(ctx)
+		var i_morrendo: float = mus._intensidade
+		ok("vida pela metade sobe a intensidade", i_meia > i_cheia,
+			"%.3f vs %.3f" % [i_meia, i_cheia])
+		ok("vida em 5% sobe mais ainda", i_morrendo > i_meia,
+			"%.3f vs %.3f" % [i_morrendo, i_meia])
+		ok("...e o ultimo quarto pesa mais que o primeiro",
+			(i_morrendo - i_meia) > (i_meia - i_cheia))
+		# A Purga abre um buraco na mixagem e devolve com brilho.
+		mus._duck = 0.0
+		mus._brilho_purga = 0.0
+		mus.marcar_purga(1.0)
+		var duck_perfeita: float = mus._duck
+		var brilho_perfeita: float = mus._brilho_purga
+		mus._duck = 0.0
+		mus._brilho_purga = 0.0
+		mus.marcar_purga(0.2)
+		ok("a Purga abaixa a trilha", duck_perfeita > 0.0)
+		ok("a Purga perfeita abaixa mais que a estourada", duck_perfeita > mus._duck,
+			"%.2f vs %.2f" % [duck_perfeita, mus._duck])
+		ok("...e brilha mais depois", brilho_perfeita > mus._brilho_purga)
+		# ...e o buraco se fecha sozinho com o tempo.
+		mus._duck = 1.0
+		mus._dt_ctx = 1.0
+		mus._aplicar_contexto(ctx)
+		ok("o buraco da Purga se fecha sozinho", mus._duck < 1.0)
+		mus.marcar_purga_pronta()
+		ok("a janela dourada e registrada", mus._purga_pronta)
+		mus.marcar_purga(1.0)
+		ok("...e some quando a Purga sai", not mus._purga_pronta)
 
 	# o WAV precisa sair no formato que o Godot toca
 	var primeiro: Dictionary = cat[cat.keys()[0]]
