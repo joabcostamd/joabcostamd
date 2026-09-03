@@ -25,7 +25,7 @@ var lbl_ramos := {}         # ramo -> Label
 var _t := 0.0
 
 func configurar() -> void:
-	titulo_texto = "Talentos"
+	titulo_texto = Txt.t("p_talentos")
 	titulo_icone = "arvore"
 	largura = 920.0
 	altura = 680.0
@@ -43,7 +43,7 @@ func montar(c: VBoxContainer) -> void:
 	c.add_child(rolagem)
 
 	if Dados.ramos.is_empty() or Dados.talentos.is_empty():
-		colunas.add_child(UI.rotulo("Nenhum talento catalogado — a árvore ainda não brotou.", 14, UI.TEXTO3))
+		colunas.add_child(UI.rotulo(Txt.t("tal_arvore_vazia"), 14, UI.TEXTO3))
 		return
 	for item in Dados.ramos:
 		var ramo: Dictionary = item
@@ -60,16 +60,16 @@ func _topo() -> HBoxContainer:
 
 	lbl_pontos = UI.rotulo("0", 22, UI.ACENTO2)
 	topo.add_child(lbl_pontos)
-	topo.add_child(UI.rotulo("pontos de talento", 13, UI.TEXTO2))
+	topo.add_child(UI.rotulo(Txt.t("pontos_talento"), 13, UI.TEXTO2))
 	lbl_gastos = UI.rotulo("", 12, UI.TEXTO3)
 	topo.add_child(lbl_gastos)
 	topo.add_child(UI.espacador())
 
-	var dica := UI.rotulo("clique compra 1 · Shift+clique enche", 12, UI.TEXTO3)
+	var dica := UI.rotulo(Txt.t("tal_dica_clique"), 12, UI.TEXTO3)
 	topo.add_child(dica)
 
-	bt_redist = UI.botao("Redistribuir", _pedir_redist,
-		"Zera todos os talentos e devolve cada ponto gasto.\nCusta %d gemas. A torre não guarda rancor." % int(CUSTO_REDIST))
+	bt_redist = UI.botao(Txt.t("tal_redistribuir"), _pedir_redist,
+		Txt.f("tal_redist_dica", {"n": int(CUSTO_REDIST)}))
 	bt_redist.custom_minimum_size = Vector2(140, 34)
 	topo.add_child(bt_redist)
 	return topo
@@ -86,11 +86,11 @@ func _confirmacao() -> PanelContainer:
 	lbl_confirma = UI.rotulo("", 13, UI.TEXTO)
 	h.add_child(lbl_confirma)
 	h.add_child(UI.espacador())
-	var sim := UI.botao("Confirmar", _confirmar_redist)
+	var sim := UI.botao(Txt.t("confirmar"), _confirmar_redist)
 	sim.custom_minimum_size = Vector2(110, 30)
 	sim.add_theme_color_override("font_color", UI.VERMELHO)
 	h.add_child(sim)
-	var nao := UI.botao("Cancelar", func(): caixa_confirma.visible = false)
+	var nao := UI.botao(Txt.t("cancelar"), func(): caixa_confirma.visible = false)
 	nao.custom_minimum_size = Vector2(100, 30)
 	h.add_child(nao)
 	caixa_confirma.add_child(h)
@@ -122,7 +122,7 @@ func _coluna(ramo: Dictionary) -> PanelContainer:
 	lbl_ramos[id] = l_pts
 	v.add_child(cab)
 
-	var desc := UI.rotulo(str(ramo.get("desc", "")), 12, UI.TEXTO2)
+	var desc := UI.rotulo(txt(ramo, "desc"), 12, UI.TEXTO2)
 	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	desc.custom_minimum_size.x = MALHA_W - 12.0
 	v.add_child(desc)
@@ -258,10 +258,10 @@ func _clicar(id: String) -> void:
 	var nivel := int(jogo.s["talentos"].get(id, 0))
 	var maxn := int(def.get("max", 1))
 	if not jogo.talento_liberado(def):
-		Bus.toast("Bloqueado — falta " + _nomes_requisitos(def), "info")
+		Bus.toast(Txt.f("tal_bloqueado_falta", {"req": _nomes_requisitos(def)}), "info")
 		return
 	if nivel >= maxn:
-		Bus.toast("%s já está no máximo" % txt(def, "nome"), "info")
+		Bus.toast(Txt.f("tal_ja_no_maximo", {"n": txt(def, "nome")}), "info")
 		return
 	var comprou := 0
 	if Input.is_key_pressed(KEY_SHIFT):
@@ -270,35 +270,37 @@ func _clicar(id: String) -> void:
 	elif jogo.comprar_talento(id):
 		comprou = 1
 	if comprou <= 0:
-		Bus.toast("Pontos de talento insuficientes", "ruim")
+		Bus.toast(Txt.t("tal_pontos_insuficientes"), "ruim")
 		return
 	var r: Dictionary = nos[id]
 	UI.pulsar(r["botao"], r["cor"])
 	UI.saltar(r["botao"], 1.22)
-	Bus.toast("%s  Nv %d" % [txt(def, "nome"), nivel + comprou], "bom")
+	Bus.toast(Txt.f("tal_toast_nivel", {"n": txt(def, "nome"), "v": nivel + comprou}), "bom")
 	atualizar()
 
 func _pedir_redist() -> void:
 	var gastos := int(jogo.s["pontos_talento_gastos"])
 	if gastos <= 0:
-		Bus.toast("Não há talento nenhum para desfazer", "info")
+		Bus.toast(Txt.t("tal_nada_desfazer"), "info")
 		return
 	var quantos := 0
 	for id in jogo.s["talentos"].keys():
 		if int(jogo.s["talentos"][id]) > 0:
 			quantos += 1
-	lbl_confirma.text = "Apagar %s e recuperar %s por %d gemas?" % [
-		_plural(quantos, "talento", "talentos"), _plural(gastos, "ponto", "pontos"), int(CUSTO_REDIST)]
+	lbl_confirma.text = Txt.f("tal_confirma_redist", {
+		"a": _plural(quantos, Txt.t("tal_talento_um"), Txt.t("tal_talento_muitos")),
+		"b": _plural(gastos, Txt.t("tal_ponto_um"), Txt.t("tal_ponto_muitos")),
+		"n": int(CUSTO_REDIST)})
 	caixa_confirma.visible = true
 
 func _confirmar_redist() -> void:
 	caixa_confirma.visible = false
 	if jogo.redistribuir_talentos(CUSTO_REDIST):
-		Bus.toast("Talentos redistribuídos — comece de novo, com mais sabedoria", "bom")
+		Bus.toast(Txt.t("tal_redistribuidos"), "bom")
 		UI.pulsar(janela, UI.ACENTO2)
 		atualizar()
 	else:
-		Bus.toast("Gemas insuficientes (%d)" % int(CUSTO_REDIST), "ruim")
+		Bus.toast(Txt.f("tal_gemas_insuficientes", {"n": int(CUSTO_REDIST)}), "ruim")
 
 ## ------------------------------------------------------------ atualização
 
@@ -309,13 +311,13 @@ func atualizar() -> void:
 	var pontos := int(jogo.s["pontos_talento"])
 	var gastos := int(jogo.s["pontos_talento_gastos"])
 	lbl_pontos.text = Fmt.inteiro(pontos)
-	lbl_gastos.text = "(%d já investidos)" % gastos
+	lbl_gastos.text = Txt.f("tal_ja_investidos", {"n": gastos})
 	lbl_pontos.add_theme_color_override("font_color", UI.ACENTO2 if pontos > 0 else UI.TEXTO3)
 
 	var gemas := float(jogo.s["moedas"]["gemas"])
 	var pode_redist := gastos > 0 and Big.gte(gemas, Big.from(CUSTO_REDIST))
 	bt_redist.disabled = not pode_redist
-	bt_redist.text = "Redistribuir · %d" % int(CUSTO_REDIST)
+	bt_redist.text = Txt.f("tal_redist_botao", {"n": int(CUSTO_REDIST)})
 	bt_redist.add_theme_color_override("font_color", UI.ROSA if pode_redist else UI.TEXTO3)
 
 	for chave in lbl_ramos.keys():
@@ -331,7 +333,7 @@ func atualizar() -> void:
 			for k in n:
 				pts += int(jogo.custo_talento(def, k))
 		var l: Label = lbl_ramos[ramo_id]
-		l.text = "%s · %s" % [_plural(niveis, "nível", "níveis"), _plural(pts, "ponto", "pontos")] if niveis > 0 else "nada investido aqui"
+		l.text = "%s · %s" % [_plural(niveis, Txt.t("tal_nivel_um"), Txt.t("tal_nivel_muitos")), _plural(pts, Txt.t("tal_ponto_um"), Txt.t("tal_ponto_muitos"))] if niveis > 0 else Txt.t("tal_nada_investido")
 
 	for chave2 in nos.keys():
 		var r: Dictionary = nos[str(chave2)]
@@ -388,7 +390,7 @@ func _pintar(r: Dictionary) -> void:
 	ic.configurar(_icone_ramo(str(def.get("ramo", ""))), cor_ic, tam * 0.46)
 
 	var rot: Label = r["rotulo"]
-	rot.text = "MÁX" if no_teto else "%d/%d" % [nivel, maxn]
+	rot.text = Txt.t("tal_max_curto") if no_teto else "%d/%d" % [nivel, maxn]
 	rot.add_theme_color_override("font_color", UI.OURO if no_teto else (UI.TEXTO if nivel > 0 else UI.TEXTO3))
 	b.tooltip_text = _dica(def, nivel, maxn, liberado, no_teto, custo)
 
@@ -406,22 +408,22 @@ func _dica(def: Dictionary, nivel: int, maxn: int, liberado: bool, no_teto: bool
 	var partes: Array = []
 	var cabeca := txt(def, "nome")
 	if bool(def.get("chave", false)):
-		cabeca += "   [ TALENTO CHAVE ]"
+		cabeca += "   " + Txt.t("tal_talento_chave")
 	partes.append(cabeca)
 	partes.append(txt(def, "desc"))
 	partes.append("")
-	partes.append("Nível %d de %d" % [nivel, maxn])
+	partes.append(Txt.f("tal_nivel_de", {"a": nivel, "b": maxn}))
 	if nivel > 0:
-		partes.append("Agora:  " + _efeito(def, nivel))
+		partes.append(Txt.t("atual") + ":  " + _efeito(def, nivel))
 	if nivel < maxn:
-		partes.append("Próximo:  " + _efeito(def, nivel + 1))
+		partes.append(Txt.t("proximo") + ":  " + _efeito(def, nivel + 1))
 	partes.append("")
 	if not liberado:
-		partes.append("Bloqueado — falta " + _nomes_requisitos(def))
+		partes.append(Txt.f("tal_bloqueado_falta", {"req": _nomes_requisitos(def)}))
 	elif no_teto:
-		partes.append("Maximizado. Nada mais a extrair daqui.")
+		partes.append(Txt.t("tal_maximizado"))
 	else:
-		partes.append("Custo: %s   ·   Shift+clique enche" % _plural(custo, "ponto", "pontos"))
+		partes.append(Txt.f("tal_custo_dica", {"c": _plural(custo, Txt.t("tal_ponto_um"), Txt.t("tal_ponto_muitos"))}))
 	return "\n".join(partes)
 
 func _efeito(def: Dictionary, nivel: int) -> String:
@@ -430,7 +432,7 @@ func _efeito(def: Dictionary, nivel: int) -> String:
 		var ef: Dictionary = item
 		if str(ef.get("tipo", "")) == "passiva":
 			var maxn := int(def.get("max", 1))
-			partes.append("passiva ativa" if maxn <= 1 else "passiva acumulada %d×" % nivel)
+			partes.append(Txt.t("tal_passiva_ativa") if maxn <= 1 else Txt.f("tal_passiva_acumulada", {"n": nivel}))
 			continue
 		if not ef.has("stat"):
 			continue
@@ -456,7 +458,7 @@ func _nomes_requisitos(def: Dictionary) -> String:
 			continue
 		var pai: Dictionary = Dados.talento_por_id.get(str(rid), {})
 		faltando.append(txt(pai, "nome") if not pai.is_empty() else str(rid))
-	return " e ".join(faltando) if not faltando.is_empty() else "—"
+	return (" %s " % Txt.t("tal_e")).join(faltando) if not faltando.is_empty() else "—"
 
 func _plural(n: int, um: String, muitos: String) -> String:
 	return "%s %s" % [Fmt.inteiro(n), um if n == 1 else muitos]

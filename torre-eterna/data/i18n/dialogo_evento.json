@@ -1,0 +1,54 @@
+{
+  "evt_evento": {
+    "pt": "EVENTO",
+    "en": "EVENT"
+  },
+  "evt_rodape": {
+    "pt": "A escolha é sua, e não tem volta. A onda seguinte já está a caminho.",
+    "en": "The choice is yours, and there is no taking it back. The next wave is already on its way."
+  },
+  "evt_de_sair_certo": {
+    "pt": "de sair certo",
+    "en": "to go right"
+  },
+  "evt_garantido": {
+    "pt": "garantido",
+    "en": "guaranteed"
+  },
+  "evt_sem_risco": {
+    "pt": "Sem risco. Sem surpresa.",
+    "en": "No risk. No surprise."
+  },
+  "evt_se_der_errado": {
+    "pt": "Se der errado: {s}",
+    "en": "If it goes wrong: {s}"
+  },
+  "evt_nada": {
+    "pt": "Nada",
+    "en": "Nothing"
+  },
+  "evt_correu_bem": {
+    "pt": "correu bem",
+    "en": "went well"
+  },
+  "evt_correu_mal": {
+    "pt": "correu mal",
+    "en": "went badly"
+  },
+  "evt_feito": {
+    "pt": "feito",
+    "en": "done"
+  },
+  "evt_chance_sucesso": {
+    "pt": "A chance era de {p}. Desta vez o mundo concordou.",
+    "en": "The odds were {p}. This time the world agreed."
+  },
+  "evt_chance_falha": {
+    "pt": "A chance era de {p}. Desta vez não.",
+    "en": "The odds were {p}. Not this time."
+  },
+  "evt_voltar_trabalho": {
+    "pt": "Voltar ao trabalho",
+    "en": "Back to work"
+  }
+}

@@ -33,23 +33,23 @@ func _montar() -> void:
 
 	var v := UI.vbox(10)
 	painel.add_child(v)
-	v.add_child(UI.titulo("PAUSA", 26))
+	v.add_child(UI.titulo(Txt.t("pau_titulo"), 26))
 	v.add_child(UI.separador())
 
 	var s: Dictionary = jogo.s
-	v.add_child(UI.rotulo("Onda %d  ·  recorde %d" % [int(s["onda"]), int(s["onda_maxima_global"])], 14, UI.TEXTO2))
-	v.add_child(UI.rotulo("Tempo total: %s" % Ux.tempo_curto(float(s["stats"]["tempo_total"])), 14, UI.TEXTO2))
+	v.add_child(UI.rotulo(Txt.f("pau_onda_recorde", {"a": int(s["onda"]), "b": int(s["onda_maxima_global"])}), 14, UI.TEXTO2))
+	v.add_child(UI.rotulo(Txt.f("pau_tempo_total", {"t": Ux.tempo_curto(float(s["stats"]["tempo_total"]))}), 14, UI.TEXTO2))
 	v.add_child(UI.separador())
 
-	var b := UI.botao("Retomar", func(): retomar.emit())
+	var b := UI.botao(Txt.t("pau_retomar"), func(): retomar.emit())
 	b.custom_minimum_size.y = 46
 	v.add_child(b)
-	for par in [["config", "Configurações"], ["stats", "Estatísticas"], ["codex", "Codex"], ["conquistas", "Conquistas"]]:
+	for par in [["config", Txt.t("p_config")], ["stats", Txt.t("p_stats")], ["codex", Txt.t("p_codex")], ["conquistas", Txt.t("p_conquistas")]]:
 		var bb := UI.botao(str(par[1]), func(): abrir_painel.emit(str(par[0])))
 		bb.custom_minimum_size.y = 38
 		v.add_child(bb)
 	v.add_child(UI.espacador(0, false))
-	var bs := UI.botao("Salvar e sair", func():
+	var bs := UI.botao(Txt.t("pau_salvar_sair"), func():
 		jogo.salvar()
 		get_tree().quit())
 	bs.custom_minimum_size.y = 38

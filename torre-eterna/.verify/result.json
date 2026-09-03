@@ -3,8 +3,8 @@
     "cenas": 1,
     "modelos3d": 0,
     "recursos": 1,
-    "scripts": 80,
-    "strings_auditadas": 73
+    "scripts": 85,
+    "strings_auditadas": 80
   },
   "corrigidas": 0,
   "kit": "1.5.2",

@@ -15,7 +15,7 @@ var check_auto: CheckButton
 var cats: Array = []
 
 func configurar() -> void:
-	titulo_texto = "Melhorias"
+	titulo_texto = Txt.t("p_upgrades")
 	titulo_icone = "espada"
 	largura = 860.0
 	altura = 620.0
@@ -32,7 +32,7 @@ func montar(c: VBoxContainer) -> void:
 	topo.add_child(lbl_ouro)
 	topo.add_child(UI.espacador())
 
-	for opcao in [[1, "×1"], [10, "×10"], [25, "×25"], [-1, "MÁX"]]:
+	for opcao in [[1, "×1"], [10, "×10"], [25, "×25"], [-1, Txt.t("upg_max_curto")]]:
 		var b := UI.botao(str(opcao[1]), func(): _definir_lote(int(opcao[0])))
 		b.custom_minimum_size = Vector2(56, 32)
 		b.toggle_mode = true
@@ -41,13 +41,13 @@ func montar(c: VBoxContainer) -> void:
 		botoes_lote.append({"botao": b, "valor": int(opcao[0])})
 
 	check_auto = CheckButton.new()
-	check_auto.text = "Auto"
-	check_auto.tooltip_text = "Compra automática (desbloqueada na árvore de Fragmentos)"
+	check_auto.text = Txt.t("upg_auto")
+	check_auto.tooltip_text = Txt.t("upg_auto_dica")
 	check_auto.button_pressed = bool(jogo.s["auto"]["comprar"])
 	check_auto.toggled.connect(func(v):
 		if not jogo.esp["desbloqueios"].has("autoCompra"):
 			check_auto.button_pressed = false
-			Bus.toast("Compre 'Servo Automático' na árvore de Fragmentos", "info")
+			Bus.toast(Txt.t("upg_auto_bloqueado"), "info")
 			return
 		jogo.s["auto"]["comprar"] = v)
 	topo.add_child(check_auto)
@@ -99,9 +99,9 @@ func _reconstruir() -> void:
 func _linha_bloqueada(def: Dictionary) -> void:
 	var l := linha("cadeado", UI.TEXTO3)
 	var req: Dictionary = def.get("requer", {})
-	var motivo := "Onda %d" % int(req.get("onda", 0)) if req.has("onda") else "Requer: " + str(req.get("upgrade", "?"))
+	var motivo: String = Txt.f("upg_onda_n", {"n": int(req.get("onda", 0))}) if req.has("onda") else Txt.t("requer") + ": " + str(req.get("upgrade", "?"))
 	l["textos"].add_child(UI.rotulo("???", 15, UI.TEXTO3))
-	l["textos"].add_child(UI.rotulo("Desbloqueia em " + motivo, 12, UI.TEXTO3))
+	l["textos"].add_child(UI.rotulo(Txt.f("upg_desbloqueia_em", {"m": motivo}), 12, UI.TEXTO3))
 	lista.add_child(l["caixa"])
 
 func _linha_upgrade(def: Dictionary) -> void:
@@ -159,7 +159,7 @@ func _comprar(id: String) -> void:
 			UI.pulsar(linhas[id]["caixa"], UI.VERDE)
 		atualizar()
 	else:
-		Bus.toast("Ouro insuficiente", "ruim")
+		Bus.toast(Txt.t("ouro_insuficiente"), "ruim")
 
 func atualizar() -> void:
 	if jogo == null or lbl_ouro == null:
@@ -172,11 +172,12 @@ func atualizar() -> void:
 		var nivel := int(jogo.s["upgrades"].get(id, 0))
 		var maxn := int(def.get("max", -1))
 		var no_teto := maxn >= 0 and nivel >= maxn
-		r["nivel"].text = ("MÁX" if no_teto else ("Nv %d%s" % [nivel, ("/%d" % maxn) if maxn >= 0 else ""]))
+		var sufixo: String = ("/%d" % maxn) if maxn >= 0 else ""
+		r["nivel"].text = Txt.t("upg_max_curto") if no_teto else (Txt.f("upg_nv", {"n": nivel}) + sufixo)
 		r["efeito"].text = _texto_efeito(def, nivel)
 		var b: Button = r["botao"]
 		if no_teto:
-			b.text = "MÁXIMO"
+			b.text = Txt.t("maximo")
 			b.disabled = true
 			continue
 		var n: int = 1
@@ -202,9 +203,9 @@ func _texto_efeito(def: Dictionary, nivel: int) -> String:
 		match str(ef.get("tipo", "flat")):
 			"flat":
 				var total := v * float(nivel)
-				partes.append("%s +%s (agora %s)" % [nome, Fmt.num(v, 2), Fmt.num(total, 2)])
+				partes.append(Txt.f("upg_efeito_flat", {"s": nome, "v": Fmt.num(v, 2), "t": Fmt.num(total, 2)}))
 			"pct":
-				partes.append("%s +%s (agora +%s)" % [nome, Fmt.pct(v), Fmt.pct(v * float(nivel))])
+				partes.append(Txt.f("upg_efeito_pct", {"s": nome, "v": Fmt.pct(v), "t": Fmt.pct(v * float(nivel))}))
 			"mult":
-				partes.append("%s ×%s (agora ×%s)" % [nome, Fmt.num(v, 2), Fmt.big(Big.pow_n(Big.from(v), float(nivel)))])
+				partes.append(Txt.f("upg_efeito_mult", {"s": nome, "v": Fmt.num(v, 2), "t": Fmt.big(Big.pow_n(Big.from(v), float(nivel)))}))
 	return "  ·  ".join(partes)

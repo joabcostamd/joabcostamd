@@ -33,13 +33,13 @@ func _montar() -> void:
 	v.alignment = BoxContainer.ALIGNMENT_CENTER
 	add_child(v)
 
-	var b1 := UI.botao("CONTINUAR" if tem_save else "COMEÇAR", func(): jogar.emit())
+	var b1 := UI.botao(Txt.t("tit_continuar") if tem_save else Txt.t("tit_comecar"), func(): jogar.emit())
 	b1.custom_minimum_size = Vector2(300, 54)
 	b1.add_theme_font_size_override("font_size", 19)
 	v.add_child(b1)
 
 	if tem_save:
-		var b2 := UI.botao("Recomeçar do zero", _confirmar_apagar)
+		var b2 := UI.botao(Txt.t("tit_recomecar"), _confirmar_apagar)
 		b2.custom_minimum_size = Vector2(300, 40)
 		b2.add_theme_color_override("font_color", UI.TEXTO2)
 		v.add_child(b2)
@@ -60,14 +60,14 @@ func _montar() -> void:
 		ld.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		ld.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		rodape.add_child(ld)
-	var lv := UI.rotulo("Torre Eterna · feito sem uma única imagem ou arquivo de som", 11, UI.TEXTO3.darkened(0.2))
+	var lv := UI.rotulo(Txt.t("tit_rodape"), 11, UI.TEXTO3.darkened(0.2))
 	lv.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	rodape.add_child(lv)
 
 func _confirmar_apagar() -> void:
 	if not _pediu_apagar:
 		_pediu_apagar = true
-		Bus.toast("Tem certeza? Clique de novo para apagar TUDO.", "ruim")
+		Bus.toast(Txt.t("tit_apagar_confirma"), "ruim")
 		get_tree().create_timer(4.0).timeout.connect(func(): _pediu_apagar = false)
 		return
 	apagar_e_jogar.emit()
@@ -119,7 +119,7 @@ func _draw() -> void:
 		var y := c.y + 126.0 - (1.0 - Ux.ease_out_cubic(kt)) * 16.0
 		draw_string(fonte, Vector2(c.x - w * 0.5, y), titulo, HORIZONTAL_ALIGNMENT_LEFT, -1, tam_f,
 			Color(1, 1, 1, kt))
-		var sub := "uma torre · ondas infinitas · três camadas de prestígio"
+		var sub := Txt.t("tit_subtitulo")
 		var ws := fonte.get_string_size(sub, HORIZONTAL_ALIGNMENT_LEFT, -1, 15).x
 		draw_string(fonte, Vector2(c.x - ws * 0.5, y + 26.0), sub, HORIZONTAL_ALIGNMENT_LEFT, -1, 15,
 			Color(UI.TEXTO2.r, UI.TEXTO2.g, UI.TEXTO2.b, kt * 0.9))

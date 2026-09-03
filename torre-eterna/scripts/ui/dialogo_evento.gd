@@ -77,7 +77,7 @@ func _montar_pergunta() -> void:
 		var op: Dictionary = opcoes[i]
 		corpo.add_child(_botao_opcao(op, i))
 
-	var rodape := UI.rotulo("A escolha é sua, e não tem volta. A onda seguinte já está a caminho.", 12, UI.TEXTO3)
+	var rodape := UI.rotulo(Txt.t("evt_rodape"), 12, UI.TEXTO3)
 	rodape.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	corpo.add_child(rodape)
 
@@ -96,7 +96,7 @@ func _cabecalho() -> HBoxContainer:
 	var v := UI.vbox(1)
 	v.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	v.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	var etiqueta := UI.rotulo("EVENTO  ·  ONDA %d" % int(jogo.s["onda"]), 12, UI.TEXTO3)
+	var etiqueta := UI.rotulo("%s  ·  %s %d" % [Txt.t("evt_evento"), Txt.t("onda"), int(jogo.s["onda"])], 12, UI.TEXTO3)
 	v.add_child(etiqueta)
 	var titulo := UI.titulo(_txt(evento, "nome"), 25)
 	titulo.add_theme_color_override("font_color", cor.lightened(0.35))
@@ -151,20 +151,20 @@ func _botao_opcao(op: Dictionary, indice: int) -> Button:
 		var pc := UI.rotulo(Fmt.pct(chance, 0), 17, cor_risco)
 		pc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		vr.add_child(pc)
-		var sub := UI.rotulo("de sair certo", 11, UI.TEXTO3)
+		var sub := UI.rotulo(Txt.t("evt_de_sair_certo"), 11, UI.TEXTO3)
 		sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		vr.add_child(sub)
 		cx.add_child(vr)
 		h.add_child(cx)
 		var falha = risco.get("falha", {})
-		var texto_falha := Eventos.resumo(jogo, falha) if falha is Dictionary else "Nada"
-		b.tooltip_text = "Se der errado: %s" % texto_falha
+		var texto_falha := Eventos.resumo(jogo, falha) if falha is Dictionary else Txt.t("evt_nada")
+		b.tooltip_text = Txt.f("evt_se_der_errado", {"s": texto_falha})
 	else:
-		var certo := UI.rotulo("garantido", 12, UI.TEXTO3)
+		var certo := UI.rotulo(Txt.t("evt_garantido"), 12, UI.TEXTO3)
 		certo.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		certo.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		h.add_child(certo)
-		b.tooltip_text = "Sem risco. Sem surpresa."
+		b.tooltip_text = Txt.t("evt_sem_risco")
 	return b
 
 ## ------------------------------------------------------------- resolução
@@ -196,9 +196,9 @@ func _montar_resultado(efeito: Dictionary) -> void:
 	var v := UI.vbox(2)
 	v.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	v.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	var manchete := "correu bem" if sucesso else "correu mal"
+	var manchete := Txt.t("evt_correu_bem") if sucesso else Txt.t("evt_correu_mal")
 	if not arriscou:
-		manchete = "feito"
+		manchete = Txt.t("evt_feito")
 	v.add_child(UI.rotulo("%s  ·  %s" % [_txt(evento, "nome").to_upper(), manchete], 12, UI.TEXTO3))
 	var l := UI.titulo(str(efeito.get("texto", "")), 23)
 	l.add_theme_color_override("font_color", cor_res)
@@ -211,12 +211,12 @@ func _montar_resultado(efeito: Dictionary) -> void:
 	if arriscou:
 		corpo.add_child(UI.separador())
 		var chance := float(efeito.get("chance", 1.0))
-		var frase := "A chance era de %s. Desta vez o mundo concordou." % Fmt.pct(chance, 0)
+		var frase := Txt.f("evt_chance_sucesso", {"p": Fmt.pct(chance, 0)})
 		if not sucesso:
-			frase = "A chance era de %s. Desta vez não." % Fmt.pct(chance, 0)
+			frase = Txt.f("evt_chance_falha", {"p": Fmt.pct(chance, 0)})
 		corpo.add_child(UI.rotulo(frase, 13, UI.TEXTO3))
 
-	var b := UI.botao("Voltar ao trabalho", _fechar)
+	var b := UI.botao(Txt.t("evt_voltar_trabalho"), _fechar)
 	b.custom_minimum_size.y = 44
 	corpo.add_child(b)
 

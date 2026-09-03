@@ -1,0 +1,54 @@
+{
+  "mis_sec_diarias": {"pt": "Diárias", "en": "Dailies"},
+  "mis_sec_diarias_dica": {"pt": "Três contratos por dia. O relógio não perdoa, o Enxame também não.", "en": "Three contracts a day. The clock shows no mercy, and neither does the Swarm."},
+  "mis_vazio_diarias": {"pt": "Nenhuma missão diária no quadro — volte depois do próximo reset.", "en": "No daily mission on the board — come back after the next reset."},
+
+  "mis_sec_sequencia": {"pt": "Sequência diária", "en": "Daily streak"},
+  "mis_sec_sequencia_dica": {"pt": "Aparecer todo dia multiplica o XP de temporada. Faltar zera a contagem.", "en": "Showing up every day multiplies season XP. Miss one and the count resets."},
+
+  "mis_sec_semanais": {"pt": "Semanais", "en": "Weeklies"},
+  "mis_sec_semanais_dica": {"pt": "Contratos longos, pagamento gordo. Sete dias para cumprir.", "en": "Long contracts, fat payout. Seven days to deliver."},
+  "mis_vazio_semanais": {"pt": "Nenhuma missão semanal no quadro.", "en": "No weekly mission on the board."},
+
+  "mis_sec_passe": {"pt": "Passe de Temporada", "en": "Season Pass"},
+  "mis_sec_passe_dica": {"pt": "XP vem de missões cumpridas. Cada nível libera uma recompensa — e ela não se coleta sozinha.", "en": "XP comes from missions completed. Each level unlocks a reward — and it will not claim itself."},
+  "mis_dica_barra_xp": {"pt": "XP acumulado rumo ao próximo nível da temporada.", "en": "XP banked toward the next season level."},
+
+  "mis_xp_temporada": {"pt": "+{n} XP de temporada", "en": "+{n} season XP"},
+  "mis_dica_xp": {"pt": "Coletar esta missão empurra o passe de temporada.", "en": "Claiming this mission pushes the season pass forward."},
+
+  "mis_toast_nao_pronta": {"pt": "Essa missão ainda não está pronta", "en": "That mission isn't ready yet"},
+  "mis_toast_coletada": {"pt": "Missão coletada", "en": "Mission claimed"},
+
+  "mis_dia_n": {"pt": "DIA {n}", "en": "DAY {n}"},
+  "mis_hoje": {"pt": "HOJE", "en": "TODAY"},
+  "mis_seq_zero": {"pt": "Nenhum dia registrado ainda", "en": "No days logged yet"},
+  "mis_seq_1": {"pt": "1 dia seguido", "en": "1 day in a row"},
+  "mis_seq_n": {"pt": "{n} dias seguidos", "en": "{n} days in a row"},
+
+  "mis_nv_n": {"pt": "NV {n}", "en": "LV {n}"},
+  "mis_dica_nivel": {"pt": "Nível {n} — {nome}", "en": "Level {n} — {nome}"},
+  "mis_dica_destaque": {"pt": "  (recompensa de destaque)", "en": "  (highlight reward)"},
+  "mis_toast_nivel_travado": {"pt": "Nível {n} ainda não liberado", "en": "Level {n} isn't unlocked yet"},
+  "mis_toast_temporada": {"pt": "Recompensa de temporada coletada", "en": "Season reward claimed"},
+
+  "mis_renova_em": {"pt": "Renova em {t}", "en": "Renews in {t}"},
+  "mis_dica_reset_diario": {"pt": "Quando o prazo estoura, três contratos novos entram no lugar.", "en": "When the deadline blows, three fresh contracts take their place."},
+  "mis_dica_reset_semanal": {"pt": "Missões semanais são sorteadas de novo a cada sete dias.", "en": "Weekly missions are redrawn every seven days."},
+
+  "mis_dica_ja_pago": {"pt": "Já pago. Volte amanhã.", "en": "Already paid. Come back tomorrow."},
+  "mis_dica_pronta": {"pt": "Recompensa pronta para retirada.", "en": "Reward ready for pickup."},
+  "mis_em_curso": {"pt": "Em curso", "en": "In progress"},
+  "mis_dica_em_curso": {"pt": "Continue jogando: {n}", "en": "Keep playing: {n}"},
+
+  "mis_nivel_de": {"pt": "Nível {a} de {b}", "en": "Level {a} of {b}"},
+  "mis_xp_barra": {"pt": "{a} / {b} XP\nfaltam {c}", "en": "{a} / {b} XP\n{c} to go"},
+  "mis_1_esperando": {"pt": "  ·  1 recompensa esperando", "en": "  ·  1 reward waiting"},
+  "mis_n_esperando": {"pt": "  ·  {n} recompensas esperando", "en": "  ·  {n} rewards waiting"},
+
+  "mis_sem_premio": {"pt": "sem prêmio", "en": "no prize"},
+  "mis_rec_ouro_ondas": {"pt": "ouro de {n} ondas", "en": "{n} waves of gold"},
+  "mis_rec_xp_ondas": {"pt": "XP de {n} ondas", "en": "{n} waves of XP"},
+  "mis_rec_ponto_talento": {"pt": "+1 ponto de talento", "en": "+1 talent point"},
+  "mis_atributo": {"pt": "atributo", "en": "stat"}
+}

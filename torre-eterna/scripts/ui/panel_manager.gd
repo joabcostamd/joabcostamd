@@ -94,7 +94,7 @@ func abrir(nome: String) -> void:
 	fechar()
 	var caminho := str(PAINEIS[nome])
 	if not ResourceLoader.exists(caminho):
-		Bus.toast("Painel em construção: " + nome, "info", "cadeado")
+		Bus.toast(Txt.f("ger_painel_em_obra", {"n": nome}), "info", "cadeado")
 		return
 	var script := load(caminho)
 	if script == null:
@@ -197,12 +197,12 @@ func _relatorio_offline(dados: Dictionary) -> void:
 	janela.offset_top = -200
 	janela.offset_bottom = 200
 	var v := UI.vbox(10)
-	v.add_child(UI.titulo("A torre continuou lutando", 21))
+	v.add_child(UI.titulo(Txt.t("ger_offline_titulo"), 21))
 	v.add_child(UI.separador())
-	v.add_child(UI.rotulo("Você ficou fora por %s." % Ux.tempo_curto(float(dados["segundos"])), 15, UI.TEXTO2))
+	v.add_child(UI.rotulo(Txt.f("ger_offline_fora", {"n": Ux.tempo_curto(float(dados["segundos"]))}), 15, UI.TEXTO2))
 	if float(dados.get("cortado", 0.0)) > 1.0:
-		v.add_child(UI.rotulo("Limite de acúmulo: %s (o resto se perdeu)." % Ux.tempo_curto(float(dados["usado"])), 13, UI.TEXTO3))
-	v.add_child(UI.rotulo("Eficiência offline: %s" % Fmt.pct(float(dados["eficiencia"])), 13, UI.TEXTO3))
+		v.add_child(UI.rotulo(Txt.f("ger_offline_teto", {"n": Ux.tempo_curto(float(dados["usado"]))}), 13, UI.TEXTO3))
+	v.add_child(UI.rotulo(Txt.f("ger_offline_eficiencia", {"n": Fmt.pct(float(dados["eficiencia"]))}), 13, UI.TEXTO3))
 	v.add_child(UI.separador())
 	v.add_child(_linha_ganho("ouro", UI.OURO, "+" + Fmt.big(dados["ouro"]), 22))
 	v.add_child(_linha_ganho("livro", UI.ACENTO2, "+" + Fmt.big(dados["xp"]) + " XP", 18))
@@ -211,30 +211,35 @@ func _relatorio_offline(dados: Dictionary) -> void:
 	var seladas := int(dados.get("seladas", 0))
 	if seladas > 0:
 		v.add_child(UI.separador())
-		v.add_child(UI.rotulo("CAIXA DA VIGÍLIA", 13, UI.TEXTO3))
-		var lbl := UI.rotulo("%d carta(s) lacrada(s) enquanto você dormia." % seladas, 14, UI.TEXTO2)
+		v.add_child(UI.rotulo(Txt.t("ger_caixa_titulo"), 13, UI.TEXTO3))
+		var lbl := UI.rotulo(Txt.f("ger_caixa_lacradas", {"n": seladas}), 14, UI.TEXTO2)
 		v.add_child(lbl)
-		var b_abrir := UI.botao("Abrir uma carta", Callable())
+		var b_abrir := UI.botao(Txt.t("ger_caixa_abrir"), Callable())
 		b_abrir.custom_minimum_size.y = 40
 		b_abrir.pressed.connect(func():
 			var carta: Dictionary = Mecanicas.abrir_caixa(jogo)
 			if carta.is_empty():
 				b_abrir.disabled = true
-				lbl.text = "A caixa está vazia."
+				lbl.text = Txt.t("ger_caixa_vazia_msg")
 				return
 			var def: Dictionary = Dados.carta_por_id.get(str(carta.get("id", "")), {})
 			var rar := str(carta.get("raridade", "comum"))
-			lbl.text = "%s  ·  %s" % [Ux.txt(def, "nome", Cfg.ingles()), str(Dados.raridade(rar).get("nome", rar))]
+			# A raridade também é conteúdo bilíngue (data/rarities.json tem `nomeEn`);
+			# lida direto do campo "nome" ela ficava em português no jogo em inglês.
+			var nome_rar := Ux.txt(Dados.raridade(rar), "nome", Cfg.ingles())
+			if nome_rar.is_empty():
+				nome_rar = rar
+			lbl.text = "%s  ·  %s" % [Ux.txt(def, "nome", Cfg.ingles()), nome_rar]
 			lbl.add_theme_color_override("font_color", UI.cor_raridade(rar))
 			UI.saltar(lbl, 1.25)
 			var restam := int(jogo.s["caixa"]["seladas"])
-			b_abrir.text = "Abrir uma carta (%d)" % restam if restam > 0 else "Caixa vazia"
+			b_abrir.text = Txt.f("ger_caixa_abrir_n", {"n": restam}) if restam > 0 else Txt.t("ger_caixa_vazia")
 			b_abrir.disabled = restam <= 0)
-		b_abrir.text = "Abrir uma carta (%d)" % seladas
+		b_abrir.text = Txt.f("ger_caixa_abrir_n", {"n": seladas})
 		v.add_child(b_abrir)
 
 	v.add_child(UI.espacador(0, false))
-	var b := UI.botao("Continuar", func(): janela.queue_free(); fundo_escuro.visible = false)
+	var b := UI.botao(Txt.t("ger_continuar"), func(): janela.queue_free(); fundo_escuro.visible = false)
 	b.custom_minimum_size.y = 42
 	v.add_child(b)
 	janela.add_child(v)

@@ -37,7 +37,7 @@ var check_auto: CheckButton
 var giro_auto: SpinBox
 
 func configurar() -> void:
-	titulo_texto = "Prestígio"
+	titulo_texto = Txt.t("p_prestigio")
 	titulo_icone = "prestigio"
 	largura = 1010.0
 	altura = 690.0
@@ -48,7 +48,7 @@ func configurar() -> void:
 func montar(c: VBoxContainer) -> void:
 	camadas = Dados.camadas_prestigio
 	if camadas.is_empty():
-		c.add_child(UI.rotulo("Nenhuma camada de prestígio catalogada — o ciclo ainda não existe.", 14, UI.TEXTO3))
+		c.add_child(UI.rotulo(Txt.t("prg_sem_camadas"), 14, UI.TEXTO3))
 		return
 
 	c.add_child(_barra_topo())
@@ -80,12 +80,12 @@ func _barra_topo() -> HBoxContainer:
 	var h := UI.hbox(6)
 	for moeda in ["fragmentos", "nucleos", "eter"]:
 		h.add_child(_chip(moeda, Icone.da_moeda(moeda), UI.MOEDA_COR.get(moeda, UI.TEXTO),
-			_nome_moeda(moeda), "Moeda permanente — sobrevive a qualquer reinício desta camada."))
+			_nome_moeda(moeda), Txt.t("prg_dica_moeda")))
 	h.add_child(UI.espacador())
-	h.add_child(_chip("ascensoes", "prestigio", UI.ACENTO, "ascensões", "Quantas vezes a torre já virou pó."))
-	h.add_child(_chip("melhor", "trofeu", UI.OURO, "melhor onda", "A onda mais distante que você já alcançou, em qualquer run."))
-	h.add_child(_chip("singularidades", "nucleo", UI.MOEDA_COR.get("nucleos", UI.ACENTO2), "singularidades", "Colapsos concluídos."))
-	h.add_child(_chip("transcendencias", "eter", UI.MOEDA_COR.get("eter", UI.ROSA), "transcendências", "Vezes que você largou tudo e recomeçou de propósito."))
+	h.add_child(_chip("ascensoes", "prestigio", UI.ACENTO, Txt.t("ascensoes"), Txt.t("prg_dica_ascensoes")))
+	h.add_child(_chip("melhor", "trofeu", UI.OURO, Txt.t("melhor_onda"), Txt.t("prg_dica_melhor")))
+	h.add_child(_chip("singularidades", "nucleo", UI.MOEDA_COR.get("nucleos", UI.ACENTO2), Txt.t("prg_singularidades"), Txt.t("prg_dica_singularidades")))
+	h.add_child(_chip("transcendencias", "eter", UI.MOEDA_COR.get("eter", UI.ROSA), Txt.t("prg_transcendencias"), Txt.t("prg_dica_transcendencias")))
 	return h
 
 func _chip(chave: String, icone: String, cor: Color, legenda: String, dica: String) -> PanelContainer:
@@ -177,7 +177,7 @@ func _destaque(cam: Dictionary) -> PanelContainer:
 	h.add_child(t)
 
 	if liberada:
-		t.add_child(UI.rotulo("GANHO PREVISTO AO %s" % txt(cam, "verbo").to_upper(), 11, UI.TEXTO3))
+		t.add_child(UI.rotulo(Txt.f("prg_ganho_ao", {"v": txt(cam, "verbo").to_upper()}), 11, UI.TEXTO3))
 		var linha_ganho := UI.hbox(8)
 		var lbl := UI.rotulo("0", 42, cor)
 		linha_ganho.add_child(lbl)
@@ -190,13 +190,13 @@ func _destaque(cam: Dictionary) -> PanelContainer:
 		t.add_child(mult)
 		refs["mult"] = mult
 	else:
-		t.add_child(UI.rotulo("AINDA FORA DE ALCANCE", 11, UI.TEXTO3))
-		t.add_child(UI.rotulo(str(cam.get("requisito", "")), 19, UI.TEXTO2))
+		t.add_child(UI.rotulo(Txt.t("prg_fora_alcance"), 11, UI.TEXTO3))
+		t.add_child(UI.rotulo(txt(cam, "requisito"), 19, UI.TEXTO2))
 		for item in _requisitos(str(cam.get("id", ""))):
 			var req: Dictionary = item
 			t.add_child(_linha_requisito(req, cor))
 
-	var lore := UI.rotulo(str(cam.get("lore", "")), 12, UI.TEXTO3)
+	var lore := UI.rotulo(txt(cam, "lore"), 12, UI.TEXTO3)
 	lore.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	lore.custom_minimum_size.x = 430
 	t.add_child(lore)
@@ -213,8 +213,8 @@ func _destaque(cam: Dictionary) -> PanelContainer:
 	b.add_theme_stylebox_override("pressed", UI.caixa(cor.darkened(0.22), 10, 2, Color.WHITE))
 	b.add_theme_stylebox_override("disabled", UI.caixa(UI.PAINEL.darkened(0.3), 10, 1, UI.BORDA.darkened(0.2)))
 	b.add_theme_color_override("font_color", Color.WHITE)
-	b.tooltip_text = "%s\n\nPerde: %s\nMantém: %s" % [
-		str(cam.get("requisito", "")), str(cam.get("resetaTexto", "")), str(cam.get("mantemTexto", ""))]
+	b.tooltip_text = Txt.f("prg_tip_ritual", {
+		"req": txt(cam, "requisito"), "perde": txt(cam, "resetaTexto"), "mantem": txt(cam, "mantemTexto")})
 	caixa_bt.add_child(b)
 	refs["botao"] = b
 	refs["cam"] = cam
@@ -227,8 +227,8 @@ func _destaque(cam: Dictionary) -> PanelContainer:
 	v.add_child(UI.separador())
 	var pes := UI.hbox(18)
 	v.add_child(pes)
-	pes.add_child(_coluna_texto("O QUE SE DESFAZ", str(cam.get("resetaTexto", "")), UI.VERMELHO))
-	pes.add_child(_coluna_texto("O QUE PERMANECE", str(cam.get("mantemTexto", "")), UI.VERDE))
+	pes.add_child(_coluna_texto(Txt.t("o_que_reseta").to_upper(), txt(cam, "resetaTexto"), UI.VERMELHO))
+	pes.add_child(_coluna_texto(Txt.t("o_que_permanece").to_upper(), txt(cam, "mantemTexto"), UI.VERDE))
 	return cx
 
 func _coluna_texto(cabeca: String, corpo_txt: String, cor: Color) -> VBoxContainer:
@@ -280,22 +280,22 @@ func _auto_ascensao() -> PanelContainer:
 
 	if not jogo.esp["desbloqueios"].has("autoAscensao"):
 		ic.configurar("cadeado", UI.TEXTO3, 17)
-		h.add_child(UI.rotulo("Ascensão automática — desbloqueie 'Ciclo Eterno' na árvore de Núcleos.", 12, UI.TEXTO3))
-		cx.tooltip_text = "Com ela, a torre se desfaz sozinha assim que bate a onda-alvo."
+		h.add_child(UI.rotulo(Txt.t("prg_auto_bloqueada"), 12, UI.TEXTO3))
+		cx.tooltip_text = Txt.t("prg_auto_bloqueada_dica")
 		return cx
 
 	ic.configurar("prestigio", UI.ACENTO, 17)
 	check_auto = CheckButton.new()
-	check_auto.text = "Ascensão automática"
-	check_auto.tooltip_text = "Ascende sozinho assim que a onda máxima da run alcançar o alvo."
+	check_auto.text = Txt.t("prg_auto_ascensao")
+	check_auto.tooltip_text = Txt.t("prg_auto_dica")
 	check_auto.button_pressed = bool(jogo.s["prestigio"]["auto_ascender"])
 	check_auto.toggled.connect(func(v: bool):
 		jogo.s["prestigio"]["auto_ascender"] = v
 		jogo.marcar_sujo()
-		Bus.toast("Ascensão automática ligada" if v else "Ascensão automática desligada", "info"))
+		Bus.toast(Txt.t("prg_auto_ligada") if v else Txt.t("prg_auto_desligada"), "info"))
 	h.add_child(check_auto)
 	h.add_child(UI.espacador())
-	h.add_child(UI.rotulo("ao chegar na onda", 12, UI.TEXTO2))
+	h.add_child(UI.rotulo(Txt.t("prg_ao_chegar_onda"), 12, UI.TEXTO2))
 
 	giro_auto = SpinBox.new()
 	giro_auto.min_value = float(Bal.ASC_ONDA_MIN)
@@ -303,7 +303,7 @@ func _auto_ascensao() -> PanelContainer:
 	giro_auto.step = 5.0
 	giro_auto.custom_minimum_size.x = 110
 	giro_auto.value = maxf(float(Bal.ASC_ONDA_MIN), float(jogo.s["prestigio"]["auto_ascender_onda"]))
-	giro_auto.tooltip_text = "Onda-alvo. Mais alto rende mais fragmentos por ciclo, mas cada ciclo demora mais."
+	giro_auto.tooltip_text = Txt.t("prg_onda_alvo_dica")
 	giro_auto.value_changed.connect(func(v: float):
 		jogo.s["prestigio"]["auto_ascender_onda"] = int(v)
 		jogo.marcar_sujo())
@@ -316,7 +316,7 @@ func _cabecalho_arvore(cam: Dictionary) -> HBoxContainer:
 	var chave := str(CHAVE_ARVORE.get(str(cam.get("id", "")), "fragmentos"))
 	var cor := Color.html(str(cam.get("cor", "#38bdf8")))
 	var h := UI.hbox(8)
-	h.add_child(UI.rotulo("ÁRVORE PERMANENTE", 12, UI.TEXTO3))
+	h.add_child(UI.rotulo(Txt.t("arvore_permanente").to_upper(), 12, UI.TEXTO3))
 	h.add_child(UI.rotulo("·", 12, UI.TEXTO3))
 	h.add_child(UI.rotulo(_nome_moeda(chave).to_upper(), 12, cor))
 	h.add_child(UI.espacador())
@@ -330,7 +330,7 @@ func _grade(cam: Dictionary) -> Control:
 	var cor := Color.html(str(cam.get("cor", "#38bdf8")))
 	var nos: Array = Dados.arvore.get(chave, [])
 	if nos.is_empty():
-		return UI.rotulo("Nenhuma melhoria permanente nesta camada — ainda.", 13, UI.TEXTO3)
+		return UI.rotulo(Txt.t("prg_arvore_vazia"), 13, UI.TEXTO3)
 
 	var colunas := 1
 	var linhas_max := 0
@@ -403,10 +403,10 @@ func _card(def: Dictionary, chave: String, cor: Color) -> PanelContainer:
 	var lbl_custo := UI.rotulo("", 13, UI.TEXTO)
 	rodape.add_child(lbl_custo)
 	rodape.add_child(UI.espacador())
-	var b1 := UI.botao("×1", func(): _comprar(id, 1), "Compra um nível.")
+	var b1 := UI.botao("×1", func(): _comprar(id, 1), Txt.t("prg_dica_x1"))
 	b1.custom_minimum_size = Vector2(46, 30)
 	rodape.add_child(b1)
-	var bm := UI.botao("Máx", func(): _comprar(id, -1), "Compra tudo o que a moeda pagar.")
+	var bm := UI.botao(Txt.t("prg_bt_max"), func(): _comprar(id, -1), Txt.t("prg_dica_max"))
 	bm.custom_minimum_size = Vector2(62, 30)
 	rodape.add_child(bm)
 
@@ -421,12 +421,12 @@ func _comprar(id: String, qtd: int) -> void:
 	var arg = "max" if qtd < 0 else qtd
 	var n: int = jogo.comprar_no(id, arg)
 	if n <= 0:
-		Bus.toast("Moeda insuficiente para %s" % txt(Dados.no_por_id.get(id, {}), "nome"), "ruim")
+		Bus.toast(Txt.f("prg_moeda_insuf", {"n": txt(Dados.no_por_id.get(id, {}), "nome")}), "ruim")
 		return
 	var r: Dictionary = cards[id]
 	UI.pulsar(r["caixa"], r["cor"])
 	UI.saltar(r["caixa"], 1.06)
-	Bus.toast("%s  +%d nível%s" % [txt(r["def"], "nome"), n, "" if n == 1 else "s"], "bom")
+	Bus.toast(Txt.f(("prg_toast_nivel" if n == 1 else "prg_toast_niveis"), {"nome": txt(r["def"], "nome"), "n": n}), "bom")
 	atualizar()
 
 # ================================================================== ritual
@@ -434,7 +434,7 @@ func _comprar(id: String, qtd: int) -> void:
 func _pedir(cam_id: String) -> void:
 	var cam: Dictionary = _camada(cam_id)
 	if not _liberada(cam):
-		Bus.toast("Requisito não cumprido: %s" % str(cam.get("requisito", "")), "info")
+		Bus.toast(Txt.f("prg_requisito_falta", {"r": txt(cam, "requisito")}), "info")
 		return
 	if not bool(Cfg.get_v("confirmar_prestigio", true)):
 		_executar(cam_id)
@@ -444,11 +444,11 @@ func _pedir(cam_id: String) -> void:
 	dlg_caixa.add_theme_stylebox_override("panel", UI.caixa(UI.PAINEL.lerp(cor.darkened(0.8), 0.35), 14, 2, cor.darkened(0.3)))
 	dlg_titulo.text = "%s?" % txt(cam, "verbo")
 	dlg_titulo.add_theme_color_override("font_color", cor)
-	dlg_lore.text = str(cam.get("lore", ""))
-	dlg_ganho.text = "Você recebe  +%s %s" % [Fmt.big(_previa(cam_id)), _nome_moeda(str(cam.get("moeda", "")))]
+	dlg_lore.text = txt(cam, "lore")
+	dlg_ganho.text = Txt.f("prg_dlg_recebe", {"v": Fmt.big(_previa(cam_id)), "m": _nome_moeda(str(cam.get("moeda", "")))})
 	dlg_ganho.add_theme_color_override("font_color", cor)
-	dlg_perde.text = str(cam.get("resetaTexto", ""))
-	dlg_mantem.text = str(cam.get("mantemTexto", ""))
+	dlg_perde.text = txt(cam, "resetaTexto")
+	dlg_mantem.text = txt(cam, "mantemTexto")
 	dlg_sim.text = txt(cam, "verbo").to_upper()
 	dlg_sim.add_theme_stylebox_override("normal", UI.caixa(cor.darkened(0.6), 8, 2, cor.darkened(0.15)))
 	dlg_sim.add_theme_stylebox_override("hover", UI.caixa(cor.darkened(0.38), 8, 2, Color.WHITE))
@@ -465,7 +465,7 @@ func _executar(cam_id: String) -> void:
 		"singularidade": ok = bool(jogo.colapsar())
 		"transcendencia": ok = bool(jogo.transcender())
 	if not ok:
-		Bus.toast("O ritual falhou — requisito não cumprido", "ruim")
+		Bus.toast(Txt.t("prg_ritual_falhou"), "ruim")
 		return
 	UI.pulsar(janela, cor)
 	UI.saltar(janela, 1.05)
@@ -507,12 +507,12 @@ func _montar_dialogo() -> void:
 	v.add_child(UI.separador())
 	dlg_ganho = UI.rotulo("", 18, UI.ACENTO)
 	v.add_child(dlg_ganho)
-	v.add_child(UI.rotulo("Isto se desfaz:", 11, UI.TEXTO3))
+	v.add_child(UI.rotulo(Txt.t("prg_dlg_desfaz"), 11, UI.TEXTO3))
 	dlg_perde = UI.rotulo("", 13, UI.VERMELHO)
 	dlg_perde.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	dlg_perde.custom_minimum_size.x = 470
 	v.add_child(dlg_perde)
-	v.add_child(UI.rotulo("Isto permanece:", 11, UI.TEXTO3))
+	v.add_child(UI.rotulo(Txt.t("prg_dlg_permanece"), 11, UI.TEXTO3))
 	dlg_mantem = UI.rotulo("", 13, UI.VERDE)
 	dlg_mantem.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	dlg_mantem.custom_minimum_size.x = 470
@@ -521,7 +521,7 @@ func _montar_dialogo() -> void:
 
 	var h := UI.hbox(8)
 	v.add_child(h)
-	var nao := UI.botao("Ainda não", func(): dlg.visible = false)
+	var nao := UI.botao(Txt.t("prg_ainda_nao"), func(): dlg.visible = false)
 	nao.custom_minimum_size = Vector2(150, 42)
 	h.add_child(nao)
 	h.add_child(UI.espacador())
@@ -582,23 +582,23 @@ func _atualizar_destaque() -> void:
 		var atual_moeda := float(jogo.s["moedas"][moeda])
 		var mult: Label = refs["mult"]
 		if Big.is_zero(atual_moeda):
-			mult.text = "Seu primeiro punhado de %s. Tudo o que vier depois se apoia nele." % _nome_moeda(moeda)
+			mult.text = Txt.f("prg_primeiro_punhado", {"m": _nome_moeda(moeda)})
 		elif Big.is_zero(ganho):
-			mult.text = "Ganho nulo — avance mais algumas ondas antes."
+			mult.text = Txt.t("prg_ganho_nulo")
 		else:
 			var razao := Big.div(Big.add(atual_moeda, ganho), atual_moeda)
-			mult.text = "Multiplica o que você já tem por ×%s  (de %s para %s)" % [
-				Fmt.big(razao), Fmt.big(atual_moeda), Fmt.big(Big.add(atual_moeda, ganho))]
+			mult.text = Txt.f("prg_multiplica", {
+				"x": Fmt.big(razao), "a": Fmt.big(atual_moeda), "b": Fmt.big(Big.add(atual_moeda, ganho))})
 
 	var b_ritual: Button = refs["botao"]
 	var sub: Label = refs["sub"]
 	b_ritual.disabled = not liberada
 	if liberada:
 		b_ritual.text = txt(cam, "verbo").to_upper()
-		sub.text = "e recomeça mais forte"
+		sub.text = Txt.t("prg_recomeca")
 	else:
-		b_ritual.text = "BLOQUEADO"
-		sub.text = str(cam.get("requisito", ""))
+		b_ritual.text = Txt.t("bloqueado").to_upper()
+		sub.text = txt(cam, "requisito")
 
 func _atualizar_arvore() -> void:
 	if cards.is_empty():
@@ -629,15 +629,15 @@ func _atualizar_arvore() -> void:
 		r["estado"] = estado
 
 		var lbl_nivel: Label = r["nivel"]
-		lbl_nivel.text = "MÁXIMO" if no_teto else ("Nv %d" % nivel if maxn < 0 else "Nv %d de %d" % [nivel, maxn])
+		lbl_nivel.text = Txt.t("maximo") if no_teto else (Txt.f("prg_nv", {"n": nivel}) if maxn < 0 else Txt.f("prg_nv_de", {"n": nivel, "m": maxn}))
 		lbl_nivel.add_theme_color_override("font_color", UI.OURO if no_teto else UI.TEXTO3)
 
 		var agora: Label = r["agora"]
-		agora.text = ("Agora: " + _efeito(def, nivel)) if nivel > 0 else _desc(def)
+		agora.text = (Txt.t("atual") + ": " + _efeito(def, nivel)) if nivel > 0 else _desc(def)
 		agora.add_theme_color_override("font_color", UI.VERDE if nivel > 0 else UI.TEXTO2)
 		var prox: Label = r["prox"]
 		prox.visible = not no_teto and not _so_desbloqueio(def)
-		prox.text = "Próximo: " + _efeito(def, nivel + 1)
+		prox.text = Txt.t("proximo") + ": " + _efeito(def, nivel + 1)
 
 		var lbl_custo: Label = r["custo"]
 		var ic_custo: Control = r["ic_custo"]
@@ -650,7 +650,7 @@ func _atualizar_arvore() -> void:
 		var bm: Button = r["bm"]
 		b1.disabled = not pode
 		bm.disabled = n_max <= 0
-		bm.text = "Máx" if n_max <= 1 else "Máx ×%d" % n_max
+		bm.text = Txt.t("prg_bt_max") if n_max <= 1 else Txt.f("prg_bt_max_n", {"n": n_max})
 		b1.visible = not no_teto
 		bm.visible = not no_teto
 
@@ -670,10 +670,10 @@ func _atualizar_arvore() -> void:
 		var ic: Control = r["icone"]
 		ic.configurar(_icone_no(id), UI.OURO if no_teto else (cor if nivel > 0 else cor.darkened(0.25)), 24)
 		cx.tooltip_text = "%s\n%s\n\n%s" % [txt(def, "nome"), _desc(def),
-			("Já no máximo." if no_teto else "Custo do próximo: %s %s" % [Fmt.big(custo), _nome_moeda(camada)])]
+			(Txt.t("prg_ja_maximo") if no_teto else Txt.f("prg_custo_proximo", {"c": Fmt.big(custo), "m": _nome_moeda(camada)}))]
 
 	if refs.has("resumo_arvore"):
-		refs["resumo_arvore"].text = "%d de %d melhorias investidas" % [comprados, total]
+		refs["resumo_arvore"].text = Txt.f("prg_resumo_arvore", {"a": comprados, "b": total})
 
 # =================================================================== textos
 
@@ -701,16 +701,16 @@ func _previa(cam_id: String) -> float:
 func _requisitos(cam_id: String) -> Array:
 	match cam_id:
 		"ascensao":
-			return [{"rotulo": "Onda máxima desta run", "chave": "onda_run", "alvo": float(Bal.ASC_ONDA_MIN)}]
+			return [{"rotulo": Txt.t("prg_req_onda_run"), "chave": "onda_run", "alvo": float(Bal.ASC_ONDA_MIN)}]
 		"singularidade":
 			return [
-				{"rotulo": "Melhor onda de todas", "chave": "onda_global", "alvo": float(Bal.SING_ONDA_MIN)},
-				{"rotulo": "Ascensões acumuladas", "chave": "ascensoes", "alvo": float(Bal.SING_ASC_MIN)},
+				{"rotulo": Txt.t("prg_req_onda_global"), "chave": "onda_global", "alvo": float(Bal.SING_ONDA_MIN)},
+				{"rotulo": Txt.t("prg_req_ascensoes"), "chave": "ascensoes", "alvo": float(Bal.SING_ASC_MIN)},
 			]
 		"transcendencia":
 			return [
-				{"rotulo": "Melhor onda de todas", "chave": "onda_global", "alvo": float(Bal.TRANS_ONDA_MIN)},
-				{"rotulo": "Singularidades", "chave": "singularidades", "alvo": float(Bal.TRANS_SING_MIN)},
+				{"rotulo": Txt.t("prg_req_onda_global"), "chave": "onda_global", "alvo": float(Bal.TRANS_ONDA_MIN)},
+				{"rotulo": Txt.t("prg_req_singularidades"), "chave": "singularidades", "alvo": float(Bal.TRANS_SING_MIN)},
 			]
 	return []
 
@@ -724,12 +724,8 @@ func _valor_requisito(chave: String) -> float:
 
 func _nome_moeda(chave: String) -> String:
 	match chave:
-		"fragmentos": return "fragmentos"
-		"nucleos": return "núcleos"
-		"eter": return "éter"
-		"ouro": return "ouro"
-		"gemas": return "gemas"
-		"poeira": return "poeira"
+		"fragmentos", "nucleos", "eter", "ouro", "gemas", "poeira":
+			return Txt.t("m_" + chave)
 	return chave
 
 ## Descrição do nó, com {v} trocado pelo valor real.
@@ -786,41 +782,41 @@ func _efeito_especial(ef: Dictionary, nivel: int) -> String:
 	var chave := str(ef.get("especial", ""))
 	var v = ef.get("valor", 0)
 	if chave == "desbloqueio" or v is String:
-		return "desbloqueia " + _nome_desbloqueio(str(v))
+		return Txt.f("prg_desbloqueia", {"v": _nome_desbloqueio(str(v))})
 	var f := float(v)
 	match chave:
 		"hpInimigo":
-			return "vida dos inimigos ×%s" % Fmt.num(pow(f, float(nivel)), 3)
+			return Txt.f("prg_esp_hp_inimigo", {"v": Fmt.num(pow(f, float(nivel)), 3)})
 		"ganhoNucleos":
-			return "ganho de núcleos ×%s" % Fmt.num(pow(f, float(nivel)), 2)
+			return Txt.f("prg_esp_ganho_nucleos", {"v": Fmt.num(pow(f, float(nivel)), 2)})
 		"offlineEficiencia", "comboBonus":
 			return "%s +%s" % [_nome_especial(chave), Fmt.pct(f * float(nivel))]
 	return "%s +%s" % [_nome_especial(chave), Fmt.num(f * float(nivel), 2)]
 
 func _nome_especial(chave: String) -> String:
 	match chave:
-		"ondaInicial": return "onda inicial"
-		"slotsCartas": return "slots de carta"
-		"pontosTalento": return "pontos de talento"
-		"offlineHoras": return "horas de progresso offline"
-		"offlineEficiencia": return "eficiência offline"
-		"comboTeto": return "teto de combo"
-		"comboBonus": return "bônus de combo"
-		"velocidadeMax": return "limite de velocidade"
-		"slotsHabilidade": return "slots de habilidade"
-		"revives": return "renascimentos"
-		"rerolls": return "rerrolagens"
+		"ondaInicial": return Txt.t("prg_esp_onda_inicial")
+		"slotsCartas": return Txt.t("prg_esp_slots_cartas")
+		"pontosTalento": return Txt.t("pontos_talento")
+		"offlineHoras": return Txt.t("prg_esp_offline_horas")
+		"offlineEficiencia": return Txt.t("prg_esp_offline_eficiencia")
+		"comboTeto": return Txt.t("prg_esp_combo_teto")
+		"comboBonus": return Txt.t("prg_esp_combo_bonus")
+		"velocidadeMax": return Txt.t("prg_esp_velocidade_max")
+		"slotsHabilidade": return Txt.t("prg_esp_slots_habilidade")
+		"revives": return Txt.t("prg_esp_revives")
+		"rerolls": return Txt.t("prg_esp_rerolls")
 	return chave
 
 func _nome_desbloqueio(chave: String) -> String:
 	match chave:
-		"autoCompra": return "a compra automática de melhorias"
-		"autoHabilidade": return "o uso automático de habilidades"
-		"modoFarm": return "o modo Farm (travar a onda)"
-		"autoAscensao": return "a Ascensão automática"
-		"desafios": return "os Desafios"
-		"offlinePerfeito": return "o progresso offline perfeito"
-		"modoInfinito": return "o Modo Infinito e o Bestiário Verdadeiro"
+		"autoCompra": return Txt.t("prg_desb_auto_compra")
+		"autoHabilidade": return Txt.t("prg_desb_auto_habilidade")
+		"modoFarm": return Txt.t("prg_desb_modo_farm")
+		"autoAscensao": return Txt.t("prg_desb_auto_ascensao")
+		"desafios": return Txt.t("prg_desb_desafios")
+		"offlinePerfeito": return Txt.t("prg_desb_offline_perfeito")
+		"modoInfinito": return Txt.t("prg_desb_modo_infinito")
 	return chave
 
 ## A fonte não tem emoji: cada nó vira um ícone vetorial.

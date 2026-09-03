@@ -117,7 +117,7 @@ func _construir() -> void:
 	add_child(vitais)
 
 	var lv := UI.hbox(6)
-	lbl_nivel = UI.rotulo("Nível 1", 15, UI.ACENTO2)
+	lbl_nivel = UI.rotulo("%s 1" % Txt.t("nivel"), 15, UI.ACENTO2)
 	lv.add_child(lbl_nivel)
 	# ponto de talento a gastar: icone VETORIAL (a fonte nao tem glifo de bolinha)
 	ic_pontos = Control.new()
@@ -189,7 +189,7 @@ func _construir() -> void:
 	dir.add_child(lbl_dps)
 	lbl_ouro_mult = UI.rotulo("", 14, UI.OURO)
 	lbl_ouro_mult.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	lbl_ouro_mult.tooltip_text = "Multiplicador de ouro no momento: combo × aglomeração.\nQuanto mais inimigos vivos na tela, mais cada abate rende."
+	lbl_ouro_mult.tooltip_text = Txt.t("hud_dica_ouro_mult")
 	dir.add_child(lbl_ouro_mult)
 	lbl_fps = UI.rotulo("", 12, UI.TEXTO3)
 	lbl_fps.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
@@ -302,7 +302,10 @@ func _reconstruir_habilidades() -> void:
 		var b := Button.new()
 		b.custom_minimum_size = Vector2(58, 58)
 		b.focus_mode = Control.FOCUS_NONE
-		b.tooltip_text = "%s  [%s]\n%s" % [str(def.get("nome", id)), str(def.get("tecla", "")), _desc_hab(def, int(h.get("nivel", 1)))]
+		var nome_hab := Ux.txt(def, "nome", Cfg.ingles())
+		if nome_hab.is_empty():
+			nome_hab = id
+		b.tooltip_text = "%s  [%s]\n%s" % [nome_hab, str(def.get("tecla", "")), _desc_hab(def, int(h.get("nivel", 1)))]
 		b.pressed.connect(func(): jogo.usar_habilidade(id))
 		b.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 		caixa_hab.add_child(b)
@@ -325,7 +328,7 @@ func _reconstruir_habilidades() -> void:
 		botoes_hab[id] = {"botao": b, "barra": pb}
 
 func _desc_hab(def: Dictionary, nivel: int) -> String:
-	var d := str(def.get("desc", ""))
+	var d := Ux.txt(def, "desc", Cfg.ingles())
 	var esc = def.get("escala", {})
 	if esc is Dictionary:
 		for chave in esc.keys():
@@ -387,7 +390,7 @@ func _atualizar_lento() -> void:
 			barra_chefe.visible = true
 			barra_chefe.value = alvo.frac_vida()
 			var fases := maxi(1, int(alvo.def.get("fases", 1)))
-			lbl_chefe_fase.text = ("fase %d/%d  ·  %s" % [alvo.fase + 1, fases, Fmt.big(alvo.hp)]) if fases > 1 else Fmt.big(alvo.hp)
+			lbl_chefe_fase.text = Txt.f("hud_chefe_fase", {"a": alvo.fase + 1, "b": fases, "hp": Fmt.big(alvo.hp)}) if fases > 1 else Fmt.big(alvo.hp)
 		else:
 			barra_chefe.visible = false
 			lbl_chefe_fase.text = ""
@@ -429,7 +432,7 @@ func _atualizar_lento() -> void:
 	lbl_ouro_mult.text = ("%s ×%.2f" % [Txt.t("m_ouro"), mult_total]) if mult_total > 1.02 else ""
 	lbl_ouro_mult.add_theme_color_override("font_color", UI.OURO.lerp(UI.VERDE, clampf((mult_total - 1.0) / 2.0, 0.0, 1.0)))
 
-	lbl_fps.text = ("%d fps · %d inim." % [int(Engine.get_frames_per_second()), jogo.arena.inimigos.size()]) if bool(Cfg.get_v("mostrar_fps", false)) else ""
+	lbl_fps.text = Txt.f("hud_fps_inimigos", {"f": int(Engine.get_frames_per_second()), "n": jogo.arena.inimigos.size()}) if bool(Cfg.get_v("mostrar_fps", false)) else ""
 	lbl_velocidade.text = "×%d" % int(jogo.velocidade)
 
 	_atualizar_buffs()
@@ -450,7 +453,7 @@ func _atualizar_adaptacao() -> void:
 			ref["label"].text = "-" + Fmt.pct(r, 0)
 			var quente := clampf(r / Mecanicas.ADAPT_TETO, 0.0, 1.0)
 			ref["label"].add_theme_color_override("font_color", UI.TEXTO3.lerp(UI.VERMELHO, quente))
-	caixa_adapt.tooltip_text = "O Enxame se adapta ao que você mais usa.\nDiversifique os elementos para o dano voltar ao normal." if algum else ""
+	caixa_adapt.tooltip_text = Txt.t("hud_dica_adaptacao") if algum else ""
 
 func _atualizar_buffs() -> void:
 	var buffs: Array = jogo.s["buffs"]
@@ -502,7 +505,7 @@ func _alternar_velocidade() -> void:
 		nova = 1.0
 	jogo.definir_velocidade(nova)
 	if teto <= 1.0:
-		Bus.toast("Desbloqueie Aceleração na árvore de Fragmentos", "info", "velocidade")
+		Bus.toast(Txt.t("hud_velocidade_trancada"), "info", "velocidade")
 
 func _alternar_mira() -> void:
 	var modos: Array = TorreSim.MODOS_MIRA

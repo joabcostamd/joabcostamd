@@ -39,7 +39,7 @@ var botoes_lore := {}            # id -> {botao, def, aberta}
 var assinatura_lore := ""
 
 func configurar() -> void:
-	titulo_texto = "Codex"
+	titulo_texto = Txt.t("p_codex")
 	titulo_icone = "livro"
 	largura = 1130.0
 	altura = 676.0
@@ -51,16 +51,16 @@ func montar(c: VBoxContainer) -> void:
 	var topo := UI.hbox(10)
 	abas = TabBar.new()
 	abas.clip_tabs = false
-	abas.add_tab("Bestiário")
-	abas.add_tab("Chefes")
-	abas.add_tab("História")
+	abas.add_tab(Txt.t("cdx_aba_bestiario"))
+	abas.add_tab(Txt.t("cdx_aba_chefes"))
+	abas.add_tab(Txt.t("cdx_aba_historia"))
 	abas.tab_changed.connect(func(i):
 		aba = int(i)
 		_reconstruir())
 	topo.add_child(abas)
 	topo.add_child(UI.espacador())
 	lbl_progresso = UI.rotulo("", 14, UI.TEXTO2)
-	lbl_progresso.tooltip_text = "Quanto do arquivo você já preencheu."
+	lbl_progresso.tooltip_text = Txt.t("cdx_dica_progresso")
 	topo.add_child(lbl_progresso)
 	c.add_child(topo)
 
@@ -78,7 +78,7 @@ func montar(c: VBoxContainer) -> void:
 	lbl_dica.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	lbl_dica.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	rodape.add_child(lbl_dica)
-	var bd := UI.botao("Outra", func(): _sortear_dica(), "Sorteia outra dica do arquivo.")
+	var bd := UI.botao(Txt.t("cdx_outra"), func(): _sortear_dica(), Txt.t("cdx_outra_dica"))
 	bd.custom_minimum_size = Vector2(72, 28)
 	bd.add_theme_font_size_override("font_size", 12)
 	rodape.add_child(bd)
@@ -89,7 +89,7 @@ func montar(c: VBoxContainer) -> void:
 
 func _sortear_dica() -> void:
 	if Dados.dicas.is_empty():
-		lbl_dica.text = "O arquivo de dicas está vazio. Improvise."
+		lbl_dica.text = Txt.t("cdx_dicas_vazias")
 		return
 	var d: Dictionary = Dados.dicas[randi() % Dados.dicas.size()]
 	lbl_dica.text = txt(d, "texto")
@@ -165,15 +165,15 @@ func _montar_bestiario() -> void:
 
 	var lista := _lista()
 	if lista.is_empty():
-		coluna.add_child(UI.rotulo("Nenhuma criatura catalogada — os dados não carregaram.", 13, UI.TEXTO3))
+		coluna.add_child(UI.rotulo(Txt.t("cdx_sem_criaturas"), 13, UI.TEXTO3))
 	for item in lista:
 		var def: Dictionary = item
 		grade.add_child(_tile(def))
 
 	if aba == 0 and not Dados.elites.is_empty():
 		coluna.add_child(UI.separador())
-		coluna.add_child(_titulo_secao("Variantes de elite", "estrela", UI.ACENTO2,
-			"Qualquer inimigo pode vir com uma destas marcas — vale mais e incomoda mais."))
+		coluna.add_child(_titulo_secao(Txt.t("cdx_variantes_elite"), "estrela", UI.ACENTO2,
+			Txt.t("cdx_variantes_elite_dica")))
 		var g2 := GridContainer.new()
 		g2.columns = 3
 		g2.add_theme_constant_override("h_separation", 6)
@@ -216,8 +216,8 @@ func _tile(def: Dictionary) -> Control:
 		sel_id = id
 		_mostrar_ficha()
 		_marcar_selecao())
-	b.tooltip_text = ("%s — %s abate(s)." % [txt(def, "nome"), Fmt.inteiro(n)]) if conhecido \
-		else "Ainda não catalogado. Derrote um para abrir a ficha."
+	b.tooltip_text = Txt.f("cdx_tile_abates", {"nome": txt(def, "nome"), "n": Fmt.inteiro(n)}) if conhecido \
+		else Txt.t("cdx_nao_catalogado")
 
 	var cx := UI.painel(UI.PAINEL2.darkened(0.16), 10)
 	b.add_child(cx)
@@ -291,7 +291,7 @@ func _mostrar_ficha() -> void:
 
 	var def := _def_por_id(sel_id)
 	if def.is_empty():
-		detalhe.add_child(_aviso("Escolha uma criatura na grade para abrir a ficha."))
+		detalhe.add_child(_aviso(Txt.t("cdx_escolha_criatura")))
 		return
 	var id := str(def.get("id", ""))
 	var n := _abates(id)
@@ -312,14 +312,13 @@ func _mostrar_ficha() -> void:
 	moldura.add_child(arte)
 
 	if not conhecido:
-		detalhe.add_child(UI.rotulo("Espécime não catalogado", 18, UI.TEXTO2))
+		detalhe.add_child(UI.rotulo(Txt.t("cdx_especime_nao_catalogado"), 18, UI.TEXTO2))
 		var falta := UI.rotulo(
-			"A Torre só registra o que morre na frente dela. Derrote um %s para abrir esta ficha."
-			% ("chefe destes" if chefe else "destes"), 13, UI.TEXTO3)
+			Txt.t("cdx_falta_chefe" if chefe else "cdx_falta_inimigo"), 13, UI.TEXTO3)
 		falta.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		falta.custom_minimum_size.x = LARG_DETALHE - 46.0
 		detalhe.add_child(falta)
-		var pista := _bloco("Onde procurar", "alvo", UI.TEXTO2)
+		var pista := _bloco(Txt.t("cdx_onde_procurar"), "alvo", UI.TEXTO2)
 		pista.add_child(_texto_corpo(_texto_aparicao(def, chefe), UI.TEXTO2))
 		_marcar_selecao()
 		return
@@ -330,7 +329,7 @@ func _mostrar_ficha() -> void:
 	ln.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	cab.add_child(ln)
 	if chefe:
-		cab.add_child(_selo("DERROTADO", UI.VERDE))
+		cab.add_child(_selo(Txt.t("cdx_derrotado"), UI.VERDE))
 	detalhe.add_child(cab)
 
 	var sub := UI.hbox(6)
@@ -339,7 +338,7 @@ func _mostrar_ficha() -> void:
 	sub.add_child(ica)
 	ica.configurar("trofeu" if chefe else "espada", UI.OURO, 15)
 	lbl_abates = UI.rotulo("", 13, UI.TEXTO2)
-	lbl_abates.tooltip_text = "Quantos deste tipo você já derrubou."
+	lbl_abates.tooltip_text = Txt.t("cdx_dica_abates")
 	sub.add_child(lbl_abates)
 	sub.add_child(UI.espacador())
 	sub.add_child(UI.rotulo(_texto_aparicao(def, chefe), 12, UI.TEXTO3))
@@ -350,12 +349,12 @@ func _mostrar_ficha() -> void:
 	g.columns = 3
 	g.add_theme_constant_override("h_separation", 6)
 	detalhe.add_child(g)
-	g.add_child(_mini("coracao", UI.VERMELHO, "Vida", "×" + Fmt.num(float(def.get("hp", 1.0)), 2),
-		"Multiplicador sobre a vida-base da onda."))
-	g.add_child(_mini("ouro", UI.OURO, "Ouro", "×" + Fmt.num(float(def.get("ouro", 1.0)), 2),
-		"Multiplicador sobre o ouro-base da onda."))
-	g.add_child(_mini("velocidade", UI.ACENTO, "Velocidade", "×" + Fmt.num(float(def.get("vel", 1.0)), 2),
-		"Multiplicador sobre a velocidade-base da onda."))
+	g.add_child(_mini("coracao", UI.VERMELHO, Txt.t("cdx_m_vida"), "×" + Fmt.num(float(def.get("hp", 1.0)), 2),
+		Txt.t("cdx_mult_vida")))
+	g.add_child(_mini("ouro", UI.OURO, Txt.t("m_ouro").capitalize(), "×" + Fmt.num(float(def.get("ouro", 1.0)), 2),
+		Txt.t("cdx_mult_ouro")))
+	g.add_child(_mini("velocidade", UI.ACENTO, Txt.t("cdx_m_velocidade"), "×" + Fmt.num(float(def.get("vel", 1.0)), 2),
+		Txt.t("cdx_mult_velocidade")))
 
 	# --- traços ---
 	var tracos := _tracos(def, chefe)
@@ -369,27 +368,27 @@ func _mostrar_ficha() -> void:
 			fluxo.add_child(_selo(str(par[0]), par[1]))
 
 	# --- comportamento ---
-	var b1 := _bloco("Comportamento", "alvo", UI.ACENTO)
+	var b1 := _bloco(Txt.t("cdx_comportamento"), "alvo", UI.ACENTO)
 	b1.add_child(_texto_corpo(_texto_mov(def, chefe), UI.TEXTO))
 
 	# --- habilidade ---
 	var hab := _texto_hab(def, chefe)
 	if hab != "":
-		var b2 := _bloco("Habilidade especial" if not chefe else "Mecânica de chefe", "raio", UI.ACENTO2)
+		var b2 := _bloco(Txt.t("cdx_mecanica_chefe" if chefe else "cdx_habilidade_especial"), "raio", UI.ACENTO2)
 		b2.add_child(_texto_corpo(hab, UI.TEXTO))
 
 	# --- lore ---
 	var lore := txt(def, "lore")
 	if lore != "":
-		var b3 := _bloco("Arquivo", "livro", UI.TEXTO2)
+		var b3 := _bloco(Txt.t("cdx_arquivo"), "livro", UI.TEXTO2)
 		b3.add_child(_texto_corpo(lore, UI.TEXTO2))
 
 	# --- dica ---
-	var dica := str(def.get("dica", ""))
+	var dica := txt(def, "dica")
 	if dica == "":
 		dica = _dica_tatica(def)
 	if dica != "":
-		var b4 := _bloco("Dica", "estrela", UI.OURO)
+		var b4 := _bloco(Txt.t("cdx_dica"), "estrela", UI.OURO)
 		b4.add_child(_texto_corpo(dica, UI.OURO.lerp(UI.TEXTO, 0.45)))
 
 	_marcar_selecao()
@@ -421,7 +420,7 @@ func _montar_historia() -> void:
 	sc.add_child(indice)
 
 	if Dados.capitulos_lore.is_empty():
-		indice.add_child(UI.rotulo("Arquivo vazio.", 13, UI.TEXTO3))
+		indice.add_child(UI.rotulo(Txt.t("cdx_arquivo_vazio"), 13, UI.TEXTO3))
 
 	for item in Dados.capitulos_lore:
 		var cap: Dictionary = item
@@ -481,7 +480,7 @@ func _botao_entrada(ent: Dictionary, cor: Color) -> Control:
 		entrada_sel = eid
 		_mostrar_entrada()
 		_marcar_entrada())
-	b.tooltip_text = txt(ent, "titulo") if aberta else ("Trancada — " + _texto_cond(ent.get("cond", {})))
+	b.tooltip_text = txt(ent, "titulo") if aberta else Txt.f("cdx_trancada", {"cond": _texto_cond(ent.get("cond", {}))})
 
 	var cx := UI.painel(UI.PAINEL2.darkened(0.3), 7)
 	b.add_child(cx)
@@ -495,7 +494,7 @@ func _botao_entrada(ent: Dictionary, cor: Color) -> Control:
 	ic.set_script(load("res://scripts/ui/icone_control.gd"))
 	h.add_child(ic)
 	ic.configurar(_icone_entrada(ent) if aberta else "cadeado", cor if aberta else UI.TEXTO3, 13)
-	var l := UI.rotulo(txt(ent, "titulo") if aberta else "Entrada selada", 13,
+	var l := UI.rotulo(txt(ent, "titulo") if aberta else Txt.t("cdx_entrada_selada"), 13,
 		UI.TEXTO if aberta else UI.TEXTO3)
 	l.clip_text = true
 	l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -512,7 +511,7 @@ func _mostrar_entrada() -> void:
 		n.queue_free()
 	var ent := _entrada_por_id(entrada_sel)
 	if ent.is_empty():
-		lore_texto.add_child(_aviso("Escolha uma entrada no índice à esquerda."))
+		lore_texto.add_child(_aviso(Txt.t("cdx_escolha_entrada")))
 		return
 	var cap := _capitulo_por_id(str(ent.get("capitulo", "")))
 	var cor := _cor(cap, "cor", "#93a3c4")
@@ -525,18 +524,17 @@ func _mostrar_entrada() -> void:
 	ic.configurar(_icone_capitulo(str(cap.get("id", ""))), cor, 18)
 	cab.add_child(UI.rotulo(txt(cap, "nome").to_upper(), 12, cor))
 	cab.add_child(UI.espacador())
-	cab.add_child(UI.rotulo("Entrada %d de %d" % [int(ent.get("ordem", 0)),
-		_entradas_do_capitulo(str(cap.get("id", ""))).size()], 12, UI.TEXTO3))
+	cab.add_child(UI.rotulo(Txt.f("cdx_entrada_de", {"a": int(ent.get("ordem", 0)),
+		"b": _entradas_do_capitulo(str(cap.get("id", ""))).size()}), 12, UI.TEXTO3))
 	lore_texto.add_child(cab)
 
 	if not aberta:
-		lore_texto.add_child(UI.rotulo("Entrada selada", 22, UI.TEXTO2))
+		lore_texto.add_child(UI.rotulo(Txt.t("cdx_entrada_selada"), 22, UI.TEXTO2))
 		lore_texto.add_child(UI.separador())
-		var av := _texto_corpo(
-			"A Torre arquivou este documento, mas ainda não o entregou. Ela tem critérios.", UI.TEXTO3)
+		var av := _texto_corpo(Txt.t("cdx_selada_aviso"), UI.TEXTO3)
 		lore_texto.add_child(av)
 		var cond: Dictionary = ent.get("cond", {})
-		var bloco := _bloco("Requisito", "cadeado", UI.LARANJA, lore_texto)
+		var bloco := _bloco(Txt.t("requer"), "cadeado", UI.LARANJA, lore_texto)
 		bloco.add_child(_texto_corpo(_texto_cond(cond), UI.TEXTO))
 		var atual := Progresso.valor_cond(jogo.s, str(cond.get("tipo", "")), str(cond.get("chave", "")))
 		var alvo := float(cond.get("valor", 1.0))
@@ -549,7 +547,7 @@ func _mostrar_entrada() -> void:
 	var titulo := UI.rotulo(txt(ent, "titulo"), 23, Color.WHITE)
 	titulo.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	lore_texto.add_child(titulo)
-	var autor := UI.rotulo(str(ent.get("autor", "")), 12, cor.lerp(UI.TEXTO2, 0.4))
+	var autor := UI.rotulo(txt(ent, "autor"), 12, cor.lerp(UI.TEXTO2, 0.4))
 	autor.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	lore_texto.add_child(autor)
 	var epi := txt(cap, "epigrafe")
@@ -599,7 +597,7 @@ func atualizar() -> void:
 			var e: Dictionary = item
 			if Progresso.cond_atendida(jogo.s, e.get("cond", {})):
 				abertas += 1
-		lbl_progresso.text = "Arquivo: %d/%d entradas" % [abertas, Dados.entradas_lore.size()]
+		lbl_progresso.text = Txt.f("cdx_progresso_arquivo", {"a": abertas, "b": Dados.entradas_lore.size()})
 		if _assinatura_lore() != assinatura_lore:
 			_reconstruir()
 		return
@@ -617,9 +615,11 @@ func atualizar() -> void:
 			var lc: Label = r["contagem"]
 			if is_instance_valid(lc) and bool(r["conhecido"]):
 				lc.text = Fmt.inteiro(n)
-	lbl_progresso.text = ("Chefes derrotados: %d/%d" if aba == 1 else "Catalogados: %d/%d") % [vistos, lista.size()]
+	lbl_progresso.text = Txt.f("cdx_progresso_chefes" if aba == 1 else "cdx_progresso_catalogados",
+		{"a": vistos, "b": lista.size()})
 	if lbl_abates != null and is_instance_valid(lbl_abates):
-		lbl_abates.text = "%s abate%s" % [Fmt.inteiro(_abates(sel_id)), "" if _abates(sel_id) == 1 else "s"]
+		lbl_abates.text = Txt.f("cdx_abates_um" if _abates(sel_id) == 1 else "cdx_abates_n",
+			{"n": Fmt.inteiro(_abates(sel_id))})
 	if _assinatura_bicho() != assinatura:
 		_reconstruir()
 
@@ -631,28 +631,28 @@ func _texto_aparicao(def: Dictionary, chefe: bool) -> String:
 		for onda in range(10, 3010, 10):
 			var c: Dictionary = Dados.chefe_da_onda(onda)
 			if str(c.get("id", "")) == id:
-				return "Guarda a onda %d" % onda
-		return "Aparição irregular"
-	return "A partir da onda %d" % int(def.get("onda", 1))
+				return Txt.f("cdx_guarda_onda", {"n": onda})
+		return Txt.t("cdx_aparicao_irregular")
+	return Txt.f("cdx_a_partir_onda", {"n": int(def.get("onda", 1))})
 
 func _texto_mov(def: Dictionary, chefe: bool) -> String:
 	if chefe:
 		var f := maxi(1, int(def.get("fases", 1)))
-		var base := "Avança devagar e sem desvio — não precisa de pressa."
+		var base := Txt.t("cdx_mov_chefe_base")
 		if f > 1:
-			base += " Muda de comportamento a cada uma das %d fases, e cada troca o atordoa por um instante." % f
+			base += " " + Txt.f("cdx_mov_chefe_fases", {"n": f})
 		return base
 	match str(def.get("mov", "direto")):
-		"direto": return "Avança em linha reta até a torre. Sem truque, sem hesitação."
-		"zigue": return "Serpenteia em zigue-zague — projétil lento erra."
-		"salto": return "Avança em arcos. Enquanto está no ar, nada o segura."
-		"fantasma": return "Some e reaparece mais perto. Fica intangível no meio do salto."
-		"teleporte": return "Pisca de um ponto a outro do campo, ignorando o caminho."
-		"parar_atirar": return "Para no alcance e atira na torre em vez de encostar nela."
-		"perseguidor": return "Persegue sem desviar e sem cansar. Corrige a rota o tempo todo."
-		"errante": return "Trajetória errática, sem lógica aparente — nem para ele."
-		"passa": return "Apenas atravessa o campo. Não ataca, não desvia, não olha."
-	return "Avança em linha reta até a torre."
+		"direto": return Txt.t("cdx_mov_direto")
+		"zigue": return Txt.t("cdx_mov_zigue")
+		"salto": return Txt.t("cdx_mov_salto")
+		"fantasma": return Txt.t("cdx_mov_fantasma")
+		"teleporte": return Txt.t("cdx_mov_teleporte")
+		"parar_atirar": return Txt.t("cdx_mov_parar_atirar")
+		"perseguidor": return Txt.t("cdx_mov_perseguidor")
+		"errante": return Txt.t("cdx_mov_errante")
+		"passa": return Txt.t("cdx_mov_passa")
+	return Txt.t("cdx_mov_padrao")
 
 func _texto_hab(def: Dictionary, chefe: bool) -> String:
 	if chefe:
@@ -663,113 +663,113 @@ func _texto_hab(def: Dictionary, chefe: bool) -> String:
 			for iid in invoca:
 				var d: Dictionary = Dados.inimigo_por_id.get(str(iid), {})
 				nomes.append(txt(d, "nome") if not d.is_empty() else str(iid))
-			extra = " Traz consigo: %s." % ", ".join(nomes)
+			extra = " " + Txt.f("cdx_traz_consigo", {"lista": ", ".join(nomes)})
 		var seg := int(def.get("segmentos", 0))
 		if seg > 1:
-			extra += " Corpo em %d segmentos: cada um cai por vez." % seg
+			extra += " " + Txt.f("cdx_corpo_segmentos", {"n": seg})
 		match str(def.get("mecanica", "")):
-			"invocar": return "Invoca reforços entre as fases e deixa que eles gastem seus tiros." + extra
-			"ninhada": return "Põe crias mais rápido do que você as mata. A matemática é o chefe real." + extra
-			"onda_choque": return "Pulsa em ondas de choque que machucam a torre de longe, sem encostar." + extra
-			"fissuras": return "Abre fissuras no campo que corroem a sua invulnerabilidade." + extra
-			"segmentos": return "Um corpo em vários anéis; enquanto houver anel, há chefe." + extra
-			"refletir": return "Devolve ao atirador o dano que não for crítico." + extra
-			"escudo_regen": return "Recupera escudo se ficar mais de um segundo e meio sem levar dano." + extra
-			"teleporte_drenar": return "Teleporta para o colo da torre, drena vida e volta mais inteiro." + extra
-			"silenciar": return "Bloqueia as suas habilidades por 5s a cada 12s. Silêncio é a arma." + extra
-			"engolir": return "Engole projéteis e coletáveis, e engorda com cada gole." + extra
-			"combinado": return "Tudo que o Enxame aprendeu, ao mesmo tempo, em fases." + extra
-		return "Mecânica desconhecida — o arquivo está incompleto." + extra
+			"invocar": return Txt.t("cdx_mec_invocar") + extra
+			"ninhada": return Txt.t("cdx_mec_ninhada") + extra
+			"onda_choque": return Txt.t("cdx_mec_onda_choque") + extra
+			"fissuras": return Txt.t("cdx_mec_fissuras") + extra
+			"segmentos": return Txt.t("cdx_mec_segmentos") + extra
+			"refletir": return Txt.t("cdx_mec_refletir") + extra
+			"escudo_regen": return Txt.t("cdx_mec_escudo_regen") + extra
+			"teleporte_drenar": return Txt.t("cdx_mec_teleporte_drenar") + extra
+			"silenciar": return Txt.t("cdx_mec_silenciar") + extra
+			"engolir": return Txt.t("cdx_mec_engolir") + extra
+			"combinado": return Txt.t("cdx_mec_combinado") + extra
+		return Txt.t("cdx_mec_desconhecida") + extra
 	match str(def.get("hab", "")):
-		"curar": return "Cura os aliados por perto em 6% da vida deles a cada 2s."
-		"cuspir": return "Cospe projéteis na torre à distância, sem nunca encostar."
-		"explodir": return "Explode ao morrer e leva a vizinhança junto — inclusive a sua paciência."
-		"roubar_ouro": return "Recolhe o ouro caído no chão antes de você. Cada moeda dele é sua."
-		"refletir": return "Devolve parte do dano não-crítico a quem atirou."
-		"grudar": return "Gruda no casco da torre e drena vida sem pressa nenhuma."
-		"chocar": return "Choca a cada 4,5s e solta três crias de Enxame."
-		"devorar": return "Engole o ouro do chão, ganha vida e cresce a cada gole."
-		"mutar": return "Alterna a cada 3s entre blindado e lento, e rápido e nu."
-		"ceifar": return "A cada 5s, salta 120 unidades em direção à torre para ceifar de perto."
+		"curar": return Txt.t("cdx_hab_curar")
+		"cuspir": return Txt.t("cdx_hab_cuspir")
+		"explodir": return Txt.t("cdx_hab_explodir")
+		"roubar_ouro": return Txt.t("cdx_hab_roubar_ouro")
+		"refletir": return Txt.t("cdx_hab_refletir")
+		"grudar": return Txt.t("cdx_hab_grudar")
+		"chocar": return Txt.t("cdx_hab_chocar")
+		"devorar": return Txt.t("cdx_hab_devorar")
+		"mutar": return Txt.t("cdx_hab_mutar")
+		"ceifar": return Txt.t("cdx_hab_ceifar")
 	return ""
 
 func _dica_tatica(def: Dictionary) -> String:
 	match str(def.get("hab", "")):
-		"curar": return "Mate o curandeiro primeiro. Ele desfaz o seu trabalho de graça e sem pressa."
-		"cuspir": return "Alcance e velocidade de projétil: ele morre antes de mirar."
-		"explodir": return "Mate longe da torre. Ou aceite o troco."
-		"roubar_ouro": return "Aumente a coleta — o que está no chão é dele até você pegar."
-		"refletir": return "Crítico passa reto pelo espelho. Invista em chance crítica."
-		"grudar": return "Não deixe encostar: cadência alta e área resolvem antes do abraço."
-		"chocar": return "Dano em área antes que o casulo abra. Depois é limpeza."
-		"devorar": return "Colete rápido ou negue o banquete — cada moeda o engorda."
-		"mutar": return "Espere a janela sem armadura; ela chega a cada três segundos."
-		"ceifar": return "Empurrões e gelo. Se ele fechar a distância, você já perdeu o turno."
+		"curar": return Txt.t("cdx_dica_curar")
+		"cuspir": return Txt.t("cdx_dica_cuspir")
+		"explodir": return Txt.t("cdx_dica_explodir")
+		"roubar_ouro": return Txt.t("cdx_dica_roubar_ouro")
+		"refletir": return Txt.t("cdx_dica_refletir")
+		"grudar": return Txt.t("cdx_dica_grudar")
+		"chocar": return Txt.t("cdx_dica_chocar")
+		"devorar": return Txt.t("cdx_dica_devorar")
+		"mutar": return Txt.t("cdx_dica_mutar")
+		"ceifar": return Txt.t("cdx_dica_ceifar")
 	if bool(def.get("invisivel", false)):
-		return "Só aparece quando revelado — leve algo que marque alvos."
+		return Txt.t("cdx_dica_invisivel")
 	if bool(def.get("voa", false)):
-		return "Voa: nada no chão o atrasa. Cadência resolve melhor que armadilha."
+		return Txt.t("cdx_dica_voa")
 	if def.has("divide"):
-		return "Ele vira dois. Área é o único jeito honesto de fechar a conta."
+		return Txt.t("cdx_dica_divide")
 	if float(def.get("escudoFrac", 0.0)) > 0.0:
-		return "Quebre o escudo de uma vez; ele volta se você der intervalo."
+		return Txt.t("cdx_dica_escudo")
 	if float(def.get("armadura", 0.0)) > 0.0:
-		return "Armadura alta: leve penetração, não orgulho."
+		return Txt.t("cdx_dica_armadura")
 	if str(def.get("mov", "")) == "passa":
-		return "Não faz nada com você. Faça você algo com ele — vale ouro."
+		return Txt.t("cdx_dica_passa")
 	if float(def.get("vel", 1.0)) >= 1.4:
-		return "Rápido demais para o alcance curto. Congele ou atire mais longe."
+		return Txt.t("cdx_dica_rapido")
 	if float(def.get("hp", 1.0)) >= 2.0:
-		return "Saco de vida: dano bruto e paciência, nesta ordem."
-	return "Nada de especial. Morre como todo mundo — só precisa de sua vez."
+		return Txt.t("cdx_dica_tanque")
+	return Txt.t("cdx_dica_comum")
 
 func _tracos(def: Dictionary, chefe: bool) -> Array:
 	var out: Array = []
 	if chefe:
 		var f := int(def.get("fases", 1))
 		if f > 1:
-			out.append(["%d fases" % f, UI.ACENTO2])
+			out.append([Txt.f("cdx_traco_fases", {"n": f}), UI.ACENTO2])
 		if int(def.get("segmentos", 0)) > 1:
-			out.append(["%d segmentos" % int(def.get("segmentos", 0)), UI.ACENTO])
+			out.append([Txt.f("cdx_traco_segmentos", {"n": int(def.get("segmentos", 0))}), UI.ACENTO])
 		if float(def.get("armadura", 0.0)) > 0.0:
-			out.append(["Armadura %d" % int(def.get("armadura", 0)), UI.TEXTO2])
+			out.append([Txt.f("cdx_traco_armadura", {"n": int(def.get("armadura", 0))}), UI.TEXTO2])
 		for sc in Dados.super_chefes:
 			var d: Dictionary = sc
 			if str(d.get("id", "")) == str(def.get("id", "")):
-				out.append(["Superchefe", UI.VERMELHO])
+				out.append([Txt.t("cdx_traco_superchefe"), UI.VERMELHO])
 		return out
 	if bool(def.get("voa", false)):
-		out.append(["Voa", UI.ACENTO])
+		out.append([Txt.t("cdx_traco_voa"), UI.ACENTO])
 	if bool(def.get("invisivel", false)):
-		out.append(["Invisível", UI.ACENTO2])
+		out.append([Txt.t("cdx_traco_invisivel"), UI.ACENTO2])
 	if def.has("divide"):
-		out.append(["Divide-se", UI.VERDE])
+		out.append([Txt.t("cdx_traco_divide"), UI.VERDE])
 	if def.has("grupo"):
 		var gr: Array = def.get("grupo", [])
 		if gr.size() >= 2:
-			out.append(["Bando de %d a %d" % [int(gr[0]), int(gr[1])], UI.VERDE])
+			out.append([Txt.f("cdx_traco_bando_de", {"a": int(gr[0]), "b": int(gr[1])}), UI.VERDE])
 		else:
-			out.append(["Vem em bando", UI.VERDE])
+			out.append([Txt.t("cdx_traco_bando"), UI.VERDE])
 	if float(def.get("armadura", 0.0)) > 0.0:
-		out.append(["Armadura %d" % int(def.get("armadura", 0)), UI.TEXTO2])
+		out.append([Txt.f("cdx_traco_armadura", {"n": int(def.get("armadura", 0))}), UI.TEXTO2])
 	if float(def.get("escudoFrac", 0.0)) > 0.0:
-		out.append(["Escudo", UI.ACENTO])
+		out.append([Txt.t("cdx_traco_escudo"), UI.ACENTO])
 	if float(def.get("esc", 1.0)) >= 1.4:
-		out.append(["Grande", UI.LARANJA])
+		out.append([Txt.t("cdx_traco_grande"), UI.LARANJA])
 	elif float(def.get("esc", 1.0)) <= 0.7:
-		out.append(["Miúdo", UI.TEXTO2])
+		out.append([Txt.t("cdx_traco_miudo"), UI.TEXTO2])
 	return out
 
 func _texto_cond(cond: Dictionary) -> String:
 	var v := float(cond.get("valor", 0.0))
 	var chave := str(cond.get("chave", ""))
 	match str(cond.get("tipo", "")):
-		"onda": return "Chegue à onda %d nesta corrida." % int(v)
-		"ondaMaxima": return "Alcance a onda %d nesta ascensão." % int(v)
-		"ondaMaximaGlobal": return "Alcance a onda %d alguma vez." % int(v)
-		"ondasCompletas": return "Limpe %s ondas no total." % Fmt.inteiro(int(v))
-		"inimigosMortos": return "Abata %s inimigos." % Fmt.inteiro(int(v))
-		"chefesMortos": return "Derrote %s chefes." % Fmt.inteiro(int(v))
+		"onda": return Txt.f("cdx_cond_onda", {"n": int(v)})
+		"ondaMaxima": return Txt.f("cdx_cond_onda_maxima", {"n": int(v)})
+		"ondaMaximaGlobal": return Txt.f("cdx_cond_onda_maxima_global", {"n": int(v)})
+		"ondasCompletas": return Txt.f("cdx_cond_ondas_completas", {"n": Fmt.inteiro(int(v))})
+		"inimigosMortos": return Txt.f("cdx_cond_inimigos_mortos", {"n": Fmt.inteiro(int(v))})
+		"chefesMortos": return Txt.f("cdx_cond_chefes_mortos", {"n": Fmt.inteiro(int(v))})
 		"inimigoTipo":
 			var d: Dictionary = Dados.inimigo_por_id.get(chave, {})
 			if d.is_empty():
@@ -778,24 +778,24 @@ func _texto_cond(cond: Dictionary) -> String:
 					if str(cd.get("id", "")) == chave:
 						d = cd
 			var nome := txt(d, "nome") if not d.is_empty() else chave
-			return "Abata %s do tipo %s." % [Fmt.inteiro(int(v)), nome]
-		"nivel": return "Chegue ao nível %d." % int(v)
-		"mortes": return "Perca a torre %s vez(es). Vai acontecer." % Fmt.inteiro(int(v))
-		"ouroTotal": return "Acumule %s de ouro no total." % Fmt.big(Big.from(v))
-		"danoMaximo": return "Dê um golpe de %s de dano." % Fmt.big(Big.from(v))
-		"tempoTotal": return "Some %s de jogo." % Ux.tempo_curto(v)
-		"ascensoes": return "Ascenda %d vez(es)." % int(v)
-		"singularidades": return "Colapse %d vez(es)." % int(v)
-		"transcendencias": return "Transcenda %d vez(es)." % int(v)
-		"cartas": return "Tenha %d cartas no inventário." % int(v)
-		"lendarios": return "Ganhe %d carta(s) lendária(s)." % int(v)
-		"relicas": return "Possua %d relíquia(s)." % int(v)
-		"conquistasTotal": return "Desbloqueie %d conquistas." % int(v)
-		"desafiosCompletos": return "Complete %d desafio(s)." % int(v)
-		"criticos": return "Acerte %s críticos." % Fmt.inteiro(int(v))
-		"tiros": return "Dispare %s tiros." % Fmt.inteiro(int(v))
-		"comboMaximo": return "Chegue a um combo de %d." % int(v)
-	return "Continue jogando. A Torre avisa quando achar apropriado."
+			return Txt.f("cdx_cond_inimigo_tipo", {"n": Fmt.inteiro(int(v)), "nome": nome})
+		"nivel": return Txt.f("cdx_cond_nivel", {"n": int(v)})
+		"mortes": return Txt.f("cdx_cond_mortes", {"n": Fmt.inteiro(int(v))})
+		"ouroTotal": return Txt.f("cdx_cond_ouro_total", {"n": Fmt.big(Big.from(v))})
+		"danoMaximo": return Txt.f("cdx_cond_dano_maximo", {"n": Fmt.big(Big.from(v))})
+		"tempoTotal": return Txt.f("cdx_cond_tempo_total", {"n": Ux.tempo_curto(v)})
+		"ascensoes": return Txt.f("cdx_cond_ascensoes", {"n": int(v)})
+		"singularidades": return Txt.f("cdx_cond_singularidades", {"n": int(v)})
+		"transcendencias": return Txt.f("cdx_cond_transcendencias", {"n": int(v)})
+		"cartas": return Txt.f("cdx_cond_cartas", {"n": int(v)})
+		"lendarios": return Txt.f("cdx_cond_lendarios", {"n": int(v)})
+		"relicas": return Txt.f("cdx_cond_relicas", {"n": int(v)})
+		"conquistasTotal": return Txt.f("cdx_cond_conquistas", {"n": int(v)})
+		"desafiosCompletos": return Txt.f("cdx_cond_desafios", {"n": int(v)})
+		"criticos": return Txt.f("cdx_cond_criticos", {"n": Fmt.inteiro(int(v))})
+		"tiros": return Txt.f("cdx_cond_tiros", {"n": Fmt.inteiro(int(v))})
+		"comboMaximo": return Txt.f("cdx_cond_combo", {"n": int(v)})
+	return Txt.t("cdx_cond_padrao")
 
 func _num_cond(v: float) -> String:
 	if v >= 100000.0:

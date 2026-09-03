@@ -41,7 +41,7 @@ var botoes_detalhe: Array = []    # [{botao, tipo, custo}]
 var overlay: Control
 
 func configurar() -> void:
-	titulo_texto = "Cartas"
+	titulo_texto = Txt.t("p_cartas")
 	titulo_icone = "carta"
 	largura = 1170.0
 	altura = 690.0
@@ -59,12 +59,12 @@ func montar(c: VBoxContainer) -> void:
 	topo.add_child(ic)
 	ic.configurar("poeira", UI.MOEDA_COR["poeira"], 20)
 	lbl_poeira = UI.rotulo("0", 18, UI.MOEDA_COR["poeira"])
-	lbl_poeira.tooltip_text = "Poeira: sobra de carta reciclada. Serve para fundir as que você resolveu manter."
+	lbl_poeira.tooltip_text = Txt.t("car_dica_poeira")
 	topo.add_child(lbl_poeira)
-	topo.add_child(UI.rotulo("poeira", 13, UI.TEXTO3))
+	topo.add_child(UI.rotulo(Txt.t("m_poeira"), 13, UI.TEXTO3))
 	topo.add_child(UI.espacador())
 	lbl_slots = UI.rotulo("", 14, UI.TEXTO2)
-	lbl_slots.tooltip_text = "Slots de carta. Mais slots vêm da relíquia 'Mão Extra'."
+	lbl_slots.tooltip_text = Txt.t("car_dica_slots")
 	topo.add_child(lbl_slots)
 	c.add_child(topo)
 
@@ -83,7 +83,7 @@ func montar(c: VBoxContainer) -> void:
 	principal.add_child(dir)
 
 	# --- equipadas ---
-	esq.add_child(_secao("Equipadas", "escudo", "As cartas presas na torre agora. Só elas contam para os atributos."))
+	esq.add_child(_secao(Txt.t("car_equipadas"), "escudo", Txt.t("car_dica_equipadas")))
 	caixa_slots = UI.hbox(8)
 	esq.add_child(caixa_slots)
 
@@ -91,11 +91,11 @@ func montar(c: VBoxContainer) -> void:
 
 	# --- cabeçalho do inventário ---
 	var linha_inv := UI.hbox(8)
-	lbl_inv = UI.rotulo("Inventário", 15, UI.TEXTO2)
+	lbl_inv = UI.rotulo(Txt.t("car_inventario"), 15, UI.TEXTO2)
 	linha_inv.add_child(lbl_inv)
 	linha_inv.add_child(UI.espacador())
-	linha_inv.add_child(UI.rotulo("Ordenar por", 12, UI.TEXTO3))
-	for par in [["raridade", "Raridade"], ["nivel", "Nível"], ["nome", "Nome"]]:
+	linha_inv.add_child(UI.rotulo(Txt.t("car_ordenar_por"), 12, UI.TEXTO3))
+	for par in [["raridade", Txt.t("car_ord_raridade")], ["nivel", Txt.t("nivel")], ["nome", Txt.t("car_ord_nome")]]:
 		var chave := str(par[0])
 		var b := UI.botao(str(par[1]), func(): _definir_ordem(chave))
 		b.toggle_mode = true
@@ -117,7 +117,7 @@ func montar(c: VBoxContainer) -> void:
 	grade.add_theme_constant_override("h_separation", 8)
 	grade.add_theme_constant_override("v_separation", 8)
 	caixa_grade.add_child(grade)
-	lbl_grade_vazia = UI.rotulo("Nenhuma carta ainda — derrote um chefe. Eles sempre deixam cair alguma peça de si.", 13, UI.TEXTO3)
+	lbl_grade_vazia = UI.rotulo(Txt.t("car_grade_vazia"), 13, UI.TEXTO3)
 	lbl_grade_vazia.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	lbl_grade_vazia.custom_minimum_size.x = LARG_ESQ - 20.0
 	caixa_grade.add_child(lbl_grade_vazia)
@@ -125,7 +125,7 @@ func montar(c: VBoxContainer) -> void:
 	# --- alternador: detalhe da carta ou quadro de conjuntos ---
 	var abas := UI.hbox(6)
 	dir.add_child(abas)
-	for par2 in [["detalhe", "Detalhe"], ["conjuntos", "Conjuntos"]]:
+	for par2 in [["detalhe", Txt.t("car_aba_detalhe")], ["conjuntos", Txt.t("car_aba_conjuntos")]]:
 		var chave2 := str(par2[0])
 		var ba := UI.botao(str(par2[1]), func(): _definir_aba(chave2))
 		ba.toggle_mode = true
@@ -154,7 +154,7 @@ func montar(c: VBoxContainer) -> void:
 	# --- conjuntos ---
 	var pc := UI.painel(UI.PAINEL2.darkened(0.18), 12)
 	pc.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	pc.tooltip_text = "Equipe as três peças de um conjunto ao mesmo tempo para acender o bônus."
+	pc.tooltip_text = Txt.t("car_dica_conjuntos")
 	dir.add_child(pc)
 	caixa_conj_painel = pc
 	var sc2 := UI.scroll()
@@ -345,10 +345,10 @@ func _widget_carta(inst: Dictionary, w: float, h: float, grande: bool) -> Contro
 	var slot := _slot_de(uid)
 
 	var b := _base_botao(w, h)
-	b.tooltip_text = "%s\n%s · Nível %d/%d\n%s%s" % [
-		txt(def, "nome"), _nome_rar(raridade), nivel, Dados.nivel_max_carta,
+	b.tooltip_text = "%s\n%s · %s %d/%d\n%s%s" % [
+		txt(def, "nome"), _nome_rar(raridade), Txt.t("nivel"), nivel, Dados.nivel_max_carta,
 		txt(def, "desc"),
-		"\n(equipada no slot %d)" % (slot + 1) if slot >= 0 else ""]
+		"\n" + Txt.f("car_equipada_slot_par", {"n": slot + 1}) if slot >= 0 else ""]
 	b.pressed.connect(func(): _selecionar(uid))
 
 	var arte := ArteCarta.new()
@@ -383,14 +383,14 @@ func _widget_carta(inst: Dictionary, w: float, h: float, grande: bool) -> Contro
 	var lr := UI.hbox(4)
 	lr.add_child(UI.rotulo(_nome_rar(raridade), 10, cor_rar))
 	lr.add_child(UI.espacador())
-	lr.add_child(UI.rotulo("Nv %d" % nivel, 10, UI.TEXTO2))
+	lr.add_child(UI.rotulo("%s %d" % [Txt.t("car_nv_abrev"), nivel], 10, UI.TEXTO2))
 	v.add_child(lr)
 	_ignorar_mouse(v)
 
 	if _novas().has(uid):
 		var selo := UI.painel(UI.VERDE.darkened(0.62), 5)
 		selo.add_theme_stylebox_override("panel", UI.caixa(UI.VERDE.darkened(0.6), 5, 1, UI.VERDE))
-		var ls := UI.rotulo("NOVO", 9, UI.VERDE)
+		var ls := UI.rotulo(Txt.t("novo"), 9, UI.VERDE)
 		selo.add_child(ls)
 		b.add_child(selo)
 		selo.position = Vector2(5, 5)
@@ -400,7 +400,7 @@ func _widget_carta(inst: Dictionary, w: float, h: float, grande: bool) -> Contro
 
 func _widget_vazio(slot: int, w: float, h: float) -> Control:
 	var b := _base_botao(w, h)
-	b.tooltip_text = "Slot %d vazio. Escolha uma carta no inventário e clique em Equipar." % (slot + 1)
+	b.tooltip_text = Txt.f("car_dica_slot_vazio", {"n": slot + 1})
 	b.pressed.connect(func(): _clicar_vazio(slot))
 	var arte := ArteCarta.new()
 	b.add_child(arte)
@@ -413,10 +413,10 @@ func _widget_vazio(slot: int, w: float, h: float) -> Control:
 	v.offset_top = 6.0
 	v.offset_bottom = -8.0
 	v.alignment = BoxContainer.ALIGNMENT_END
-	var l := UI.rotulo("Vazio", 12, UI.TEXTO3)
+	var l := UI.rotulo(Txt.t("vazio"), 12, UI.TEXTO3)
 	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	v.add_child(l)
-	var l2 := UI.rotulo("slot %d" % (slot + 1), 10, UI.TEXTO3.darkened(0.15))
+	var l2 := UI.rotulo(Txt.f("car_slot_n", {"n": slot + 1}), 10, UI.TEXTO3.darkened(0.15))
 	l2.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	v.add_child(l2)
 	_ignorar_mouse(v)
@@ -444,7 +444,7 @@ func _selecionar(uid: String) -> void:
 func _clicar_vazio(slot: int) -> void:
 	var inst := _achar(sel_uid)
 	if inst.is_empty():
-		Bus.toast("Escolha uma carta no inventário primeiro", "info")
+		Bus.toast(Txt.t("car_toast_escolha"), "info")
 		return
 	_equipar(sel_uid, slot)
 
@@ -475,11 +475,11 @@ func _mostrar_detalhe() -> void:
 
 	var inst := _achar(sel_uid)
 	if inst.is_empty():
-		var l := UI.rotulo("Selecione uma carta para inspecionar.", 13, UI.TEXTO2)
+		var l := UI.rotulo(Txt.t("car_sel_vazia"), 13, UI.TEXTO2)
 		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		l.custom_minimum_size.x = 244
 		detalhe.add_child(l)
-		var l2 := UI.rotulo("Cada uma é um pedaço de algo que já foi maior. A torre não pergunta de onde vieram.", 12, UI.TEXTO3)
+		var l2 := UI.rotulo(Txt.t("car_sel_vazia_lore"), 12, UI.TEXTO3)
 		l2.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		l2.custom_minimum_size.x = 244
 		detalhe.add_child(l2)
@@ -507,9 +507,9 @@ func _mostrar_detalhe() -> void:
 	ln.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	ln.custom_minimum_size.x = 148
 	vt.add_child(ln)
-	vt.add_child(UI.rotulo("%s · Nv %d/%d" % [_nome_rar(raridade), nivel, Dados.nivel_max_carta], 12, UI.TEXTO2))
+	vt.add_child(UI.rotulo("%s · %s %d/%d" % [_nome_rar(raridade), Txt.t("car_nv_abrev"), nivel, Dados.nivel_max_carta], 12, UI.TEXTO2))
 	if slot >= 0:
-		vt.add_child(UI.rotulo("equipada no slot %d" % (slot + 1), 11, UI.ACENTO))
+		vt.add_child(UI.rotulo(Txt.f("car_equipada_slot", {"n": slot + 1}), 11, UI.ACENTO))
 	detalhe.add_child(cab)
 
 	var ld := UI.rotulo(txt(def, "desc"), 11, UI.TEXTO3)
@@ -519,10 +519,10 @@ func _mostrar_detalhe() -> void:
 	detalhe.add_child(UI.separador())
 
 	# --- efeitos ---
-	detalhe.add_child(UI.rotulo("Efeitos (já com raridade e nível)", 12, UI.TEXTO2))
+	detalhe.add_child(UI.rotulo(Txt.t("car_efeitos_titulo"), 12, UI.TEXTO2))
 	var efeitos := _efeitos_carta(def, raridade, nivel)
 	if efeitos.is_empty():
-		detalhe.add_child(UI.rotulo("Nenhum efeito conhecido. Suspeito.", 12, UI.TEXTO3))
+		detalhe.add_child(UI.rotulo(Txt.t("car_sem_efeitos"), 12, UI.TEXTO3))
 	for e in efeitos:
 		var ef: Dictionary = e
 		var l3 := UI.rotulo("· " + str(ef["texto"]), 12, ef["cor"])
@@ -532,7 +532,7 @@ func _mostrar_detalhe() -> void:
 	if nivel < Dados.nivel_max_carta:
 		var prev := _efeitos_carta(def, raridade, nivel + 1)
 		if not prev.is_empty():
-			var lp := UI.rotulo("No nível %d: %s" % [nivel + 1, str(prev[0]["texto"])], 11, UI.TEXTO3)
+			var lp := UI.rotulo(Txt.f("car_no_nivel", {"n": nivel + 1, "t": str(prev[0]["texto"])}), 11, UI.TEXTO3)
 			lp.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 			lp.custom_minimum_size.x = 244
 			detalhe.add_child(lp)
@@ -548,9 +548,9 @@ func _mostrar_detalhe() -> void:
 		for cid in pecas:
 			if not equipadas_ids.has(str(cid)):
 				faltam += 1
-		detalhe.add_child(UI.rotulo("Conjunto: " + txt(conj, "nome"), 12, cor_c))
+		detalhe.add_child(UI.rotulo(Txt.t("car_conjunto") + ": " + txt(conj, "nome"), 12, cor_c))
 		var lc := UI.rotulo(
-			"Conjunto completo — bônus ativo." if faltam == 0 else "Faltam %d peça(s) equipada(s)." % faltam,
+			Txt.t("car_conj_completo") if faltam == 0 else Txt.f("car_conj_faltam", {"n": faltam}),
 			11, UI.VERDE if faltam == 0 else UI.TEXTO3)
 		lc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		lc.custom_minimum_size.x = 244
@@ -562,27 +562,28 @@ func _mostrar_detalhe() -> void:
 		var alvo: Dictionary = Dados.carta_por_id.get(sin, {})
 		if not alvo.is_empty():
 			var junto := _ids_equipados().has(sin)
-			var lsin := UI.rotulo("Sinergia: combina com %s%s" % [txt(alvo, "nome"), " (equipada)" if junto else ""],
+			var marca_eq := " " + Txt.t("car_equipada_par") if junto else ""
+			var lsin := UI.rotulo(Txt.f("car_sinergia", {"nome": txt(alvo, "nome")}) + marca_eq,
 				11, UI.ACENTO2 if junto else UI.TEXTO3)
 			lsin.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 			lsin.custom_minimum_size.x = 244
-			lsin.tooltip_text = "Peças da mesma linhagem. Equipadas juntas, a torre fica mais coerente — e você também."
+			lsin.tooltip_text = Txt.t("car_dica_sinergia")
 			detalhe.add_child(lsin)
 
 	# --- ações ---
 	if slot >= 0:
-		var bd := UI.botao("Desequipar", func(): _desequipar(slot), "Tira a carta do slot %d. Ela volta para o inventário." % (slot + 1))
+		var bd := UI.botao(Txt.t("car_desequipar"), func(): _desequipar(slot), Txt.f("car_dica_desequipar", {"n": slot + 1}))
 		bd.custom_minimum_size.y = 34
 		acoes.add_child(bd)
 	else:
-		acoes.add_child(UI.rotulo("Equipar no slot", 12, UI.TEXTO2))
+		acoes.add_child(UI.rotulo(Txt.t("car_equipar_no_slot"), 12, UI.TEXTO2))
 		var hs := UI.hbox(4)
 		for i in slots:
 			var idx := i
 			var ocupante := _achar(str(_equipadas()[i]))
 			var bs := UI.botao(str(i + 1), func(): _equipar(sel_uid, idx))
 			bs.custom_minimum_size = Vector2(38, 32)
-			bs.tooltip_text = "Slot %d — livre" % (i + 1) if ocupante.is_empty() else "Slot %d — troca com %s" % [i + 1, _nome_carta(ocupante)]
+			bs.tooltip_text = Txt.f("car_slot_livre", {"n": i + 1}) if ocupante.is_empty() else Txt.f("car_slot_troca", {"n": i + 1, "nome": _nome_carta(ocupante)})
 			hs.add_child(bs)
 		hs.add_child(UI.espacador())
 		acoes.add_child(hs)
@@ -592,16 +593,16 @@ func _mostrar_detalhe() -> void:
 	var bf := UI.botao("", func(): _fundir(sel_uid))
 	bf.custom_minimum_size.y = 34
 	bf.disabled = no_teto
-	bf.text = "Nível máximo" if no_teto else "Fundir  —  %s poeira" % Fmt.num(custo, 0)
-	bf.tooltip_text = "Funde poeira na carta e sobe um nível: cada nível vale +25% do efeito base."
+	bf.text = Txt.t("car_nivel_maximo") if no_teto else Txt.f("car_fundir_custo", {"n": Fmt.num(custo, 0)})
+	bf.tooltip_text = Txt.t("car_dica_fundir")
 	acoes.add_child(bf)
 	botoes_detalhe.append({"botao": bf, "tipo": "fundir", "custo": custo, "teto": no_teto})
 
 	var ganho := Saque.poeira_de(raridade, nivel)
-	var br := UI.botao("Reciclar  —  +%s poeira" % Fmt.num(ganho, 0), func(): _reciclar(sel_uid))
+	var br := UI.botao(Txt.f("car_reciclar_ganho", {"n": Fmt.num(ganho, 0)}), func(): _reciclar(sel_uid))
 	br.custom_minimum_size.y = 32
 	br.disabled = slot >= 0
-	br.tooltip_text = "Desmancha a carta em poeira. Não tem volta." if slot < 0 else "Desequipe antes de desmanchar."
+	br.tooltip_text = Txt.t("car_dica_reciclar") if slot < 0 else Txt.t("car_dica_reciclar_equipada")
 	br.add_theme_color_override("font_color", UI.VERMELHO.lerp(UI.TEXTO, 0.35))
 	acoes.add_child(br)
 	botoes_detalhe.append({"botao": br, "tipo": "reciclar", "custo": 0.0, "teto": false})
@@ -655,7 +656,7 @@ func _efeitos_carta(def: Dictionary, raridade: String, nivel: int) -> Array:
 				texto = "%s %s%s" % [nome, "+" if v >= 0.0 else "", Fmt.pct(v)]
 			"mult":
 				if v <= 0.0:
-					texto = "%s anulado" % nome
+					texto = Txt.f("car_ef_anulado", {"nome": nome})
 					cor = UI.VERMELHO
 				else:
 					texto = "%s ×%s" % [nome, _n(v, 2)]
@@ -689,16 +690,16 @@ func _texto_efeitos(efeitos: Array, n: int) -> String:
 func _equipar(uid: String, slot: int) -> void:
 	if Saque.equipar(jogo, uid, slot):
 		jogo.recalcular()
-		Bus.toast("Módulo acoplado no slot %d" % (slot + 1), "bom")
+		Bus.toast(Txt.f("car_toast_equipou", {"n": slot + 1}), "bom")
 		_reconstruir()
 		UI.saltar(caixa_slots, 1.03)
 	else:
-		Bus.toast("Não deu para equipar", "ruim")
+		Bus.toast(Txt.t("car_toast_falha_equipar"), "ruim")
 
 func _desequipar(slot: int) -> void:
 	Saque.desequipar(jogo, slot)
 	jogo.recalcular()
-	Bus.toast("Slot %d liberado" % (slot + 1), "info")
+	Bus.toast(Txt.f("car_toast_slot_livre", {"n": slot + 1}), "info")
 	_reconstruir()
 
 func _fundir(uid: String) -> void:
@@ -706,15 +707,15 @@ func _fundir(uid: String) -> void:
 	if inst.is_empty():
 		return
 	if int(inst["nivel"]) >= Dados.nivel_max_carta:
-		Bus.toast("Já está no nível máximo", "info")
+		Bus.toast(Txt.t("car_toast_no_teto"), "info")
 		return
 	if Saque.fundir(jogo, uid):
 		jogo.recalcular()
-		Bus.toast("Fusão concluída — nível %d" % int(inst["nivel"]), "epico")
+		Bus.toast(Txt.f("car_toast_fusao", {"n": int(inst["nivel"])}), "epico")
 		_reconstruir()
 		UI.pulsar(detalhe, UI.ACENTO2)
 	else:
-		Bus.toast("Poeira insuficiente", "ruim")
+		Bus.toast(Txt.t("car_poeira_insuficiente"), "ruim")
 
 func _reciclar(uid: String) -> void:
 	var inst := _achar(uid)
@@ -723,9 +724,9 @@ func _reciclar(uid: String) -> void:
 	var raridade := str(inst["raridade"])
 	var ganho := Saque.poeira_de(raridade, int(inst["nivel"]))
 	if _ordem_rar(raridade) >= 3:
-		_confirmar("Desmanchar %s?" % _nome_carta(inst),
-			"%s de nível %d vira %s de poeira. Não tem volta, e a torre não guarda rancor — você sim." % [
-				_nome_rar(raridade), int(inst["nivel"]), Fmt.num(ganho, 0)],
+		_confirmar(Txt.f("car_conf_titulo", {"nome": _nome_carta(inst)}),
+			Txt.f("car_conf_texto", {
+				"rar": _nome_rar(raridade), "n": int(inst["nivel"]), "p": Fmt.num(ganho, 0)}),
 			func(): _fazer_reciclar(uid, ganho))
 		return
 	_fazer_reciclar(uid, ganho)
@@ -734,11 +735,11 @@ func _fazer_reciclar(uid: String, ganho: float) -> void:
 	if Saque.reciclar(jogo, uid):
 		if sel_uid == uid:
 			sel_uid = ""
-		Bus.toast("+%s de poeira" % Fmt.num(ganho, 0), "bom")
+		Bus.toast(Txt.f("car_toast_poeira", {"n": Fmt.num(ganho, 0)}), "bom")
 		_reconstruir()
 		UI.pulsar(lbl_poeira, UI.MOEDA_COR["poeira"])
 	else:
-		Bus.toast("Essa carta está equipada", "ruim")
+		Bus.toast(Txt.t("car_toast_esta_equipada"), "ruim")
 
 func _confirmar(titulo: String, texto: String, ao_confirmar: Callable) -> void:
 	if overlay != null and is_instance_valid(overlay):
@@ -772,11 +773,11 @@ func _confirmar(titulo: String, texto: String, ao_confirmar: Callable) -> void:
 	v.add_child(lt)
 	v.add_child(UI.espacador(0, false))
 	var h := UI.hbox(8)
-	var bn := UI.botao("Cancelar", func(): _fechar_overlay())
+	var bn := UI.botao(Txt.t("cancelar"), func(): _fechar_overlay())
 	bn.custom_minimum_size = Vector2(120, 34)
 	h.add_child(bn)
 	h.add_child(UI.espacador())
-	var bs := UI.botao("Desmanchar", func():
+	var bs := UI.botao(Txt.t("car_desmanchar"), func():
 		_fechar_overlay()
 		ao_confirmar.call())
 	bs.custom_minimum_size = Vector2(140, 34)
@@ -871,10 +872,11 @@ func atualizar() -> void:
 	for uid in _equipadas():
 		if str(uid) != "" and not _achar(str(uid)).is_empty():
 			usados += 1
-	lbl_slots.text = "Slots  %d/%d" % [usados, slots]
+	lbl_slots.text = Txt.f("car_slots_n", {"a": usados, "b": slots})
 	var n_inv: int = _inv().size()
 	var n_novas: int = _novas().size()
-	lbl_inv.text = "Inventário  %d %s" % [n_inv, "· %d nova(s)" % n_novas if n_novas > 0 else ""]
+	var marca_novas := Txt.f("car_novas_n", {"n": n_novas}) if n_novas > 0 else ""
+	lbl_inv.text = "%s  %d %s" % [Txt.t("car_inventario"), n_inv, marca_novas]
 	_atualizar_selos()
 	_atualizar_conjuntos()
 

@@ -15,51 +15,20 @@ const ATRASO_INICIAL := 5.0       ## deixa o jogador ver a torre atirar antes
 const LARGURA := 330.0
 
 ## A sequência. `alvo` é uma região da tela; `id` é o que fica salvo.
+## `texto` é a CHAVE do balão em `data/i18n/tutorial.json` — não o texto em si:
+## const não pode chamar `Txt.t`, então a tradução é resolvida na hora de mostrar.
 const PASSOS := [
-	{
-		"id": "inicio", "alvo": "torre",
-		"texto": "Eu sou a Torre. Atiro sozinha, enferrujo devagar e não durmo.\nO resto é com você.",
-	},
-	{
-		"id": "purga", "alvo": "purga",
-		"texto": "A Purga é a única coisa que eu não faço sozinha.\nDeixe encher e solte na faixa dourada.",
-	},
-	{
-		"id": "ouro", "alvo": "moedas",
-		"texto": "Isso que você recolheu é ouro.\nParado no bolso, ele não mata ninguém.",
-	},
-	{
-		"id": "melhorias", "alvo": "menu_upgrades",
-		"texto": "Melhorias ficam aqui embaixo.\nGaste tudo, sempre. Poupar é uma forma lenta de morrer.",
-	},
-	{
-		"id": "nivel", "alvo": "menu_talentos",
-		"texto": "Subiu de nível: ganhou pontos de talento.\nA árvore lembra de cada um deles.",
-	},
-	{
-		"id": "chefe", "alvo": "onda",
-		"texto": "Esse tem nome próprio e mais de uma fase.\nMorre soltando gemas — se morrer.",
-	},
-	{
-		"id": "carta", "alvo": "menu_cartas",
-		"texto": "Caiu uma carta.\nNo inventário ela é enfeite; equipada, ela é dano.",
-	},
-	{
-		"id": "habilidade", "alvo": "habilidades",
-		"texto": "Uma habilidade acordou.\nTem tecla, tem recarga e tem hora certa de usar.",
-	},
-	{
-		"id": "casco", "alvo": "vitais",
-		"texto": "Metade do meu casco já era.\nVida também está à venda, caso lhe interesse.",
-	},
-	{
-		"id": "evento", "alvo": "centro",
-		"texto": "Entre as ondas, o mundo bate à porta.\nEscolha rápido: as consequências ficam.",
-	},
-	{
-		"id": "ascensao", "alvo": "menu_prestigio",
-		"texto": "Onda 25. Dá para Ascender: perde-se tudo, ganham-se fragmentos.\nÉ assim que se avança de verdade.",
-	},
+	{"id": "inicio", "alvo": "torre", "texto": "tut_p_inicio"},
+	{"id": "purga", "alvo": "purga", "texto": "tut_p_purga"},
+	{"id": "ouro", "alvo": "moedas", "texto": "tut_p_ouro"},
+	{"id": "melhorias", "alvo": "menu_upgrades", "texto": "tut_p_melhorias"},
+	{"id": "nivel", "alvo": "menu_talentos", "texto": "tut_p_nivel"},
+	{"id": "chefe", "alvo": "onda", "texto": "tut_p_chefe"},
+	{"id": "carta", "alvo": "menu_cartas", "texto": "tut_p_carta"},
+	{"id": "habilidade", "alvo": "habilidades", "texto": "tut_p_habilidade"},
+	{"id": "casco", "alvo": "vitais", "texto": "tut_p_casco"},
+	{"id": "evento", "alvo": "centro", "texto": "tut_p_evento"},
+	{"id": "ascensao", "alvo": "menu_prestigio", "texto": "tut_p_ascensao"},
 ]
 
 var jogo: Node
@@ -235,12 +204,13 @@ func _mostrar(passo: Dictionary) -> void:
 	ic.set_script(load("res://scripts/ui/icone_control.gd"))
 	topo.add_child(ic)
 	ic.configurar("torre", UI.ACENTO, 18)
-	topo.add_child(UI.rotulo("A TORRE", 11, UI.TEXTO3))
+	topo.add_child(UI.rotulo(Txt.t("tut_a_torre"), 11, UI.TEXTO3))
 	topo.add_child(UI.espacador())
-	topo.add_child(UI.rotulo("clique para dispensar", 10, UI.TEXTO3.darkened(0.1)))
+	topo.add_child(UI.rotulo(Txt.t("tut_dispensar"), 10, UI.TEXTO3.darkened(0.1)))
 	v.add_child(topo)
 
-	var l := UI.rotulo(str(passo["texto"]), 14, UI.TEXTO)
+	# `{n}` só existe no balão da ascensão; nos outros o replace não acha nada.
+	var l := UI.rotulo(Txt.f(str(passo["texto"]), {"n": Bal.ASC_ONDA_MIN}), 14, UI.TEXTO)
 	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	l.custom_minimum_size.x = LARGURA - 30.0
 	l.add_theme_constant_override("line_spacing", 5)
@@ -249,7 +219,7 @@ func _mostrar(passo: Dictionary) -> void:
 	if primeiro:
 		var linha := UI.hbox(6)
 		linha.add_child(UI.espacador())
-		var b := UI.botao("Pular tutorial", _pular, "Some com os balões para sempre. Não vou insistir.")
+		var b := UI.botao(Txt.t("tut_pular"), _pular, Txt.t("tut_pular_dica"))
 		b.add_theme_font_size_override("font_size", 12)
 		b.add_theme_color_override("font_color", UI.TEXTO3)
 		b.add_theme_stylebox_override("normal", UI.caixa(UI.PAINEL2.darkened(0.2), 7, 1, UI.BORDA.darkened(0.2)))
@@ -293,7 +263,7 @@ func _pular() -> void:
 	t["completo"] = true
 	_passo_atual = ""
 	_sumir()
-	Bus.toast("Tutorial encerrado. Você por sua conta.", "info")
+	Bus.toast(Txt.t("tut_encerrado"), "info")
 
 func _sumir() -> void:
 	if is_instance_valid(seta):

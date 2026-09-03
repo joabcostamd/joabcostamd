@@ -9,39 +9,40 @@ extends "res://scripts/ui/panel_base.gd"
 
 const MOEDAS := ["fragmentos", "gemas", "nucleos"]
 
+## Chave interna do efeito -> chave de tradução (data/i18n/panel_reliquias.json).
 const ESPECIAIS := {
-	"offlineHoras": "Horas de acúmulo offline",
-	"offlineEficiencia": "Eficiência offline",
-	"rerolls": "Rerrolagens diárias",
-	"revivesExtra": "Renascimentos por onda",
-	"slotsHabilidade": "Slots de habilidade",
-	"slotsCartas": "Slots de carta",
-	"pontosTalento": "Pontos de talento",
-	"hpInimigo": "Vida dos inimigos",
-	"ganhoNucleos": "Ganho de núcleos",
-	"ondaInicial": "Onda inicial",
-	"velocidadeMax": "Velocidade máxima",
-	"comboTeto": "Teto de combo",
-	"comboBonus": "Bônus por combo",
+	"offlineHoras": "rel_esp_offline_horas",
+	"offlineEficiencia": "rel_esp_offline_eficiencia",
+	"rerolls": "rel_esp_rerolls",
+	"revivesExtra": "rel_esp_revives",
+	"slotsHabilidade": "rel_esp_slots_habilidade",
+	"slotsCartas": "rel_esp_slots_cartas",
+	"pontosTalento": "rel_esp_pontos_talento",
+	"hpInimigo": "rel_esp_hp_inimigo",
+	"ganhoNucleos": "rel_esp_ganho_nucleos",
+	"ondaInicial": "rel_esp_onda_inicial",
+	"velocidadeMax": "rel_esp_velocidade_max",
+	"comboTeto": "rel_esp_combo_teto",
+	"comboBonus": "rel_esp_combo_bonus",
 }
 
 const DESBLOQUEIOS := {
-	"autoReciclagem": "reciclagem automática de cartas",
-	"autoCompra": "compra automática",
-	"autoHabilidade": "uso automático de habilidades",
-	"autoAscensao": "ascensão automática",
-	"modoFarm": "modo farm",
-	"desafios": "desafios",
+	"autoReciclagem": "rel_desb_auto_reciclagem",
+	"autoCompra": "rel_desb_auto_compra",
+	"autoHabilidade": "rel_desb_auto_habilidade",
+	"autoAscensao": "rel_desb_auto_ascensao",
+	"modoFarm": "rel_desb_modo_farm",
+	"desafios": "rel_desb_desafios",
 }
 
 const PASSIVAS := {
-	"salva_coral": "Salva coral: de tempos em tempos a torre despeja projéteis em círculo.",
-	"contrato_recompra": "Contrato de recompra: cancela uma morte por onda e devolve parte da vida.",
-	"sino_de_recomeco": "Sino do recomeço: zera o tempo de recarga das habilidades a cada onda.",
-	"combo_imortal": "Combo imortal: o combo só cai quando a torre toma dano.",
-	"coleira_dourada": "Coleira dourada: mais inimigos dourados, e eles não fogem mais.",
-	"heranca_dourada": "Herança dourada: guarda parte do ouro ao ascender.",
-	"espelho_do_operador": "Espelho do operador: sua relíquia mais cara conta duas vezes.",
+	"salva_coral": "rel_pas_salva_coral",
+	"contrato_recompra": "rel_pas_contrato_recompra",
+	"sino_de_recomeco": "rel_pas_sino_de_recomeco",
+	"combo_imortal": "rel_pas_combo_imortal",
+	"coleira_dourada": "rel_pas_coleira_dourada",
+	"heranca_dourada": "rel_pas_heranca_dourada",
+	"espelho_do_operador": "rel_pas_espelho_do_operador",
 }
 
 var abas: TabBar
@@ -54,7 +55,7 @@ var filtro := "todas"
 var lbl_vazio: Label
 
 func configurar() -> void:
-	titulo_texto = "Relíquias"
+	titulo_texto = Txt.t("p_reliquias")
 	titulo_icone = "reliquia"
 	largura = 1080.0
 	altura = 690.0
@@ -79,17 +80,17 @@ func montar(c: VBoxContainer) -> void:
 		saldos[moeda] = l
 	topo.add_child(UI.espacador())
 	lbl_total = UI.rotulo("", 14, UI.TEXTO2)
-	lbl_total.tooltip_text = "Relíquias com pelo menos um nível, de todas as que existem."
+	lbl_total.tooltip_text = Txt.t("rel_total_dica")
 	topo.add_child(lbl_total)
 	c.add_child(topo)
 
-	var sub := UI.rotulo("Bônus permanentes: sobrevivem à Ascensão, à Singularidade e a você.", 12, UI.TEXTO3)
+	var sub := UI.rotulo(Txt.t("rel_sub"), 12, UI.TEXTO3)
 	c.add_child(sub)
 
 	# ---- filtro por moeda ----
 	abas = TabBar.new()
 	abas.clip_tabs = false
-	abas.add_tab("Todas")
+	abas.add_tab(Txt.t("tudo"))
 	for moeda in MOEDAS:
 		abas.add_tab(_nome_moeda(moeda).capitalize())
 	abas.tab_changed.connect(func(i):
@@ -109,24 +110,24 @@ func montar(c: VBoxContainer) -> void:
 	grade.add_theme_constant_override("v_separation", 10)
 	grade.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	lista.add_child(grade)
-	lbl_vazio = UI.rotulo("Nenhuma relíquia nesta moeda ainda.", 13, UI.TEXTO3)
+	lbl_vazio = UI.rotulo(Txt.t("rel_vazio_moeda"), 13, UI.TEXTO3)
 	lista.add_child(lbl_vazio)
 
 	_reconstruir()
 
 func _nome_moeda(moeda: String) -> String:
 	match moeda:
-		"fragmentos": return "fragmentos"
-		"gemas": return "gemas"
-		"nucleos": return "núcleos"
-		"eter": return "éter"
+		"fragmentos": return Txt.t("m_fragmentos")
+		"gemas": return Txt.t("m_gemas")
+		"nucleos": return Txt.t("m_nucleos")
+		"eter": return Txt.t("m_eter")
 	return moeda
 
 func _dica_moeda(moeda: String) -> String:
 	match moeda:
-		"fragmentos": return "Fragmentos: vêm da Ascensão. O pó do que a torre já foi."
-		"gemas": return "Gemas: caem de chefes e missões. Duras de conseguir, fáceis de gastar."
-		"nucleos": return "Núcleos: vêm da Singularidade. Poucos, densos e caros."
+		"fragmentos": return Txt.t("rel_dica_fragmentos")
+		"gemas": return Txt.t("rel_dica_gemas")
+		"nucleos": return Txt.t("rel_dica_nucleos")
 	return moeda
 
 # ------------------------------------------------------------ reconstrução
@@ -222,10 +223,10 @@ func _cartao(def: Dictionary) -> Control:
 	linha_custo.add_child(lcusto)
 	d.add_child(linha_custo)
 
-	var b1 := UI.botao("Comprar", func(): _comprar(id, 1), "Sobe um nível desta relíquia.")
+	var b1 := UI.botao(Txt.t("comprar"), func(): _comprar(id, 1), Txt.t("rel_dica_comprar_1"))
 	b1.custom_minimum_size = Vector2(150, 34)
 	d.add_child(b1)
-	var bm := UI.botao("Máx", func(): _comprar(id, -1), "Compra quantos níveis o saldo aguentar.")
+	var bm := UI.botao(Txt.t("rel_btn_max"), func(): _comprar(id, -1), Txt.t("rel_dica_comprar_max"))
 	bm.custom_minimum_size = Vector2(150, 28)
 	bm.add_theme_font_size_override("font_size", 13)
 	d.add_child(bm)
@@ -278,17 +279,17 @@ func _requisito(def: Dictionary) -> Dictionary:
 		var alvo := int(req["onda"])
 		var atual := int(jogo.s["onda_maxima_global"])
 		if atual < alvo:
-			return {"ok": false, "texto": "Travada — alcance a onda %d (você chegou à %d)" % [alvo, atual]}
+			return {"ok": false, "texto": Txt.f("rel_travada_onda", {"a": alvo, "b": atual})}
 	if req.has("ascensoes"):
 		var alvo2 := int(req["ascensoes"])
 		var atual2 := int(jogo.s["prestigio"]["ascensoes"])
 		if atual2 < alvo2:
-			return {"ok": false, "texto": "Travada — %d ascensões (você tem %d)" % [alvo2, atual2]}
+			return {"ok": false, "texto": Txt.f("rel_travada_ascensoes", {"a": alvo2, "b": atual2})}
 	if req.has("singularidades"):
 		var alvo3 := int(req["singularidades"])
 		var atual3 := int(jogo.s["prestigio"]["singularidades"])
 		if atual3 < alvo3:
-			return {"ok": false, "texto": "Travada — %d singularidades (você tem %d)" % [alvo3, atual3]}
+			return {"ok": false, "texto": Txt.f("rel_travada_singularidades", {"a": alvo3, "b": atual3})}
 	return {"ok": true, "texto": ""}
 
 # ------------------------------------------------------------------- efeitos
@@ -328,10 +329,10 @@ func _valores(def: Dictionary, n: int) -> String:
 			var chave := str(ef["especial"])
 			var val = ef.get("valor", 0)
 			if chave == "desbloqueio" or not (val is float or val is int):
-				partes.append("Desbloqueia " + str(DESBLOQUEIOS.get(str(val), str(val))))
+				partes.append(Txt.f("rel_desbloqueia", {"o": Txt.t(str(DESBLOQUEIOS.get(str(val), str(val))))}))
 				continue
 			var fv := float(val)
-			var rotulo := str(ESPECIAIS.get(chave, chave))
+			var rotulo := Txt.t(str(ESPECIAIS.get(chave, chave)))
 			if chave == "hpInimigo" or chave == "ganhoNucleos":
 				partes.append("%s ×%s" % [rotulo, _n(pow(fv, float(n)), 3)])
 			elif chave == "offlineEficiencia" or chave == "comboBonus":
@@ -340,7 +341,7 @@ func _valores(def: Dictionary, n: int) -> String:
 				partes.append("%s +%s" % [rotulo, _n(fv * float(n), 2)])
 			continue
 		if ef.has("chave"):
-			partes.append(str(PASSIVAS.get(str(ef["chave"]), str(ef["chave"]))))
+			partes.append(Txt.t(str(PASSIVAS.get(str(ef["chave"]), str(ef["chave"])))))
 	return " · ".join(partes)
 
 # -------------------------------------------------------------------- compra
@@ -358,15 +359,15 @@ func _comprar(id: String, qtd: int) -> void:
 	if n < 0:
 		n = _max_compravel(def)
 		if n <= 0:
-			Bus.toast("Saldo insuficiente", "ruim")
+			Bus.toast(Txt.t("recurso_insuficiente"), "ruim")
 			return
 	var comprados: int = jogo.comprar_reliquia(id, n)
 	if comprados > 0:
 		UI.pulsar(reg["caixa"], UI.VERDE)
-		Bus.toast("%s — nível %d" % [txt(def, "nome"), int(jogo.s["relicas"].get(id, 0))], "bom")
+		Bus.toast(Txt.f("rel_comprou", {"nome": txt(def, "nome"), "n": int(jogo.s["relicas"].get(id, 0))}), "bom")
 		atualizar()
 	else:
-		Bus.toast("Faltam %s" % _nome_moeda(str(reg["moeda"])), "ruim")
+		Bus.toast(Txt.f("rel_faltam", {"m": _nome_moeda(str(reg["moeda"]))}), "ruim")
 
 func _max_compravel(def: Dictionary) -> int:
 	var id := str(def.get("id", ""))
@@ -392,7 +393,7 @@ func atualizar() -> void:
 	for id in jogo.s["relicas"].keys():
 		if int(jogo.s["relicas"][id]) > 0:
 			possuidas += 1
-	lbl_total.text = "Relíquias  %d/%d" % [possuidas, Dados.reliquias.size()]
+	lbl_total.text = "%s  %d/%d" % [Txt.t("p_reliquias"), possuidas, Dados.reliquias.size()]
 
 	for id in cartoes.keys():
 		_atualizar_cartao(str(id))
@@ -409,20 +410,20 @@ func _atualizar_cartao(id: String) -> void:
 	var travada := not bool(req["ok"])
 
 	var lnivel: Label = reg["nivel"]
-	lnivel.text = "MÁX" if no_teto else ("Nv %d%s" % [nivel, "/%d" % maxn if maxn >= 0 else ""])
+	lnivel.text = Txt.t("maximo") if no_teto else ("%s %d%s" % [Txt.t("nivel"), nivel, "/%d" % maxn if maxn >= 0 else ""])
 	lnivel.add_theme_color_override("font_color", UI.OURO if no_teto else UI.TEXTO2)
 
 	var latual: Label = reg["atual"]
-	latual.text = _valores(def, nivel) if nivel > 0 else "Ainda sem nível — nenhum efeito."
+	latual.text = _valores(def, nivel) if nivel > 0 else Txt.t("rel_sem_nivel")
 	latual.add_theme_color_override("font_color", UI.VERDE if nivel > 0 else UI.TEXTO3)
 
 	var lprox: Label = reg["prox"]
 	lprox.visible = not travada
 	if no_teto:
-		lprox.text = "Nada além disso. Já foi longe."
+		lprox.text = Txt.t("rel_no_teto")
 		lprox.add_theme_color_override("font_color", UI.TEXTO3)
 	else:
-		lprox.text = "Próximo: " + _valores(def, nivel + 1)
+		lprox.text = Txt.t("proximo") + ": " + _valores(def, nivel + 1)
 		lprox.add_theme_color_override("font_color", UI.ACENTO)
 
 	var barra: ProgressBar = reg["barra"]
@@ -444,7 +445,7 @@ func _atualizar_cartao(id: String) -> void:
 		cx.modulate = Color(1, 1, 1, 0.55)
 		b1.disabled = true
 		bm.disabled = true
-		b1.text = "Travada"
+		b1.text = Txt.t("bloqueado")
 		bm.visible = false
 		lcusto.text = "—"
 		lcusto.add_theme_color_override("font_color", UI.TEXTO3)
@@ -460,7 +461,7 @@ func _atualizar_cartao(id: String) -> void:
 
 	if no_teto:
 		b1.disabled = true
-		b1.text = "MÁXIMO"
+		b1.text = Txt.t("maximo")
 		lcusto.text = "—"
 		lcusto.add_theme_color_override("font_color", UI.TEXTO3)
 		_acender(reg, true, UI.OURO)
@@ -472,10 +473,10 @@ func _atualizar_cartao(id: String) -> void:
 	lcusto.text = Fmt.big(custo)
 	lcusto.add_theme_color_override("font_color", UI.TEXTO if pode else UI.TEXTO3)
 	b1.disabled = not pode
-	b1.text = "Comprar"
+	b1.text = Txt.t("comprar")
 	var n_max := _max_compravel(def)
 	bm.disabled = n_max <= 0
-	bm.text = "Máx  ×%d" % n_max if n_max > 0 else "Máx"
+	bm.text = "%s  ×%d" % [Txt.t("rel_btn_max"), n_max] if n_max > 0 else Txt.t("rel_btn_max")
 	_acender(reg, pode, cor)
 
 ## Acende a moldura do cartão quando dá para comprar (ou quando está no máximo).

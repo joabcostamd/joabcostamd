@@ -22,5 +22,25 @@
   "mira_longe": {
     "pt": "Mais distante",
     "en": "Farthest"
+  },
+  "hud_dica_ouro_mult": {
+    "pt": "Multiplicador de ouro no momento: combo × aglomeração.\nQuanto mais inimigos vivos na tela, mais cada abate rende.",
+    "en": "Current gold multiplier: combo × crowding.\nThe more enemies alive on screen, the more each kill pays."
+  },
+  "hud_chefe_fase": {
+    "pt": "fase {a}/{b}  ·  {hp}",
+    "en": "phase {a}/{b}  ·  {hp}"
+  },
+  "hud_fps_inimigos": {
+    "pt": "{f} fps · {n} inim.",
+    "en": "{f} fps · {n} enemies"
+  },
+  "hud_dica_adaptacao": {
+    "pt": "O Enxame se adapta ao que você mais usa.\nDiversifique os elementos para o dano voltar ao normal.",
+    "en": "The Swarm adapts to whatever you lean on.\nMix up your elements to get your damage back."
+  },
+  "hud_velocidade_trancada": {
+    "pt": "Desbloqueie Aceleração na árvore de Fragmentos",
+    "en": "Unlock Acceleration in the Fragment tree"
   }
 }

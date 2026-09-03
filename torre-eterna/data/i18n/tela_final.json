@@ -1,0 +1,46 @@
+{
+  "fim_reinicios": {
+    "pt": "Você reiniciou {n} vezes.",
+    "en": "You have restarted {n} times."
+  },
+  "fim_ficou_para_tras": {
+    "pt": "A cada reinício, algo seu ficou para trás na arena.",
+    "en": "Every reset, something of yours stayed behind in the arena."
+  },
+  "fim_enxame": {
+    "pt": "O Enxame nunca veio de fora.",
+    "en": "The Swarm never came from outside."
+  },
+  "fim_versoes": {
+    "pt": "São as suas versões anteriores, voltando para pedir o lugar de volta.",
+    "en": "They are your earlier selves, coming back to ask for their place."
+  },
+  "fim_peregrinos": {
+    "pt": "Peregrinos poupados: {a}   ·   Peregrinos abatidos: {b}",
+    "en": "Pilgrims spared: {a}   ·   Pilgrims killed: {b}"
+  },
+  "fim_veredito_nenhum": {
+    "pt": "Você nunca encontrou um Peregrino. Ele encontrou você.",
+    "en": "You never found a Pilgrim. It found you."
+  },
+  "fim_veredito_poupou": {
+    "pt": "Você deixou a maioria passar. Alguns chegaram do outro lado.",
+    "en": "You let most of them through. Some made it to the other side."
+  },
+  "fim_veredito_matou": {
+    "pt": "Você não deixou nenhum passar. A arena lembra de cada um.",
+    "en": "You let none of them through. The arena remembers every one."
+  },
+  "fim_veredito_hesitou": {
+    "pt": "Você hesitou. Isso também é uma resposta.",
+    "en": "You hesitated. That is an answer too."
+  },
+  "fim_continua": {
+    "pt": "A torre continua. Ela sempre continua.",
+    "en": "The tower goes on. It always goes on."
+  },
+  "fim_continuar_existindo": {
+    "pt": "Continuar existindo",
+    "en": "Keep existing"
+  }
+}

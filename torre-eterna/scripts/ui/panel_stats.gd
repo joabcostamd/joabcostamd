@@ -23,7 +23,7 @@ var aviso_grafico: Label
 var lbl_grafico_info: Label
 
 func configurar() -> void:
-	titulo_texto = "Estatísticas"
+	titulo_texto = Txt.t("p_stats")
 	titulo_icone = "stats"
 	largura = 1060.0
 	altura = 676.0
@@ -34,15 +34,15 @@ func configurar() -> void:
 func montar(c: VBoxContainer) -> void:
 	abas = TabBar.new()
 	abas.clip_tabs = false
-	abas.add_tab("Resumo")
-	abas.add_tab("Atributos")
+	abas.add_tab(Txt.t("sta_aba_resumo"))
+	abas.add_tab(Txt.t("sta_aba_atributos"))
 	abas.tab_changed.connect(func(i):
 		pagina_resumo.visible = int(i) == 0
 		pagina_stats.visible = int(i) == 1)
 	var topo := UI.hbox(10)
 	topo.add_child(abas)
 	topo.add_child(UI.espacador())
-	topo.add_child(UI.rotulo("Uma torre que não mede não melhora.", 12, UI.TEXTO3))
+	topo.add_child(UI.rotulo(Txt.t("sta_epigrafe"), 12, UI.TEXTO3))
 	c.add_child(topo)
 
 	pagina_resumo = _montar_resumo()
@@ -76,106 +76,106 @@ func _montar_resumo() -> Control:
 	return sc
 
 func _cartao_progresso(g: GridContainer) -> void:
-	var v := _cartao(g, "Progresso", "torre", UI.ACENTO)
-	_linha(v, "Onda atual", "A onda que está rolando agora.",
+	var v := _cartao(g, Txt.t("sta_c_progresso"), "torre", UI.ACENTO)
+	_linha(v, Txt.t("sta_onda_atual"), Txt.t("sta_onda_atual_dica"),
 		func(): return Fmt.inteiro(int(jogo.s["onda"])), UI.TEXTO)
-	_linha(v, "Melhor desta corrida", "Onda mais alta desde a última ascensão.",
+	_linha(v, Txt.t("sta_melhor_corrida"), Txt.t("sta_melhor_corrida_dica"),
 		func(): return Fmt.inteiro(int(jogo.s["onda_maxima"])))
-	_linha(v, "Recorde absoluto", "A onda mais alta que você já viu, em qualquer corrida.",
+	_linha(v, Txt.t("sta_recorde"), Txt.t("sta_recorde_dica"),
 		func(): return Fmt.inteiro(int(jogo.s["onda_maxima_global"])), UI.OURO)
-	_linha(v, "Ondas completas", "Ondas limpas somando todas as corridas.",
+	_linha(v, Txt.t("sta_ondas_completas"), Txt.t("sta_ondas_completas_dica"),
 		func(): return Fmt.inteiro(int(_st()["ondas_completas"])))
-	_linha(v, "Nível", "Nível da torre — cada nível dá um ponto de talento.",
+	_linha(v, Txt.t("nivel"), Txt.t("sta_nivel_dica"),
 		func(): return Fmt.inteiro(int(jogo.s["nivel"])))
-	_linha(v, "Prestígio (asc · sing · trans)", "As três camadas de prestígio.",
+	_linha(v, Txt.t("sta_prestigio"), Txt.t("sta_prestigio_dica"),
 		func(): return "%d · %d · %d" % [int(jogo.s["prestigio"]["ascensoes"]),
 			int(jogo.s["prestigio"]["singularidades"]), int(jogo.s["prestigio"]["transcendencias"])], UI.ACENTO2)
-	_linha(v, "Tempo médio por onda", "Tempo total dividido pelas ondas completas.",
+	_linha(v, Txt.t("sta_media_onda"), Txt.t("sta_media_onda_dica"),
 		func(): return _media_onda())
-	_linha(v, "Ondas por hora", "Ritmo médio de avanço.",
+	_linha(v, Txt.t("sta_ondas_hora"), Txt.t("sta_ondas_hora_dica"),
 		func(): return _ondas_hora())
 
 func _cartao_combate(g: GridContainer) -> void:
-	var v := _cartao(g, "Combate", "espada", UI.VERMELHO)
-	_linha(v, "Inimigos abatidos", "Tudo que a torre derrubou.",
+	var v := _cartao(g, Txt.t("sta_c_combate"), "espada", UI.VERMELHO)
+	_linha(v, Txt.t("sta_mortos"), Txt.t("sta_mortos_dica"),
 		func(): return Fmt.inteiro(int(_st()["mortos"])), UI.TEXTO)
-	_linha(v, "Chefes abatidos", "Só os graúdos.",
+	_linha(v, Txt.t("sta_chefes"), Txt.t("sta_chefes_dica"),
 		func(): return Fmt.inteiro(int(_st()["chefes_mortos"])))
-	_linha(v, "Dourados abatidos", "Inimigos dourados: raros, ricos e apressados.",
+	_linha(v, Txt.t("sta_dourados"), Txt.t("sta_dourados_dica"),
 		func(): return Fmt.inteiro(int(_st()["dourados"])), UI.OURO)
-	_linha(v, "Tiros disparados", "Projéteis que saíram do cano.",
+	_linha(v, Txt.t("sta_tiros"), Txt.t("sta_tiros_dica"),
 		func(): return Fmt.inteiro(int(_st()["tiros"])))
-	_linha(v, "Críticos", "Acertos críticos e a fração dos tiros que acertou crítico.",
+	_linha(v, Txt.t("sta_criticos"), Txt.t("sta_criticos_dica"),
 		func(): return "%s  (%s)" % [Fmt.inteiro(int(_st()["criticos"])), _taxa_critico()])
-	_linha(v, "Dano total", "Soma de todo o dano causado.",
+	_linha(v, Txt.t("sta_dano_total"), Txt.t("sta_dano_total_dica"),
 		func(): return Fmt.big(_st()["dano_total"]), UI.VERMELHO)
-	_linha(v, "Maior golpe", "O maior número que você já viu subir na tela.",
+	_linha(v, Txt.t("sta_maior_golpe"), Txt.t("sta_maior_golpe_dica"),
 		func(): return Fmt.big(_st()["dano_maximo"]), UI.LARANJA)
-	_linha(v, "Dano médio por tiro", "Dano total dividido pelos tiros.",
+	_linha(v, Txt.t("sta_dano_medio"), Txt.t("sta_dano_medio_dica"),
 		func(): return _dano_medio())
-	_linha(v, "Combo máximo", "Maior sequência de abates sem respiro.",
+	_linha(v, Txt.t("sta_combo_max"), Txt.t("sta_combo_max_dica"),
 		func(): return Fmt.inteiro(int(_st()["combo_maximo"])))
-	_linha(v, "Torres perdidas", "Quantas vezes a torre caiu. Acontece.",
+	_linha(v, Txt.t("sta_mortes"), Txt.t("sta_mortes_dica"),
 		func(): return Fmt.inteiro(int(_st()["mortes"])), UI.TEXTO2)
 
 func _cartao_economia(g: GridContainer) -> void:
-	var v := _cartao(g, "Economia", "ouro", UI.OURO)
-	_linha(v, "Ouro acumulado", "Todo o ouro que já entrou no caixa.",
+	var v := _cartao(g, Txt.t("sta_c_economia"), "ouro", UI.OURO)
+	_linha(v, Txt.t("sta_ouro_total"), Txt.t("sta_ouro_total_dica"),
 		func(): return Fmt.big(_st()["ouro_total"]), UI.OURO)
-	_linha(v, "Ouro gasto", "Todo o ouro que já saiu — sem arrependimento.",
+	_linha(v, Txt.t("sta_ouro_gasto"), Txt.t("sta_ouro_gasto_dica"),
 		func(): return Fmt.big(_st()["ouro_gasto"]))
-	_linha(v, "Ouro por minuto", "Ritmo médio de arrecadação no tempo total.",
+	_linha(v, Txt.t("sta_ouro_min"), Txt.t("sta_ouro_min_dica"),
 		func(): return _ouro_minuto(), UI.VERDE)
-	_linha(v, "Ouro em caixa", "O que está disponível agora.",
+	_linha(v, Txt.t("sta_ouro_caixa"), Txt.t("sta_ouro_caixa_dica"),
 		func(): return Fmt.big(jogo.s["moedas"]["ouro"]), UI.OURO)
-	_linha(v, "Gemas", "Moeda de conveniência.",
+	_linha(v, Txt.t("m_gemas").capitalize(), Txt.t("sta_gemas_dica"),
 		func(): return Fmt.big(jogo.s["moedas"]["gemas"]), UI.MOEDA_COR["gemas"])
-	_linha(v, "Fragmentos", "Moeda da Ascensão.",
+	_linha(v, Txt.t("m_fragmentos").capitalize(), Txt.t("sta_fragmentos_dica"),
 		func(): return Fmt.big(jogo.s["moedas"]["fragmentos"]), UI.MOEDA_COR["fragmentos"])
-	_linha(v, "Núcleos", "Moeda da Singularidade.",
+	_linha(v, Txt.t("m_nucleos").capitalize(), Txt.t("sta_nucleos_dica"),
 		func(): return Fmt.big(jogo.s["moedas"]["nucleos"]), UI.MOEDA_COR["nucleos"])
-	_linha(v, "Éter", "Moeda da Transcendência.",
+	_linha(v, Txt.t("m_eter").capitalize(), Txt.t("sta_eter_dica"),
 		func(): return Fmt.big(jogo.s["moedas"]["eter"]), UI.MOEDA_COR["eter"])
-	_linha(v, "Poeira", "Resto de carta reciclada.",
+	_linha(v, Txt.t("m_poeira").capitalize(), Txt.t("sta_poeira_dica"),
 		func(): return Fmt.big(jogo.s["moedas"]["poeira"]), UI.MOEDA_COR["poeira"])
 
 func _cartao_colecao(g: GridContainer) -> void:
-	var v := _cartao(g, "Coleção", "carta", UI.ACENTO2)
-	_linha(v, "Cartas obtidas", "Total de cartas que já caíram para você.",
+	var v := _cartao(g, Txt.t("sta_c_colecao"), "carta", UI.ACENTO2)
+	_linha(v, Txt.t("sta_cartas"), Txt.t("sta_cartas_dica"),
 		func(): return Fmt.inteiro(int(_st()["cartas_obtidas"])))
-	_linha(v, "Lendárias", "As que valem a moldura dourada.",
+	_linha(v, Txt.t("sta_lendarias"), Txt.t("sta_lendarias_dica"),
 		func(): return Fmt.inteiro(int(_st()["lendarios"])), UI.OURO)
-	_linha(v, "No inventário", "Cartas guardadas agora.",
+	_linha(v, Txt.t("sta_inventario"), Txt.t("sta_inventario_dica"),
 		func(): return Fmt.inteiro(jogo.s["cartas"]["inventario"].size()))
-	_linha(v, "Relíquias", "Tipos de relíquia possuídos.",
+	_linha(v, Txt.t("p_reliquias"), Txt.t("sta_reliquias_dica"),
 		func(): return Fmt.inteiro(jogo.s["relicas"].size()))
-	_linha(v, "Conquistas", "Conquistas desbloqueadas do total catalogado.",
+	_linha(v, Txt.t("p_conquistas"), Txt.t("sta_conquistas_dica"),
 		func(): return "%s / %s" % [Fmt.inteiro(jogo.s["conquistas"].size()), Fmt.inteiro(Dados.conquistas.size())])
-	_linha(v, "Desafios vencidos", "Provações concluídas.",
+	_linha(v, Txt.t("sta_desafios"), Txt.t("sta_desafios_dica"),
 		func(): return Fmt.inteiro(jogo.s["desafios"]["completos"].size()))
-	_linha(v, "Habilidades usadas", "Quantas vezes você apertou o botão certo.",
+	_linha(v, Txt.t("sta_habilidades"), Txt.t("sta_habilidades_dica"),
 		func(): return Fmt.inteiro(int(_st()["habilidades_usadas"])))
-	_linha(v, "Arquivo de história", "Entradas de lore já liberadas.",
+	_linha(v, Txt.t("sta_lore"), Txt.t("sta_lore_dica"),
 		func(): return "%s / %s" % [Fmt.inteiro(_lore_abertas()), Fmt.inteiro(Dados.entradas_lore.size())], UI.ACENTO)
 
 func _cartao_tempo(g: GridContainer) -> void:
-	var v := _cartao(g, "Tempo", "ampulheta", UI.ACENTO)
-	_linha(v, "Tempo total", "Somando todas as sessões e o tempo offline creditado.",
+	var v := _cartao(g, Txt.t("sta_c_tempo"), "ampulheta", UI.ACENTO)
+	_linha(v, Txt.t("sta_tempo_total"), Txt.t("sta_tempo_total_dica"),
 		func(): return Ux.tempo_curto(float(_st()["tempo_total"])), UI.TEXTO)
-	_linha(v, "Nesta sessão", "Desde que você abriu o jogo.",
+	_linha(v, Txt.t("sta_sessao"), Txt.t("sta_sessao_dica"),
 		func(): return Ux.tempo_curto(float(_st()["tempo_sessao"])))
-	_linha(v, "Offline", "Tempo que a torre lutou sozinha.",
+	_linha(v, Txt.t("sta_offline"), Txt.t("sta_offline_dica"),
 		func(): return Ux.tempo_curto(float(_st()["tempo_offline"])))
-	_linha(v, "Fração offline", "Quanto do total foi ganho enquanto você não olhava.",
+	_linha(v, Txt.t("sta_frac_offline"), Txt.t("sta_frac_offline_dica"),
 		func(): return _frac_offline(), UI.ACENTO2)
-	_linha(v, "Primeira ignição", "Quando este save nasceu.",
+	_linha(v, Txt.t("sta_criacao"), Txt.t("sta_criacao_dica"),
 		func(): return _data_criacao(), UI.TEXTO2)
-	_linha(v, "Velocidade do jogo", "Multiplicador de tempo escolhido no HUD.",
+	_linha(v, Txt.t("velocidade"), Txt.t("sta_velocidade_dica"),
 		func(): return Fmt.mult(float(jogo.s["auto"]["velocidade"])))
 
 func _cartao_cacadas(g: GridContainer) -> void:
-	var v := _cartao(g, "Caçadas", "alvo", UI.VERDE)
-	v.add_child(UI.rotulo("Os tipos que mais morreram na sua frente.", 11, UI.TEXTO3))
+	var v := _cartao(g, Txt.t("sta_c_cacadas"), "alvo", UI.VERDE)
+	v.add_child(UI.rotulo(Txt.t("sta_cacadas_sub"), 11, UI.TEXTO3))
 	for i in TOPO_CACADAS:
 		var linha_c := UI.vbox(1)
 		var h := UI.hbox(6)
@@ -197,7 +197,7 @@ func _cartao_cacadas(g: GridContainer) -> void:
 func _painel_grafico() -> Control:
 	var p := UI.painel(UI.PAINEL2.darkened(0.24), 12)
 	p.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	p.tooltip_text = "Cada marca do histórico é uma amostra: em que instante você estava em que onda."
+	p.tooltip_text = Txt.t("sta_grafico_dica")
 	var v := UI.vbox(6)
 	p.add_child(v)
 
@@ -206,7 +206,7 @@ func _painel_grafico() -> Control:
 	ic.set_script(load("res://scripts/ui/icone_control.gd"))
 	cab.add_child(ic)
 	ic.configurar("stats", UI.ACENTO, 16)
-	cab.add_child(UI.rotulo("Curva de progresso", 15, UI.TEXTO))
+	cab.add_child(UI.rotulo(Txt.t("sta_grafico_titulo"), 15, UI.TEXTO))
 	cab.add_child(UI.espacador())
 	lbl_grafico_info = UI.rotulo("", 12, UI.TEXTO3)
 	cab.add_child(lbl_grafico_info)
@@ -221,9 +221,7 @@ func _painel_grafico() -> Control:
 	caixa.add_child(grafico)
 	grafico.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
-	aviso_grafico = UI.rotulo(
-		"Ainda não há amostras suficientes para desenhar a curva.\nJogue mais algumas ondas e volte — a Torre anota tudo.",
-		13, UI.TEXTO3)
+	aviso_grafico = UI.rotulo(Txt.t("sta_grafico_vazio"), 13, UI.TEXTO3)
 	aviso_grafico.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	aviso_grafico.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	aviso_grafico.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -240,7 +238,7 @@ func _montar_atributos() -> Control:
 	sc.add_child(v)
 
 	if Dados.stat_grupos.is_empty():
-		v.add_child(UI.rotulo("Nenhum atributo catalogado — os dados não carregaram.", 13, UI.TEXTO3))
+		v.add_child(UI.rotulo(Txt.t("sta_sem_atributos"), 13, UI.TEXTO3))
 		return sc
 
 	for item in Dados.stat_grupos:
@@ -273,7 +271,7 @@ func _montar_atributos() -> Control:
 				continue
 			var h := UI.hbox(8)
 			h.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-			h.tooltip_text = "%s\nBase: %s" % [txt(sd, "desc"), str(sd.get("base", 0))]
+			h.tooltip_text = "%s\n%s: %s" % [txt(sd, "desc"), Txt.t("sta_base"), str(sd.get("base", 0))]
 			var ln := UI.rotulo(txt(sd, "nome"), 13, UI.TEXTO2)
 			ln.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			h.add_child(ln)
@@ -345,8 +343,8 @@ func _atualizar_grafico() -> void:
 	grafico.queue_redraw()
 	var tem := pontos.size() >= 2
 	aviso_grafico.visible = not tem
-	lbl_grafico_info.text = ("%d amostras · pico na onda %d" % [pontos.size(), int(grafico.pico())]) if tem \
-		else "sem amostras"
+	lbl_grafico_info.text = Txt.f("sta_grafico_info", {"n": pontos.size(), "pico": int(grafico.pico())}) if tem \
+		else Txt.t("sta_sem_amostras")
 
 # ============================================================== cálculos
 
@@ -392,9 +390,9 @@ func _frac_offline() -> String:
 func _data_criacao() -> String:
 	var ts := int(jogo.s.get("criado_em", 0))
 	if ts <= 0:
-		return "hoje"
+		return Txt.t("sta_hoje")
 	var d := Time.get_datetime_dict_from_unix_time(ts)
-	return "%02d/%02d/%04d" % [int(d["day"]), int(d["month"]), int(d["year"])]
+	return Txt.f("sta_data", {"d": "%02d" % int(d["day"]), "m": "%02d" % int(d["month"]), "a": "%04d" % int(d["year"])})
 
 func _lore_abertas() -> int:
 	var n := 0
@@ -556,7 +554,7 @@ class Grafico extends Control:
 		draw_circle(p_pico, 6.0, Color(UI.OURO.r, UI.OURO.g, UI.OURO.b, 0.25))
 		draw_circle(p_pico, 3.0, UI.OURO)
 		if f != null:
-			var rotulo := "pico: onda %d" % int(v_pico.y)
+			var rotulo := Txt.f("sta_grafico_pico", {"n": int(v_pico.y)})
 			var w := f.get_string_size(rotulo, HORIZONTAL_ALIGNMENT_LEFT, -1, 12).x
 			var px := clampf(p_pico.x - w * 0.5, area.position.x, area.position.x + area.size.x - w)
 			draw_string(f, Vector2(px, maxf(p_pico.y - 10.0, area.position.y + 11.0)), rotulo,
@@ -589,9 +587,9 @@ class Grafico extends Control:
 		draw_line(area.position + Vector2(0, area.size.y), area.end, UI.BORDA_FORTE, 1.5)
 		draw_line(area.position, area.position + Vector2(0, area.size.y), UI.BORDA_FORTE, 1.5)
 		if f != null:
-			draw_string(f, Vector2(area.position.x - 46.0, area.position.y - 9.0), "onda",
+			draw_string(f, Vector2(area.position.x - 46.0, area.position.y - 9.0), Txt.t("onda").to_lower(),
 				HORIZONTAL_ALIGNMENT_LEFT, -1, 11, UI.TEXTO3)
-			var st := "tempo de jogo"
+			var st := Txt.t("sta_eixo_tempo")
 			var wt := f.get_string_size(st, HORIZONTAL_ALIGNMENT_LEFT, -1, 11).x
 			draw_string(f, Vector2(area.end.x - wt, area.position.y - 9.0), st,
 				HORIZONTAL_ALIGNMENT_LEFT, -1, 11, UI.TEXTO3)

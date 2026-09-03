@@ -11,7 +11,13 @@ func _ready() -> void:
 	custom_minimum_size = Vector2(72, 72)
 	focus_mode = Control.FOCUS_NONE
 	mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	tooltip_text = "PURGA  [P ou clique na torre]\nO núcleo acumula carga sozinho.\nSolte na faixa dourada (92%+) para o efeito máximo:\ndano massivo em tudo, ouro extra e habilidades recarregadas.\nDeixar estourar desperdiça a carga e trava a torre."
+	# A porcentagem sai da constante, e não de um número escrito à mão: se a
+	# janela mudar, a dica muda junto.
+	var pct_janela := int(round(Mecanicas.PURGA_JANELA_PERFEITA * 100.0))
+	tooltip_text = "%s  [%s]\n%s\n%s (%d%%+)\n%s\n%s" % [
+		Txt.t("purga"), Txt.t("pur_atalho"), Txt.t("pur_acumula"),
+		Txt.t("purga_dica"), pct_janela, Txt.t("pur_efeito"), Txt.t("pur_estourar"),
+	]
 	pressed.connect(func(): jogo.purgar())
 
 func _process(delta: float) -> void:

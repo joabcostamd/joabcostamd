@@ -1,0 +1,26 @@
+{
+  "tit_continuar": {
+    "pt": "CONTINUAR",
+    "en": "CONTINUE"
+  },
+  "tit_comecar": {
+    "pt": "COMEÇAR",
+    "en": "START"
+  },
+  "tit_recomecar": {
+    "pt": "Recomeçar do zero",
+    "en": "Start over from scratch"
+  },
+  "tit_apagar_confirma": {
+    "pt": "Tem certeza? Clique de novo para apagar TUDO.",
+    "en": "Are you sure? Click again to erase EVERYTHING."
+  },
+  "tit_rodape": {
+    "pt": "Torre Eterna · feito sem uma única imagem ou arquivo de som",
+    "en": "Torre Eterna · made without a single image or sound file"
+  },
+  "tit_subtitulo": {
+    "pt": "uma torre · ondas infinitas · três camadas de prestígio",
+    "en": "one tower · endless waves · three layers of prestige"
+  }
+}

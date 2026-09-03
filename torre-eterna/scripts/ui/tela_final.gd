@@ -16,17 +16,17 @@ func _ready() -> void:
 	var poupados := int(jogo.s.get("peregrinos_poupados", 0))
 	var mortos := int(jogo.s.get("peregrinos_mortos", 0))
 	linhas = [
-		"Você reiniciou %d vezes." % int(jogo.s["prestigio"]["transcendencias"]),
-		"A cada reinício, algo seu ficou para trás na arena.",
-		"O Enxame nunca veio de fora.",
-		"São as suas versões anteriores, voltando para pedir o lugar de volta.",
+		Txt.f("fim_reinicios", {"n": int(jogo.s["prestigio"]["transcendencias"])}),
+		Txt.t("fim_ficou_para_tras"),
+		Txt.t("fim_enxame"),
+		Txt.t("fim_versoes"),
 		"",
-		"Peregrinos poupados: %d   ·   Peregrinos abatidos: %d" % [poupados, mortos],
+		Txt.f("fim_peregrinos", {"a": poupados, "b": mortos}),
 		_veredito(poupados, mortos),
 		"",
-		"A torre continua. Ela sempre continua.",
+		Txt.t("fim_continua"),
 	]
-	var b := UI.botao("Continuar existindo", func(): queue_free())
+	var b := UI.botao(Txt.t("fim_continuar_existindo"), func(): queue_free())
 	b.anchor_left = 0.5
 	b.anchor_right = 0.5
 	b.anchor_top = 1.0
@@ -43,12 +43,12 @@ func _ready() -> void:
 
 func _veredito(poupados: int, mortos: int) -> String:
 	if poupados == 0 and mortos == 0:
-		return "Você nunca encontrou um Peregrino. Ele encontrou você."
+		return Txt.t("fim_veredito_nenhum")
 	if poupados > mortos * 2:
-		return "Você deixou a maioria passar. Alguns chegaram do outro lado."
+		return Txt.t("fim_veredito_poupou")
 	if mortos > poupados * 2:
-		return "Você não deixou nenhum passar. A arena lembra de cada um."
-	return "Você hesitou. Isso também é uma resposta."
+		return Txt.t("fim_veredito_matou")
+	return Txt.t("fim_veredito_hesitou")
 
 func _process(delta: float) -> void:
 	t += delta

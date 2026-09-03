@@ -30,7 +30,7 @@ var niveis: Dictionary = {}      # nivel -> registro
 var assinatura := ""
 
 func configurar() -> void:
-	titulo_texto = "Missões"
+	titulo_texto = Txt.t("p_missoes")
 	titulo_icone = "missao"
 	largura = 1020.0
 	altura = 690.0
@@ -51,17 +51,17 @@ func montar(c: VBoxContainer) -> void:
 
 	# ---------------------------------------------------------- diárias
 	lbl_diario = UI.rotulo("", 13, UI.TEXTO2)
-	conteudo.add_child(_secao("Diárias", "ampulheta", UI.ACENTO,
-		"Três contratos por dia. O relógio não perdoa, o Enxame também não.", lbl_diario))
+	conteudo.add_child(_secao(Txt.t("mis_sec_diarias"), "ampulheta", UI.ACENTO,
+		Txt.t("mis_sec_diarias_dica"), lbl_diario))
 	caixa_diarias = UI.vbox(6)
 	conteudo.add_child(caixa_diarias)
-	lbl_vazio_d = UI.rotulo("Nenhuma missão diária no quadro — volte depois do próximo reset.", 13, UI.TEXTO3)
+	lbl_vazio_d = UI.rotulo(Txt.t("mis_vazio_diarias"), 13, UI.TEXTO3)
 	conteudo.add_child(lbl_vazio_d)
 
 	# ------------------------------------------------------- sequência
 	lbl_sequencia = UI.rotulo("", 13, UI.TEXTO2)
-	conteudo.add_child(_secao("Sequência diária", "estrela", UI.OURO,
-		"Aparecer todo dia multiplica o XP de temporada. Faltar zera a contagem.", lbl_sequencia))
+	conteudo.add_child(_secao(Txt.t("mis_sec_sequencia"), "estrela", UI.OURO,
+		Txt.t("mis_sec_sequencia_dica"), lbl_sequencia))
 	var cx_seq := UI.painel(UI.PAINEL2.darkened(0.15), 12)
 	caixa_sequencia = UI.hbox(6)
 	caixa_sequencia.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -71,16 +71,16 @@ func montar(c: VBoxContainer) -> void:
 
 	# --------------------------------------------------------- semanais
 	lbl_semanal = UI.rotulo("", 13, UI.TEXTO2)
-	conteudo.add_child(_secao("Semanais", "desafio", UI.ACENTO2,
-		"Contratos longos, pagamento gordo. Sete dias para cumprir.", lbl_semanal))
+	conteudo.add_child(_secao(Txt.t("mis_sec_semanais"), "desafio", UI.ACENTO2,
+		Txt.t("mis_sec_semanais_dica"), lbl_semanal))
 	caixa_semanais = UI.vbox(6)
 	conteudo.add_child(caixa_semanais)
-	lbl_vazio_s = UI.rotulo("Nenhuma missão semanal no quadro.", 13, UI.TEXTO3)
+	lbl_vazio_s = UI.rotulo(Txt.t("mis_vazio_semanais"), 13, UI.TEXTO3)
 	conteudo.add_child(lbl_vazio_s)
 
 	# -------------------------------------------------------- temporada
-	conteudo.add_child(_secao("Passe de Temporada", "prestigio", UI.ROSA,
-		"XP vem de missões cumpridas. Cada nível libera uma recompensa — e ela não se coleta sozinha.", null))
+	conteudo.add_child(_secao(Txt.t("mis_sec_passe"), "prestigio", UI.ROSA,
+		Txt.t("mis_sec_passe_dica"), null))
 	var cabeca := UI.painel(UI.PAINEL2.darkened(0.1), 12)
 	var ch := UI.hbox(14)
 	cabeca.add_child(ch)
@@ -90,11 +90,11 @@ func montar(c: VBoxContainer) -> void:
 	ic.configurar("estrela", UI.ROSA, 30)
 	var cv := UI.vbox(3)
 	cv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	lbl_nivel = UI.rotulo("Nível 0", 18, UI.TEXTO)
+	lbl_nivel = UI.rotulo(Txt.t("nivel") + " 0", 18, UI.TEXTO)
 	cv.add_child(lbl_nivel)
 	barra_xp = UI.barra(UI.ROSA, 9)
 	barra_xp.custom_minimum_size.x = 420
-	barra_xp.tooltip_text = "XP acumulado rumo ao próximo nível da temporada."
+	barra_xp.tooltip_text = Txt.t("mis_dica_barra_xp")
 	cv.add_child(barra_xp)
 	ch.add_child(cv)
 	lbl_xp = UI.rotulo("", 14, UI.TEXTO2)
@@ -188,12 +188,12 @@ func _linha_missao(grupo: String, indice: int) -> void:
 	ic_rec.configurar(_icone_recompensa(rec), _cor_recompensa(rec), 14)
 	lp.add_child(UI.rotulo(_texto_recompensa(rec), 12, _cor_recompensa(rec)))
 	lp.add_child(UI.rotulo("·", 12, UI.BORDA_FORTE))
-	var lxp := UI.rotulo("+%d XP de temporada" % int(def.get("xpTemporada", 10)), 12, UI.ROSA)
-	lxp.tooltip_text = "Coletar esta missão empurra o passe de temporada."
+	var lxp := UI.rotulo(Txt.f("mis_xp_temporada", {"n": int(def.get("xpTemporada", 10))}), 12, UI.ROSA)
+	lxp.tooltip_text = Txt.t("mis_dica_xp")
 	lp.add_child(lxp)
 	l["textos"].add_child(lp)
 
-	var b := UI.botao("Coletar", func(): _coletar(grupo, indice))
+	var b := UI.botao(Txt.t("coletar"), func(): _coletar(grupo, indice))
 	b.custom_minimum_size = Vector2(126, 44)
 	l["direita"].add_child(b)
 
@@ -208,7 +208,7 @@ func _linha_missao(grupo: String, indice: int) -> void:
 
 func _coletar(grupo: String, indice: int) -> void:
 	if not Progresso.coletar_missao(jogo, grupo, indice):
-		Bus.toast("Essa missão ainda não está pronta", "info")
+		Bus.toast(Txt.t("mis_toast_nao_pronta"), "info")
 		return
 	jogo.marcar_sujo()
 	var chave := "%s:%d" % [grupo, indice]
@@ -216,7 +216,7 @@ func _coletar(grupo: String, indice: int) -> void:
 		var reg: Dictionary = missoes[chave]
 		var cx: PanelContainer = reg["caixa"]
 		UI.pulsar(cx, UI.VERDE)
-	Bus.toast("Missão coletada", "bom")
+	Bus.toast(Txt.t("mis_toast_coletada"), "bom")
 	atualizar()
 
 # ------------------------------------------------------------- sequência
@@ -233,7 +233,7 @@ func _montar_sequencia() -> void:
 		v.alignment = BoxContainer.ALIGNMENT_CENTER
 		cx.add_child(v)
 
-		var lbl_dia := UI.rotulo("DIA %d" % dia, 12, UI.TEXTO3)
+		var lbl_dia := UI.rotulo(Txt.f("mis_dia_n", {"n": dia}), 12, UI.TEXTO3)
 		lbl_dia.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		v.add_child(lbl_dia)
 
@@ -282,7 +282,7 @@ func _montar_trilha() -> void:
 		v.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		cx.add_child(v)
 
-		var lbl_nv := UI.rotulo("NV %d" % nivel, 12, UI.TEXTO3)
+		var lbl_nv := UI.rotulo(Txt.f("mis_nv_n", {"n": nivel}), 12, UI.TEXTO3)
 		lbl_nv.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		v.add_child(lbl_nv)
 
@@ -302,7 +302,7 @@ func _montar_trilha() -> void:
 		v.add_child(lbl_rec)
 
 		v.add_child(UI.espacador(0, false))
-		var b := UI.botao("Coletar", func(): _coletar_nivel(nivel))
+		var b := UI.botao(Txt.t("coletar"), func(): _coletar_nivel(nivel))
 		b.custom_minimum_size = Vector2(0, 26)
 		b.add_theme_font_size_override("font_size", 12)
 		v.add_child(b)
@@ -310,22 +310,22 @@ func _montar_trilha() -> void:
 		lbl_estado.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		v.add_child(lbl_estado)
 
-		cx.tooltip_text = "Nível %d — %s%s" % [nivel, txt(r, "nome"),
-			"  (recompensa de destaque)" if destaque else ""]
+		var dica_extra := Txt.t("mis_dica_destaque") if destaque else ""
+		cx.tooltip_text = Txt.f("mis_dica_nivel", {"n": nivel, "nome": txt(r, "nome")}) + dica_extra
 		trilha.add_child(cx)
 		niveis[nivel] = {"caixa": cx, "nv": lbl_nv, "icone": ic, "rec": lbl_rec,
 			"botao": b, "estado": lbl_estado, "destaque": destaque, "recompensa": rec}
 
 func _coletar_nivel(nivel: int) -> void:
 	if not Progresso.coletar_temporada(jogo, nivel):
-		Bus.toast("Nível %d ainda não liberado" % nivel, "info")
+		Bus.toast(Txt.f("mis_toast_nivel_travado", {"n": nivel}), "info")
 		return
 	jogo.marcar_sujo()
 	if niveis.has(nivel):
 		var reg: Dictionary = niveis[nivel]
 		var cx: PanelContainer = reg["caixa"]
 		UI.pulsar(cx, UI.VERDE)
-	Bus.toast("Recompensa de temporada coletada", "bom")
+	Bus.toast(Txt.t("mis_toast_temporada"), "bom")
 	atualizar()
 
 func _centralizar_trilha() -> void:
@@ -351,10 +351,10 @@ func atualizar() -> void:
 	var agora := Time.get_unix_time_from_system()
 	var falta_d := float(int(m["reset_diario"]) + SEG_DIA) - agora
 	var falta_s := float(int(m["reset_semanal"]) + SEG_SEMANA) - agora
-	lbl_diario.text = "Renova em %s" % Ux.tempo_curto(maxf(0.0, falta_d))
-	lbl_diario.tooltip_text = "Quando o prazo estoura, três contratos novos entram no lugar."
-	lbl_semanal.text = "Renova em %s" % Ux.tempo_curto(maxf(0.0, falta_s))
-	lbl_semanal.tooltip_text = "Missões semanais são sorteadas de novo a cada sete dias."
+	lbl_diario.text = Txt.f("mis_renova_em", {"t": Ux.tempo_curto(maxf(0.0, falta_d))})
+	lbl_diario.tooltip_text = Txt.t("mis_dica_reset_diario")
+	lbl_semanal.text = Txt.f("mis_renova_em", {"t": Ux.tempo_curto(maxf(0.0, falta_s))})
+	lbl_semanal.tooltip_text = Txt.t("mis_dica_reset_semanal")
 
 	_atualizar_missoes()
 	_atualizar_sequencia()
@@ -388,14 +388,14 @@ func _atualizar_missoes() -> void:
 		var b: Button = reg["botao"]
 		b.disabled = coletada or not pronta
 		if coletada:
-			b.text = "Coletado"
-			b.tooltip_text = "Já pago. Volte amanhã."
+			b.text = Txt.t("coletado")
+			b.tooltip_text = Txt.t("mis_dica_ja_pago")
 		elif pronta:
-			b.text = "Coletar"
-			b.tooltip_text = "Recompensa pronta para retirada."
+			b.text = Txt.t("coletar")
+			b.tooltip_text = Txt.t("mis_dica_pronta")
 		else:
-			b.text = "Em curso"
-			b.tooltip_text = "Continue jogando: %s" % Fmt.pct(f)
+			b.text = Txt.t("mis_em_curso")
+			b.tooltip_text = Txt.f("mis_dica_em_curso", {"n": Fmt.pct(f)})
 
 		var cx: PanelContainer = reg["caixa"]
 		var cor: Color = reg["cor"]
@@ -410,9 +410,9 @@ func _atualizar_sequencia() -> void:
 	var seq := int(jogo.s["missoes"]["sequencia"])
 	var hoje := _dia_da_sequencia()
 	if seq <= 0:
-		lbl_sequencia.text = "Nenhum dia registrado ainda"
+		lbl_sequencia.text = Txt.t("mis_seq_zero")
 	else:
-		lbl_sequencia.text = "1 dia seguido" if seq == 1 else "%d dias seguidos" % seq
+		lbl_sequencia.text = Txt.t("mis_seq_1") if seq == 1 else Txt.f("mis_seq_n", {"n": seq})
 	for dia in dias.keys():
 		var reg: Dictionary = dias[dia]
 		var d := int(dia)
@@ -426,21 +426,21 @@ func _atualizar_sequencia() -> void:
 		if d == hoje:
 			cx.add_theme_stylebox_override("panel", UI.caixa(UI.PAINEL2.lerp(UI.OURO, 0.12), 10, 2, UI.OURO))
 			ic.configurar(_icone_recompensa(rec), UI.OURO, tam)
-			lbl_dia.text = "HOJE"
+			lbl_dia.text = Txt.t("mis_hoje")
 			lbl_dia.add_theme_color_override("font_color", UI.OURO)
 			lbl_rec.add_theme_color_override("font_color", UI.TEXTO)
 			lbl_mult.add_theme_color_override("font_color", UI.OURO)
 		elif d < hoje:
 			cx.add_theme_stylebox_override("panel", UI.caixa(UI.PAINEL2.darkened(0.1), 10, 1, UI.VERDE.darkened(0.4)))
 			ic.configurar(_icone_recompensa(rec), UI.VERDE.darkened(0.15), tam)
-			lbl_dia.text = "DIA %d" % d
+			lbl_dia.text = Txt.f("mis_dia_n", {"n": d})
 			lbl_dia.add_theme_color_override("font_color", UI.VERDE)
 			lbl_rec.add_theme_color_override("font_color", UI.TEXTO2)
 			lbl_mult.add_theme_color_override("font_color", UI.TEXTO2)
 		else:
 			cx.add_theme_stylebox_override("panel", UI.caixa(UI.PAINEL2.darkened(0.3), 10, 1, UI.BORDA.darkened(0.25)))
 			ic.configurar(_icone_recompensa(rec), UI.TEXTO3, tam)
-			lbl_dia.text = "DIA %d" % d
+			lbl_dia.text = Txt.f("mis_dia_n", {"n": d})
 			lbl_dia.add_theme_color_override("font_color", UI.TEXTO3)
 			lbl_rec.add_theme_color_override("font_color", UI.TEXTO3)
 			lbl_mult.add_theme_color_override("font_color", UI.TEXTO3)
@@ -450,9 +450,10 @@ func _atualizar_temporada() -> void:
 	var nivel := int(t["nivel"])
 	var xp := int(t["xp"])
 	var custo := int(Progresso.xp_para_nivel(nivel + 1))
-	lbl_nivel.text = "Nível %d de %d" % [nivel, Dados.temporada.size()]
+	lbl_nivel.text = Txt.f("mis_nivel_de", {"a": nivel, "b": Dados.temporada.size()})
 	barra_xp.value = clampf(float(xp) / maxf(1.0, float(custo)), 0.0, 1.0)
-	lbl_xp.text = "%s / %s XP\nfaltam %s" % [Fmt.inteiro(xp), Fmt.inteiro(custo), Fmt.inteiro(maxi(0, custo - xp))]
+	lbl_xp.text = Txt.f("mis_xp_barra", {"a": Fmt.inteiro(xp), "b": Fmt.inteiro(custo),
+		"c": Fmt.inteiro(maxi(0, custo - xp))})
 
 	var coletadas: Array = t["coletadas"]
 	var pendentes := 0
@@ -473,7 +474,7 @@ func _atualizar_temporada() -> void:
 		if coletadas.has(n):
 			b.visible = false
 			lbl_estado.visible = true
-			lbl_estado.text = "Coletado"
+			lbl_estado.text = Txt.t("coletado")
 			lbl_estado.add_theme_color_override("font_color", UI.VERDE)
 			cx.add_theme_stylebox_override("panel", UI.caixa(UI.PAINEL2.darkened(0.2), 10, 1, UI.VERDE.darkened(0.45)))
 			ic.configurar(_icone_recompensa(rec), UI.VERDE.darkened(0.1), tam)
@@ -491,7 +492,7 @@ func _atualizar_temporada() -> void:
 		else:
 			b.visible = false
 			lbl_estado.visible = true
-			lbl_estado.text = "Próximo" if atual else "Bloqueado"
+			lbl_estado.text = Txt.t("proximo") if atual else Txt.t("bloqueado")
 			lbl_estado.add_theme_color_override("font_color", UI.ROSA if atual else UI.TEXTO3)
 			var borda := UI.ROSA if atual else UI.BORDA.darkened(0.25)
 			cx.add_theme_stylebox_override("panel", UI.caixa(UI.PAINEL2.darkened(0.1 if atual else 0.35), 10, 2 if atual else 1, borda))
@@ -499,7 +500,7 @@ func _atualizar_temporada() -> void:
 			lbl_nv.add_theme_color_override("font_color", UI.ROSA if atual else UI.TEXTO3)
 			lbl_rec.add_theme_color_override("font_color", UI.TEXTO2 if atual else UI.TEXTO3)
 	if pendentes > 0:
-		lbl_nivel.text += "  ·  %s esperando" % ("1 recompensa" if pendentes == 1 else "%d recompensas" % pendentes)
+		lbl_nivel.text += Txt.t("mis_1_esperando") if pendentes == 1 else Txt.f("mis_n_esperando", {"n": pendentes})
 
 # ------------------------------------------------------------- utilidades
 
@@ -560,23 +561,23 @@ func _cor_recompensa(r: Dictionary) -> Color:
 
 func _texto_recompensa(r: Dictionary) -> String:
 	if r.is_empty():
-		return "sem prêmio"
+		return Txt.t("mis_sem_premio")
 	var v: float = float(r.get("valor", 0))
 	match str(r.get("tipo", "")):
-		"gemas": return "+%s gemas" % Fmt.inteiro(int(v))
-		"fragmentos": return "+%s fragmentos" % Fmt.inteiro(int(v))
-		"nucleos": return "+%s núcleos" % Fmt.inteiro(int(v))
-		"eter": return "+%s éter" % Fmt.inteiro(int(v))
-		"poeira": return "+%s poeira" % Fmt.inteiro(int(v))
-		"ouro": return "ouro de %s ondas" % Fmt.num(v, 1)
-		"xp": return "XP de %s ondas" % Fmt.num(v, 1)
-		"pontosTalento": return "+%d ponto de talento" % int(v) if int(v) == 1 else "+%s pontos de talento" % Fmt.inteiro(int(v))
+		"gemas": return "+%s %s" % [Fmt.inteiro(int(v)), Txt.t("m_gemas")]
+		"fragmentos": return "+%s %s" % [Fmt.inteiro(int(v)), Txt.t("m_fragmentos")]
+		"nucleos": return "+%s %s" % [Fmt.inteiro(int(v)), Txt.t("m_nucleos")]
+		"eter": return "+%s %s" % [Fmt.inteiro(int(v)), Txt.t("m_eter")]
+		"poeira": return "+%s %s" % [Fmt.inteiro(int(v)), Txt.t("m_poeira")]
+		"ouro": return Txt.f("mis_rec_ouro_ondas", {"n": Fmt.num(v, 1)})
+		"xp": return Txt.f("mis_rec_xp_ondas", {"n": Fmt.num(v, 1)})
+		"pontosTalento": return Txt.t("mis_rec_ponto_talento") if int(v) == 1 else "+%s %s" % [Fmt.inteiro(int(v)), Txt.t("pontos_talento")]
 		"stat":
 			var sd: Dictionary = Dados.stat_defs.get(str(r.get("stat", "")), {})
 			var nome := txt(sd, "nome")
 			if nome.is_empty():
-				nome = str(r.get("stat", "atributo"))
+				nome = str(r.get("stat", Txt.t("mis_atributo")))
 			if str(r.get("tipoEfeito", "pct")) == "mult":
 				return "%s ×%s" % [nome, Fmt.num(v, 2)]
 			return "%s +%s" % [nome, Fmt.pct(v)]
-	return "recompensa"
+	return Txt.t("recompensa").to_lower()

@@ -37,7 +37,7 @@ var linhas: Dictionary = {}     # id -> registro de nós
 var novas: Dictionary = {}      # id -> true (desbloqueada e ainda não vista)
 
 func configurar() -> void:
-	titulo_texto = "Conquistas"
+	titulo_texto = Txt.t("p_conquistas")
 	titulo_icone = "trofeu"
 	largura = 960.0
 	altura = 660.0
@@ -60,22 +60,22 @@ func montar(c: VBoxContainer) -> void:
 
 	var esq := UI.vbox(3)
 	esq.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	lbl_contagem = UI.rotulo("0 de 0 desbloqueadas", 18, UI.TEXTO)
+	lbl_contagem = UI.rotulo(Txt.f("cqt_desbloqueadas", {"a": 0, "b": 0}), 18, UI.TEXTO)
 	esq.add_child(lbl_contagem)
 	barra_total = UI.barra(UI.OURO, 9)
 	barra_total.custom_minimum_size.x = 360
-	barra_total.tooltip_text = "Progresso geral do mural."
+	barra_total.tooltip_text = Txt.t("cqt_dica_barra_total")
 	esq.add_child(barra_total)
 	th.add_child(esq)
 
 	var dir := UI.vbox(3)
-	lbl_pontos = UI.rotulo("0 / 0 pontos", 17, UI.OURO)
+	lbl_pontos = UI.rotulo(Txt.f("cqt_pontos", {"a": 0, "b": 0}), 17, UI.OURO)
 	lbl_pontos.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	lbl_pontos.tooltip_text = "Cada conquista vale pontos conforme a dificuldade."
+	lbl_pontos.tooltip_text = Txt.t("cqt_dica_pontos")
 	dir.add_child(lbl_pontos)
 	lbl_bonus = UI.rotulo("", 13, UI.VERDE)
 	lbl_bonus.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	lbl_bonus.tooltip_text = "A cada 10 pontos de conquista: +0,5% de dano e +0,5% de ouro. Permanente, sobrevive a todo prestígio."
+	lbl_bonus.tooltip_text = Txt.t("cqt_dica_bonus")
 	dir.add_child(lbl_bonus)
 	th.add_child(dir)
 	c.add_child(topo)
@@ -85,7 +85,7 @@ func montar(c: VBoxContainer) -> void:
 	abas = TabBar.new()
 	abas.clip_tabs = false
 	abas.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	cats = [{"id": "todas", "nome": "Todas"}]
+	cats = [{"id": "todas", "nome": Txt.t("cqt_cat_todas")}]
 	for item in Dados.categorias_conquista:
 		var cat: Dictionary = item
 		cats.append({"id": str(cat.get("id", "")), "nome": txt(cat, "nome")})
@@ -98,8 +98,8 @@ func montar(c: VBoxContainer) -> void:
 	barra_filtro.add_child(abas)
 
 	check_faltam = CheckButton.new()
-	check_faltam.text = "Só as que faltam"
-	check_faltam.tooltip_text = "Esconde o que você já conquistou. Sobra a lista de coisas para fazer."
+	check_faltam.text = Txt.t("cqt_so_faltam")
+	check_faltam.tooltip_text = Txt.t("cqt_so_faltam_dica")
 	check_faltam.toggled.connect(func(v):
 		so_faltam = bool(v)
 		_reconstruir())
@@ -167,7 +167,7 @@ func _reconstruir() -> void:
 		mostradas += 1
 	lbl_vazio.visible = mostradas == 0
 	if mostradas == 0:
-		lbl_vazio.text = "Nada aqui. Ou você conquistou tudo, ou o filtro está esperto demais."
+		lbl_vazio.text = Txt.t("cqt_vazio")
 	atualizar()
 
 func _linha_conquista(def: Dictionary) -> void:
@@ -182,9 +182,9 @@ func _linha_conquista(def: Dictionary) -> void:
 	var cabeca := UI.hbox(8)
 	var nome := UI.rotulo("???" if oculta else txt(def, "nome"), 16, UI.TEXTO if feita else UI.TEXTO2)
 	cabeca.add_child(nome)
-	var selo := UI.rotulo("NOVA", 11, UI.VERDE)
+	var selo := UI.rotulo(Txt.t("cqt_nova"), 11, UI.VERDE)
 	selo.visible = novas.has(id)
-	selo.tooltip_text = "Desbloqueada desde a última vez que você abriu este mural."
+	selo.tooltip_text = Txt.t("cqt_dica_nova")
 	cabeca.add_child(selo)
 	l["textos"].add_child(cabeca)
 
@@ -200,7 +200,7 @@ func _linha_conquista(def: Dictionary) -> void:
 	var barra := UI.barra(UI.VERDE if feita else cor, 8)
 	barra.custom_minimum_size.x = 190
 	barra.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	barra.tooltip_text = "Progresso rumo a algo que você ainda não deveria saber." if oculta else _dica_meta(def)
+	barra.tooltip_text = Txt.t("cqt_dica_barra_oculta") if oculta else _dica_meta(def)
 	lp.add_child(barra)
 	var lbl_prog := UI.rotulo("", 12, UI.TEXTO3)
 	lp.add_child(lbl_prog)
@@ -212,8 +212,8 @@ func _linha_conquista(def: Dictionary) -> void:
 	lp.add_child(ic_rec)
 	var cor_rec: Color = _cor_recompensa(rec)
 	ic_rec.configurar("cadeado" if oculta else _icone_recompensa(rec), UI.TEXTO3 if oculta else (cor_rec if feita else cor_rec.darkened(0.4)), 14)
-	var lbl_rec := UI.rotulo("recompensa selada" if oculta else _texto_recompensa(rec), 12, UI.TEXTO3 if oculta else (cor_rec if feita else UI.TEXTO3))
-	lbl_rec.tooltip_text = "O prêmio só aparece quando o registro abrir." if oculta else "Recompensa entregue no instante em que a conquista cai."
+	var lbl_rec := UI.rotulo(Txt.t("cqt_recompensa_selada") if oculta else _texto_recompensa(rec), 12, UI.TEXTO3 if oculta else (cor_rec if feita else UI.TEXTO3))
+	lbl_rec.tooltip_text = Txt.t("cqt_dica_rec_selada") if oculta else Txt.t("cqt_dica_rec")
 	lp.add_child(lbl_rec)
 	l["textos"].add_child(lp)
 
@@ -221,16 +221,16 @@ func _linha_conquista(def: Dictionary) -> void:
 	var col := UI.vbox(2)
 	col.alignment = BoxContainer.ALIGNMENT_CENTER
 	var pontos := int(def.get("pontos", 5))
-	var lp2 := UI.rotulo("%d pts" % pontos, 17, UI.OURO if feita else UI.TEXTO3)
+	var lp2 := UI.rotulo(Txt.f("cqt_pts", {"n": pontos}), 17, UI.OURO if feita else UI.TEXTO3)
 	lp2.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	lp2.tooltip_text = "Vale %d pontos para o bônus global." % pontos
+	lp2.tooltip_text = Txt.f("cqt_dica_pts", {"n": pontos})
 	col.add_child(lp2)
 	var ldata := UI.rotulo("", 11, UI.TEXTO3)
 	ldata.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	col.add_child(ldata)
 	l["direita"].add_child(col)
 
-	l["caixa"].tooltip_text = "Conquista oculta: nem a meta aparece. A barra mede o quanto falta." if oculta else _dica_meta(def)
+	l["caixa"].tooltip_text = Txt.t("cqt_dica_oculta") if oculta else _dica_meta(def)
 	lista.add_child(l["caixa"])
 	linhas[id] = {
 		"def": def, "caixa": l["caixa"], "icone": l["icone"], "nome": nome, "desc": desc,
@@ -263,11 +263,11 @@ func atualizar() -> void:
 	for id in jogo.s["conquistas"].keys():
 		var def: Dictionary = Dados.conquista_por_id.get(id, {})
 		pontos += int(def.get("pontos", 5))
-	lbl_contagem.text = "%d de %d desbloqueadas" % [feitas, total]
+	lbl_contagem.text = Txt.f("cqt_desbloqueadas", {"a": feitas, "b": total})
 	barra_total.value = float(feitas) / maxf(1.0, float(total))
-	lbl_pontos.text = "%s / %s pontos" % [Fmt.inteiro(pontos), Fmt.inteiro(int(Dados.pontos_totais))]
+	lbl_pontos.text = Txt.f("cqt_pontos", {"a": Fmt.inteiro(pontos), "b": Fmt.inteiro(int(Dados.pontos_totais))})
 	var bonus := float(pontos) * BONUS_POR_PONTO
-	lbl_bonus.text = "Bônus global: +%s de dano e de ouro" % Fmt.pct(bonus)
+	lbl_bonus.text = Txt.f("cqt_bonus_global", {"n": Fmt.pct(bonus)})
 	lbl_bonus.add_theme_color_override("font_color", UI.VERDE if bonus > 0.0 else UI.TEXTO3)
 
 	_atualizar_abas()
@@ -317,7 +317,7 @@ func atualizar() -> void:
 		var lbl_prog: Label = reg["prog"]
 		var tipo := str(cond.get("tipo", ""))
 		if bool(reg["oculta"]):
-			lbl_prog.text = "meta selada"
+			lbl_prog.text = Txt.t("cqt_meta_selada")
 		else:
 			lbl_prog.text = "%s / %s" % [_valor(minf(atual, alvo), tipo), _valor(alvo, tipo)]
 		lbl_prog.add_theme_color_override("font_color", UI.VERDE if feita else UI.TEXTO3)
@@ -352,10 +352,10 @@ func _atualizar_abas() -> void:
 ## Descrições seladas variadas — repetir a mesma frase 10 vezes é preguiça.
 func _frase_selada(id: String) -> String:
 	var frases := [
-		"Registro selado. Faça algo estranho o bastante e ele se abre.",
-		"O Comando classificou esta entrada. A barra abaixo é tudo que vazou.",
-		"Ninguém escreveu esta regra. Alguém, um dia, vai tropeçar nela.",
-		"Existe. Conta pontos. Não pergunte mais nada.",
+		Txt.t("cqt_selada_1"),
+		Txt.t("cqt_selada_2"),
+		Txt.t("cqt_selada_3"),
+		Txt.t("cqt_selada_4"),
 	]
 	return str(frases[absi(id.hash()) % frases.size()])
 
@@ -370,7 +370,7 @@ func _data(ts: int) -> String:
 	if ts <= 0:
 		return "—"
 	var d := Time.get_datetime_dict_from_unix_time(ts)
-	return "%02d/%02d/%02d" % [int(d["day"]), int(d["month"]), int(d["year"]) % 100]
+	return Txt.f("cqt_data", {"d": "%02d" % int(d["day"]), "m": "%02d" % int(d["month"]), "a": "%02d" % (int(d["year"]) % 100)})
 
 func _dica_meta(def: Dictionary) -> String:
 	var cond: Dictionary = def.get("cond", {})
@@ -379,38 +379,38 @@ func _dica_meta(def: Dictionary) -> String:
 	var chave := str(cond.get("chave", ""))
 	var alvo_txt := _valor(alvo, tipo)
 	match tipo:
-		"onda": return "Chegue à onda %s nesta corrida." % alvo_txt
-		"ondaMaxima": return "Melhor onda desta ascensão: %s." % alvo_txt
-		"ondaMaximaGlobal": return "Melhor onda de todos os tempos: %s." % alvo_txt
-		"ondasCompletas": return "Complete %s ondas ao todo." % alvo_txt
-		"inimigosMortos": return "Abata %s inimigos ao todo." % alvo_txt
-		"inimigoTipo": return "Abata %s inimigos do tipo '%s'." % [alvo_txt, chave]
-		"chefesMortos": return "Derrube %s chefes." % alvo_txt
-		"criticos": return "Acerte %s golpes críticos." % alvo_txt
-		"tiros": return "Dispare %s projéteis." % alvo_txt
-		"danoMaximo": return "Dê um único golpe de %s de dano." % alvo_txt
-		"comboMaximo": return "Chegue a um combo de %s." % alvo_txt
-		"ouroTotal": return "Acumule %s de ouro ao longo do jogo." % alvo_txt
-		"ouroGasto": return "Gaste %s de ouro em melhorias." % alvo_txt
-		"nivel": return "Chegue ao nível %s." % alvo_txt
-		"tempoTotal": return "Jogue por %s no total." % alvo_txt
-		"mortes": return "Perca a torre %s vezes. Sim, isso conta." % alvo_txt
-		"habilidadesUsadas": return "Use habilidades %s vezes." % alvo_txt
-		"douradosAbatidos", "dourados": return "Abata %s inimigos dourados." % alvo_txt
-		"cartas": return "Tenha %s cartas no inventário." % alvo_txt
-		"lendarios": return "Encontre %s cartas lendárias." % alvo_txt
-		"relicas": return "Tenha %s relíquias." % alvo_txt
-		"ascensoes": return "Ascenda %s vezes." % alvo_txt
-		"singularidades": return "Colapse %s vezes." % alvo_txt
-		"transcendencias": return "Transcenda %s vezes." % alvo_txt
-		"upgradeNivel": return "Leve a melhoria '%s' ao nível %s." % [chave, alvo_txt]
-		"talentoNivel": return "Leve o talento '%s' ao nível %s." % [chave, alvo_txt]
-		"missoesCompletas": return "Complete %s missões." % alvo_txt
-		"desafiosCompletos": return "Complete %s desafios." % alvo_txt
-		"conquistasTotal": return "Desbloqueie %s conquistas." % alvo_txt
-		"eras": return "Veja %s eras diferentes." % alvo_txt
-		"gemas", "fragmentos", "nucleos", "eter": return "Tenha %s de %s guardados." % [alvo_txt, tipo]
-	return "Meta: %s" % alvo_txt
+		"onda": return Txt.f("cqt_meta_onda", {"n": alvo_txt})
+		"ondaMaxima": return Txt.f("cqt_meta_onda_maxima", {"n": alvo_txt})
+		"ondaMaximaGlobal": return Txt.f("cqt_meta_onda_maxima_global", {"n": alvo_txt})
+		"ondasCompletas": return Txt.f("cqt_meta_ondas_completas", {"n": alvo_txt})
+		"inimigosMortos": return Txt.f("cqt_meta_inimigos", {"n": alvo_txt})
+		"inimigoTipo": return Txt.f("cqt_meta_inimigo_tipo", {"n": alvo_txt, "k": chave})
+		"chefesMortos": return Txt.f("cqt_meta_chefes", {"n": alvo_txt})
+		"criticos": return Txt.f("cqt_meta_criticos", {"n": alvo_txt})
+		"tiros": return Txt.f("cqt_meta_tiros", {"n": alvo_txt})
+		"danoMaximo": return Txt.f("cqt_meta_dano_maximo", {"n": alvo_txt})
+		"comboMaximo": return Txt.f("cqt_meta_combo", {"n": alvo_txt})
+		"ouroTotal": return Txt.f("cqt_meta_ouro_total", {"n": alvo_txt})
+		"ouroGasto": return Txt.f("cqt_meta_ouro_gasto", {"n": alvo_txt})
+		"nivel": return Txt.f("cqt_meta_nivel", {"n": alvo_txt})
+		"tempoTotal": return Txt.f("cqt_meta_tempo", {"n": alvo_txt})
+		"mortes": return Txt.f("cqt_meta_mortes", {"n": alvo_txt})
+		"habilidadesUsadas": return Txt.f("cqt_meta_habilidades", {"n": alvo_txt})
+		"douradosAbatidos", "dourados": return Txt.f("cqt_meta_dourados", {"n": alvo_txt})
+		"cartas": return Txt.f("cqt_meta_cartas", {"n": alvo_txt})
+		"lendarios": return Txt.f("cqt_meta_lendarios", {"n": alvo_txt})
+		"relicas": return Txt.f("cqt_meta_relicas", {"n": alvo_txt})
+		"ascensoes": return Txt.f("cqt_meta_ascensoes", {"n": alvo_txt})
+		"singularidades": return Txt.f("cqt_meta_singularidades", {"n": alvo_txt})
+		"transcendencias": return Txt.f("cqt_meta_transcendencias", {"n": alvo_txt})
+		"upgradeNivel": return Txt.f("cqt_meta_upgrade_nivel", {"k": chave, "n": alvo_txt})
+		"talentoNivel": return Txt.f("cqt_meta_talento_nivel", {"k": chave, "n": alvo_txt})
+		"missoesCompletas": return Txt.f("cqt_meta_missoes", {"n": alvo_txt})
+		"desafiosCompletos": return Txt.f("cqt_meta_desafios", {"n": alvo_txt})
+		"conquistasTotal": return Txt.f("cqt_meta_conquistas", {"n": alvo_txt})
+		"eras": return Txt.f("cqt_meta_eras", {"n": alvo_txt})
+		"gemas", "fragmentos", "nucleos", "eter": return Txt.f("cqt_meta_moeda", {"n": alvo_txt, "m": Txt.t("m_" + tipo)})
+	return Txt.f("cqt_meta_generica", {"n": alvo_txt})
 
 func _icone_de(def: Dictionary) -> String:
 	var cond: Dictionary = def.get("cond", {})
@@ -467,23 +467,23 @@ func _cor_recompensa(r: Dictionary) -> Color:
 
 func _texto_recompensa(r: Dictionary) -> String:
 	if r.is_empty():
-		return "Só a glória, e os pontos."
+		return Txt.t("cqt_rec_gloria")
 	var v: float = float(r.get("valor", 0))
 	match str(r.get("tipo", "")):
-		"gemas": return "+%s gemas" % Fmt.inteiro(int(v))
-		"fragmentos": return "+%s fragmentos" % Fmt.inteiro(int(v))
-		"nucleos": return "+%s núcleos" % Fmt.inteiro(int(v))
-		"eter": return "+%s éter" % Fmt.inteiro(int(v))
-		"poeira": return "+%s poeira" % Fmt.inteiro(int(v))
-		"ouro": return "ouro de %s ondas" % Fmt.num(v, 1)
-		"xp": return "XP de %s ondas" % Fmt.num(v, 1)
-		"pontosTalento": return "+%d ponto de talento" % int(v) if int(v) == 1 else "+%s pontos de talento" % Fmt.inteiro(int(v))
+		"gemas": return Txt.f("cqt_rec_moeda", {"n": Fmt.inteiro(int(v)), "m": Txt.t("m_gemas")})
+		"fragmentos": return Txt.f("cqt_rec_moeda", {"n": Fmt.inteiro(int(v)), "m": Txt.t("m_fragmentos")})
+		"nucleos": return Txt.f("cqt_rec_moeda", {"n": Fmt.inteiro(int(v)), "m": Txt.t("m_nucleos")})
+		"eter": return Txt.f("cqt_rec_moeda", {"n": Fmt.inteiro(int(v)), "m": Txt.t("m_eter")})
+		"poeira": return Txt.f("cqt_rec_moeda", {"n": Fmt.inteiro(int(v)), "m": Txt.t("m_poeira")})
+		"ouro": return Txt.f("cqt_rec_ouro", {"n": Fmt.num(v, 1)})
+		"xp": return Txt.f("cqt_rec_xp", {"n": Fmt.num(v, 1)})
+		"pontosTalento": return Txt.t("cqt_rec_talento_1") if int(v) == 1 else Txt.f("cqt_rec_talento", {"n": Fmt.inteiro(int(v))})
 		"stat":
 			var sd: Dictionary = Dados.stat_defs.get(str(r.get("stat", "")), {})
 			var nome := txt(sd, "nome")
 			if nome.is_empty():
-				nome = str(r.get("stat", "atributo"))
+				nome = str(r.get("stat", Txt.t("cqt_atributo")))
 			if str(r.get("tipoEfeito", "pct")) == "mult":
-				return "%s ×%s permanente" % [nome, Fmt.num(v, 2)]
-			return "%s +%s permanente" % [nome, Fmt.pct(v)]
-	return "Recompensa misteriosa"
+				return Txt.f("cqt_rec_stat_mult", {"nome": nome, "n": Fmt.num(v, 2)})
+			return Txt.f("cqt_rec_stat_pct", {"nome": nome, "n": Fmt.pct(v)})
+	return Txt.t("cqt_rec_misteriosa")

@@ -9,7 +9,7 @@ var check_auto: CheckButton
 var cartoes := {}           # id -> refs dos controles
 
 func configurar() -> void:
-	titulo_texto = "Habilidades"
+	titulo_texto = Txt.t("p_habilidades")
 	titulo_icone = "raio"
 	largura = 880.0
 	altura = 660.0
@@ -23,18 +23,18 @@ func montar(c: VBoxContainer) -> void:
 	ic.configurar("gema", UI.MOEDA_COR["gemas"], 20)
 	lbl_gemas = UI.rotulo("0", 19, UI.MOEDA_COR["gemas"])
 	topo.add_child(lbl_gemas)
-	topo.add_child(UI.rotulo("gemas", 13, UI.TEXTO2))
+	topo.add_child(UI.rotulo(Txt.t("m_gemas"), 13, UI.TEXTO2))
 	topo.add_child(UI.espacador())
-	topo.add_child(UI.rotulo("cada nível encurta a recarga em 3% (teto de -40%)", 12, UI.TEXTO3))
+	topo.add_child(UI.rotulo(Txt.t("hab_dica_cdr"), 12, UI.TEXTO3))
 
 	check_auto = CheckButton.new()
-	check_auto.text = "Auto"
-	check_auto.tooltip_text = "Usa as habilidades sozinho, com bom senso.\nDesbloqueado na árvore de prestígio."
+	check_auto.text = Txt.t("hab_auto")
+	check_auto.tooltip_text = Txt.t("hab_auto_dica")
 	check_auto.button_pressed = bool(jogo.s["auto"]["habilidades"])
 	check_auto.toggled.connect(func(v):
 		if not jogo.esp["desbloqueios"].has("autoHabilidade"):
 			check_auto.button_pressed = false
-			Bus.toast("Requer o nó 'Piloto Automático' na árvore de prestígio", "info")
+			Bus.toast(Txt.t("hab_requer_piloto"), "info")
 			return
 		jogo.s["auto"]["habilidades"] = v)
 	topo.add_child(check_auto)
@@ -47,7 +47,7 @@ func montar(c: VBoxContainer) -> void:
 	c.add_child(rolagem)
 
 	if Dados.habilidades.is_empty():
-		lista.add_child(UI.rotulo("Nenhuma habilidade catalogada — a torre está muda.", 14, UI.TEXTO3))
+		lista.add_child(UI.rotulo(Txt.t("hab_vazio"), 14, UI.TEXTO3))
 		return
 	for item in Dados.habilidades:
 		var def: Dictionary = item
@@ -90,7 +90,7 @@ func _cartao(def: Dictionary) -> PanelContainer:
 		var badge := PanelContainer.new()
 		badge.add_theme_stylebox_override("panel", UI.caixa(UI.FUNDO2, 6, 1, UI.BORDA_FORTE))
 		badge.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		badge.tooltip_text = "Atalho de teclado: %s" % tecla
+		badge.tooltip_text = Txt.f("hab_atalho", {"t": tecla})
 		var lt := UI.rotulo(tecla, 12, UI.TEXTO2)
 		badge.add_child(lt)
 		cab.add_child(badge)
@@ -113,7 +113,7 @@ func _cartao(def: Dictionary) -> PanelContainer:
 
 	var linha_num := UI.hbox(12)
 	var lbl_cd := UI.rotulo("", 12, UI.TEXTO3)
-	lbl_cd.tooltip_text = "Recarga já com a sua Redução de Recarga aplicada."
+	lbl_cd.tooltip_text = Txt.t("hab_cd_dica")
 	linha_num.add_child(lbl_cd)
 	var lbl_dur := UI.rotulo("", 12, UI.TEXTO3)
 	linha_num.add_child(lbl_dur)
@@ -121,7 +121,7 @@ func _cartao(def: Dictionary) -> PanelContainer:
 
 	var barra := UI.barra(cor, 7)
 	barra.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	barra.tooltip_text = "Recarga em tempo real."
+	barra.tooltip_text = Txt.t("hab_barra_dica")
 	var linha_barra := UI.hbox(8)
 	linha_barra.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	linha_barra.add_child(barra)
@@ -138,7 +138,7 @@ func _cartao(def: Dictionary) -> PanelContainer:
 	h.add_child(dir)
 
 	var caixa_bt := UI.vbox(3)
-	var bt := UI.botao("Melhorar", func(): _melhorar(id))
+	var bt := UI.botao(Txt.t("hab_melhorar"), func(): _melhorar(id))
 	bt.custom_minimum_size = Vector2(160, 40)
 	caixa_bt.add_child(bt)
 	var caixa_custo := UI.hbox(0)
@@ -176,18 +176,18 @@ func _melhorar(id: String) -> void:
 	var def: Dictionary = r["def"]
 	var h: Dictionary = GameState.hab(jogo.s, id)
 	if not bool(h["desbloqueada"]):
-		Bus.toast("Ainda trancada", "info")
+		Bus.toast(Txt.t("hab_ainda_trancada"), "info")
 		return
 	if int(h["nivel"]) >= Dados.nivel_max_habilidade:
-		Bus.toast("%s já está no máximo" % txt(def, "nome"), "info")
+		Bus.toast(Txt.f("hab_ja_no_maximo", {"n": txt(def, "nome")}), "info")
 		return
 	if jogo.melhorar_habilidade(id):
 		UI.pulsar(r["caixa"], r["cor"])
 		UI.saltar(r["selo"], 1.18)
-		Bus.toast("%s  Nv %d" % [txt(def, "nome"), int(h["nivel"])], "bom")
+		Bus.toast(Txt.f("hab_subiu", {"n": txt(def, "nome"), "v": int(h["nivel"])}), "bom")
 		atualizar()
 	else:
-		Bus.toast("Gemas insuficientes", "ruim")
+		Bus.toast(Txt.t("hab_gemas_insuficientes"), "ruim")
 
 ## ------------------------------------------------------------ atualização
 
@@ -224,7 +224,7 @@ func _atualizar_cartao(r: Dictionary) -> void:
 		lbl_pronta.text = ""
 	elif cd <= 0.0:
 		barra.value = 1.0
-		lbl_pronta.text = "PRONTA"
+		lbl_pronta.text = Txt.t("hab_pronta")
 		lbl_pronta.add_theme_color_override("font_color", UI.VERDE)
 	else:
 		barra.value = clampf(1.0 - cd / cd_max, 0.0, 1.0)
@@ -233,7 +233,10 @@ func _atualizar_cartao(r: Dictionary) -> void:
 
 	var lbl_usos: Label = r["usos"]
 	var usos := int(h["usos"])
-	lbl_usos.text = ("%s uso" % Fmt.inteiro(usos) if usos == 1 else "%s usos" % Fmt.inteiro(usos)) if aberta else ""
+	var texto_usos := ""
+	if aberta:
+		texto_usos = Txt.f("hab_uso_um" if usos == 1 else "hab_usos", {"n": Fmt.inteiro(usos)})
+	lbl_usos.text = texto_usos
 
 	# --- o resto só muda quando o estado muda ---
 	var estado := "%d|%d|%d|%d" % [nivel, int(aberta), int(pode), int(custo)]
@@ -260,14 +263,17 @@ func _atualizar_cartao(r: Dictionary) -> void:
 		ic.configurar(Icone.da_habilidade(id), UI.TEXTO3, 38)
 		nome.add_theme_color_override("font_color", UI.TEXTO3)
 		r["nivel"].text = ""
-		r["agora"].text = "Desbloqueia na onda %d." % onda_req
+		r["agora"].text = Txt.f("hab_desbloqueia_onda", {"n": onda_req})
 		r["agora"].add_theme_color_override("font_color", UI.TEXTO3)
-		r["prox"].text = ("Faltam %d onda%s — continue subindo." % [faltam, "" if faltam == 1 else "s"]) if faltam > 0 else "Requisito cumprido — abre na virada da onda."
+		var texto_falta := Txt.t("hab_requisito_cumprido")
+		if faltam > 0:
+			texto_falta = Txt.f("hab_faltam_onda" if faltam == 1 else "hab_faltam_ondas", {"n": faltam})
+		r["prox"].text = texto_falta
 		r["prox"].add_theme_color_override("font_color", UI.TEXTO3)
-		r["cd"].text = "Recarga base %ss" % Fmt.num(float(def.get("cd", 0.0)), 0)
+		r["cd"].text = Txt.f("hab_recarga_base", {"n": Fmt.num(float(def.get("cd", 0.0)), 0)})
 		r["dur"].text = ""
-		r["lock_txt"].text = "Onda %d" % onda_req
-		cx.tooltip_text = "%s\n%s\nAinda selada." % [txt(def, "nome"), txt(def, "desc")]
+		r["lock_txt"].text = Txt.f("hab_onda_n", {"n": onda_req})
+		cx.tooltip_text = "%s\n%s\n%s" % [txt(def, "nome"), txt(def, "desc"), Txt.t("hab_ainda_selada")]
 		return
 
 	cx.add_theme_stylebox_override("panel", UI.caixa(UI.PAINEL2.darkened(0.12), 10, 1, cor.darkened(0.55)))
@@ -276,7 +282,7 @@ func _atualizar_cartao(r: Dictionary) -> void:
 	nome.add_theme_color_override("font_color", cor)
 
 	var lbl_nivel: Label = r["nivel"]
-	lbl_nivel.text = "Nv %d/%d" % [nivel, maxn]
+	lbl_nivel.text = Txt.f("hab_nv_de", {"a": nivel, "b": maxn})
 	lbl_nivel.add_theme_color_override("font_color", UI.OURO if no_teto else UI.TEXTO2)
 
 	var agora: Label = r["agora"]
@@ -285,15 +291,15 @@ func _atualizar_cartao(r: Dictionary) -> void:
 
 	var prox: Label = r["prox"]
 	if no_teto:
-		prox.text = "No máximo. Não dá pra espremer mais nada."
+		prox.text = Txt.t("hab_no_maximo")
 		prox.add_theme_color_override("font_color", UI.OURO)
 	else:
-		prox.text = "Nv %d:  %s" % [nivel + 1, _delta_nivel(def, nivel)]
+		prox.text = Txt.f("hab_nv_prox", {"n": nivel + 1, "d": _delta_nivel(def, nivel)})
 		prox.add_theme_color_override("font_color", UI.VERDE)
 
 	var cdr := float(jogo.stats.n("cdr"))
 	var cd_agora := Habilidades.cd_efetivo(def, nivel, cdr)
-	var texto_cd := "Recarga %ss" % Fmt.num(cd_agora, 1)
+	var texto_cd := Txt.f("hab_recarga", {"n": Fmt.num(cd_agora, 1)})
 	if not no_teto:
 		texto_cd += "  ->  %ss" % Fmt.num(Habilidades.cd_efetivo(def, nivel + 1, cdr), 1)
 	r["cd"].text = texto_cd
@@ -301,23 +307,26 @@ func _atualizar_cartao(r: Dictionary) -> void:
 	var mult_dur := float(jogo.stats.n("duracaoHab"))
 	var dur := Habilidades.duracao(def, nivel, mult_dur)
 	var lbl_dur: Label = r["dur"]
-	lbl_dur.text = "Duração %ss" % Fmt.num(dur, 1) if dur > 0.0 else "Instantânea"
+	lbl_dur.text = Txt.f("hab_duracao", {"n": Fmt.num(dur, 1)}) if dur > 0.0 else Txt.t("hab_instantanea")
 
 	var caixa_custo: HBoxContainer = r["custo"]
 	for n in caixa_custo.get_children():
 		n.queue_free()
 	if no_teto:
-		bt.text = "MÁXIMO"
+		bt.text = Txt.t("maximo")
 		bt.disabled = true
 	else:
-		bt.text = "Melhorar"
+		bt.text = Txt.t("hab_melhorar")
 		bt.disabled = not pode
-		bt.tooltip_text = "Sobe %s para o nível %d por %s gemas." % [txt(def, "nome"), nivel + 1, Fmt.num(custo, 0)]
+		bt.tooltip_text = Txt.f("hab_dica_melhorar", {
+			"n": txt(def, "nome"), "v": nivel + 1, "c": Fmt.num(custo, 0),
+		})
 		caixa_custo.add_child(custo_label("gemas", Big.from(custo), pode))
 
-	cx.tooltip_text = "%s\n%s\nTecla %s  ·  %s" % [
-		txt(def, "nome"), txt(def, "desc"), str(def.get("tecla", "-")),
-		"pronta" if cd <= 0.0 else "recarregando",
+	cx.tooltip_text = "%s\n%s\n%s  ·  %s" % [
+		txt(def, "nome"), txt(def, "desc"),
+		Txt.f("hab_tecla", {"t": str(def.get("tecla", "-"))}),
+		Txt.t("hab_est_pronta") if cd <= 0.0 else Txt.t("hab_est_recarregando"),
 	]
 
 ## O que muda ao subir um nível, em números (nível atual -> próximo).
@@ -338,19 +347,20 @@ func _delta_nivel(def: Dictionary, nivel: int) -> String:
 			partes.append("%s %s -> %s" % [_rotulo_escala(k), Fmt.num(a, 1), Fmt.num(b, 1)])
 	if partes.is_empty():
 		var cdr := float(jogo.stats.n("cdr"))
-		partes.append("recarga %ss -> %ss" % [
-			Fmt.num(Habilidades.cd_efetivo(def, nivel, cdr), 1),
-			Fmt.num(Habilidades.cd_efetivo(def, nivel + 1, cdr), 1)])
+		partes.append(Txt.f("hab_delta_recarga", {
+			"a": Fmt.num(Habilidades.cd_efetivo(def, nivel, cdr), 1),
+			"b": Fmt.num(Habilidades.cd_efetivo(def, nivel + 1, cdr), 1),
+		}))
 	return "  ·  ".join(partes)
 
 func _rotulo_escala(chave: String) -> String:
 	match chave:
-		"dano": return "dano"
-		"cad": return "cadência"
-		"dur": return "duração"
-		"mult": return "multiplicador"
-		"qtd": return "quantidade"
-		"cura": return "cura"
+		"dano": return Txt.t("hab_esc_dano")
+		"cad": return Txt.t("hab_esc_cad")
+		"dur": return Txt.t("hab_esc_dur")
+		"mult": return Txt.t("hab_esc_mult")
+		"qtd": return Txt.t("hab_esc_qtd")
+		"cura": return Txt.t("hab_esc_cura")
 	return chave
 
 ## Descrição com os {marcadores} trocados pelos números daquele nível.
