@@ -421,6 +421,69 @@ func t_prestigio() -> void:
 	ok("nucleos exigem onda", Big.is_zero(Bal.nucleos(100, 20)))
 	ok("eter exige onda", Big.is_zero(Bal.eter(300, 10)))
 
+	# Ascender devolvia TODOS os pontos de talento gastos sem limpar a arvore:
+	# quem ascendia ficava com os talentos comprados E com os pontos de volta.
+	# Entrar e sair de um desafio faz o mesmo caminho, entao dava para dobrar os
+	# pontos em segundos. Este teste ascende duas vezes e olha o total.
+	jogo.s["talentos"] = {}
+	jogo.s["pontos_talento_gastos"] = 12
+	jogo.s["pontos_talento"] = 0
+	for id_t in Dados.talentos.slice(0, 3):
+		jogo.s["talentos"][str(id_t.get("id", ""))] = 1
+	jogo.s["onda_maxima"] = maxi(int(jogo.s["onda_maxima"]), Bal.ASC_ONDA_MIN + 5)
+	var livres_antes := int(jogo.s["pontos_talento"])
+	var arvore_antes: int = jogo.s["talentos"].size()
+	jogo.ascender(true)
+	ok("ascender nao devolve ponto gasto", int(jogo.s["pontos_talento"]) <= livres_antes + 1,
+		"%d -> %d" % [livres_antes, int(jogo.s["pontos_talento"])])
+	ok("ascender mantem a arvore", jogo.s["talentos"].size() == arvore_antes)
+	jogo.s["onda_maxima"] = Bal.ASC_ONDA_MIN + 5
+	jogo.ascender(true)
+	ok("duas ascensoes nao acumulam ponto de graca", int(jogo.s["pontos_talento"]) <= livres_antes + 1,
+		"depois de duas: %d" % int(jogo.s["pontos_talento"]))
+
+	# Devolve o contador ao ponto de partida: os testes abaixo montam a propria
+	# ascensao e contam a partir do zero.
+	jogo.s["prestigio"]["ascensoes"] = 0
+	jogo.s["talentos"] = {}
+	jogo.s["pontos_talento_gastos"] = 0
+
+	# Recompensa permanente de desafio vencido: 14 desafios anunciam bonus no
+	# painel e nenhum deles entrava no calculo. Vencer pagava so orgulho.
+	if not Dados.desafios.is_empty():
+		var dsf: Dictionary = {}
+		for cand in Dados.desafios:
+			var rec = cand.get("recompensa", [])
+			if rec is Array and not rec.is_empty():
+				for it in rec:
+					if it is Dictionary and it.has("stat") and str(it.get("tipo", "")) == "pct":
+						dsf = cand
+						break
+			if not dsf.is_empty():
+				break
+		ok("existe desafio com recompensa de atributo", not dsf.is_empty())
+		if not dsf.is_empty():
+			var alvo_stat := ""
+			var alvo_val := 0.0
+			for it in dsf.get("recompensa", []):
+				if it is Dictionary and it.has("stat") and str(it.get("tipo", "")) == "pct":
+					alvo_stat = str(it["stat"])
+					alvo_val = float(it.get("valor", 0.0))
+					break
+			jogo.s["desafios"]["completos"] = {}
+			jogo.marcar_sujo()
+			jogo.recalcular()
+			var sem: float = jogo.stats.n(alvo_stat)
+			jogo.s["desafios"]["completos"][str(dsf.get("id", ""))] = 1
+			jogo.marcar_sujo()
+			jogo.recalcular()
+			var com: float = jogo.stats.n(alvo_stat)
+			ok("desafio vencido aplica a recompensa", com > sem,
+				"%s: %.4f -> %.4f (esperado +%.0f%%)" % [alvo_stat, sem, com, alvo_val * 100.0])
+			jogo.s["desafios"]["completos"] = {}
+			jogo.marcar_sujo()
+			jogo.recalcular()
+
 	var s: Dictionary = jogo.s
 	s["onda_maxima"] = 60
 	s["onda_maxima_global"] = 60
@@ -877,16 +940,35 @@ func t_save() -> void:
 	var recuperado: Dictionary = save.carregar()
 	ok("save corrompido cai no backup", not recuperado.is_empty())
 	ok("backup preserva a onda", int(recuperado.get("onda", -1)) == int(jogo.s["onda"]))
+	# Cair no backup nao pode deixar o jogo rodando com UMA copia so: a proxima
+	# falha custaria a partida. `carregar()` reescreve o principal na hora.
+	var reparado = JSON.parse_string(_texto_de(save.cam()))
+	ok("recuperar repara o principal", reparado is Dictionary and int(reparado.get("onda", -1)) == int(jogo.s["onda"]))
+	# E o arquivo ilegivel vai para a quarentena em vez de virar backup.
+	ok("ilegivel vai para .corrompido", FileAccess.file_exists(save.cam_corrompido()))
 
-	# os dois corrompidos: precisa devolver vazio sem explodir
-	var f4 := FileAccess.open(save.cam_backup(), FileAccess.WRITE)
-	f4.store_string("lixo total")
+	# Rotacao do backup nunca promove lixo. Este era o caminho que matava a
+	# unica copia boa vinte segundos depois de recuperar dela.
+	var f4 := FileAccess.open(save.cam(), FileAccess.WRITE)
+	f4.store_string("{truncado")
 	f4.close()
+	var bak_antes := _texto_de(save.cam_backup())
+	save.salvar({"versao": 1, "onda": 555})
+	ok("backup nao recebe lixo", _texto_de(save.cam_backup()) == bak_antes)
+
+	# Os dois ilegiveis: devolve vazio, avisa, e o jogo NAO trata como jogador
+	# novo — sobrescrever aqui apagaria o que talvez ainda de para recuperar.
+	for caminho in [save.cam(), save.cam_backup()]:
+		var fx := FileAccess.open(caminho, FileAccess.WRITE)
+		fx.store_string("lixo total")
+		fx.close()
 	var vazio: Dictionary = save.carregar()
-	ok("dois corrompidos devolvem vazio", vazio.is_empty())
+	ok("dois ilegiveis devolvem vazio", vazio.is_empty())
+	ok("perda total nao passa por jogador novo", save.falhou_ao_ler)
 	var novo_estado := GameState.mesclar(GameState.novo(), vazio)
 	ok("jogo comeca limpo apos perda total", int(novo_estado["onda"]) == 1)
 	save.apagar()
+	ok("sem arquivo nenhum nao e falha de leitura", save.carregar().is_empty() and not save.falhou_ao_ler)
 
 	# Um unico NaN/INF sai do JSON.stringify como `nan`/`inf`, que nao e JSON
 	# valido. O arquivo gravava assim mesmo e, no autosave seguinte, esse lixo
@@ -958,6 +1040,15 @@ func t_save() -> void:
 	ok("migracao nao mexe em save ja atual", int(save.migrar(ja_novo.duplicate(true))["onda"]) == 9)
 
 ## ------------------------------------------------------------ offline
+## Le um arquivo inteiro, ou "" se nao der. So para os testes de save.
+func _texto_de(caminho: String) -> String:
+	var f := FileAccess.open(caminho, FileAccess.READ)
+	if f == null:
+		return ""
+	var t := f.get_as_text()
+	f.close()
+	return t
+
 func t_offline() -> void:
 	g("Offline")
 	var r := Offline.calcular(jogo, 10.0)

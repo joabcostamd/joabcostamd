@@ -278,6 +278,18 @@ static func recalcular(s: Dictionary, m: StatEngine) -> Dictionary:
 	if pas.has("juros_dobrados"):
 		m.add_mult("jurosOuro", 2.0, "Juros Compostos")
 
+	# ------------------------------------------ desafios ja vencidos
+	# Os 14 desafios anunciam uma "Recompensa permanente" no painel (dano +15%,
+	# perfuracao +1, e por ai). A vitoria era gravada em `completos` e o array
+	# `recompensa` nao era lido por ninguem: o selo de vencido aparecia e os
+	# atributos ficavam identicos. Vencer um desafio pagava so orgulho.
+	for vencido in s["desafios"]["completos"].keys():
+		var dv: Dictionary = Dados.desafio_por_id.get(str(vencido), {})
+		if dv.is_empty():
+			continue
+		aplicar_efeitos(m, dv.get("recompensa", []), 1,
+			Ux.txt(dv, "nome", Cfg.ingles()), esp, pas)
+
 	# --------------------------------------------------------- desafio
 	var desafio_id := str(s["desafios"]["ativo"])
 	if desafio_id != "":

@@ -52,6 +52,11 @@ func _ready() -> void:
 
 ## ============================================================== boot ====
 
+## Ligado quando o boot encontrou save e não conseguiu ler. Enquanto estiver
+## ligado, `salvar()` não escreve nada: o arquivo ilegível continua no disco,
+## intacto, esperando alguém decidir o que fazer com ele.
+var salvamento_travado := false
+
 func iniciar() -> void:
 	if iniciado:
 		return
@@ -60,6 +65,14 @@ func iniciar() -> void:
 		s = GameState.novo()
 		s["criado_em"] = int(Time.get_unix_time_from_system())
 		s["tick_em"] = s["criado_em"]
+		# "Não existe save" e "existe e não consigo ler" davam no mesmo lugar:
+		# tela de tutorial, e o autosave sobrescrevendo os dois arquivos vinte
+		# segundos depois. Quem só precisava fechar o jogo e pedir ajuda perdia
+		# tudo em silêncio. Agora o jogo avisa, e desliga o autosave até a
+		# pessoa decidir — recomeçar apaga, e apagar tem que ser escolha dela.
+		if SaveSys.falhou_ao_ler:
+			salvamento_travado = true
+			Bus.save_ilegivel.emit(SaveSys.ultimo_erro)
 	else:
 		s = GameState.mesclar(GameState.novo(), salvo)
 
@@ -799,7 +812,15 @@ func _resetar_run() -> void:
 	s["onda_maxima"] = inicio
 	if inicio > int(s["onda_maxima_global"]):
 		s["onda_maxima_global"] = inicio
-	s["pontos_talento"] = int(s["pontos_talento_gastos"]) + int(esp.get("pontosTalento", 0))
+	# Os pontos seguem a arvore. Aqui devolvia TODOS os pontos ja gastos sem
+	# limpar `talentos` nem `pontos_talento_gastos`: quem ascendia ficava com a
+	# arvore comprada E com os pontos de volta na mao. Entrar e sair de um
+	# desafio faz o mesmo caminho, entao dava para dobrar os pontos em segundos
+	# e maxar a arvore inteira de graca — o que tambem apagava o sentido do
+	# respec pago de 50 gemas em `redistribuir_talentos`. A Ascensao mantem os
+	# talentos (nao estao no `resetaTexto`), entao ela nao devolve nada; quem
+	# limpa a arvore — `colapsar` — ja zera os gastos antes de chegar aqui.
+	s["pontos_talento"] = int(esp.get("pontosTalento", 0))
 	sincronizar_torre(true)
 	Habilidades.desbloquear_por_progresso(s)
 	diretor.iniciar_onda(inicio)
@@ -835,6 +856,10 @@ func encerrar_desafio(vitoria: bool) -> void:
 ## ================================================================ save ====
 
 func salvar() -> bool:
+	# Trancado quando o boot achou save ilegível: gravar por cima seria apagar
+	# o que talvez ainda dê para recuperar. Destrancar é decisão de quem joga.
+	if salvamento_travado:
+		return false
 	var agora := int(Time.get_unix_time_from_system())
 	s["salvo_em"] = agora
 	# a âncora do offline nunca anda para trás (ver `iniciar`)

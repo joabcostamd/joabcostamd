@@ -17,7 +17,10 @@ static var prefixo := ""
 static func cam() -> String:
 	return CAMINHO.replace("torre_eterna.", prefixo + "torre_eterna.")
 
-static func cam_backup() -> String:
+static func cam_corrompido() -> String:
+	return cam() + ".corrompido"
+
+func cam_backup() -> String:
 	return CAMINHO_BACKUP.replace("torre_eterna.", prefixo + "torre_eterna.")
 
 static func cam_config() -> String:
@@ -39,33 +42,81 @@ func salvar(dados: Dictionary) -> bool:
 		push_error(ultimo_erro)
 		Bus.toast(Txt.t("save_falhou"), "ruim", "cadeado")
 		return false
-	# backup do save anterior antes de sobrescrever
+	# Rotação do backup — só promove conteúdo VÁLIDO.
+	#
+	# Antes, o backup era "o arquivo anterior", corrompido ou não. Isso monta uma
+	# armadilha: se o principal corrompe, o boot seguinte recupera do backup e
+	# segue jogando; vinte segundos depois o autosave copia o principal AINDA
+	# corrompido por cima do backup, destruindo a única cópia boa. O jogador
+	# perdia tudo sem nunca ver um aviso. Agora, conteúdo ilegível no principal
+	# vai para a quarentena `.corrompido` e o backup fica onde está.
 	if FileAccess.file_exists(cam()):
 		var antigo := FileAccess.open(cam(), FileAccess.READ)
 		if antigo:
 			var conteudo := antigo.get_as_text()
 			antigo.close()
-			var bak := FileAccess.open(cam_backup(), FileAccess.WRITE)
-			if bak:
-				bak.store_string(conteudo)
-				bak.close()
-	var f := FileAccess.open(cam(), FileAccess.WRITE)
+			if JSON.parse_string(conteudo) is Dictionary:
+				var bak := FileAccess.open(cam_backup(), FileAccess.WRITE)
+				if bak:
+					bak.store_string(conteudo)
+					bak.close()
+			else:
+				push_warning("[save] principal ilegível: não vai virar backup; guardado em %s" % cam_corrompido())
+				DirAccess.rename_absolute(cam(), cam_corrompido())
+
+	# Escrita atômica — grava no temporário, confere que volta a ser Dicionário,
+	# e só então troca pelo definitivo. Antes, `store_string` num disco cheio (ou
+	# um kill no meio) deixava o save truncado no lugar do bom, e `salvar()`
+	# devolvia `true` do mesmo jeito: o `jogo_salvo` era mentira.
+	var tmp := cam() + ".tmp"
+	var f := FileAccess.open(tmp, FileAccess.WRITE)
 	if f == null:
 		ultimo_erro = "Não consegui abrir o arquivo de save (erro %d)." % FileAccess.get_open_error()
 		push_error(ultimo_erro)
 		return false
 	f.store_string(texto)
 	f.close()
+	var conferido := FileAccess.open(tmp, FileAccess.READ)
+	var de_volta := conferido.get_as_text() if conferido != null else ""
+	if conferido != null:
+		conferido.close()
+	if not (JSON.parse_string(de_volta) is Dictionary):
+		ultimo_erro = "A gravação do save saiu incompleta (disco cheio?). O save anterior foi mantido."
+		push_error(ultimo_erro)
+		Bus.toast(Txt.t("save_falhou"), "ruim", "cadeado")
+		DirAccess.remove_absolute(tmp)
+		return false
+	if DirAccess.rename_absolute(tmp, cam()) != OK:
+		ultimo_erro = "Não consegui substituir o arquivo de save."
+		push_error(ultimo_erro)
+		DirAccess.remove_absolute(tmp)
+		return false
 	Bus.jogo_salvo.emit(texto.length())
 	return true
 
+## Verdadeiro quando a última `carregar()` encontrou arquivo de save e não
+## conseguiu ler NENHUM deles. É diferente de "não existe save": no primeiro
+## caso o jogo mostrava o tutorial como se fosse jogador novo e sobrescrevia os
+## dois arquivos no autosave seguinte, apagando o progresso de quem talvez só
+## precisasse fechar o jogo e pedir ajuda.
+var falhou_ao_ler := false
+
 func carregar() -> Dictionary:
+	falhou_ao_ler = false
+	var tinha := FileAccess.file_exists(cam()) or FileAccess.file_exists(cam_backup())
 	var d := _ler(cam())
 	if d.is_empty():
 		d = _ler(cam_backup())
 		if not d.is_empty():
 			push_warning("[save] save principal corrompido; backup restaurado.")
+			# Volta a ter duas cópias boas AGORA. Rodar com uma cópia só é o
+			# estado em que a próxima falha custa a partida inteira.
+			salvar(d)
 	if d.is_empty():
+		if tinha:
+			falhou_ao_ler = true
+			ultimo_erro = "Encontrei o arquivo de save e não consegui ler nem ele nem o backup."
+			push_error(ultimo_erro)
 		return {}
 	return migrar(d)
 
