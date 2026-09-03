@@ -48,6 +48,8 @@ func _conectar() -> void:
 	Bus.carta_caiu.connect(_ao_carta)
 	Bus.onda_falhou.connect(_ao_onda_falhou)
 	Bus.combo_quebrou.connect(_ao_combo_quebrou)
+	# O juice mexe no tempo por FATOR, e quem multiplica os fatores e o Jogo.
+	juice.dono = jogo
 	Bus.prestigio_feito.connect(func(_c, _g): particulas.limpar(); numeros.limpar())
 
 func _ao_atingir(e, dano_log: float, critico: bool, elemento: String, dot: bool = false) -> void:

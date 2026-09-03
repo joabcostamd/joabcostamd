@@ -840,11 +840,27 @@ func alternar_infinito() -> bool:
 	Bus.toast(Txt.t("infinito_ligado" if ligado else "infinito_desligado"), "epico", "nova")
 	return ligado
 
+## DONO UNICO DE `Engine.time_scale`.
+##
+## Quatro pontos escreviam nele sem se falar: a velocidade escolhida pelo
+## jogador, a Retomada (6x), a camera lenta do juice e o fim da Retomada. Eles
+## brigavam de verdade — se a camera lenta de um chefe morrendo terminasse
+## durante a Retomada, ela restaurava a "velocidade base" e MATAVA a Retomada no
+## meio; e ligar 2x durante uma camera lenta cancelava a camera lenta.
+##
+## Agora os tres efeitos sao fatores independentes e a escala final e o produto.
+## Quem quiser mexer no tempo mexe no seu fator, nunca no relogio direto.
+var fator_retomada := 1.0
+var fator_lenta := 1.0
+
+func aplicar_time_scale() -> void:
+	Engine.time_scale = clampf(velocidade * fator_retomada * fator_lenta, 0.05, 24.0)
+
 func definir_velocidade(v: float) -> void:
 	var teto := maxf(1.0, float(esp.get("velocidadeMax", 1.0)))
 	velocidade = clampf(v, 1.0, teto)
 	s["auto"]["velocidade"] = velocidade
-	Engine.time_scale = velocidade
+	aplicar_time_scale()
 
 ## ========================================================= prestígio ====
 

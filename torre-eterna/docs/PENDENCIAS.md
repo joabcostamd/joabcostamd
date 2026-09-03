@@ -16,22 +16,21 @@ Itens sem prova foram descartados pelos próprios céticos e não entraram.
 
 ---
 
-## 1. Portões que não medem o que dizem medir
+## 1. Portões que não medem o que dizem medir — ✅ FECHADO
 
-O diagnóstico central do painel: *"não é um projeto ruim; é um projeto bom cujo
-sistema de garantia não consegue distinguir o que funciona do que só tem o nome
-escrito no lugar certo."* Enquanto isto não for resolvido, **nenhum conserto
-abaixo fica protegido**.
+Era o diagnóstico central do painel. Todos os sete itens foram resolvidos, e
+cada um tem prova de que o portão **morde** (o defeito foi reintroduzido e a
+suíte reprovou):
 
-| # | Pendência | Prova |
+| # | O que era | Como ficou |
 |---|---|---|
-| 1.1 | **Critério 6 prova _string_, não elo.** `testes.gd` verifica `texto.contains(prova)` — se o símbolo aparece no arquivo, o elo está "provado". Um cético cortou os dois elos da Adaptação, reescreveu o nome dentro de um comentário, e a suíte fechou 348/348. | `tools/suites/testes.gd` (`t_sistemas`), `data/systems.json` |
-| 1.2 | **Mesma doença no linter.** `_checar_passivas` e `_checar_especiais` usam `contains()`. 15 passivas sem teste. | `tools/lint.gd` |
-| 1.3 | **Piso de asserções global e frouxo.** `piso := 250` contra 370 reais: dá para perder um grupo inteiro sem reprovar. Deve ser por grupo. | `tools/suites/testes.gd` |
-| 1.4 | **Suíte dependente de ordem**, `_ready()` que não roda em modo `-s`, `Engine.time_scale` sem dono. | `tools/suites/testes.gd` |
-| 1.5 | **`soak.gd` sem semente fixa** — é o único portão longo com veredito e ainda é loteria. | `tools/suites/soak.gd` |
-| 1.6 | **Sem teste para o próprio linter** nem para a escrita atômica do save. `verificar.gd` sai 0 imprimindo FAIL. | `tools/verificar.gd` |
-| 1.7 | **Filtro de daltonismo sem portão**, e o critério 12 promete "separação percebida medida" sem instrumento nenhum. | `docs/QUALIDADE.md`, `scripts/render/filtro_acessibilidade.gd` |
+| 1.1 | Critério 6 provava _string_: um auditor cortou dois elos, pôs o nome num comentário, e a suíte fechou verde | Prova em código sem comentários **+ exige chamador**. Função declarada e nunca chamada deixou de contar como elo |
+| 1.2 | Passiva contava se o nome aparecesse em qualquer lugar — até num rótulo de UI | Exige leitura real (`pas.has/get/[]` ou `_tem_passiva`) |
+| 1.3 | Piso global de 250 contra 371 reais: 121 de folga, mais que qualquer grupo | Piso **por grupo**, derivado da contagem medida. Perder um bloco reprova nomeando o bloco |
+| 1.4 | Quatro pontos escreviam `Engine.time_scale`: a câmera lenta terminando **matava a Retomada** | Três fatores, um dono. Teste prova que a briga acabou e que ninguém mais escreve no relógio |
+| 1.5 | `soak` sem semente — o único portão longo com veredito era loteria | Semente fixa; duas execuções dão saída idêntica |
+| 1.6 | `verificar.gd` escrevia FAIL e saía 0 quando faltava dado | Veredito e código de saída concordam, cobrado por teste em todas as ferramentas |
+| 1.7 | Critério 12 prometia "separação percebida medida" sem instrumento nenhum | Instrumento em CIELAB (ΔE 76). **Desmentiu o comentário do shader**: a média piora nos três modos; o filtro troca média por pior caso, e é o pior caso que importa |
 
 ## 2. Promessas que o jogo faz e não cumpre
 

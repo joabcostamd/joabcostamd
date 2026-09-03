@@ -370,7 +370,8 @@ static func iniciar_retomada(j, onda_anterior: int) -> void:
 		"superou": false,
 	}
 	j.s["auto"]["comprar"] = true
-	Engine.time_scale = RETOMADA_VELOCIDADE
+	j.fator_retomada = RETOMADA_VELOCIDADE
+	j.aplicar_time_scale()
 	Bus.celebracao.emit("retomada", {"alvo": onda_anterior})
 
 static func atualizar_retomada(dt: float, j) -> void:
@@ -397,7 +398,8 @@ static func encerrar_retomada(j) -> void:
 	var r: Dictionary = j.s["retomada"]
 	j.s["auto"]["comprar"] = bool(r["auto_antes"])
 	j.velocidade = float(r["velocidade_antes"])
-	Engine.time_scale = j.velocidade
+	j.fator_retomada = 1.0
+	j.aplicar_time_scale()
 	j.s["retomada"] = {}
 
 ## Estar em Retomada é ter um ALVO, não ter a chave. Enquanto `retomada` só

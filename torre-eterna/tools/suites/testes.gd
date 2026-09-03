@@ -38,6 +38,7 @@ func rodar(cena: SceneTree) -> void:
 	t_combate()
 	t_alcancavel()
 	t_ferramentas()
+	t_tempo()
 	t_daltonismo()
 	t_nada_mudo()
 	t_elites()
@@ -78,7 +79,7 @@ func rodar(cena: SceneTree) -> void:
 		"Acessibilidade": 11, "Alcancavel": 7, "Big": 12,
 		"Chaves dinamicas": 3, "Combate": 9, "Defesa": 27,
 		"Dicas": 5, "Economia": 9, "Elites": 11,
-		"Eventos": 12, "Feedback": 2, "Ferramentas": 3, "Daltonismo": 9, "Fmt": 6,
+		"Eventos": 12, "Feedback": 2, "Ferramentas": 3, "Daltonismo": 9, "Tempo": 5, "Fmt": 6,
 		"Habilidades": 17, "Icones": 2, "Integridade": 9,
 		"Longo prazo": 7, "Mecânicas": 59, "Mira": 6,
 		"Mods": 19, "Numeros de dano": 2, "Offline": 6,
@@ -504,6 +505,50 @@ func t_combate() -> void:
 	ok("execucao mata", not e3.vivo())
 
 	jogo.arena.limpar_inimigos()
+
+## ----------------------------------------- o tempo tem um dono so
+## Quatro pontos escreviam em `Engine.time_scale` sem se falar: a velocidade
+## escolhida pelo jogador, a Retomada (6x), a camera lenta do juice e o fim da
+## Retomada. Eles brigavam de verdade — a camera lenta de um chefe morrendo,
+## ao terminar, restaurava a "velocidade base" e MATAVA a Retomada no meio.
+## Agora sao tres fatores independentes e um dono que multiplica.
+func t_tempo() -> void:
+	g("Tempo")
+	jogo.velocidade = 1.0
+	jogo.fator_retomada = 1.0
+	jogo.fator_lenta = 1.0
+	jogo.aplicar_time_scale()
+	ok("parado em 1x", perto(Engine.time_scale, 1.0, 0.001), str(Engine.time_scale))
+
+	jogo.definir_velocidade(2.0)
+	var v2 := Engine.time_scale
+	jogo.fator_lenta = 0.25
+	jogo.aplicar_time_scale()
+	ok("camera lenta multiplica a velocidade escolhida",
+		perto(Engine.time_scale, v2 * 0.25, 0.001), str(Engine.time_scale))
+
+	# O caso que quebrava: a camera lenta acaba enquanto a Retomada corre.
+	jogo.fator_retomada = Mecanicas.RETOMADA_VELOCIDADE
+	jogo.aplicar_time_scale()
+	jogo.fator_lenta = 1.0
+	jogo.aplicar_time_scale()
+	ok("a camera lenta acabando NAO mata a Retomada",
+		Engine.time_scale >= v2 * Mecanicas.RETOMADA_VELOCIDADE - 0.01,
+		"time_scale=%s" % str(Engine.time_scale))
+
+	jogo.fator_retomada = 1.0
+	jogo.definir_velocidade(1.0)
+	ok("volta ao normal no fim", perto(Engine.time_scale, 1.0, 0.001), str(Engine.time_scale))
+
+	# Ninguem alem do dono pode escrever no relogio.
+	var escritores: Array = []
+	for arq in _listar_gd("res://scripts"):
+		if arq.ends_with("game.gd"):
+			continue
+		var texto := _sem_comentario(FileAccess.get_file_as_string(arq))
+		if texto.contains("Engine.time_scale ="):
+			escritores.append(arq)
+	ok("so o Jogo escreve em Engine.time_scale", escritores.is_empty(), str(escritores))
 
 ## --------------------------------- daltonismo: a medida que faltava
 ## O criterio 12 promete "daltonismo medido por separacao percebida" e se

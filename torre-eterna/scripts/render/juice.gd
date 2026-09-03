@@ -59,8 +59,18 @@ func zoom_punch(forca: float) -> void:
 	zoom = 1.0 + forca
 	aberracao = maxf(aberracao, forca * 2.4)
 
+## A camera lenta e um FATOR, nao um relogio.
+##
+## Ela escrevia direto em `Engine.time_scale`, e quando o timer acabava
+## restaurava a "velocidade base" — o que matava a Retomada no meio se as duas
+## coincidissem, e cancelava a camera lenta se o jogador trocasse a velocidade
+## durante ela. Agora quem multiplica os tres fatores e o Jogo.
+var dono = null
+
 func camera_lenta(escala: float, ms: float) -> void:
-	Engine.time_scale = clampf(escala, 0.05, 8.0)
+	if dono != null:
+		dono.fator_lenta = clampf(escala, 0.05, 8.0)
+		dono.aplicar_time_scale()
 	_timer_lenta = ms / 1000.0
 
 ## O juice anda em TEMPO REAL, nao em tempo de jogo.
@@ -96,8 +106,9 @@ func atualizar(dt: float, velocidade_base: float) -> void:
 
 	if _timer_lenta > 0.0:
 		_timer_lenta -= dt_real
-		if _timer_lenta <= 0.0:
-			Engine.time_scale = velocidade_base
+		if _timer_lenta <= 0.0 and dono != null:
+			dono.fator_lenta = 1.0
+			dono.aplicar_time_scale()
 
 func desenhar_flash(ci: CanvasItem, tam: Vector2) -> void:
 	if flash_forca <= 0.01:
