@@ -38,6 +38,7 @@ var lbl_velocidade: Label
 var b_mira: Button
 var b_infinito: Button
 var b_farm: Button
+var b_autopurga: Button
 var aviso_pontos: Label
 var ic_pontos: Control
 
@@ -329,6 +330,13 @@ func _construir() -> void:
 	# aviso de "onda travada", e não havia como chegar lá.
 	b_farm = _botao_com_icone("ampulheta", Txt.t("hud_farm_dica"), UI.OURO, _alternar_farm)
 	acoes.add_child(b_farm)
+	# A Purga automatica custa 120 fragmentos no no `af_auto_purga` e NAO TINHA
+	# INTERRUPTOR: `p["auto"]` era lido por `atualizar_purga` e nunca escrito
+	# por ninguem em todo o repositorio. O jogador pagava a compra mais cara do
+	# comeco da arvore e nada acontecia. Mesmo padrao do Farm e do Infinito: o
+	# botao so existe quando o desbloqueio existe.
+	b_autopurga = _botao_com_icone("purga", Txt.t("hud_autopurga_dica"), UI.ACENTO2, _alternar_autopurga)
+	acoes.add_child(b_autopurga)
 	acoes.add_child(_botao_com_icone("salvar", Txt.t("salvar_agora") + " (F5)", UI.TEXTO2, _salvar_agora))
 
 	# a Purga fica à esquerda da barra de habilidades, com destaque próprio
@@ -615,6 +623,9 @@ func _atualizar_lento() -> void:
 	if b_farm != null:
 		b_farm.visible = jogo.esp["desbloqueios"].has("modoFarm")
 		b_farm.modulate = UI.OURO if bool(jogo.s["modo_farm"]) else Color.WHITE
+	if b_autopurga != null:
+		b_autopurga.visible = jogo.esp["desbloqueios"].has("autoPurga")
+		b_autopurga.modulate = UI.ACENTO2 if bool(Mecanicas.estado_purga(jogo.s)["auto"]) else Color.WHITE
 
 ## Mostra só os elementos em que o Enxame já criou resistência.
 func _atualizar_adaptacao() -> void:
@@ -694,6 +705,15 @@ func _alternar_infinito() -> void:
 	if not jogo.alternar_infinito():
 		Bus.toast(Txt.t("hud_infinito_trancado"), "info", "cadeado")
 
+func _alternar_autopurga() -> void:
+	if not jogo.esp["desbloqueios"].has("autoPurga"):
+		return
+	var p: Dictionary = Mecanicas.estado_purga(jogo.s)
+	var ligado := not bool(p["auto"])
+	p["auto"] = ligado
+	Bus.ui_atualizar.emit(false)
+	Bus.toast(Txt.t("hud_autopurga_on" if ligado else "hud_autopurga_off"), "info", "purga")
+
 func _alternar_farm() -> void:
 	if not jogo.esp["desbloqueios"].has("modoFarm"):
 		Bus.toast(Txt.t("hud_farm_trancado"), "info", "cadeado")
@@ -729,6 +749,8 @@ func _retraduzir() -> void:
 		b_infinito.tooltip_text = Txt.t("hud_infinito_dica")
 	if b_farm != null and is_instance_valid(b_farm):
 		b_farm.tooltip_text = Txt.t("hud_farm_dica")
+	if b_autopurga != null and is_instance_valid(b_autopurga):
+		b_autopurga.tooltip_text = Txt.t("hud_autopurga_dica")
 
 func _atualizar_dica_mira() -> void:
 	if b_mira == null:

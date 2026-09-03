@@ -342,6 +342,20 @@ static func checar_missoes(j) -> void:
 				continue
 			var meta: Dictionary = def.get("meta", {})
 			var atual := valor_cond(s, str(meta.get("tipo", "")), str(meta.get("chave", "")))
+			# `semMorrer`: "uma queda e a contagem recomeca". A regra estava
+			# escrita nas duas missoes, nos dois idiomas, e NENHUM codigo lia a
+			# flag — `grep semMorrer` devolvia so as duas linhas de JSON. O
+			# jogador podia morrer toda onda e ainda faturar os 8 pontos de
+			# talento. A missao anunciava uma exigencia que nao existia.
+			if bool(def.get("semMorrer", false)):
+				var quedas := int(s["stats"].get("mortes", 0))
+				if int(mi.get("quedas_base", -1)) < 0:
+					mi["quedas_base"] = quedas
+				elif quedas > int(mi["quedas_base"]):
+					# Caiu: zera o progresso e recomeca a contar daqui.
+					mi["quedas_base"] = quedas
+					mi["prog"] = 0.0
+					mi["base"] = atual
 			if _avancar(mi, atual) >= float(mi["alvo"]):
 				mi["pronta"] = true
 				Bus.missao_concluida.emit(str(mi["id"]))

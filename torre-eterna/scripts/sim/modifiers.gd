@@ -1,6 +1,10 @@
 class_name Mods
 extends RefCounted
 
+## Ganho por dupla de cartas com sinergia equipada junta.
+const SINERGIA_DANO := 1.12
+const SINERGIA_OURO := 1.08
+
 ## Junta TODAS as fontes de bônus num StatEngine.
 ## Fontes: upgrades · talentos · árvores de prestígio · relíquias · cartas
 ## (+ conjuntos) · buffs · conquistas · era · desafio · passivas.
@@ -187,6 +191,30 @@ static func recalcular(s: Dictionary, m: StatEngine) -> Dictionary:
 					m.add_pct(stat, v, str(def.get("nome", "")))
 				_:
 					m.add_flat(stat, v, str(def.get("nome", "")))
+
+	# SINERGIA ENTRE CARTAS. Doze das trinta cartas declaram `sinergia` apontando
+	# para outra carta — "esta combina com aquela" — e a palavra so aparecia em
+	# `panel_cartas.gd`, como um rotulo colorido com dica. Zero efeito na
+	# simulacao: o jogador lia que duas cartas combinavam, montava a dupla, e
+	# nao ganhava nada por isso. Rotulo que promete e nao paga e pior que rotulo
+	# nenhum, porque desperdica um slot em nome de uma vantagem inexistente.
+	#
+	# Agora o par equipado vale: +12% de dano e +8% de ouro por dupla completa.
+	# Conta uma vez por par (A->B e B->A sao a mesma dupla), senao sinergia
+	# reciproca pagaria dobrado.
+	var pares_vistos := {}
+	for cid in equipadas_ids:
+		var cdef: Dictionary = Dados.carta_por_id.get(str(cid), {})
+		var par := str(cdef.get("sinergia", ""))
+		if par == "" or not equipadas_ids.has(par):
+			continue
+		var chave_par := str(cid) if str(cid) < par else par
+		var chave_dupla := chave_par + "|" + (par if str(cid) < par else str(cid))
+		if pares_vistos.has(chave_dupla):
+			continue
+		pares_vistos[chave_dupla] = true
+		m.add_mult("multiplicador", SINERGIA_DANO, "Sinergia")
+		m.add_mult("ganhoOuro", SINERGIA_OURO, "Sinergia")
 
 	# bônus de conjunto completo
 	for conj in Dados.conjuntos:

@@ -90,5 +90,17 @@
   "hud_chefe_em": {
     "pt": "Chefe na onda {n}",
     "en": "Boss on wave {n}"
+  },
+  "hud_autopurga_dica": {
+    "pt": "Purga automática: dispara sozinha ao encher, mas rende menos que a sua mão",
+    "en": "Auto Purge: fires on its own when full, but yields less than your own timing"
+  },
+  "hud_autopurga_on": {
+    "pt": "Purga automática ligada. Ela rende menos que você.",
+    "en": "Auto Purge on. It yields less than you do."
+  },
+  "hud_autopurga_off": {
+    "pt": "Purga automática desligada.",
+    "en": "Auto Purge off."
   }
 }

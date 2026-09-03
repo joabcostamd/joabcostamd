@@ -38,6 +38,7 @@ func rodar(cena: SceneTree) -> void:
 	t_combate()
 	t_alcancavel()
 	t_ferramentas()
+	t_conteudo_lido()
 	t_tempo()
 	t_daltonismo()
 	t_nada_mudo()
@@ -76,10 +77,10 @@ func rodar(cena: SceneTree) -> void:
 	# Agora cada grupo tem o proprio minimo. Perder um bloco reprova NOMEANDO o
 	# bloco, e acrescentar teste continua nunca reprovando.
 	var minimo_por_grupo := {
-		"Acessibilidade": 11, "Alcancavel": 7, "Big": 12,
+		"Acessibilidade": 11, "Alcancavel": 8, "Big": 12,
 		"Chaves dinamicas": 3, "Combate": 9, "Defesa": 27,
 		"Dicas": 5, "Economia": 9, "Elites": 11,
-		"Eventos": 12, "Feedback": 2, "Ferramentas": 3, "Daltonismo": 9, "Tempo": 5, "Fmt": 6,
+		"Eventos": 12, "Feedback": 2, "Ferramentas": 3, "Daltonismo": 9, "Tempo": 5, "Conteudo lido": 5, "Fmt": 6,
 		"Habilidades": 17, "Icones": 2, "Integridade": 9,
 		"Longo prazo": 7, "Mecânicas": 59, "Mira": 6,
 		"Mods": 19, "Numeros de dano": 2, "Offline": 6,
@@ -506,6 +507,91 @@ func t_combate() -> void:
 
 	jogo.arena.limpar_inimigos()
 
+## ------------------------------- conteudo declarado tem que ser lido
+## Um campo escrito em data/*.json que nenhum codigo le e uma promessa feita ao
+## jogador e nao cumprida — e o jogo tinha varias. `sinergia` existia em 12 das
+## 30 cartas e so pintava um rotulo; `semMorrer` anunciava "uma queda e a
+## contagem recomeca" em duas missoes e nenhum codigo lia a flag, entao dava
+## para morrer toda onda e faturar os 8 pontos de talento.
+func t_conteudo_lido() -> void:
+	g("Conteudo lido")
+	var codigo := ""
+	for arq in _listar_gd("res://scripts"):
+		codigo += _sem_comentario(FileAccess.get_file_as_string(arq))
+
+	# Campos de conteudo que precisam de leitor na SIMULACAO (nao vale so a UI).
+	var codigo_sim := ""
+	for arq2 in _listar_gd("res://scripts/sim"):
+		codigo_sim += _sem_comentario(FileAccess.get_file_as_string(arq2))
+	var campos := ["sinergia", "semMorrer"]
+	var sem_leitor: Array = []
+	for campo in campos:
+		if not codigo_sim.contains('"%s"' % campo):
+			sem_leitor.append(campo)
+	ok("campo de conteudo declarado tem leitor na simulacao",
+		sem_leitor.is_empty(), str(sem_leitor))
+
+	# SINERGIA: a dupla equipada tem que pagar mais que as cartas soltas.
+	var achou_par := {}
+	for c in Dados.cartas:
+		var par := str(c.get("sinergia", ""))
+		if par != "" and Dados.carta_por_id.has(par):
+			achou_par = {"a": str(c.get("id", "")), "b": par}
+			break
+	ok("ha par de sinergia no conteudo", not achou_par.is_empty())
+	if not achou_par.is_empty():
+		var s_par := GameState.novo()
+		var m_sem := Mods.recalcular(s_par, StatEngine.new())
+		var base_sem: float = float(m_sem["stats"].n("multiplicador"))
+		# Equipa as duas cartas do par.
+		var inv: Array = s_par["cartas"]["inventario"]
+		var uids: Array = []
+		for id_carta in [str(achou_par["a"]), str(achou_par["b"])]:
+			var uid := "sin_%s" % id_carta
+			inv.append({"uid": uid, "id": id_carta, "raridade": "comum", "nivel": 1})
+			uids.append(uid)
+		s_par["cartas"]["equipadas"] = uids
+		var m_com = Mods.recalcular(s_par, StatEngine.new())
+		var base_com: float = float(m_com["stats"].n("multiplicador"))
+		ok("a dupla de sinergia paga mais que as cartas soltas",
+			base_com > base_sem,
+			"sem=%s com=%s" % [str(base_sem), str(base_com)])
+
+	# semMorrer: cair zera a contagem.
+	var s_m := GameState.novo()
+	var def_sm: Dictionary = {}
+	for d in (Dados.missoes_diarias + Dados.missoes_semanais):
+		if bool(d.get("semMorrer", false)):
+			def_sm = d
+			break
+	ok("ha missao semMorrer no conteudo", not def_sm.is_empty())
+	if not def_sm.is_empty():
+		var mi := {"id": str(def_sm.get("id", "")), "alvo": 999.0, "prog": 0.0,
+			"base": 0.0, "pronta": false, "coletada": false, "quedas_base": -1}
+		s_m["missoes"]["diarias"] = [mi]
+		s_m["stats"]["mortes"] = 0
+		s_m["onda_maxima"] = 10
+		Progresso.checar_missoes(_jogo_falso(s_m))
+		var prog1 := float(mi["prog"])
+		s_m["stats"]["mortes"] = 1
+		s_m["onda_maxima"] = 20
+		Progresso.checar_missoes(_jogo_falso(s_m))
+		ok("cair zera a contagem da missao semMorrer",
+			float(mi["prog"]) <= prog1 + 0.001,
+			"prog %s -> %s" % [str(prog1), str(mi["prog"])])
+
+## Envelope minimo para exercitar `Progresso` sem subir o jogo inteiro.
+func _jogo_falso(estado: Dictionary):
+	var j := JogoFalso.new()
+	j.s = estado
+	return j
+
+class JogoFalso:
+	extends RefCounted
+	var s: Dictionary = {}
+	func marcar_sujo() -> void:
+		pass
+
 ## ----------------------------------------- o tempo tem um dono so
 ## Quatro pontos escreviam em `Engine.time_scale` sem se falar: a velocidade
 ## escolhida pelo jogador, a Retomada (6x), a camera lenta do juice e o fim da
@@ -790,6 +876,26 @@ func t_alcancavel() -> void:
 	var codigo_ui := ""
 	for arq in _listar_gd("res://scripts"):
 		codigo_ui += FileAccess.get_file_as_string(arq)
+	# TODO DESBLOQUEIO PAGO PRECISA DE INTERRUPTOR.
+	#
+	# `autoPurga` custava 120 fragmentos e `modoFarm` 35, e nenhum dos dois tinha
+	# quem os ligasse: a flag era LIDA pela simulacao e nunca ESCRITA por ninguem.
+	# O jogador pagava a compra mais cara do comeco da arvore e nada acontecia.
+	# Nao basta o desbloqueio existir nos dados: alguem tem que poder liga-lo.
+	var chaves := {
+		"autoPurga": "p[\"auto\"] =",
+		"modoFarm": "alternar_farm(",
+		"autoCompra": "[\"comprar\"] =",
+		"autoHabilidade": "[\"habilidades\"] =",
+		"modoInfinito": "alternar_infinito(",
+	}
+	var sem_interruptor: Array = []
+	for chave in chaves:
+		if not codigo_ui.contains(str(chaves[chave])):
+			sem_interruptor.append(str(chave))
+	ok("todo desbloqueio pago tem interruptor na interface",
+		sem_interruptor.is_empty(), str(sem_interruptor))
+
 	for nome in portas:
 		var alcancavel := codigo_ui.contains(nome + "(")
 		# `contains(nome + "(")` acha tanto a definicao quanto a chamada, entao
