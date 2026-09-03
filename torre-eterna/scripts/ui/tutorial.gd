@@ -9,9 +9,9 @@ extends Control
 ##
 ## Adicionado pelo `main` dentro da camada de UI, acima do HUD.
 
-const DURACAO := 9.5              ## segundos que um balão fica na tela
-const ESPERA_ENTRE := 5.0         ## respiro entre um balão e o próximo
-const ATRASO_INICIAL := 5.0       ## deixa o jogador ver a torre atirar antes
+const DURACAO := 2.2              ## segundos que um balão fica na tela
+const ESPERA_ENTRE := 0.4         ## respiro entre um balão e o próximo
+const ATRASO_INICIAL := 1.0       ## deixa o jogador ver a torre atirar antes
 const LARGURA := 300.0
 
 ## A sequência. `alvo` é uma região da tela; `id` é o que fica salvo.

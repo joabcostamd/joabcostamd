@@ -59,9 +59,6 @@ func _montar() -> void:
 	janela.add_child(corpo)
 	_montar_pergunta()
 	UI.saltar(janela, 1.07)
-	if OS.get_environment("TE_AUTO_EVENTO") != "":
-		await get_tree().create_timer(0.3).timeout
-		_escolher(int(OS.get_environment("TE_AUTO_EVENTO")))
 
 func _montar_pergunta() -> void:
 	_limpar()

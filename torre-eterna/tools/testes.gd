@@ -31,6 +31,7 @@ func _initialize() -> void:
 	t_progresso()
 	t_mecanicas()
 	t_eventos()
+	t_audio()
 	t_save()
 	t_offline()
 	t_habilidades()
@@ -506,6 +507,77 @@ func t_eventos() -> void:
 				if tf != "" and not tipos_ok.has(tf) and not desconhecidos.has(tf):
 					desconhecidos.append(tf)
 	ok("todo resultado de evento e conhecido", desconhecidos.is_empty(), str(desconhecidos))
+
+## --------------------------------------------------------------- áudio
+## O áudio é sintetizado: dá para provar que cada som existe, tem duração
+## sensata e NÃO é silêncio — mesmo sem placa de som nesta máquina.
+func t_audio() -> void:
+	g("Áudio")
+	var cat: Dictionary = Sfx.catalogo()
+	ok("catalogo tem sons", cat.size() >= 20, str(cat.size()))
+
+	# nomes reais do catálogo (scripts/audio/sfx.gd)
+	var essenciais := ["tiro", "tiro_critico", "impacto", "morte", "morte_chefe", "ouro",
+		"compra", "bloqueado", "nivel", "onda", "alerta_chefe", "torre_dano", "torre_destruida",
+		"prestigio", "lendario", "hab_pronta", "conquista", "clique", "erro", "carta"]
+	var faltando: Array = []
+	for nome in essenciais:
+		if not cat.has(nome):
+			faltando.append(nome)
+	ok("sons essenciais presentes", faltando.is_empty(), str(faltando))
+
+	var mudos: Array = []
+	var longos: Array = []
+	var curtos: Array = []
+	var invalidos: Array = []
+	var total_amostras := 0
+	for nome in cat.keys():
+		var receita: Dictionary = cat[nome]
+		var buf: PackedFloat32Array = Synth.mixar(receita.get("camadas", []))
+		if buf.size() == 0:
+			invalidos.append(str(nome))
+			continue
+		total_amostras += buf.size()
+		var dur := float(buf.size()) / float(Synth.TAXA)
+		if dur < 0.015:
+			curtos.append("%s (%.3fs)" % [str(nome), dur])
+		if dur > 6.0:
+			longos.append("%s (%.2fs)" % [str(nome), dur])
+		var pico := 0.0
+		var tem_nan := false
+		for i in range(0, buf.size(), maxi(1, buf.size() / 400)):
+			var v := buf[i]
+			if is_nan(v) or is_inf(v):
+				tem_nan = true
+				break
+			pico = maxf(pico, absf(v))
+		if tem_nan:
+			invalidos.append(str(nome) + " (NaN)")
+		elif pico < 0.01:
+			mudos.append(str(nome))
+
+	ok("nenhum som invalido", invalidos.is_empty(), str(invalidos))
+	ok("nenhum som mudo", mudos.is_empty(), str(mudos))
+	ok("nenhum som curto demais", curtos.is_empty(), str(curtos))
+	ok("nenhum som longo demais", longos.is_empty(), str(longos))
+	ok("gerou audio de verdade", total_amostras > 44100, str(total_amostras))
+
+	# o WAV precisa sair no formato que o Godot toca
+	var primeiro: Dictionary = cat[cat.keys()[0]]
+	var wav: AudioStreamWAV = Synth.som(primeiro.get("camadas", []), float(primeiro.get("pico", 0.85)))
+	ok("gera AudioStreamWAV", wav != null)
+	if wav != null:
+		ok("16 bits", wav.format == AudioStreamWAV.FORMAT_16_BITS)
+		ok("taxa correta", wav.mix_rate == Synth.TAXA, str(wav.mix_rate))
+		ok("tem dados", wav.data.size() > 0)
+
+	# cada habilidade precisa ter um som mapeado
+	var sem_som: Array = []
+	for h in Dados.habilidades:
+		var nome := Sfx.som_habilidade(str(h.get("id", "")))
+		if nome == "" or not cat.has(nome):
+			sem_som.append(str(h.get("id", "")))
+	ok("toda habilidade tem som", sem_som.is_empty(), str(sem_som))
 
 ## -------------------------------------------------------------- save
 func t_save() -> void:
