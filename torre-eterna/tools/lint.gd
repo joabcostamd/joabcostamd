@@ -12,6 +12,7 @@ var linhas := 0
 
 const PASTAS := ["res://scripts", "res://tools"]
 const Textos := preload("res://scripts/core/textos.gd")
+const Sons := preload("res://scripts/audio/sfx.gd")
 
 func _initialize() -> void:
 	Dados.carregar(true)
@@ -22,6 +23,7 @@ func _initialize() -> void:
 	_checar_recursos()
 	_checar_entradas()
 	_checar_i18n()
+	_checar_sons()
 
 	print("===LINT=== arquivos=%d linhas=%d erros=%d avisos=%d" % [arquivos, linhas, erros.size(), avisos.size()])
 	for e in erros:
@@ -206,7 +208,10 @@ func _checar_entrada(caminho: String) -> void:
 	for isento in ["bootstrap.gd", "build_scene.gd"]:
 		if caminho.ends_with(isento):
 			return
-	var limpo := _sem_comentarios(texto)
+	# Sem comentários E sem strings: um nome de classe DENTRO de aspas (um padrão
+	# de regex, um caminho, uma mensagem) não é dependência de compilação. A
+	# própria regra se acusou uma vez por causa do regex `Audio\.tocar`.
+	var limpo := _sem_strings(_sem_comentarios(texto))
 	var citadas: Array = []
 	for classe in _classes_contaminadas():
 		var re := RegEx.create_from_string("(?<![\\w.\"])" + classe + "(?![\\w\"])")
@@ -248,7 +253,7 @@ func _classes_contaminadas() -> Array:
 		var m := re_nome.search(texto)
 		if m == null:
 			continue
-		var limpo := _sem_comentarios(texto)
+		var limpo := _sem_strings(_sem_comentarios(texto))
 		for a in autos:
 			var re_uso := RegEx.create_from_string("(?<![\\w.\"])" + str(a) + "\\.")
 			if re_uso.search(limpo) != null:
@@ -260,6 +265,31 @@ func _classes_contaminadas() -> Array:
 	return _cache_contaminadas
 
 var _cache_contaminadas: Array = []
+
+## Troca todo literal de texto por aspas vazias. Só para regras que perguntam
+## "este código DEPENDE de X?" — nunca para as que leem o conteúdo das strings.
+func _sem_strings(texto: String) -> String:
+	var out := ""
+	var dentro := false
+	var aspa := ""
+	var i := 0
+	while i < texto.length():
+		var c := texto[i]
+		if dentro:
+			if c == "\\":
+				i += 2
+				continue
+			if c == aspa:
+				dentro = false
+				out += aspa
+		elif c == "\"" or c == "'":
+			dentro = true
+			aspa = c
+			out += c
+		else:
+			out += c
+		i += 1
+	return out
 
 func _sem_comentarios(texto: String) -> String:
 	var out := ""
@@ -287,3 +317,20 @@ func _checar_i18n() -> void:
 			var chave := m.get_string(1)
 			if not Textos.tem(chave):
 				erros.append("%s usa Txt.t(\"%s\") sem tradução" % [caminho, chave])
+
+## `Audio.tocar("nome")` com nome que não existe no catálogo é silêncio: não
+## quebra nada, não avisa nada, e a cena que devia ter som fica muda. Aconteceu
+## com a camada de comemoração, que pedia um "celebracao" inexistente.
+func _checar_sons() -> void:
+	var catalogo := Sons.catalogo()
+	var re := RegEx.create_from_string('Audio\\.tocar(?:_em)?\\("([a-z0-9_]+)"')
+	for caminho in _todos_gd():
+		var f := FileAccess.open(caminho, FileAccess.READ)
+		if f == null:
+			continue
+		var texto := _sem_comentarios(f.get_as_text())
+		f.close()
+		for m in re.search_all(texto):
+			var nome := m.get_string(1)
+			if not catalogo.has(nome):
+				erros.append("%s toca som inexistente: \"%s\"" % [caminho, nome])
