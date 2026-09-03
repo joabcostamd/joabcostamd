@@ -679,7 +679,16 @@ func _efeitos_carta(def: Dictionary, raridade: String, nivel: int) -> Array:
 		var ef: Dictionary = item
 		if not ef.has("stat"):
 			continue
-		var v := float(ef.get("valor", 0.0)) * mult * escala
+		# A conta TEM que ser a mesma do motor (Mods.aplicar_efeitos): em
+		# multiplicador a raridade escala só o BÔNUS acima de 1, e penalidade
+		# (< 1) nunca é amplificada. O painel multiplicava o valor inteiro:
+		# um ×1,35 numa carta épica aparecia como ×2,70 (o motor dava ×1,70) e
+		# uma penalidade de ×0,45 aparecia como ×0,90 — bônus inflado e castigo
+		# escondido, os dois na direção de enganar quem lê.
+		var bruto := float(ef.get("valor", 0.0))
+		var v := bruto * mult * escala
+		if str(ef.get("tipo", "flat")) == "mult":
+			v = (1.0 + (bruto - 1.0) * mult * escala) if bruto >= 1.0 else bruto
 		var nome := _nome_stat(str(ef["stat"]))
 		var cor := UI.VERDE if v >= 0.0 else UI.VERMELHO
 		var texto := ""
@@ -710,11 +719,14 @@ func _texto_efeitos(efeitos: Array, n: int) -> String:
 		var v := float(ef.get("valor", 0.0))
 		match str(ef.get("tipo", "flat")):
 			"pct":
-				partes.append("%s +%s" % [nome, Fmt.pct(v * float(n))])
+				# o "+" era fixo: uma penalidade saía como "+-25%"
+				var pv := v * float(n)
+				partes.append("%s %s%s" % [nome, "+" if pv >= 0.0 else "", Fmt.pct(pv)])
 			"mult":
 				partes.append("%s ×%s" % [nome, _n(pow(v, float(n)), 2)])
 			_:
-				partes.append("%s +%s" % [nome, _n(v * float(n), 3)])
+				var fv := v * float(n)
+				partes.append("%s %s%s" % [nome, "+" if fv >= 0.0 else "", _n(fv, 3)])
 	return " · ".join(partes)
 
 # ------------------------------------------------------------------- ações

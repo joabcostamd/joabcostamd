@@ -716,6 +716,8 @@ func transcender() -> bool:
 		"peregrinos_poupados": int(s.get("peregrinos_poupados", 0)),
 		"missoes_completas": int(s.get("missoes_completas", 0)),
 		"caixa": s.get("caixa", {"seladas": 0, "abertas": 0}),
+		# bônus permanentes vêm de missões e conquistas, que também sobrevivem
+		"bonus_permanentes": s.get("bonus_permanentes", []),
 		"desbloqueios": s["desbloqueios"],
 		"tutorial": s["tutorial"],
 		"novidades": s["novidades"],
@@ -737,6 +739,7 @@ func transcender() -> bool:
 	s["peregrinos_poupados"] = guardar["peregrinos_poupados"]
 	s["missoes_completas"] = guardar["missoes_completas"]
 	s["caixa"] = guardar["caixa"]
+	s["bonus_permanentes"] = guardar["bonus_permanentes"]
 	s["desbloqueios"] = guardar["desbloqueios"]
 	s["tutorial"] = guardar["tutorial"]
 	s["novidades"] = guardar["novidades"]

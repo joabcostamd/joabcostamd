@@ -125,6 +125,12 @@ static func novo() -> Dictionary:
 			"historico": [],
 		},
 
+		# Bônus permanentes ganhos de missões, conquistas e desafios. As 61
+		# recompensas do tipo "stat" caíam num `_: pass` e sumiam em silêncio:
+		# o jogador cumpria a missão, via o texto do prêmio e não ganhava nada.
+		# Guardadas aqui, entram no cálculo de atributos como qualquer bônus.
+		"bonus_permanentes": [],   # [{stat, tipoEfeito, valor, fonte}]
+
 		"desbloqueios": {},
 		"tutorial": {"passo": 0, "completo": false, "vistas": []},
 

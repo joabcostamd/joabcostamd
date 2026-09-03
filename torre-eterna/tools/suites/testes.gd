@@ -185,6 +185,17 @@ func t_modificadores() -> void:
 	jogo.marcar_sujo()
 	jogo.recalcular()
 
+	# Recompensa de missao/conquista do tipo "stat" (61 no conteudo) caia num
+	# `_: pass`: o jogador cumpria, lia "Ganho de Ouro x1,12" e nao ganhava nada.
+	var s_bon := GameState.novo()
+	var m_bon := StatEngine.new()
+	var r_sem := Mods.recalcular(s_bon, m_bon)
+	var ouro_sem := m_bon.n("ganhoOuro")
+	s_bon["bonus_permanentes"] = [{"stat": "ganhoOuro", "tipoEfeito": "mult", "valor": 1.5, "fonte": "teste"}]
+	var r_com := Mods.recalcular(s_bon, m_bon)
+	ok("bonus permanente entra no calculo", m_bon.n("ganhoOuro") > ouro_sem * 1.4,
+		"%s -> %s" % [str(ouro_sem), str(m_bon.n("ganhoOuro"))])
+
 	# talento com passiva
 	s["talentos"]["f_sede"] = 1
 	s["combo"]["atual"] = 10

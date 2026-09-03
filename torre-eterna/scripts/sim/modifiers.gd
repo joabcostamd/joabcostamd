@@ -107,6 +107,23 @@ static func recalcular(s: Dictionary, m: StatEngine) -> Dictionary:
 			if not def.is_empty() and n > 0:
 				aplicar_efeitos(m, def.get("efeito", []), n, str(def.get("nome", id)), esp, pas)
 
+	# ------------------------------------------- bônus permanentes ganhos
+	# Recompensas do tipo "stat" de missões, conquistas e desafios. Ficam no
+	# estado (ver GameState) e entram aqui como qualquer outro modificador.
+	for item in s.get("bonus_permanentes", []):
+		if not (item is Dictionary):
+			continue
+		var b: Dictionary = item
+		var alvo := str(b.get("stat", ""))
+		if alvo == "":
+			continue
+		var val := float(b.get("valor", 0.0))
+		var fonte := str(b.get("fonte", ""))
+		match str(b.get("tipoEfeito", "flat")):
+			"mult": m.add_mult(alvo, val, fonte)
+			"pct": m.add_pct(alvo, val, fonte)
+			_: m.add_flat(alvo, val, fonte)
+
 	# --------------------------------------------------------- relíquias
 	var espelho := false
 	for id in s["relicas"].keys():

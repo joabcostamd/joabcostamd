@@ -94,6 +94,19 @@ static func _dar_recompensa(r: Dictionary, j, fonte: String) -> void:
 		"poeira": Economia.ganhar_moeda("poeira", Big.from(v), j, fonte)
 		"pontosTalento": j.s["pontos_talento"] = int(j.s["pontos_talento"]) + int(v)
 		"xp": Economia.ganhar_xp(Big.mul_f(Bal.xp_onda(int(j.s["onda"])), v), j)
+		"stat":
+			# 61 recompensas do conteúdo são deste tipo e caíam no `_: pass`:
+			# o jogador cumpria a missão, lia "Ganho de Ouro ×1,12" e não
+			# ganhava nada. Agora vira bônus permanente no estado.
+			var alvo := str(r.get("stat", ""))
+			if alvo != "":
+				j.s["bonus_permanentes"].append({
+					"stat": alvo,
+					"tipoEfeito": str(r.get("tipoEfeito", "flat")),
+					"valor": v,
+					"fonte": fonte,
+				})
+				j.marcar_sujo()
 		_: pass
 
 ## ------------------------------------------------------------- missões
