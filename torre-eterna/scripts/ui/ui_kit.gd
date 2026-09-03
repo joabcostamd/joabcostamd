@@ -283,7 +283,12 @@ static func barra(cor: Color = ACENTO, altura: int = 10) -> ProgressBar:
 
 static func scroll() -> ScrollContainer:
 	var sc := ScrollContainer.new()
-	sc.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	# AUTO, não DISABLED. Com a escala da interface acima de 1,05 a tela lógica
+	# encolhe e há conteúdo que não consegue mais estreitar — coluna de pontos,
+	# data, botões de filtro. Com a rolagem horizontal desligada esse conteúdo
+	# simplesmente ficava fora da tela, sem nenhum jeito de alcançá-lo. A barra
+	# só aparece quando de fato não coube, então em 1,0 nada muda.
+	sc.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
 	sc.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	sc.follow_focus = true
 	return sc

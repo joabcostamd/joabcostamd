@@ -42,8 +42,14 @@ func _ready() -> void:
 	# língua velha — eles nascem em `montar()` e ninguém os reconstruía. Reabrir
 	# resolve, e tem que ser DIFERIDO: o pedido vem de dentro do callback do
 	# próprio seletor, que seria liberado no meio da própria execução.
+	# Mudar a escala da interface ou a fonte grande muda o tamanho da tela
+	# LÓGICA, e é dele que sai toda a largura calculada em `panel_base`. Sem
+	# reconstruir, o painel aberto continuava com a largura da escala anterior:
+	# acima de 1,05 o conteúdo saía pela direita e levava junto o botão de
+	# fechar. Mesmo tratamento que o idioma já tinha, e pela mesma razão.
 	Bus.config_mudou.connect(func(chave, _v):
-		if str(chave) == "idioma" and atual != "":
+		var c := str(chave)
+		if (c == "idioma" or c == "escala_ui" or c == "fonte_grande") and atual != "":
 			_reabrir.call_deferred(atual))
 	await get_tree().process_frame
 	_montar_overlay()

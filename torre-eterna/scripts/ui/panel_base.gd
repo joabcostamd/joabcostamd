@@ -29,6 +29,8 @@ func _ready() -> void:
 	# rotulo nunca abre.
 	UI.liberar_dicas(self)
 	UI.saltar(janela, 1.04)
+	_reencaixar.call_deferred()
+	get_tree().get_root().size_changed.connect(_reencaixar)
 
 ## Sobrescreva para definir título/tamanho.
 func configurar() -> void:
@@ -65,8 +67,31 @@ func _process(delta: float) -> void:
 func _area() -> Vector2:
 	var a := get_parent_area_size()
 	if a.x < 100.0 or a.y < 100.0:
-		a = get_viewport_rect().size
+		# Reserva, para quando o pai ainda não foi disposto: `get_viewport_rect`
+		# devolve pixels FÍSICOS, e os Controls vivem em coordenadas LÓGICAS.
+		# Com a escala em 1,25 a tela lógica é 1024 e a física é 1280 — usar a
+		# física direto fazia o painel se achar 25% maior do que a tela e sair
+		# pela direita levando o botão de fechar junto. Dividir pelo fator é o
+		# que converte um espaço no outro.
+		var jan := get_window()
+		var fator := 1.0 if jan == null else maxf(0.1, jan.content_scale_factor)
+		a = get_viewport_rect().size / fator
 	return a
+
+## Reencaixa a janela no espaço que existe DE FATO.
+##
+## No primeiro quadro o pai ainda não foi disposto e `_area()` cai na reserva.
+## Depois que o layout assenta, o número certo aparece — e o painel precisa
+## obedecer a ele, senão fica com a largura de um palpite.
+func _reencaixar() -> void:
+	if janela == null:
+		return
+	var w := larg_janela()
+	var h := alt_janela()
+	janela.offset_left = -w * 0.5
+	janela.offset_right = w * 0.5
+	janela.offset_top = -h * 0.5
+	janela.offset_bottom = h * 0.5
 
 func larg_janela() -> float:
 	return minf(largura, _area().x - 40.0)
@@ -80,6 +105,9 @@ func larg_util() -> float:
 
 func _montar_janela() -> void:
 	janela = UI.painel(UI.PAINEL, 16)
+	# A janela não pinta fora de si mesma, aconteça o que acontecer com o
+	# conteúdo: sem isso, um filho grande demais desenha por cima da tela toda.
+	janela.clip_contents = true
 	janela.anchor_left = 0.5
 	janela.anchor_right = 0.5
 	janela.anchor_top = 0.5
@@ -114,9 +142,33 @@ func _montar_janela() -> void:
 	v.add_child(cabecalho)
 	v.add_child(UI.separador())
 
+	# Trilho horizontal: o conteúdo NÃO pode empurrar a janela para fora da tela.
+	#
+	# Um PanelContainer cresce até o mínimo somado dos filhos. Vários painéis
+	# têm larguras mínimas fixas por dentro (barra de 360, descrição de 430,
+	# fileira de sete abas), e a soma delas passava dos 960 pedidos: com a escala
+	# da interface em 1,15 ou mais a tela lógica encolhe, a janela não encolhe
+	# junto, e o que sobra do lado direito — coluna de pontos, botão de filtro,
+	# o X de fechar — simplesmente não existia mais na tela. Não havia rolagem
+	# nenhuma: o conteúdo ficava inalcançável.
+	#
+	# Este ScrollContainer rola SÓ na horizontal. Ele corta a propagação do
+	# mínimo horizontal para a janela (a janela volta a mandar no seu tamanho) e
+	# deixa o excedente alcançável por rolagem. O vertical fica desligado de
+	# propósito: quase todo painel já tem a própria rolagem vertical lá dentro, e
+	# duas rolagens verticais aninhadas brigam pela roda do mouse.
+	var trilho := ScrollContainer.new()
+	trilho.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	trilho.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	trilho.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	trilho.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	v.add_child(trilho)
+
 	corpo = UI.vbox(8)
 	corpo.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	v.add_child(corpo)
+	corpo.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	corpo.custom_minimum_size.x = larg_util()
+	trilho.add_child(corpo)
 
 func fechar_painel() -> void:
 	var g = get_meta("gerente", null)
