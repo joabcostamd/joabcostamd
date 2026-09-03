@@ -98,8 +98,14 @@ func _talvez_capturar() -> void:
 			_painel_alvo = a.substr(9)
 		elif a.begins_with("--tela="):
 			_tela_alvo = a.substr(7)
+		elif a.begins_with("--cartas="):
+			_cartas_debug = int(a.substr(9))
 	if segundos < 0.0:
 		return
+	if _cartas_debug > 0:
+		for i in _cartas_debug:
+			Saque.criar_carta(jogo, "", i % 3 == 0)
+		Bus.ui_atualizar.emit(true)
 	if onda > 0:
 		jogo.s["onda_maxima"] = onda
 		jogo.s["onda_maxima_global"] = onda
@@ -113,6 +119,7 @@ func _talvez_capturar() -> void:
 
 var _painel_alvo := ""
 var _tela_alvo := ""
+var _cartas_debug := 0
 
 func _capturar_em(segundos: float, saida: String) -> void:
 	await get_tree().create_timer(segundos).timeout
