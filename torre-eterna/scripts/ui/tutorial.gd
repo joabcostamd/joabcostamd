@@ -9,10 +9,10 @@ extends Control
 ##
 ## Adicionado pelo `main` dentro da camada de UI, acima do HUD.
 
-const DURACAO := 2.2              ## segundos que um balão fica na tela
-const ESPERA_ENTRE := 0.4         ## respiro entre um balão e o próximo
-const ATRASO_INICIAL := 1.0       ## deixa o jogador ver a torre atirar antes
-const LARGURA := 300.0
+const DURACAO := 9.5              ## segundos que um balão fica na tela
+const ESPERA_ENTRE := 5.0         ## respiro entre um balão e o próximo
+const ATRASO_INICIAL := 5.0       ## deixa o jogador ver a torre atirar antes
+const LARGURA := 330.0
 
 ## A sequência. `alvo` é uma região da tela; `id` é o que fica salvo.
 const PASSOS := [
@@ -107,6 +107,9 @@ func _process(dt: float) -> void:
 	if jogo == null or not jogo.iniciado:
 		return
 	if _passo_atual != "":
+		# painel, evento ou pausa entrou na frente: some e tenta de novo depois
+		if _ocupado():
+			_recolher()
 		return
 	_espera -= dt
 	if _espera > 0.0:
@@ -123,18 +126,26 @@ func _process(dt: float) -> void:
 	_mostrar(passo)
 
 ## Nada de balão por cima de painel aberto, janela de evento ou pausa.
-func _pode_falar() -> bool:
-	var est := _estado()
-	if bool(est["completo"]):
-		return false
+func _ocupado() -> bool:
 	if jogo.pausado or not bool(jogo.s["torre"]["viva"]):
-		return false
+		return true
 	if gerente != null and is_instance_valid(gerente):
 		if str(gerente.atual) != "":
-			return false
+			return true
 		if "dialogo" in gerente and gerente.dialogo != null and is_instance_valid(gerente.dialogo):
-			return false
-	return true
+			return true
+	return false
+
+func _pode_falar() -> bool:
+	if bool(_estado()["completo"]):
+		return false
+	return not _ocupado()
+
+## Tira o balão da tela sem marcar como visto — ele volta na próxima brecha.
+func _recolher() -> void:
+	_passo_atual = ""
+	_espera = ESPERA_ENTRE
+	_sumir()
 
 func _estado() -> Dictionary:
 	var s: Dictionary = jogo.s
@@ -361,7 +372,7 @@ func _regiao(nome: String) -> Rect2:
 	match nome:
 		"moedas": return Rect2(14, 12, 240, 38)
 		"vitais": return Rect2(14, 58, 236, 120)
-		"onda": return Rect2(tam.x * 0.5 - 150.0, 10, 300, 72)
+		"onda": return Rect2(tam.x * 0.5 - 150.0, 10, 300, 108)
 		"habilidades": return Rect2(tam.x * 0.5 - 200.0, tam.y - 84.0, 400, 62)
 		"menu": return Rect2(14, tam.y - 58.0, 320, 44)
 		"acoes": return Rect2(tam.x - 240.0, tam.y - 58.0, 226, 44)

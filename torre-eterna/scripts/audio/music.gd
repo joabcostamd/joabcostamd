@@ -57,27 +57,35 @@ func nomes_banco() -> Array:
 		out.append("arpejo_" + str(t))
 	return out
 
-## Gera um banco. Chamado aos poucos pelo motor, nunca em bloco.
+## Guarda um banco já sintetizado (o motor gera em fatias e entrega aqui).
+func definir_banco(nome: String, fluxo: AudioStreamWAV) -> void:
+	if fluxo != null:
+		bancos[nome] = fluxo
+
+## Caminho simples, sem fatiar — usado por testes e ferramentas.
 func gerar_banco(nome: String) -> void:
 	if bancos.has(nome):
 		return
-	bancos[nome] = _receita_banco(nome)
+	var r := receita_banco(nome)
+	bancos[nome] = Synth.som(r.get("camadas", []), float(r.get("pico", 0.85)))
 
-func _receita_banco(nome: String) -> AudioStreamWAV:
+## Receita de um instrumento: camadas + normalização. Tudo em uma oitava de
+## referência; o resto é `pitch_scale`.
+func receita_banco(nome: String) -> Dictionary:
 	if nome == "perc":
-		return Synth.som([
+		return _r([
 			{"onda": "senoide", "f0": 150.0, "f1": 46.0, "curva": 0.5, "dur": 0.24,
 			 "atk": 0.001, "dec": 0.18, "rel": 0.05, "sat": 0.35, "vol": 0.9},
 			{"onda": "ruido", "dur": 0.045, "atk": 0.0005, "dec": 0.035, "rel": 0.008,
 			 "lp0": 3200.0, "lp1": 800.0, "vol": 0.3},
 		], 0.9)
 	if nome == "hat":
-		return Synth.som([
+		return _r([
 			{"onda": "ruido", "dur": 0.05, "atk": 0.0008, "dec": 0.038, "rel": 0.01,
 			 "lp0": 13000.0, "lp1": 6000.0, "vol": 0.5},
 		], 0.6)
 	if nome == "pad":
-		return Synth.som([
+		return _r([
 			{"onda": "triangulo", "f0": Synth.freq(REF_PAD), "dur": 3.0, "vozes": 3,
 			 "detune": 0.17, "atk": 0.8, "dec": 0.7, "sus": 0.55, "rel": 1.3,
 			 "lp0": 900.0, "lp1": 1800.0, "vol": 0.6},
@@ -89,20 +97,34 @@ func _receita_banco(nome: String) -> AudioStreamWAV:
 	var papel := str(partes[0])
 	var timbre: String = str(partes[1]) if partes.size() > 1 else "senoide"
 	if papel == "baixo":
-		return Synth.som([
+		return _r([
 			{"onda": timbre, "f0": Synth.freq(REF_BAIXO), "dur": 0.55, "vozes": 2,
 			 "detune": 0.09, "atk": 0.006, "dec": 0.3, "sus": 0.35, "rel": 0.2,
 			 "lp0": 1100.0, "lp1": 380.0, "sat": 0.35, "vol": 0.85},
 			{"onda": "senoide", "f0": Synth.freq(REF_BAIXO - 12.0), "dur": 0.5,
 			 "atk": 0.004, "dec": 0.28, "sus": 0.25, "rel": 0.18, "vol": 0.5},
 		], 0.85)
-	return Synth.som([
+	return _r([
 		{"onda": timbre, "f0": Synth.freq(REF_ARPEJO), "dur": 0.32, "atk": 0.003,
 		 "dec": 0.2, "sus": 0.1, "rel": 0.11, "lp0": 5200.0, "lp1": 2600.0, "vol": 0.6},
 	], 0.7)
 
+static func _r(camadas: Array, pico: float) -> Dictionary:
+	return {"camadas": camadas, "pico": pico}
+
+## O banco do timbre da era, ou o que já existir — a trilha nunca espera.
+func banco(papel: String) -> String:
+	var alvo := papel + "_" + _timbre
+	if bancos.has(alvo):
+		return alvo
+	for t in TIMBRES:
+		var alt: String = papel + "_" + str(t)
+		if bancos.has(alt):
+			return alt
+	return ""
+
 func pronta() -> bool:
-	return bancos.has("perc") and bancos.has("pad") and bancos.has("baixo_" + _timbre)
+	return bancos.has("perc") and banco("baixo") != ""
 
 ## ------------------------------------------------------------------ vozes
 
@@ -205,10 +227,10 @@ func _tocar_passo(p: int) -> void:
 		bate_baixo = no_compasso % 4 == 0
 	if bate_baixo:
 		var grau: int = 0 if no_compasso == 0 else int(_escala[(compasso + no_compasso / 8) % _escala.size()])
-		_nota("baixo_" + _timbre, REF_BAIXO, float(_raiz + grau), -9.0, 1.0)
+		_nota(banco("baixo"), REF_BAIXO, float(_raiz + grau), -9.0, 1.0)
 		if _chefe and no_compasso == 8:
 			# trítono do baixo: a dissonância que avisa que hoje é diferente
-			_nota("baixo_" + _timbre, REF_BAIXO, float(_raiz + 6), -14.0, 1.0)
+			_nota(banco("baixo"), REF_BAIXO, float(_raiz + 6), -14.0, 1.0)
 
 	# --- percussão ---
 	if camadas >= 2:
@@ -223,7 +245,7 @@ func _tocar_passo(p: int) -> void:
 		if passa:
 			var i: int = (no_compasso + compasso) % _escala.size()
 			var oitava: int = 12 if (no_compasso % 8) == 6 else 0
-			_nota("arpejo_" + _timbre, REF_ARPEJO, float(_raiz + 24 + int(_escala[i]) + oitava), -17.0, 1.0)
+			_nota(banco("arpejo"), REF_ARPEJO, float(_raiz + 24 + int(_escala[i]) + oitava), -17.0, 1.0)
 
 	# --- pad: um acorde por compasso ---
 	if camadas >= 4 and no_compasso == 0:
@@ -236,7 +258,7 @@ func _tocar_passo(p: int) -> void:
 	# --- contracanto: só quando o campo está cheio ---
 	if camadas >= 5 and (no_compasso == 4 or no_compasso == 11) and _rng.randf() < 0.7:
 		var g: int = int(_escala[_rng.randi() % _escala.size()])
-		_nota("arpejo_" + _timbre, REF_ARPEJO, float(_raiz + 36 + g), -21.0, 1.0)
+		_nota(banco("arpejo"), REF_ARPEJO, float(_raiz + 36 + g), -21.0, 1.0)
 
 func _nota(banco: String, ref_midi: float, midi: float, db: float, tempero: float) -> void:
 	var fluxo: AudioStreamWAV = bancos.get(banco, null)

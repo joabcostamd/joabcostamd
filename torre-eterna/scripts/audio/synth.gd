@@ -113,37 +113,30 @@ static func sequencia(base: Dictionary, semitons: Array, passo: float, ganho_fim
 
 ## ------------------------------------------------------------ render (uma vez)
 
+## Quantas amostras uma mistura ocupa (a camada que termina mais tarde manda).
+static func amostras_totais(camadas: Array) -> int:
+	var total := 0
+	for item in camadas:
+		var r: Dictionary = item
+		var off: int = int(maxf(0.0, float(r.get("atraso", 0.0))) * float(TAXA))
+		total = maxi(total, off + maxi(1, int(maxf(0.005, float(r.get("dur", 0.2))) * float(TAXA))))
+	return total
+
 ## Uma receita -> amostras mono em ponto flutuante.
 static func render(r: Dictionary) -> PackedFloat32Array:
 	var st := preparar(r)
 	avancar(st, int(st["n"]))
 	return st["buf"]
 
-## Soma várias receitas, cada uma no seu `atraso`.
+## Soma várias receitas, cada uma no seu `atraso`, num buffer só.
 static func mixar(camadas: Array) -> PackedFloat32Array:
-	var bufs: Array = []
+	var out := PackedFloat32Array()
+	out.resize(amostras_totais(camadas))
 	for item in camadas:
 		var r: Dictionary = item
-		bufs.append(render(r))
-	return juntar(camadas, bufs)
-
-## Junta buffers já prontos respeitando o `atraso` de cada receita.
-static func juntar(camadas: Array, bufs: Array) -> PackedFloat32Array:
-	var total := 0
-	var offs: Array = []
-	for i in camadas.size():
-		var r: Dictionary = camadas[i]
-		var b: PackedFloat32Array = bufs[i]
 		var off: int = int(maxf(0.0, float(r.get("atraso", 0.0))) * float(TAXA))
-		offs.append(off)
-		total = maxi(total, off + b.size())
-	var out := PackedFloat32Array()
-	out.resize(total)
-	for i in bufs.size():
-		var b: PackedFloat32Array = bufs[i]
-		var off: int = int(offs[i])
-		for k in b.size():
-			out[off + k] += b[k]
+		var st := preparar(r, out, off)
+		avancar(st, int(st["n"]))
 	return out
 
 ## Atalho: lista de receitas -> AudioStreamWAV pronto.
@@ -153,11 +146,18 @@ static func som(camadas: Array, pico: float = 0.85) -> AudioStreamWAV:
 ## ------------------------------------------------------- render (fatiado)
 
 ## Estado de render de UMA receita. `avancar` come pedaços dele.
-static func preparar(r: Dictionary) -> Dictionary:
+## `saida`/`deslocamento` deixam a camada escrever direto na mistura final —
+## assim não existe passe extra de soma no fim.
+static func preparar(r: Dictionary, saida: PackedFloat32Array = PackedFloat32Array(),
+		deslocamento: int = 0) -> Dictionary:
 	var dur: float = maxf(0.005, float(r.get("dur", 0.2)))
 	var n: int = maxi(1, int(dur * float(TAXA)))
-	var buf := PackedFloat32Array()
-	buf.resize(n)
+	var buf := saida
+	var off := deslocamento
+	if buf.size() < off + n:
+		buf = PackedFloat32Array()
+		buf.resize(n)
+		off = 0
 
 	var vozes: int = clampi(int(r.get("vozes", 1)), 1, 8)
 	var detune: float = float(r.get("detune", 0.0))
@@ -179,7 +179,7 @@ static func preparar(r: Dictionary) -> Dictionary:
 	rng.seed = int(r.get("semente", 20260903))
 
 	return {
-		"buf": buf, "n": n, "i": 0, "dur": dur, "passo": passo,
+		"buf": buf, "off": off, "n": n, "i": 0, "dur": dur, "passo": passo,
 		"codigo": codigo_onda(str(r.get("onda", "senoide"))),
 		"f0": f0, "f1": float(r.get("f1", f0)), "curva": float(r.get("curva", 1.0)),
 		"vozes": vozes, "razoes": razoes, "fases": fases,
@@ -205,6 +205,7 @@ static func avancar(st: Dictionary, quantas: int) -> bool:
 	var fim: int = mini(n, i + maxi(BLOCO, quantas))
 
 	var buf: PackedFloat32Array = st["buf"]
+	var off: int = int(st["off"])
 	var fases: PackedFloat32Array = st["fases"]
 	var razoes: PackedFloat32Array = st["razoes"]
 	var rng: RandomNumberGenerator = st["rng"]
@@ -299,7 +300,7 @@ static func avancar(st: Dictionary, quantas: int) -> bool:
 			var g := 1.0 + sat * 5.0
 			v = (v * g) / (1.0 + absf(v * g))
 
-		buf[i] = v * env * vol
+		buf[off + i] += v * env * vol
 		f += df
 		i += 1
 
@@ -327,71 +328,100 @@ static func _amostra(codigo: int, fase: float, rng: RandomNumberGenerator) -> fl
 
 ## Amostras -> AudioStreamWAV (16 bits, mono, normalizado, com fade anti-clique).
 static func wav(buf: PackedFloat32Array, pico: float = 0.85) -> AudioStreamWAV:
-	var w := AudioStreamWAV.new()
-	w.format = AudioStreamWAV.FORMAT_16_BITS
-	w.mix_rate = TAXA
-	w.stereo = false
-	w.loop_mode = AudioStreamWAV.LOOP_DISABLED
 	var n := buf.size()
-	if n <= 0:
-		w.data = PackedByteArray()
-		return w
-
 	var maxv := 0.0
 	for i in n:
 		maxv = maxf(maxv, absf(buf[i]))
-	var g: float = 1.0 if maxv <= 0.0001 else pico / maxv
-	var fade: int = maxi(1, mini(n, int(0.004 * float(TAXA))))
-	var ini: int = maxi(1, mini(n, int(0.001 * float(TAXA))))
-
 	var bytes := PackedByteArray()
 	bytes.resize(n * 2)
-	for i in n:
-		var v := buf[i] * g
+	var g: float = 1.0 if maxv <= 0.0001 else pico / maxv
+	codificar(buf, bytes, 0, n, g)
+	return montar(bytes)
+
+## Converte um trecho de amostras em bytes de 16 bits, com fade nas pontas.
+static func codificar(buf: PackedFloat32Array, bytes: PackedByteArray, de: int, ate: int, ganho: float) -> void:
+	var n := buf.size()
+	var fade: int = maxi(1, mini(n, int(0.004 * float(TAXA))))
+	var ini: int = maxi(1, mini(n, int(0.001 * float(TAXA))))
+	for i in range(de, mini(ate, n)):
+		var v := buf[i] * ganho
 		if i < ini:
 			v *= float(i) / float(ini)
 		if i >= n - fade:
 			v *= float(n - i) / float(fade)
 		bytes.encode_s16(i * 2, int(clampf(v, -1.0, 1.0) * 32767.0))
+
+static func montar(bytes: PackedByteArray) -> AudioStreamWAV:
+	var w := AudioStreamWAV.new()
+	w.format = AudioStreamWAV.FORMAT_16_BITS
+	w.mix_rate = TAXA
+	w.stereo = false
+	w.loop_mode = AudioStreamWAV.LOOP_DISABLED
 	w.data = bytes
 	return w
 
 ## ---------------------------------------------------------------- fábrica
 
-## Gera um som em fatias, para o motor consumir dentro de um orçamento de
-## milissegundos por quadro. Um som de dois segundos não trava quadro nenhum.
+## Gera um som em fatias, dentro de um orçamento de milissegundos por quadro.
+## Nenhuma etapa — render, normalização ou escrita — roda inteira de uma vez,
+## então nem um som de dois segundos custa um quadro perdido.
 class Fabrica extends RefCounted:
-	var camadas: Array
+	enum { RENDER, PICO, ESCRITA, FIM }
+
 	var pico: float
+	var buf := PackedFloat32Array()
+	var bytes := PackedByteArray()
 	var estados: Array = []
-	var bufs: Array = []
-	var atual := 0
+	var camada := 0
+	var fase := RENDER
+	var cursor := 0
+	var maxv := 0.0
+	var ganho := 1.0
+	var n := 0
 	var pronto := false
 	var resultado: AudioStreamWAV = null
 
-	func _init(lista: Array, pico_norm: float = 0.85) -> void:
-		camadas = lista
+	func _init(camadas: Array, pico_norm: float = 0.85) -> void:
 		pico = pico_norm
-		for r in camadas:
-			estados.append(Synth.preparar(r))
+		n = Synth.amostras_totais(camadas)
+		buf.resize(n)
+		for item in camadas:
+			var r: Dictionary = item
+			var off: int = int(maxf(0.0, float(r.get("atraso", 0.0))) * float(Synth.TAXA))
+			estados.append(Synth.preparar(r, buf, off))
 
-	## Trabalha `amostras` amostras. Devolve true quando o WAV ficou pronto.
+	## Trabalha ~`amostras` amostras. Devolve true quando o WAV ficou pronto.
 	func avancar(amostras: int) -> bool:
-		if pronto:
-			return true
-		if atual >= estados.size():
-			_finalizar()
-			return true
-		var st: Dictionary = estados[atual]
-		if Synth.avancar(st, amostras):
-			bufs.append(st["buf"])
-			atual += 1
-			if atual >= estados.size():
-				_finalizar()
+		var quantas := maxi(64, amostras)
+		match fase:
+			RENDER:
+				if camada >= estados.size():
+					fase = PICO
+					return false
+				var st: Dictionary = estados[camada]
+				if Synth.avancar(st, quantas):
+					camada += 1
+					if camada >= estados.size():
+						fase = PICO
+						cursor = 0
+			PICO:
+				var ate: int = mini(n, cursor + quantas * 6)
+				while cursor < ate:
+					maxv = maxf(maxv, absf(buf[cursor]))
+					cursor += 1
+				if cursor >= n:
+					ganho = 1.0 if maxv <= 0.0001 else pico / maxv
+					bytes.resize(n * 2)
+					cursor = 0
+					fase = ESCRITA
+			ESCRITA:
+				var ate2: int = mini(n, cursor + quantas * 4)
+				Synth.codificar(buf, bytes, cursor, ate2, ganho)
+				cursor = ate2
+				if cursor >= n:
+					resultado = Synth.montar(bytes)
+					pronto = true
+					fase = FIM
+					estados.clear()
+					buf = PackedFloat32Array()
 		return pronto
-
-	func _finalizar() -> void:
-		resultado = Synth.wav(Synth.juntar(camadas, bufs), pico)
-		pronto = true
-		estados.clear()
-		bufs.clear()
