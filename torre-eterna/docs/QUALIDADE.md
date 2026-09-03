@@ -221,7 +221,7 @@ STATUS: PASS   (kit 1.5.2, 0 falhas)
 | | |
 |---|---:|
 | Scripts GDScript | 85 |
-| Linhas de código | 26.674 |
+| Linhas de código | 26.788 |
 | Testes da simulação | 342 |
 | Chaves de interface PT/EN | 1.012 |
 | Textos de conteúdo PT/EN | 1.286 |
