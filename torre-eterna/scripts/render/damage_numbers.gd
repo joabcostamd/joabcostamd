@@ -2,8 +2,14 @@ class_name NumerosDeDano
 extends RefCounted
 
 ## Números de dano flutuantes — pool fixo, com curva de subida e "pop" no crítico.
+##
+## Golpes que caem no mesmo lugar em sequência SOMAM num número só, em vez de
+## empilhar três textos ilegíveis um em cima do outro. É o que faz a diferença
+## entre "está batendo forte" e "tem números demais na tela".
 
 const MAX := 160
+const RAIO_FUNDIR := 30.0    ## distância em que um golpe novo entra no número que já está lá
+const JANELA_FUNDIR := 0.32  ## por quanto tempo um número aceita somar
 
 var pool: Array = []
 var fonte: Font
@@ -19,9 +25,25 @@ func limpar() -> void:
 	for p in pool:
 		p["ativo"] = false
 
-func adicionar(pos: Vector2, texto: String, cor: Color, critico: bool = false, escala: float = 1.0) -> void:
+## `valor_log` é o dano em log10 (o mesmo `Big` do resto do jogo); `texto` é ele
+## já formatado. Passar os dois evita ter que formatar de novo a cada soma.
+func adicionar(pos: Vector2, texto: String, cor: Color, critico: bool = false, escala: float = 1.0, valor_log: float = Big.ZERO) -> void:
 	if modo == 2 or (modo == 1 and not critico):
 		return
+
+	# golpe novo em cima de um número recente: soma nele e dá outro "pop"
+	if valor_log > Big.LIMIAR_ZERO:
+		var perto := _fundir_em(pos, critico)
+		if not perto.is_empty():
+			perto["valor"] = Big.add(float(perto["valor"]), valor_log)
+			perto["texto"] = Fmt.big(float(perto["valor"]))
+			perto["vida"] = float(perto["vida_max"])
+			perto["somas"] = int(perto["somas"]) + 1
+			if critico:
+				perto["crit"] = true
+				perto["cor"] = cor
+			return
+
 	var alvo: Dictionary = {}
 	for p in pool:
 		if not bool(p["ativo"]):
@@ -30,6 +52,9 @@ func adicionar(pos: Vector2, texto: String, cor: Color, critico: bool = false, e
 	if alvo.is_empty():
 		alvo = pool[0]
 	alvo["ativo"] = true
+	alvo["valor"] = valor_log
+	alvo["somas"] = 0
+	alvo["nascido"] = 0.0
 	alvo["pos"] = pos + Vector2(randf_range(-9.0, 9.0), randf_range(-6.0, 2.0))
 	alvo["vel"] = Vector2(randf_range(-22.0, 22.0), -62.0 - (34.0 if critico else 0.0))
 	alvo["texto"] = texto
@@ -39,10 +64,31 @@ func adicionar(pos: Vector2, texto: String, cor: Color, critico: bool = false, e
 	alvo["vida_max"] = alvo["vida"]
 	alvo["escala"] = escala
 
+## O número mais próximo que ainda aceita soma. Crítico só funde com crítico:
+## o "pop" amarelo grande é informação, não pode ser diluído num número comum.
+func _fundir_em(pos: Vector2, critico: bool) -> Dictionary:
+	var melhor: Dictionary = {}
+	var melhor_d := RAIO_FUNDIR * RAIO_FUNDIR
+	for p in pool:
+		if not bool(p["ativo"]) or not p.has("valor"):
+			continue
+		if float(p["nascido"]) > JANELA_FUNDIR:
+			continue
+		if bool(p["crit"]) != critico:
+			continue
+		if float(p["valor"]) <= Big.LIMIAR_ZERO:
+			continue
+		var d: float = (pos - (p["pos"] as Vector2)).length_squared()
+		if d < melhor_d:
+			melhor_d = d
+			melhor = p
+	return melhor
+
 func atualizar(dt: float) -> void:
 	for p in pool:
 		if not bool(p["ativo"]):
 			continue
+		p["nascido"] = float(p.get("nascido", 0.0)) + dt
 		p["vida"] = float(p["vida"]) - dt
 		if float(p["vida"]) <= 0.0:
 			p["ativo"] = false

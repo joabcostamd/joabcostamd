@@ -43,7 +43,7 @@ func _ao_atingir(e, dano_log: float, critico: bool, elemento: String) -> void:
 		cor = Color("#fde047")
 	elif elemento != "":
 		cor = Color.html(str(Bal.ELEMENTOS.get(elemento, {}).get("cor", "#ffffff")))
-	numeros.adicionar(e.pos + Vector2(0, -e.raio), Fmt.big(dano_log), cor, critico, 1.0 + (0.25 if e.chefe else 0.0))
+	numeros.adicionar(e.pos + Vector2(0, -e.raio), Fmt.big(dano_log), cor, critico, 1.0 + (0.25 if e.chefe else 0.0), dano_log)
 	if critico:
 		juice.tremer(2.6, 0.09)
 
