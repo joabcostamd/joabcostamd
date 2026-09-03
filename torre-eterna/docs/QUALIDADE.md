@@ -43,7 +43,7 @@ rodando na máquina (ver a observação sobre medir desempenho no `AGENTS.md`).
 | 12 | **Acessibilidade** | 5 | MEDIDA | `tools/testes.gd` (grupo Acessibilidade) + painel | tremor e movimento reduzido de fato zerando; contraste ≥4,5:1 conferido por teste; daltonismo medido por separação percebida |
 | 13 | **Persistência** | 5 | PORTÃO | `tools/testes.gd` (grupo Save) | autosave, rotação de backup, migração, exportar/importar com checksum, e save ilegível nunca tratado como jogador novo |
 | 14 | **Originalidade** | 4 | JUÍZO | leitura das mecânicas | ≥3 mecânicas com torque próprio, e o texto do README não pode vender como inédito o que é convenção do gênero |
-| 15 | **Documentação e portões** | 4 | PORTÃO | `tools/testes.gd` (grupo doc) + `.github/workflows/` | os números da documentação batem com a medida real, todo caminho citado existe, e o CI roda os oito portões sem afrouxar nenhum |
+| 15 | **Documentação e portões** | 4 | PORTÃO | `tools/testes.gd` (grupo doc) + `.github/workflows/` | os números da documentação batem com a medida real, todo caminho citado existe, e o CI roda os nove portões sem afrouxar nenhum |
 
 Contagem honesta: **61 dos 100 pontos** são decididos por um comando que imprime
 PASS/FAIL (critérios 1, 2, 3, 4, 5, 6, 7, 13, 15). **11 pontos** são medida com
@@ -91,6 +91,44 @@ GPU de verdade; aqui, o que dá para afirmar é quanto custa a simulação.
 - Uma imagem ou arquivo de som no repositório.
 - Acesso a Dicionário sem tipo explícito (não compila, mas o hábito é o risco).
 - Um painel que reconstrói a árvore de nós dentro de `atualizar()`.
+
+## Portão 9 — a varredura de layout, e por que ela existe
+
+Eu estava achando defeito de layout do jeito mais caro possível: uma captura de
+tela por vez, três minutos cada, e a olho. Assim achei quatro painéis estourando
+a largura da janela — e só achei porque tirei as capturas em **português por
+acaso**. As frases em português são mais longas que as inglesas, a máquina das
+capturas estava em inglês, e metade dos defeitos desta classe só existe num dos
+idiomas. A outra metade só existe na **escala 1,25**, que o jogo oferece nas
+configurações e que encolhe a janela lógica de 1280 para 1024 — e essa metade eu
+não tinha achado de jeito nenhum.
+
+`godot --path . -- --auditar-ui` abre **12 painéis × 2 idiomas × 2 escalas = 48
+combinações num processo só, em 32 segundos**. O equivalente em capturas seria
+perto de duas horas e meia, e ainda dependeria de alguém olhar com atenção 48
+imagens. Ela não olha: mede quatro coisas.
+
+| O que mede | Por que essa |
+|---|---|
+| Controle fora da janela | Foi assim que Conquistas escondeu o contador de pontos e a última aba |
+| Rolagem horizontal ligada | Grade que rola de lado esconde conteúdo atrás de um gesto que ninguém faz. Denunciou Cartas, Codex e Relíquias |
+| Controle espremido abaixo do próprio mínimo | É o "Comprar" que vira "Com": o botão continua lá, sem espaço para o texto |
+| Centro da arena contra centro da janela | A torre é o único ponto fixo da tela. Trocar de escala é a condição exata que a deslocava |
+
+Duas lições ficaram no código, porque as duas custaram tempo:
+
+**Falso positivo custa mais que falso negativo.** A primeira versão acusou 1.366
+problemas — 250 deles só no passe de temporada, que rola na horizontal **de
+propósito**. Um relatório com 1.366 linhas não se lê, e um portão que ninguém lê
+não é portão. Hoje quem quiser rolagem horizontal marca o nó
+(`rolagem_horizontal_proposital`) e assume a escolha por escrito.
+
+**O relatório tem que dizer QUEM, não só QUE.** "Transborda" manda procurar a
+olho, que é o trabalho que a varredura veio substituir. Ela agora nomeia os três
+nós mais largos lá dentro — e inclui containers com `custom_minimum_size`
+escrito na mão, porque foi um deles (uma fileira de sete cartões de 122 px) que
+segurou a última caçada por quatro rodadas enquanto o relatório só mostrava
+folhas.
 
 ## Sobre o critério 4 — o portão que decidia no cara ou coroa
 
@@ -204,11 +242,11 @@ real no save (ver `scripts/core/save_system.gd`, `_tem_nao_finito`).
 
 ```
 $ godot --headless --path . -s res://tools/verificar.gd
-===VERIFICAR=== scripts=87 falhas=0 dados_faltando=[]
+===VERIFICAR=== scripts=88 falhas=0 dados_faltando=[]
 ===STATUS=== PASS
 
 $ godot --headless --path . -s res://tools/lint.gd
-===LINT=== arquivos=87 linhas=31147 erros=0 avisos=0
+===LINT=== arquivos=88 linhas=31147 erros=0 avisos=0
 ===STATUS=== PASS
 
 $ godot --headless --path . -s res://tools/validar_dados.gd
@@ -232,7 +270,7 @@ $ godot --headless --path . -s res://tools/validar_dados.gd
 ===STATUS=== PASS
 
 $ godot --headless --path . -s res://tools/testes.gd
-===TESTES=== passou=771 falhou=0
+===TESTES=== passou=776 falhou=0
 ===STATUS=== PASS
 
 $ godot --headless --path . -s res://tools/perf.gd -- 412
@@ -333,9 +371,9 @@ STATUS: PASS   (3418 ms)
 
 | | |
 |---|---:|
-| Scripts GDScript | 87 |
-| Linhas de código | 32.773 |
-| Testes da simulação | 771 |
+| Scripts GDScript | 88 |
+| Linhas de código | 33.226 |
+| Testes da simulação | 776 |
 | Chaves de interface PT/EN | 1.058 |
 | Textos de conteúdo PT/EN | 1.286 |
 | Imagens no repositório | 1 (`icon.svg`, o ícone do projeto — nenhuma no jogo) |

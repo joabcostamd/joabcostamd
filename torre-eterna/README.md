@@ -8,7 +8,7 @@
 ![GDScript](https://img.shields.io/badge/GDScript-2.0-478CBF)
 ![Arte](https://img.shields.io/badge/Arte-100%25%20procedural-a855f7)
 ![Áudio](https://img.shields.io/badge/Áudio-sintetizado-f472b6)
-![Testes](https://img.shields.io/badge/Testes-771%2F771-4ade80)
+![Testes](https://img.shields.io/badge/Testes-776%2F776-4ade80)
 ![Idiomas](https://img.shields.io/badge/Idiomas-PT--BR%20%C2%B7%20EN-38bdf8)
 
 ---
@@ -44,7 +44,7 @@ cd torre-eterna
 # Verificação estrutural (todo script compila? dados presentes?)
 godot --headless --path . -s res://tools/verificar.gd
 
-# Suíte de testes da simulação — 771 testes, sem mocks
+# Suíte de testes da simulação — 776 testes, sem mocks
 godot --headless --path . -s res://tools/testes.gd
 
 # Convenções do projeto (emoji na interface, print solto, painel órfão, mídia)
@@ -64,6 +64,10 @@ godot --headless --path . -s res://tools/perf.gd -- 412
 
 # Verificação estrutural do kit (KIT-GODOT-V1)
 godot --headless --path . -s res://agent_verify.gd
+
+# Varredura de layout: 12 painéis × 2 idiomas × 2 escalas, medidos, em ~30 s
+xvfb-run -a --server-args="-screen 0 1280x720x24" godot --path . \
+  --resolution 1280x720 -- --auditar-ui
 
 # Captura de tela automatizada (precisa de xvfb num servidor sem monitor)
 xvfb-run -a --server-args="-screen 0 1280x720x24" godot --path . --resolution 1280x720 \
@@ -97,8 +101,13 @@ está dito em cada verbete.
 
 **A Purga.** O núcleo da torre acumula carga sozinho. Soltar na faixa dourada
 (92%+) dá dano massivo em tudo, ouro extra e recarrega as habilidades. Deixar
-estourar desperdiça. Existe automação — e ela é **de propósito 40% pior** que a
-sua mão. É a única coisa que o jogo pede de você, e a razão para voltar à tela.
+estourar desperdiça. Existe automação — e ela é **de propósito 53% pior** que a
+sua mão: dispara em 86% de carga, o que vale 0,79 de qualidade, e ainda leva um
+corte de 40% em cima disso. Mais importante que o número: **a automática nunca
+conta como perfeita**, e portanto nunca paga o ouro extra nem os 6 s a menos de
+recarga em todas as habilidades — as duas coisas que a faixa dourada dá. Ela
+serve para você dormir, não para você parar de jogar. É a única coisa que o
+jogo pede de você, e a razão para voltar à tela.
 
 **Marcos de melhoria.** Melhoria de idle costuma ser "+X%" repetido, e aí a
 ordem de compra não importa: compra-se a mais barata, sempre. Aqui quinze delas
@@ -129,15 +138,19 @@ multiplicador eterno. É o único sistema em que você perde algo de verdade.
 
 E ainda: **A Retomada** — fast-forward pós-prestígio é comum, mas correr contra
 o fantasma da run anterior, ultrapassando-o ao vivo, é o que faz o reset deixar
-de ser anticlímax. E a **Aglomeração**, uma curva de ouro por lotação: o teto de
-entidades vira economia, e a tela cheia rende mais em vez de render menos.
+de ser anticlímax. E a **Aglomeração**, uma curva de ouro por lotação: a tela
+cheia rende mais em vez de render menos. Ressalva honesta: ela **não é uma
+alavanca sua**. A onda só fecha quando o último inimigo cai, então elas nunca se
+sobrepõem, e a única coisa que você compra o tempo todo — velocidade de matar —
+*reduz* a lotação. Na prática ela é um amortecedor: paga mais justamente na onda
+em que você está apanhando. Isso é bom, mas é o contrário de perseguir o limite.
 
 ### Números
 - **23** tipos de inimigo · **9** modificadores de elite · **10** chefes · **2** super-chefes
 - **40** entradas de lore em 8 capítulos · **30** dicas
 - **6** moedas · **6** raridades · **39** atributos de torre
 - **1.058** chaves de interface e **1.286** textos de conteúdo, em português e inglês
-- **771** testes da simulação · **0** arquivo de som · a única imagem do repositório é `icon.svg`, o ícone do projeto
+- **776** testes da simulação · **0** arquivo de som · a única imagem do repositório é `icon.svg`, o ícone do projeto
 
 ---
 

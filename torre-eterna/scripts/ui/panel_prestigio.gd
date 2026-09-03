@@ -10,7 +10,11 @@ extends "res://scripts/ui/panel_base.gd"
 
 const CHAVE_ARVORE := {"ascensao": "fragmentos", "singularidade": "nucleos", "transcendencia": "eter"}
 const TABELA := {"fragmentos": "arvore_fragmentos", "nucleos": "arvore_nucleos", "eter": "arvore_eter"}
+## Largura CHEIA da ficha da arvore. Vira teto: `_card_w` guarda o que coube.
 const CARD_W := 292.0
+
+## Largura de fato usada na montagem atual (ver `_arvore`).
+var _card_w := CARD_W
 
 var abas: TabBar
 var camadas: Array = []
@@ -346,6 +350,14 @@ func _grade(cam: Dictionary) -> Control:
 		var lin := int(p2[1]) if p2.size() > 1 else 0
 		mapa[lin * 100 + col] = def2
 
+	# A FICHA ENCOLHE QUANDO A JANELA ENCOLHE.
+	#
+	# O numero de colunas vem do CONTEUDO (a posicao de cada no na arvore, no
+	# JSON), entao nao da para reduzi-lo sem mudar o desenho da arvore. O que da
+	# para ajustar e a largura da ficha: tres de 292 px somam 892, que cabe nos
+	# 1.076 px uteis a 1,0 e nao cabe nos 842 a 1,25 — e a arvore ganhava
+	# rolagem horizontal, escondendo um ramo inteiro atras de um gesto.
+	_card_w = minf(CARD_W, (UI.larg_util_painel(self) - float(colunas - 1) * 8.0) / maxf(1.0, float(colunas)))
 	var g := GridContainer.new()
 	g.columns = colunas
 	g.add_theme_constant_override("h_separation", 8)
@@ -358,14 +370,14 @@ func _grade(cam: Dictionary) -> Control:
 				g.add_child(_card(mapa[k], chave, cor))
 			else:
 				var vazio := Control.new()
-				vazio.custom_minimum_size = Vector2(CARD_W, 0)
+				vazio.custom_minimum_size = Vector2(_card_w, 0)
 				g.add_child(vazio)
 	return g
 
 func _card(def: Dictionary, chave: String, cor: Color) -> PanelContainer:
 	var id := str(def.get("id", ""))
 	var cx := PanelContainer.new()
-	cx.custom_minimum_size = Vector2(CARD_W, 0)
+	cx.custom_minimum_size = Vector2(_card_w, 0)
 	cx.add_theme_stylebox_override("panel", UI.caixa(UI.PAINEL2.darkened(0.2), 10, 1, UI.BORDA))
 	var v := UI.vbox(3)
 	cx.add_child(v)
@@ -383,11 +395,11 @@ func _card(def: Dictionary, chave: String, cor: Color) -> PanelContainer:
 
 	var agora := UI.rotulo("", 11, UI.VERDE)
 	agora.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	agora.custom_minimum_size.x = CARD_W - 28.0
+	agora.custom_minimum_size.x = _card_w - 28.0
 	v.add_child(agora)
 	var prox := UI.rotulo("", 11, UI.TEXTO2)
 	prox.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	prox.custom_minimum_size.x = CARD_W - 28.0
+	prox.custom_minimum_size.x = _card_w - 28.0
 	v.add_child(prox)
 
 	var rodape := UI.hbox(6)

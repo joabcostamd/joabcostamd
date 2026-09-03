@@ -107,6 +107,8 @@ func _talvez_capturar() -> void:
 			_clicar_debug = a.substr(9)
 		elif a.begins_with("--celebrar="):
 			_celebrar_debug = a.substr(11)
+		elif a == "--auditar-ui":
+			_auditar_ui = true
 		elif a == "--en":
 			Cfg.set_v("idioma", "en")
 		elif a == "--pt":
@@ -125,6 +127,13 @@ func _talvez_capturar() -> void:
 			Cfg.set_v("escala_ui", float(a.substr(9)))
 		elif a == "--fonte-grande":
 			Cfg.set_v("fonte_grande", true)
+	if _auditar_ui:
+		# A varredura mora em `tools/` porque e ferramenta, nao jogo: ela imprime
+		# relatorio em portugues, e o linter — com razao — proibe texto solto
+		# fora do `Txt` em tudo que vai para a tela de quem joga.
+		var vr = load("res://tools/varredura_ui.gd").new()
+		await vr.rodar(self, gerente, jogo)
+		return
 	if segundos < 0.0:
 		return
 	if _abrir_debug != "":
@@ -179,6 +188,7 @@ var _abrir_debug := ""
 var _clicar_debug := ""
 var _celebrar_debug := ""
 var _codex_debug := false
+var _auditar_ui := false
 
 func _capturar_em(segundos: float, saida: String) -> void:
 	await get_tree().create_timer(segundos).timeout

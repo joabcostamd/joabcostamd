@@ -209,8 +209,21 @@ static func registrar_elemento(s: Dictionary, elemento: String) -> void:
 	var a := estado_adaptacao(s)
 	if not a.has(elemento):
 		return
+	# CONTA, NAO MARCA.
+	#
+	# Isto era `usados[elemento] = true`, um booleano por quadro. Com a torre
+	# acertando varios alvos por quadro, TODO elemento com qualquer peso ficava
+	# marcado em quase todo quadro — e o `decair_adaptacao` dava o ganho cheio a
+	# qualquer marcado. O resultado e que a adaptacao nao tinha meio-termo: cada
+	# elemento acabava em 0% ou colado no teto de 62%, nunca entre os dois.
+	#
+	# E isso inverte a mecanica. O jogo diz, na dica do HUD e no README, que o
+	# Enxame cria resistencia ao que voce MAIS usa e que diversificar resolve.
+	# Com o booleano, diversificar so adicionava mais elementos a -62%: usar
+	# dois era estritamente pior que usar um, e a "build otima que muda sozinha"
+	# nao mudava nunca. A contagem e o que permite medir participacao.
 	var usados: Dictionary = s.get("_adapt_uso", {})
-	usados[elemento] = true
+	usados[elemento] = int(usados.get(elemento, 0)) + 1
 	s["_adapt_uso"] = usados
 
 ## Sobe o que foi usado neste quadro, desce o resto. Roda uma vez por quadro,
@@ -221,12 +234,30 @@ static func registrar_elemento(s: Dictionary, elemento: String) -> void:
 ## o jogador consegue ler e contornar, que e o ponto da mecanica.
 static func decair_adaptacao(dt: float, s: Dictionary) -> void:
 	var a := estado_adaptacao(s)
+	# A MIRA E A PARTICIPACAO DO ELEMENTO, NAO O TETO.
+	#
+	# Cada elemento anda em direcao a `ADAPT_TETO x (acertos dele / acertos do
+	# quadro)`. Quem carrega a build inteira mira nos 62%; quem divide meio a
+	# meio com outro mira em 31% cada; quem quase nao aparece mira perto de zero
+	# e desce. A velocidade continua sendo a mesma de antes (`ADAPT_GANHO_SEG`
+	# para subir, `ADAPT_DECAI` para descer), entao a curva segue no relogio e o
+	# ruido de um quadro nao decide nada — o valor integra a media ao longo de
+	# muitos quadros.
+	#
+	# Agora diversificar FUNCIONA, que e o que o jogo promete em dois lugares.
 	var usados: Dictionary = s.get("_adapt_uso", {})
+	var total := 0
+	for k2 in usados.keys():
+		total += int(usados[k2])
 	for k in a.keys():
-		if usados.has(k):
-			a[k] = minf(ADAPT_TETO, float(a[k]) + ADAPT_GANHO_SEG * dt)
-		else:
-			a[k] = maxf(0.0, float(a[k]) - ADAPT_DECAI * dt)
+		var atual := float(a[k])
+		var alvo := 0.0
+		if total > 0:
+			alvo = ADAPT_TETO * (float(int(usados.get(k, 0))) / float(total))
+		if atual < alvo:
+			a[k] = minf(alvo, atual + ADAPT_GANHO_SEG * dt)
+		elif atual > alvo:
+			a[k] = maxf(alvo, atual - ADAPT_DECAI * dt)
 	if not usados.is_empty():
 		s["_adapt_uso"] = {}
 

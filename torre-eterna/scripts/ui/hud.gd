@@ -148,6 +148,21 @@ func _construir() -> void:
 	centro.add_child(lbl_chefe_fase)
 
 	# ---------- esquerda: vitais ----------
+	# MESMO VEU DO BLOCO DA ONDA, PELA MESMA RAZAO.
+	#
+	# O codigo ja tinha reconhecido este defeito para o bloco central — "os
+	# aneis de morte passam por cima e o jogador perde justamente o que precisa
+	# ler" — e deixou o bloco da esquerda de fora. Medido numa captura com um
+	# inimigo atras: o numero de vida da torre cai de 3,79:1 para 1,44:1 de
+	# contraste, ou seja, ilegivel. E vida da torre e o numero que decide usar
+	# habilidade defensiva ou nao, no canto por onde os inimigos entram.
+	var veu_vitais := ColorRect.new()
+	veu_vitais.color = Color(0.02, 0.03, 0.07, 0.45)
+	veu_vitais.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	veu_vitais.position = Vector2(8, 56)
+	veu_vitais.size = Vector2(248, 116)
+	add_child(veu_vitais)
+
 	var vitais := UI.vbox(4)
 	vitais.position = Vector2(14, 62)
 	vitais.custom_minimum_size.x = 230

@@ -168,7 +168,11 @@ func _montar_bestiario() -> void:
 	rolagem.add_child(coluna)
 
 	var grade := GridContainer.new()
-	grade.columns = COLUNAS
+	# A coluna da esquerda e a janela menos a ficha de detalhe e as molduras. A
+	# quatro colunas fixas o bestiario ganhava rolagem horizontal a 1,25 — o que
+	# cabe depende da escala, entao a conta e feita, nao chutada. `COLUNAS` vira
+	# o teto: quatro em portugues e o maximo que o nome do inimigo permite.
+	grade.columns = UI.colunas(UI.larg_util_painel(self, 190.0) - LARG_DETALHE, 158.0, 8.0, COLUNAS)
 	grade.add_theme_constant_override("h_separation", 8)
 	grade.add_theme_constant_override("v_separation", 8)
 	coluna.add_child(grade)
@@ -877,6 +881,15 @@ func _bicho(def: Dictionary, chefe: bool, conhecido: bool) -> Inimigo:
 		e.chefe = false
 		e.cor = Color(0.78, 0.81, 0.90)
 		e.cor2 = Color(0.55, 0.58, 0.68)
+	# O DISFARCE E ESTADO DE COMBATE, NAO PROPRIEDADE DA ESPECIE.
+	#
+	# `art_enemy` corta o alfa de quem tem `invisivel` no JSON e ainda nao foi
+	# revelado. Na arena isso esta certo — a Sombra so aparece quando encosta.
+	# Na ficha do Codex, nao: era o unico bicho cuja ficha mostrava um retangulo
+	# vazio, e justamente o que mais precisa ser estudado com calma, porque no
+	# campo ele tem meio segundo para ser reconhecido. A pessoa pagava 9 abates
+	# para desbloquear nada.
+	e.revelado = true
 	return e
 
 func _botao_limpo(w: float, h: float) -> Button:

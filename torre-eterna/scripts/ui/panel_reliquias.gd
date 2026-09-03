@@ -103,7 +103,14 @@ func montar(c: VBoxContainer) -> void:
 	lista.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	rolagem.add_child(lista)
 	grade = GridContainer.new()
-	grade.columns = 2
+	# COLUNAS PELA LARGURA, NAO PELO PALPITE.
+	#
+	# Duas colunas cabiam a 1,0 e nao cabiam a 1,25, onde a janela logica cai de
+	# 1280 para 1024: sobravam 173 px de conteudo escondido atras de rolagem
+	# horizontal. Uma ficha de reliquia precisa de uns 470 px para o texto e os
+	# dois botoes; quando nao cabem duas, cabe uma — e uma ficha larga le melhor
+	# que duas cortadas.
+	grade.columns = UI.colunas(UI.larg_util_painel(self), 470.0, 10.0, 2)
 	grade.add_theme_constant_override("h_separation", 10)
 	grade.add_theme_constant_override("v_separation", 10)
 	grade.size_flags_horizontal = Control.SIZE_EXPAND_FILL

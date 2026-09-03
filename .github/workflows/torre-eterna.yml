@@ -136,6 +136,22 @@ jobs:
       - name: Instalar Xvfb (para o portão que desenha)
         run: sudo apt-get update -qq && sudo apt-get install -y -qq xvfb libxcursor1 libxinerama1 libxi6 libxrandr2
 
+      # Este portao existe porque eu estava achando defeito de layout com uma
+      # captura de tela por vez: tres minutos cada, uma tela cada, e a olho.
+      # Assim achei quatro paineis estourando a largura da janela — e so achei
+      # porque tirei as capturas em portugues por acaso, ja que as frases em
+      # portugues sao mais longas que as inglesas e metade dos defeitos desta
+      # classe SO existe num dos idiomas. A varredura cobre 12 paineis x 2
+      # idiomas x 2 escalas num processo so, em meio minuto, e nao olha: mede.
+      - name: Portão 9 — nenhum painel estoura a janela
+        working-directory: torre-eterna
+        run: |
+          set -euo pipefail
+          saida=$(xvfb-run -a -s "-screen 0 1280x720x24" \
+            godot --path . --resolution 1280x720 -- --auditar-ui 2>&1) || true
+          echo "$saida"
+          echo "$saida" | grep -q "===STATUS=== PASS"
+
       - name: Portão 8 — o jogo DESENHA sem erro de motor
         working-directory: torre-eterna
         run: |

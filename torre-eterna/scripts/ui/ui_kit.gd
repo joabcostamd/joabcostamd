@@ -304,6 +304,27 @@ static func vbox(sep: int = 6) -> VBoxContainer:
 	v.add_theme_constant_override("separation", sep)
 	return v
 
+## Quantas colunas de `larg_ficha` cabem em `larg_util`, no maximo `teto`.
+##
+## Grade com numero fixo de colunas cabe na escala em que foi escrita e em mais
+## nenhuma. Com a interface a 1,25 a janela logica encolhe de 1280 para 1024, e
+## quatro paineis (Reliquias, Missoes, Codex, Prestigio) passavam a ter rolagem
+## horizontal — conteudo escondido atras de um gesto que ninguem faz numa grade.
+## A varredura de layout (`--auditar-ui`) acha isso em segundos; esta funcao e
+## o conserto, num lugar so, para as quatro.
+static func colunas(larg_util: float, larg_ficha: float, sep: float, teto: int) -> int:
+	if larg_ficha <= 0.0:
+		return 1
+	var n := int(floor((larg_util + sep) / (larg_ficha + sep)))
+	return clampi(n, 1, teto)
+
+## Largura util de um painel: a janela logica menos a moldura dele.
+##
+## A janela logica ja vem dividida pela escala da interface (`content_scale`),
+## entao 1280 vira 1024 a 1,25 sem ninguem precisar dividir nada na mao.
+static func larg_util_painel(no: Control, moldura: float = 190.0) -> float:
+	return maxf(240.0, no.get_viewport_rect().size.x - moldura)
+
 static func hbox(sep: int = 6) -> HBoxContainer:
 	var h := HBoxContainer.new()
 	h.add_theme_constant_override("separation", sep)

@@ -17,7 +17,7 @@ var lbl_vazio_d: Label
 var lbl_vazio_s: Label
 var caixa_diarias: VBoxContainer
 var caixa_semanais: VBoxContainer
-var caixa_sequencia: HBoxContainer
+var caixa_sequencia: Container
 var lbl_sequencia: Label
 var trilha: HBoxContainer
 var rolagem_trilha: ScrollContainer
@@ -74,7 +74,16 @@ func montar(c: VBoxContainer) -> void:
 	conteudo.add_child(_secao(Txt.t("mis_sec_sequencia"), "estrela", UI.OURO,
 		Txt.t("mis_sec_sequencia_dica"), lbl_sequencia))
 	var cx_seq := UI.painel(UI.PAINEL2.darkened(0.15), 12)
-	caixa_sequencia = UI.hbox(6)
+	# SETE CARTOES DE 122 px SAO 890 px, E A JANELA UTIL A 1,25 TEM 842.
+	#
+	# Era um `HBoxContainer`, que empurra em vez de quebrar: a fileira da
+	# sequencia diaria sozinha punha o painel de Missoes alem da janela na
+	# escala 1,25, e ele abria rolado para a direita com a coluna da esquerda
+	# cortada. Num container que quebra, o setimo dia desce para a linha de
+	# baixo e ninguem perde nada.
+	caixa_sequencia = HFlowContainer.new()
+	caixa_sequencia.add_theme_constant_override("h_separation", 6)
+	caixa_sequencia.add_theme_constant_override("v_separation", 6)
 	caixa_sequencia.alignment = BoxContainer.ALIGNMENT_CENTER
 	cx_seq.add_child(caixa_sequencia)
 	conteudo.add_child(cx_seq)
@@ -102,7 +111,10 @@ func montar(c: VBoxContainer) -> void:
 	lbl_nivel = UI.rotulo(Txt.t("nivel") + " 0", 18, UI.TEXTO)
 	cv.add_child(lbl_nivel)
 	barra_xp = UI.barra(UI.ROSA, 9)
-	barra_xp.custom_minimum_size.x = 420
+	# Mesma historia da descricao: a barra de XP da temporada exigia 420 px de
+	# largura minima, e numa janela util de 842 isso nao sobra depois do icone,
+	# do nivel e do contador. Ela ocupa o que houver.
+	barra_xp.custom_minimum_size.x = 200
 	barra_xp.tooltip_text = Txt.t("mis_dica_barra_xp")
 	cv.add_child(barra_xp)
 	ch.add_child(cv)
@@ -112,6 +124,10 @@ func montar(c: VBoxContainer) -> void:
 	conteudo.add_child(cabeca)
 
 	rolagem_trilha = ScrollContainer.new()
+	# A trilha de 40 niveis rola na horizontal DE PROPOSITO — e o desenho dela,
+	# nao um transbordo. A marca abaixo diz isso a varredura de layout
+	# (`--auditar-ui`), que sem ela acusava 250 falsos positivos so aqui.
+	rolagem_trilha.set_meta("rolagem_horizontal_proposital", true)
 	rolagem_trilha.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	rolagem_trilha.custom_minimum_size.y = 176
 	trilha = UI.hbox(8)
@@ -129,7 +145,21 @@ func _secao(titulo: String, icone: String, cor: Color, dica: String, extra: Labe
 	var l := UI.rotulo(titulo, 18, cor)
 	l.tooltip_text = dica
 	h.add_child(l)
+	# A LINHA DE DICA NAO PODE EXIGIR LARGURA.
+	#
+	# Era um rotulo comum: sem quebra e sem limite, o minimo dele e o texto
+	# inteiro — 557 px em portugues. Somado ao titulo, ao icone e ao botao da
+	# direita, isso empurrava o painel de Missoes alem da janela na escala 1,25
+	# e ele abria rolado para a direita, com a coluna da esquerda cortada.
+	#
+	# A dica e texto secundario, e o titulo ao lado ja a repete no tooltip: ela
+	# ocupa o que sobrar e corta com reticencias quando nao couber. Assim a
+	# altura da linha nao muda e a largura deixa de ser exigencia dela.
 	var sub := UI.rotulo(dica, 12, UI.TEXTO3)
+	sub.clip_text = true
+	sub.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	sub.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	sub.custom_minimum_size.x = 0
 	h.add_child(sub)
 	h.add_child(UI.espacador())
 	if extra != null:
@@ -177,7 +207,16 @@ func _linha_missao(grupo: String, indice: int) -> void:
 	var alvo_txt := Fmt.inteiro(int(round(alvo / 60.0))) if meta_tipo == "tempoTotal" else Fmt.inteiro(int(round(alvo)))
 	var desc := UI.rotulo(txt(def, "desc").replace("{v}", alvo_txt), 12, UI.TEXTO2)
 	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	desc.custom_minimum_size.x = 460
+	# A DESCRICAO PEDE POUCO E ACEITA O QUE SOBRAR.
+	#
+	# 460 px de minimo cabiam a 1,0 e nao cabiam a 1,25: somados ao icone, a
+	# barra de progresso, aos premios e ao botao, punham a linha em 938 px numa
+	# janela util de 842, e o painel abria rolado para a direita. Ela ja quebra
+	# em varias linhas — o que ela nao pode e EXIGIR uma largura que a janela
+	# nao tem. Com um minimo modesto e permissao para expandir, ela ocupa o que
+	# sobrar: 460+ na tela larga, menos na estreita, e nunca empurra o painel.
+	desc.custom_minimum_size.x = 240
+	desc.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	l["textos"].add_child(desc)
 
 	var lp := UI.hbox(8)

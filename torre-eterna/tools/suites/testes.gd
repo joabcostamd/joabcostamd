@@ -1028,6 +1028,19 @@ func _usar_elemento(estado: Dictionary, elemento: String, segundos: float) -> vo
 		Mecanicas.registrar_elemento(estado, elemento)
 		Mecanicas.decair_adaptacao(passo, estado)
 
+## Usa DOIS elementos na mesma janela, na proporcao pedida. E como o jogo faz
+## quando a torre tem peso em mais de um elemento: os dois acertam no mesmo
+## quadro, em quantidades diferentes.
+func _usar_dois(estado: Dictionary, a: String, na: int, b: String, nb: int, segundos: float) -> void:
+	var passo := 1.0 / 60.0
+	var n := int(segundos / passo)
+	for i in n:
+		for k in na:
+			Mecanicas.registrar_elemento(estado, a)
+		for k2 in nb:
+			Mecanicas.registrar_elemento(estado, b)
+		Mecanicas.decair_adaptacao(passo, estado)
+
 ## Envelope minimo para exercitar `Progresso` sem subir o jogo inteiro.
 func _jogo_falso(estado: Dictionary):
 	var j := JogoFalso.new()
@@ -3039,6 +3052,43 @@ func t_mecanicas() -> void:
 	# desde o primeiro quadro. O teste media a função com um estado que o jogo
 	# nunca produz. Agora ele parte do estado REAL, e é isso que o faz morder.
 	var s_novo := GameState.novo()
+	# DIVERSIFICAR TEM QUE VALER A PENA — E NAO VALIA.
+	#
+	# `registrar_elemento` gravava um BOOLEANO por quadro, e a torre no meio do
+	# jogo acerta varios alvos por quadro: todo elemento com qualquer peso
+	# ficava marcado em quase todo quadro e recebia o ganho cheio. Nao havia
+	# meio-termo — cada elemento acabava em 0% ou colado no teto, nunca entre os
+	# dois — e entao usar dois elementos era estritamente PIOR que usar um: dois
+	# a -62% em vez de um. O jogo diz o contrario na dica do HUD e no README.
+	var s_div: Dictionary = {"adaptacao": {"fogo": 0.0, "gelo": 0.0, "raio": 0.0,
+		"veneno": 0.0, "vazio": 0.0}}
+	_usar_elemento(s_div, "fogo", 60.0)
+	var so_fogo: float = float((s_div["adaptacao"] as Dictionary)["fogo"])
+	ok("um elemento sozinho sobe ate o teto", perto(so_fogo, Mecanicas.ADAPT_TETO, 0.02),
+		"%.3f de %.3f" % [so_fogo, Mecanicas.ADAPT_TETO])
+	var s_mm: Dictionary = {"adaptacao": {"fogo": 0.0, "gelo": 0.0, "raio": 0.0,
+		"veneno": 0.0, "vazio": 0.0}}
+	_usar_dois(s_mm, "fogo", 1, "gelo", 1, 60.0)
+	var meio_fogo: float = float((s_mm["adaptacao"] as Dictionary)["fogo"])
+	var meio_gelo: float = float((s_mm["adaptacao"] as Dictionary)["gelo"])
+	ok("meio a meio para na metade do teto",
+		perto(meio_fogo, Mecanicas.ADAPT_TETO * 0.5, 0.03) and perto(meio_gelo, Mecanicas.ADAPT_TETO * 0.5, 0.03),
+		"fogo %.3f, gelo %.3f, teto %.3f" % [meio_fogo, meio_gelo, Mecanicas.ADAPT_TETO])
+	# A conta que decide a build: dividir tem que doer MENOS que concentrar.
+	var dano_concentrado: float = 1.0 - so_fogo
+	var dano_dividido: float = (1.0 - meio_fogo) * 0.5 + (1.0 - meio_gelo) * 0.5
+	ok("diversificar rende mais dano que concentrar", dano_dividido > dano_concentrado * 1.2,
+		"dividido %.3f contra concentrado %.3f" % [dano_dividido, dano_concentrado])
+	# Tres quartos num, um quarto no outro: a resistencia acompanha a proporcao.
+	var s_75: Dictionary = {"adaptacao": {"fogo": 0.0, "gelo": 0.0, "raio": 0.0,
+		"veneno": 0.0, "vazio": 0.0}}
+	_usar_dois(s_75, "fogo", 3, "gelo", 1, 60.0)
+	var f75: float = float((s_75["adaptacao"] as Dictionary)["fogo"])
+	var g25: float = float((s_75["adaptacao"] as Dictionary)["gelo"])
+	ok("a resistencia acompanha a participacao", f75 > g25 * 2.4,
+		"fogo %.3f contra gelo %.3f" % [f75, g25])
+	ok("e o elemento abandonado desce", float((s_div["adaptacao"] as Dictionary)["gelo"]) < 0.01)
+
 	ok("o estado novo do jogo produz adaptacao utilizavel",
 		not (s_novo["adaptacao"] as Dictionary).is_empty()
 			or not Mecanicas.estado_adaptacao(s_novo).is_empty())
@@ -3529,12 +3579,25 @@ func _conferir_ci() -> int:
 	var exigidos := [
 		"tools/verificar.gd", "tools/lint.gd", "tools/validar_dados.gd",
 		"tools/testes.gd", "tools/perf.gd", "tools/soak.gd",
-		"tools/sim_balance.gd", "agent_verify.gd",
+		"tools/sim_balance.gd", "agent_verify.gd", "--auditar-ui",
 	]
 	for alvo in exigidos:
 		if not ci.contains(str(alvo)):
-			print("  FALHOU [doc] o CI nao roda '%s', e a rubrica promete os oito portoes" % alvo)
+			print("  FALHOU [doc] o CI nao roda '%s', e a rubrica promete os nove portoes" % alvo)
 			erros += 1
+	# A VARREDURA DE LAYOUT SO VALE SE RODAR NOS DOIS IDIOMAS E NAS DUAS ESCALAS.
+	#
+	# Metade dos defeitos desta classe so existe em portugues (as frases sao mais
+	# longas) e metade so existe na escala 1,25 (a janela logica encolhe de 1280
+	# para 1024). Uma varredura que rode so em ingles a 1,0 passa verde num jogo
+	# com quatro paineis estourando a tela — foi exatamente o que aconteceu.
+	var fonte_vr := _ler("res://tools/varredura_ui.gd")
+	if not fonte_vr.contains('const AUD_IDIOMAS := ["pt", "en"]'):
+		print("  FALHOU [doc] a varredura de layout precisa cobrir os DOIS idiomas")
+		erros += 1
+	if not fonte_vr.contains("const AUD_ESCALAS := [1.0, 1.25]"):
+		print("  FALHOU [doc] a varredura de layout precisa cobrir as escalas que o jogo oferece")
+		erros += 1
 	# Os argumentos que a rubrica publica tem que ser os que o CI usa: portao
 	# que roda com numero menor no CI e portao afrouxado.
 	var qual := _ler("res://docs/QUALIDADE.md")
