@@ -82,6 +82,7 @@ func _ao_prestigio(camada: String, _ganho: float) -> void:
 
 ## Captura de tela para verificação automatizada:
 ##   godot --path . -- --shot=5 --saida=/tmp/tela.png [--onda=40]
+## `--abrir=desafios,modoFarm` liga desbloqueios para fotografar painéis trancados.
 func _talvez_capturar() -> void:
 	var args := OS.get_cmdline_user_args()
 	var segundos := -1.0
@@ -100,8 +101,16 @@ func _talvez_capturar() -> void:
 			_tela_alvo = a.substr(7)
 		elif a.begins_with("--cartas="):
 			_cartas_debug = int(a.substr(9))
+		elif a.begins_with("--abrir="):
+			_abrir_debug = a.substr(8)
 	if segundos < 0.0:
 		return
+	if _abrir_debug != "":
+		for chave in _abrir_debug.split(",", false):
+			jogo.s["desbloqueios"][str(chave).strip_edges()] = true
+		jogo.marcar_sujo()
+		jogo.recalcular()
+		Bus.ui_atualizar.emit(true)
 	if _cartas_debug > 0:
 		for i in _cartas_debug:
 			Saque.criar_carta(jogo, "", i % 3 == 0)
@@ -120,6 +129,7 @@ func _talvez_capturar() -> void:
 var _painel_alvo := ""
 var _tela_alvo := ""
 var _cartas_debug := 0
+var _abrir_debug := ""
 
 func _capturar_em(segundos: float, saida: String) -> void:
 	await get_tree().create_timer(segundos).timeout

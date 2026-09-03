@@ -31,6 +31,7 @@ const PADRAO := {
 }
 
 var v: Dictionary = PADRAO.duplicate(true)
+var _filtro: CanvasLayer = null
 
 func _ready() -> void:
 	var salvo := SaveSys.carregar_config()
@@ -75,6 +76,27 @@ func aplicar() -> void:
 		if DisplayServer.window_get_mode() != alvo:
 			DisplayServer.window_set_mode(alvo)
 	Engine.max_fps = int(v["limite_fps"])
+	_aplicar_filtro()
+
+## O filtro de acessibilidade é um CanvasLayer global criado sob demanda —
+## fica acima de tudo, inclusive dos painéis, para a opção valer na hora.
+func _aplicar_filtro() -> void:
+	var modo := int(v["daltonismo"])
+	var contraste := 0.35 if bool(v["alto_contraste"]) else 0.0
+	if modo == 0 and contraste <= 0.0:
+		if _filtro != null:
+			_filtro.configurar(0, 0.0)
+		return
+	if not is_inside_tree():
+		return
+	if _filtro == null or not is_instance_valid(_filtro):
+		if DisplayServer.get_name() == "headless":
+			return
+		_filtro = CanvasLayer.new()
+		_filtro.name = "FiltroAcessibilidade"
+		_filtro.set_script(load("res://scripts/render/filtro_acessibilidade.gd"))
+		add_child(_filtro)
+	_filtro.configurar(modo, contraste)
 
 func _vol_bus(nome: String, linear: float) -> void:
 	var idx := AudioServer.get_bus_index(nome)
