@@ -37,6 +37,14 @@ func _rodar() -> void:
     Navegacao.ir_para("estatisticas")
     await _esperar(3.0)
 
+    # a interface em japonês, com a fonte de reserva entrando por glifo
+    Progresso.opcoes["idioma"] = "ja"
+    Progresso.aplicar_idioma()
+    Navegacao.ir_para("opcoes")
+    await _esperar(3.0)
+    Progresso.opcoes["idioma"] = "pt"
+    Progresso.aplicar_idioma()
+
     # Mostra o tema claro, e volta ao escuro no fim.
     Progresso.opcoes["tema_claro"] = true
     Progresso.aplicar_aparencia()

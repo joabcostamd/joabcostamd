@@ -232,6 +232,7 @@ func _abrir_pausa() -> void:
     Audio.tocar("clique")
     _guardar_partida()
     _pausa.visible = true
+    Juice.entrada(_pausa, 0.0, 14.0)
 
 ## Guarda o andamento sempre que o jogador pode estar de saída.
 func _guardar_partida() -> void:
@@ -242,7 +243,6 @@ func _guardar_partida() -> void:
 func _notification(que: int) -> void:
     if que == NOTIFICATION_WM_CLOSE_REQUEST or que == NOTIFICATION_PREDELETE:
         _guardar_partida()
-    Juice.entrada(_pausa, 0.0, 14.0)
 
 func _fechar_pausa() -> void:
     Audio.tocar("clique")
