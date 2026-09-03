@@ -142,6 +142,9 @@ func _conferir_doc(total_testes: int) -> int:
 		"eras": Dados.eras.size(),
 		"habilidades": Dados.habilidades.size(),
 		"efeitos_audio": Sfx.nomes().size(),
+		# `27.155` ficou publicado enquanto a arvore tinha 31.147: numero de
+		# documento que nenhum portao conferia e numero que apodrece.
+		"linhas": _contar_linhas_gd(),
 	}
 	# arquivo -> [[regex, chave], ...]. O grupo 1 do regex e o numero.
 	var alvos := {
@@ -187,6 +190,7 @@ func _conferir_doc(total_testes: int) -> int:
 		"res://docs/QUALIDADE.md": [
 			["===TESTES=== passou=([\\d.]+)", "testes"],
 			["\\| Scripts GDScript \\| ([\\d.]+) \\|", "scripts"],
+			["\\| Linhas de c[oó]digo \\| ([\\d.]+) \\|", "linhas"],
 			["\\| Testes da simula[cç][aã]o \\| ([\\d.]+) \\|", "testes"],
 			["\\| Chaves de interface PT/EN \\| ([\\d.]+) \\|", "chaves_i18n"],
 		],
@@ -245,6 +249,38 @@ func _conferir_doc(total_testes: int) -> int:
 		print("  FALHOU [doc] o projeto promete zero arquivo de som e tem %d" % int(reais["sons"]))
 		erros += 1
 	return erros
+
+## Linhas de GDScript, na MESMA conta que o `lint` publica: as mesmas duas
+## pastas, e o numero de quebras de linha (que e o que `get_line()` ate o EOF
+## devolve para arquivo terminado em newline). Contar de outro jeito faria o
+## portao comparar duas medidas diferentes e reprovar para sempre.
+func _contar_linhas_gd() -> int:
+	var alvos: Array = []
+	for raiz in ["res://scripts", "res://tools"]:
+		alvos.append_array(_listar_gd(str(raiz)))
+	# ...mais os `.gd` soltos na raiz, que o lint tambem varre (`agent_verify`).
+	var d := DirAccess.open("res://")
+	if d != null:
+		d.list_dir_begin()
+		var nome := d.get_next()
+		while nome != "":
+			if not d.current_is_dir() and nome.ends_with(".gd"):
+				alvos.append("res://" + nome)
+			nome = d.get_next()
+		d.list_dir_end()
+	# MESMO LACO do lint, de proposito: `get_line()` ate `eof_reached()`. Contar
+	# quebras de linha da um numero PARECIDO e diferente (77 a menos nesta
+	# arvore), e portao que compara duas medidas diferentes reprova para sempre
+	# sem que ninguem entenda por que.
+	var n := 0
+	for arq in alvos:
+		var f := FileAccess.open(str(arq), FileAccess.READ)
+		if f == null:
+			continue
+		while not f.eof_reached():
+			f.get_line()
+			n += 1
+	return n
 
 func _contar_gd() -> int:
 	var n := 0

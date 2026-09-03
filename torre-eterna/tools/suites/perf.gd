@@ -261,11 +261,17 @@ func rodar(cena: SceneTree) -> void:
 		print("--- PORTAO: 10 min de jogo real (onda %d ao fim, automacao ligada) ---" % int(j.s["onda_maxima"]))
 		_relatar(g, fator)
 	if not so_segurado:
-		print("  normalizado p90: %.0f us  (orcamento %.0f us = %.0f x %.2f)" % [float(g["p90"]) / fator, orcamento, ORCAMENTO_US, fator])
+		# NORMALIZA UMA VEZ SO. A linha dividia o p90 pelo fator e comparava com
+		# um orcamento que ja tinha sido MULTIPLICADO por ele — normalizacao dos
+		# dois lados, entao o numero publicado nao era o numero julgado. O
+		# veredito sempre usou p90 cru contra orcamento escalado (que e o certo);
+		# quem lia o relatorio e que via outra conta.
+		print("  p90 %.0f us  (orcamento %.0f us = %.0f x %.2f da maquina)" % [
+			float(g["p90"]), orcamento, ORCAMENTO_US, fator])
 	print("")
 	print("--- PORTAO 2: %d inimigos vivos SEGURADOS (teto do jogo + 25%%) ---" % alvo)
 	_relatar(e1, fator)
-	print("  normalizado p90: %.0f us  (orcamento %.0f us)" % [float(e1["p90"]) / fator, orcamento])
+	print("  p90 %.0f us  (orcamento %.0f us)" % [float(e1["p90"]), orcamento])
 	print("")
 	print("--- FOLGA (nao reprova): %d vivos, alem do que o jogo cria ---" % alvo_estresse)
 	_relatar(e2, fator)
