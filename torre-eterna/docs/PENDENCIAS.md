@@ -145,3 +145,9 @@ Para não repetir trabalho — cada um com teste que reprova se voltar:
 - **O README dizia que a automação da Purga é "40% pior"**; ela é 53% pior e ainda nunca conta como perfeita, então nunca paga o ouro nem a recarga
 - **O README vendia a Aglomeração como algo que o jogador persegue**; ela não tem alavanca nenhuma dele
 - **Quatro painéis rolavam na horizontal na escala 1,25**, escondendo conteúdo — achados pela varredura de layout, não a olho
+- **A compra automática travava em 1 nível por chamada** acima do teto do JSON — a economia virava enfeite justamente na metade em que o ouro cresce mais rápido
+- **Três dos quatro controles de ambiente das eras eram dados mortos**: as dez eras mudavam de matiz, não de clima
+- **Duas duplas de eras desenhavam o mesmo chão** e quatro tipos de céu caíam no mesmo ramo de pontinhos — o Cinturão pedia nuvens e recebia estrelas
+- **O aviso atravessava o painel aberto**, apagando duas linhas da lista que a pessoa foi ler
+- **A aba "Segredos" sumia na escala 1,25** atrás das setinhas do TabBar — alcançável não é o mesmo que visível
+- **Os dois botões de reciclagem só divergiam no caractere 14**, e um deles desmancha cartas na hora
