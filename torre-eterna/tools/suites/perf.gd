@@ -375,6 +375,7 @@ func _medir(j, repor: Callable, quantos: int, passos: int) -> Dictionary:
 		repor.call(quantos)
 
 	var r := _resumir(amostras, soma_vivos / passos, pico_p)
+	r["lotacao"] = _lotacao(j)
 	r["mortes_caros"] = _media_dos_caros(amostras, mortes, true)
 	r["mortes_resto"] = _media_dos_caros(amostras, mortes, false)
 	r["projs_caros"] = _media_dos_caros(amostras, projs, true)
@@ -382,6 +383,23 @@ func _medir(j, repor: Callable, quantos: int, passos: int) -> Dictionary:
 	r["vivos_caros"] = _media_dos_caros(amostras, vivs, true)
 	r["vivos_resto"] = _media_dos_caros(amostras, vivs, false)
 	return r
+
+## Quantos inimigos há na célula mais cheia da grade, e a média por célula
+## ocupada. É o que separa "160 inimigos espalhados", que a grade resolve em
+## poucas células, de "160 inimigos empilhados", em que a grade não filtra nada
+## e cada projétil acaba testando quase toda a população.
+func _lotacao(j) -> Array:
+	var celulas := {}
+	for e in j.arena.inimigos:
+		var k := int(floor(e.pos.x / 72.0)) * 4096 + int(floor(e.pos.y / 72.0))
+		celulas[k] = int(celulas.get(k, 0)) + 1
+	var pior := 0
+	var soma := 0
+	for k in celulas:
+		var n: int = celulas[k]
+		pior = maxi(pior, n)
+		soma += n
+	return [pior, float(soma) / maxf(1.0, float(celulas.size())), celulas.size()]
 
 ## Média de `valores` nos 10% de passos mais caros (`caros = true`) ou nos 90%
 ## restantes. É o que responde "o que os passos caros têm de diferente".
@@ -419,6 +437,10 @@ func _relatar(d: Dictionary, fator: float) -> void:
 	print("  media %6.0f | p50 %6.0f | p90 %6.0f | p99 %6.0f | pior %6.0f  (us)" % [
 		float(d["media"]), float(d["p50"]), float(d["p90"]), float(d["p99"]), float(d["pior"])])
 	print("  %.0f fps no p90" % (1000000.0 / maxf(1.0, float(d["p90"]) / fator)))
+	if d.has("lotacao"):
+		var lot: Array = d["lotacao"]
+		print("  lotacao da grade: %d na celula mais cheia | %.1f por celula ocupada | %d celulas" % [
+			int(lot[0]), float(lot[1]), int(lot[2])])
 	if d.has("mortes_caros"):
 		print("  nos 10%% mais caros vs o resto -> mortes %.1f/%.1f | projeteis %.0f/%.0f | vivos %.0f/%.0f" % [
 			float(d["mortes_caros"]), float(d["mortes_resto"]),
