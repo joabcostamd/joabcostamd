@@ -13,6 +13,9 @@ var root: Node
 
 const DT := 1.0 / 60.0
 const ORCAMENTO_US := 4000.0   ## 4 ms de simulação por frame (de 16,6 ms)
+## Divergencia maxima entre as duas calibragens da maquina. Acima disso o portao
+## declara INCONCLUSIVO em vez de fingir que mediu — ver `rodar()`.
+const DERIVA_MAX := 0.18
 const SEMENTE := 20260903
 
 ## O que este portão mede, e por que assim
@@ -249,11 +252,28 @@ func rodar(cena: SceneTree) -> void:
 		Habilidades.auto_usar(j)
 	periodicas["auto_habilidade"] = [float(Time.get_ticks_usec() - t0) / n_amostras, 0.25]
 
-	var ref := maxf(ref_antes, medir_maquina())
+	# A MAQUINA PODE ESTAR MENTINDO, E O PORTAO PRECISA SABER DISSO.
+	#
+	# O veredito compara o custo do jogo com um orcamento escalado pela conta de
+	# referencia. Se a maquina esta disputada, as duas calibragens — a de antes e
+	# a de depois — divergem, e ai o numero medido no meio nao vale nada: nesta
+	# sessao a mesma arvore mediu 3.708 us e 8.537 us, e a diferenca era outro
+	# processo do Godot rodando ao lado, nao o codigo. Um portao que devolve
+	# verde ou vermelho conforme quem mais esta usando o processador nao mede
+	# nada; ele so parece medir.
+	#
+	# Entao o portao passa a declarar INCONCLUSIVO quando as duas calibragens
+	# discordam demais, e reprova — porque um verde tirado de uma medida instavel
+	# e pior que um vermelho honesto.
+	var ref_depois := medir_maquina()
+	var ref := maxf(ref_antes, ref_depois)
+	var deriva := absf(ref_depois - ref_antes) / maxf(1.0, minf(ref_antes, ref_depois))
 	var fator := clampf(ref / REF_US, FATOR_MIN, FATOR_MAX)
 	var orcamento := ORCAMENTO_US * fator
 
 	print("maquina: %.0f us na conta de referencia (%.0f esperado) -> fator %.2fx" % [ref, REF_US, fator])
+	print("  calibragem: %.0f us antes, %.0f us depois (deriva %.1f%%, limite %.0f%%)" % [
+		ref_antes, ref_depois, deriva * 100.0, DERIVA_MAX * 100.0])
 	print("")
 	if so_segurado:
 		print("--- BANCADA: so a perna de populacao segurada (nao e portao) ---")
@@ -316,7 +336,12 @@ func rodar(cena: SceneTree) -> void:
 		print("FALHOU: jogo real p90 %.0f us > orcamento %.0f us" % [float(g["p90"]), orcamento])
 	if not ok_cheio:
 		print("FALHOU: %d vivos segurados p90 %.0f us > orcamento %.0f us" % [alvo, float(e1["p90"]), orcamento])
-	var ok := ok_real and ok_cheio
+	var estavel := deriva <= DERIVA_MAX
+	if not estavel:
+		print("INCONCLUSIVO: as duas calibragens da maquina diferem %.0f%% (limite %.0f%%)." % [
+			deriva * 100.0, DERIVA_MAX * 100.0])
+		print("  a maquina estava disputada; meça de novo com a arvore limpa e nada mais rodando")
+	var ok := ok_real and ok_cheio and estavel
 	print("===STATUS=== ", "PASS" if ok else "FAIL")
 	arvore.quit(0 if ok else 1)
 
