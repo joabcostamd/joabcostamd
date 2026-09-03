@@ -40,6 +40,7 @@ var b_infinito: Button
 var b_farm: Button
 var b_autopurga: Button
 var b_poupar: Button
+var b_antecipar: Button
 var aviso_pontos: Label
 var ic_pontos: Control
 
@@ -345,6 +346,13 @@ func _construir() -> void:
 	# exatamente quando a decisao existe.
 	b_poupar = _botao_com_icone("coracao", Txt.t("hud_poupar_dica"), UI.VERDE, _alternar_poupar)
 	acoes.add_child(b_poupar)
+	# CHAMAR A ONDA. O ritmo do jogo era do spawner, nao do jogador: comprar
+	# poder nao encurtava nada dentro de uma run. Acelerar o spawn sozinho
+	# quebrou o balanceamento quando testei, entao a decisao volta para as maos
+	# de quem joga — o botao so aparece no respiro entre ondas, que e quando ela
+	# existe, e paga mais quanto mais cedo for apertado.
+	b_antecipar = _botao_com_icone("foguete", Txt.t("hud_antecipar_dica"), UI.OURO, _antecipar)
+	acoes.add_child(b_antecipar)
 	acoes.add_child(_botao_com_icone("salvar", Txt.t("salvar_agora") + " (F5)", UI.TEXTO2, _salvar_agora))
 
 	# a Purga fica à esquerda da barra de habilidades, com destaque próprio
@@ -631,6 +639,8 @@ func _atualizar_lento() -> void:
 	if b_farm != null:
 		b_farm.visible = jogo.esp["desbloqueios"].has("modoFarm")
 		b_farm.modulate = UI.OURO if bool(jogo.s["modo_farm"]) else Color.WHITE
+	if b_antecipar != null:
+		b_antecipar.visible = jogo.diretor.estado == "intervalo" and jogo.diretor.timer > 0.15
 	if b_poupar != null:
 		var tem_peregrino := false
 		for e in jogo.arena.inimigos:
@@ -720,6 +730,10 @@ func _salvar_agora() -> void:
 func _alternar_infinito() -> void:
 	if not jogo.alternar_infinito():
 		Bus.toast(Txt.t("hud_infinito_trancado"), "info", "cadeado")
+
+func _antecipar() -> void:
+	if jogo.diretor.antecipar():
+		UI.pulsar(b_antecipar, UI.OURO)
 
 func _alternar_poupar() -> void:
 	var ligado: bool = not jogo.arena.poupar_peregrino

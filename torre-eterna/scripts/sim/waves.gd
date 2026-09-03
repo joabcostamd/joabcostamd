@@ -4,6 +4,9 @@ extends RefCounted
 ## Diretor de ondas: ritmo de spawn, chefes, limpeza e avanço.
 
 var j
+## Ouro extra por antecipar a onda inteira, em cima da recompensa de onda.
+const ANTECIPAR_BONUS := 0.6
+
 var cd_spawn := 0.0
 var spawnados := 0
 var estado := "preparando"        # preparando | ativa | chefe | intervalo
@@ -88,6 +91,16 @@ func atualizar(dt: float) -> void:
 				return
 			cd_spawn -= dt
 			var faltam := int(s["necessarios"]) - spawnados
+			# NAO ACELERE O SPAWN SOZINHO. Tentei: quando a arena esvaziava e
+			# ainda faltavam inimigos, o proximo vinha quase na hora. As ondas
+			# iniciais aceleraram (onda 25 de 7m27 para 6m59), e o jogo QUEBROU
+			# do meio para a frente: onda 100 saiu de 30m56 para 1h03 e a onda
+			# maxima despencou de 261 para 115. O tempo de espera do spawn era,
+			# na pratica, tempo de acumular poder — encurtar a onda sem dar o
+			# ganho junto so faz o jogador chegar despreparado na parede.
+			#
+			# A saida certa nao e o jogo decidir o ritmo, e o JOGADOR: quem esta
+			# forte antecipa a onda e leva bonus por isso (ver `antecipar()`).
 			if cd_spawn <= 0.0 and faltam > 0:
 				cd_spawn = Bal.intervalo_spawn(int(s["onda"]))
 				EnemyAI.spawn_onda(int(s["onda"]), j)
@@ -118,6 +131,33 @@ func atualizar(dt: float) -> void:
 			if timer <= 0.0:
 				var proxima := int(s["onda_farm"]) if bool(s["modo_farm"]) else int(s["onda"]) + 1
 				iniciar_onda(proxima)
+
+## ANTECIPAR A ONDA: a decisao que faltava.
+##
+## O ritmo do jogo era ditado pelo spawner, nao pelo poder do jogador: a onda so
+## fecha quando todos nasceram, um a cada `intervalo_spawn`, entao o piso de
+## tempo era o mesmo para quem matava em um tiro e para quem apanhava. Medido:
+## da onda ~50 em diante, 21 ordens de grandeza de dano sobrando compravam 0,2
+## minuto. Comprar poder nao encurtava nada, e o jogo virava espera.
+##
+## Acelerar o spawn sozinho foi tentado e QUEBROU o jogo (onda 100 de 30m56 para
+## 1h03, onda maxima de 261 para 115): o tempo de espera era, na pratica, tempo
+## de acumular poder. A saida e nao decidir pelo jogador — quem esta forte
+## antecipa e leva bonus por isso; quem nao esta simplesmente nao aperta.
+##
+## Devolve `false` quando nao da para antecipar (nao esta no intervalo).
+func antecipar() -> bool:
+	if estado != "intervalo" or timer <= 0.0:
+		return false
+	var s: Dictionary = j.s
+	# O bonus e proporcional ao que sobrou do respiro: quem chama na hora exata
+	# em que a onda ia comecar nao ganha nada, e quem chama de cara ganha tudo.
+	var fracao := clampf(timer / maxf(0.01, intervalo_entre_ondas), 0.0, 1.0)
+	var bonus := 1.0 + ANTECIPAR_BONUS * fracao
+	j.ganhar_ouro(Big.mul_f(Bal.ouro_onda(int(s["onda"])), bonus), "antecipar", false)
+	timer = 0.0
+	Bus.onda_antecipada.emit(int(s["onda"]) + 1, bonus)
+	return true
 
 func concluir() -> void:
 	var s: Dictionary = j.s

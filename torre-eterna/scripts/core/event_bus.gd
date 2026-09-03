@@ -41,6 +41,8 @@ signal carta_equipada(uid, slot)
 # --- progressão ---
 signal onda_iniciou(onda, eh_chefe)
 signal onda_limpa(onda, tempo)
+## O jogador chamou a proxima onda antes da hora, e levou bonus por isso.
+signal onda_antecipada(onda, bonus)
 signal onda_falhou(onda)
 signal nivel_subiu(nivel, pontos)
 signal conquista_desbloqueada(id)

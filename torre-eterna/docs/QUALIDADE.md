@@ -32,7 +32,7 @@ rodando na máquina (ver a observação sobre medir desempenho no `AGENTS.md`).
 | 1 | **Compila e roda** | 6 | PORTÃO | `tools/verificar.gd`, `tools/lint.gd`, `agent_verify.gd` | PASS, zero erro de script |
 | 2 | **Testes da simulação** | 10 | PORTÃO | `tools/testes.gd` — sem mocks, roda o jogo real | 100% passando, ≥300 asserções, e nenhum bloco pode sumir em silêncio (há piso) |
 | 3 | **Integridade dos dados** | 6 | PORTÃO | `tools/validar_dados.gd` | zero erro |
-| 4 | **Desempenho** | 8 | PORTÃO | `tools/perf.gd -- 407` | **p90 de `Jogo.simular()` ≤ 4 ms nas DUAS pernas**: 10 min de jogo real, e 160 inimigos vivos segurados (o teto que `Bal.contagem_onda` sabe criar, mais 25%). O estresse de 407 é publicado como folga e não reprova, porque o jogo não produz essa população |
+| 4 | **Desempenho** | 8 | PORTÃO | `tools/perf.gd -- 411` | **p90 de `Jogo.simular()` ≤ 4 ms nas DUAS pernas**: 10 min de jogo real, e 160 inimigos vivos segurados (o teto que `Bal.contagem_onda` sabe criar, mais 25%). O estresse de 411 é publicado como folga e não reprova, porque o jogo não produz essa população |
 | 5 | **Balanceamento medido** | 8 | PORTÃO | `tools/sim_balance.gd -- 1.2 auto` (72 min de jogo é o mínimo que julga as três faixas; mais que isso não decide nada a mais) | onda 25 em 4–12 min; onda 50 em 11–30 min; onda 100 em 22–60 min (pisos remedidos — ver abaixo); a onda continua subindo no último terço; o catálogo de melhorias não esvazia |
 | 6 | **Profundidade de sistemas** | 8 | PORTÃO | `tools/testes.gd` (grupo Sistemas) contra `data/systems.json` | ≥10 elos declarados e ≥10 sistemas distintos, cada elo com a PROVA no código — arquivo e símbolo. Elo que sumir do código reprova; elo que ninguém declarou não conta |
 | 7 | **Volume de conteúdo** | 6 | PORTÃO | `tools/validar_dados.gd` (`MINIMOS`) | ≥20 inimigos, ≥10 chefes, ≥35 melhorias, ≥30 talentos, ≥30 cartas, ≥80 conquistas, ≥10 eras |
@@ -153,10 +153,10 @@ $ godot --headless --path . -s res://tools/validar_dados.gd
 ===STATUS=== PASS
 
 $ godot --headless --path . -s res://tools/testes.gd
-===TESTES=== passou=407 falhou=0
+===TESTES=== passou=411 falhou=0
 ===STATUS=== PASS
 
-$ godot --headless --path . -s res://tools/perf.gd -- 407
+$ godot --headless --path . -s res://tools/perf.gd -- 411
 === DESEMPENHO ===
 projeteis/s: 40.0 | orbes: 16 | elementos ativos: sim
 maquina: 35221 us na conta de referencia (39000 esperado) -> fator 1.00x
@@ -216,8 +216,8 @@ STATUS: PASS   (kit 1.5.2, 0 falhas)
 |---|---:|
 | Scripts GDScript | 87 |
 | Linhas de código | 27.155 |
-| Testes da simulação | 407 |
-| Chaves de interface PT/EN | 1.037 |
+| Testes da simulação | 411 |
+| Chaves de interface PT/EN | 1.040 |
 | Textos de conteúdo PT/EN | 1.286 |
 | Imagens no repositório | 1 (`icon.svg`, o ícone do projeto — nenhuma no jogo) |
 | Arquivos de som no repositório | 0 |

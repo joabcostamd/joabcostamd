@@ -80,7 +80,7 @@ func rodar(cena: SceneTree) -> void:
 		"Acessibilidade": 11, "Alcancavel": 8, "Big": 12,
 		"Chaves dinamicas": 3, "Combate": 9, "Defesa": 27,
 		"Dicas": 5, "Economia": 9, "Elites": 11,
-		"Eventos": 12, "Feedback": 2, "Ferramentas": 3, "Daltonismo": 9, "Tempo": 5, "Conteudo lido": 16, "Fmt": 6,
+		"Eventos": 12, "Feedback": 2, "Ferramentas": 3, "Daltonismo": 9, "Tempo": 5, "Conteudo lido": 20, "Fmt": 6,
 		"Habilidades": 17, "Icones": 2, "Integridade": 9,
 		"Longo prazo": 7, "Mecânicas": 61, "Mira": 6,
 		"Mods": 19, "Numeros de dano": 2, "Offline": 6,
@@ -631,6 +631,33 @@ func t_conteudo_lido() -> void:
 		codigo_ui2.contains("save_ilegivel"), "ninguem escuta o sinal")
 	ok("o save travado tem como destravar",
 		codigo_ui2.contains("destravar_salvamento("), "sem caminho de volta")
+
+	# ANTECIPAR A ONDA: a decisao que devolve o ritmo ao jogador.
+	# O ritmo era do spawner — comprar poder nao encurtava nada dentro de uma
+	# run. Acelerar o spawner sozinho foi tentado e quebrou o jogo (onda 100 de
+	# 30m56 para 1h03, onda maxima de 261 para 115), porque o tempo de espera
+	# era, na pratica, tempo de acumular poder.
+	jogo.diretor.estado = "intervalo"
+	jogo.diretor.timer = jogo.diretor.intervalo_entre_ondas
+	var ouro_antes: float = jogo.s["moedas"]["ouro"]
+	var cedo: bool = jogo.diretor.antecipar()
+	var ganho_cedo := Big.sub(jogo.s["moedas"]["ouro"], ouro_antes)
+	ok("da para chamar a onda durante o respiro", cedo)
+	ok("chamar cedo paga ouro", Big.gt(ganho_cedo, Big.ZERO))
+
+	# E o bonus e proporcional: chamar em cima da hora paga menos.
+	jogo.diretor.estado = "intervalo"
+	jogo.diretor.timer = jogo.diretor.intervalo_entre_ondas * 0.05
+	var ouro2: float = jogo.s["moedas"]["ouro"]
+	jogo.diretor.antecipar()
+	var ganho_tarde := Big.sub(jogo.s["moedas"]["ouro"], ouro2)
+	ok("chamar em cima da hora paga menos que chamar cedo",
+		Big.lt(ganho_tarde, ganho_cedo),
+		"cedo=%s tarde=%s" % [Fmt.big(ganho_cedo), Fmt.big(ganho_tarde)])
+
+	# Fora do respiro nao da para chamar: senao viraria um botao de pular onda.
+	jogo.diretor.estado = "ativa"
+	ok("fora do respiro nao da para chamar", not jogo.diretor.antecipar())
 
 	# SINERGIA: a dupla equipada tem que pagar mais que as cartas soltas.
 	var achou_par := {}

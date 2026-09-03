@@ -44,7 +44,7 @@ cd torre-eterna
 # Verificação estrutural (todo script compila? dados presentes?)
 godot --headless --path . -s res://tools/verificar.gd
 
-# Suíte de testes da simulação — 407 testes, sem mocks
+# Suíte de testes da simulação — 411 testes, sem mocks
 godot --headless --path . -s res://tools/testes.gd
 
 # Convenções do projeto (emoji na interface, print solto, painel órfão, mídia)
@@ -60,7 +60,7 @@ godot --headless --path . -s res://tools/sim_balance.gd -- 2
 godot --headless --path . -s res://tools/soak.gd -- 3
 
 # Estresse de desempenho: 500 inimigos, perfil por subsistema
-godot --headless --path . -s res://tools/perf.gd -- 407
+godot --headless --path . -s res://tools/perf.gd -- 411
 
 # Verificação estrutural do kit (KIT-GODOT-V1)
 godot --headless --path . -s res://agent_verify.gd
@@ -127,8 +127,8 @@ entidades vira economia, e a tela cheia rende mais em vez de render menos.
 - **23** tipos de inimigo · **9** modificadores de elite · **10** chefes · **2** super-chefes
 - **40** entradas de lore em 8 capítulos · **30** dicas
 - **6** moedas · **6** raridades · **39** atributos de torre
-- **1.037** chaves de interface e **1.286** textos de conteúdo, em português e inglês
-- **407** testes da simulação · **0** arquivo de som · a única imagem do repositório é `icon.svg`, o ícone do projeto
+- **1.040** chaves de interface e **1.286** textos de conteúdo, em português e inglês
+- **411** testes da simulação · **0** arquivo de som · a única imagem do repositório é `icon.svg`, o ícone do projeto
 
 ---
 
@@ -137,7 +137,7 @@ entidades vira economia, e a tela cheia rende mais em vez de render menos.
 **Números gigantes em espaço logarítmico.** Ouro, dano e vida são guardados como
 `log10` num `float` de 64 bits (`scripts/core/big.gd`). Multiplicar vira somar
 (exato e instantâneo), o alcance passa muito de `1e308`, e **nada é alocado** —
-o que importa quando 407 inimigos recalculam vida a 60 fps. Soma usa log-sum-exp.
+o que importa quando 411 inimigos recalculam vida a 60 fps. Soma usa log-sum-exp.
 
 **Arte 100% procedural.** Nenhuma imagem no repositório. Inimigos, chefes, torre,
 projéteis, partículas, fundo por era e até os ícones da interface são desenhados

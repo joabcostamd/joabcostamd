@@ -130,5 +130,17 @@
   "sv_destravado": {
     "pt": "Salvamento religado. A partir de agora esta partida é gravada.",
     "en": "Saving re-enabled. This run is recorded from now on."
+  },
+  "hud_antecipar": {
+    "pt": "Chamar agora",
+    "en": "Call now"
+  },
+  "hud_antecipar_dica": {
+    "pt": "Chama a próxima onda imediatamente e paga ouro extra — quanto mais cedo, maior o bônus. Quem está forte não precisa esperar.",
+    "en": "Calls the next wave immediately and pays extra gold — the earlier, the bigger the bonus. If you are strong, you should not have to wait."
+  },
+  "hud_antecipou": {
+    "pt": "Onda chamada. +{b}% de ouro.",
+    "en": "Wave called. +{b}% gold."
   }
 }

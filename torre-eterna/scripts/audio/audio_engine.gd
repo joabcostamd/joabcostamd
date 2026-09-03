@@ -290,6 +290,7 @@ func _ligar_sinais() -> void:
 	# a virada de fase de um chefe acontecia em silencio; e perder uma onda —
 	# a unica coisa ruim que acontece — nao soava diferente de ganhar.
 	Bus.onda_limpa.connect(func(_n, _t): tocar("onda", -3.0, 1.28))
+	Bus.onda_antecipada.connect(func(_n, b): tocar("onda", 0.0, 1.05 + minf(float(b) - 1.0, 0.6) * 0.4))
 	Bus.overkill.connect(_ao_overkill)
 	Bus.chefe_fase.connect(func(e, _f): tocar_em("alerta_chefe", _pos(e), -2.0, 1.22))
 	Bus.onda_falhou.connect(func(_n): tocar("erro", 0.0, 0.72))
