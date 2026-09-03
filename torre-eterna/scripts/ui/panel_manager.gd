@@ -28,16 +28,30 @@ const PAINEIS := {
 
 func _ready() -> void:
 	jogo = get_node_or_null("/root/Jogo")
-	await get_tree().process_frame
-	_montar_overlay()
+	# As conexões vêm ANTES do await de propósito. `Jogo.iniciar()` roda no mesmo
+	# quadro em que este nó nasce e emite `relatorio_offline` na hora: conectar
+	# depois do await perdia o sinal, e quem voltava depois de horas fora não via
+	# relatório nenhum.
 	Bus.aviso.connect(_toast)
 	Bus.relatorio_offline.connect(_relatorio_offline)
 	Bus.evento_sorteado.connect(abrir_evento)
+	await get_tree().process_frame
+	_montar_overlay()
+	# Cinto e suspensório: se o sinal ainda assim chegou cedo demais, o Jogo
+	# guarda o relatório e a gente pega dele.
+	if jogo != null and not _offline_mostrado:
+		var guardado: Dictionary = jogo.relatorio_offline
+		if not guardado.is_empty() and bool(guardado.get("aplicado", false)):
+			_relatorio_offline(guardado)
 	# fechou o jogo com um evento na tela? ele continua esperando resposta.
 	if jogo != null:
 		var pendente := Eventos.pendente(jogo.s)
 		if not pendente.is_empty():
 			abrir_evento(pendente)
+
+## O relatório aparece uma vez por abertura de jogo, venha pelo sinal ou pelo
+## estado guardado.
+var _offline_mostrado := false
 
 func _montar_overlay() -> void:
 	fundo_escuro = ColorRect.new()
@@ -158,15 +172,21 @@ func _toast(texto: String, tipo: String, icone: String) -> void:
 	tw.tween_interval(2.4)
 	tw.tween_property(cx, "modulate:a", 0.0, 0.4)
 	tw.tween_callback(cx.queue_free)
+	# O `break` aqui dentro fazia o teto valer para UM toast só: numa rajada de
+	# avisos a tela enchia. Sem ele o excedente sai de verdade. `queue_free` só
+	# libera no fim do quadro, então tiramos o filho da árvore na hora — senão o
+	# laço veria o mesmo filho para sempre.
 	while caixa_toast.get_child_count() > 5:
-		caixa_toast.get_child(0).queue_free()
-		break
+		var velho := caixa_toast.get_child(0)
+		caixa_toast.remove_child(velho)
+		velho.queue_free()
 
 ## ------------------------------------------------- relatório offline
 
 func _relatorio_offline(dados: Dictionary) -> void:
-	if not bool(dados.get("aplicado", false)):
+	if not bool(dados.get("aplicado", false)) or _offline_mostrado:
 		return
+	_offline_mostrado = true
 	var janela := UI.painel(UI.PAINEL, 16)
 	janela.anchor_left = 0.5
 	janela.anchor_right = 0.5

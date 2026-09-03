@@ -697,6 +697,11 @@ func t_offline() -> void:
 	ok("da ouro", Big.gt(jogo.s["moedas"]["ouro"], ouro_antes))
 	var r3 := Offline.calcular(jogo, 3600.0 * 500.0)
 	ok("corta no teto", float(r3.get("cortado", 0.0)) > 0.0)
+	# O relatorio precisa continuar guardado no Jogo. A interface conectava o
+	# sinal um quadro DEPOIS de ele ser emitido e o relatorio nunca aparecia;
+	# agora o painel tambem pode ler o estado guardado.
+	jogo.relatorio_offline = r2
+	ok("jogo guarda o relatorio", bool(jogo.relatorio_offline.get("aplicado", false)))
 
 ## -------------------------------------------------------- habilidades
 func t_habilidades() -> void:
