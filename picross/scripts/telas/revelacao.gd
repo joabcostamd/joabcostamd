@@ -42,7 +42,7 @@ func _ready() -> void:
     coluna.alignment = BoxContainer.ALIGNMENT_CENTER
     add_child(coluna)
 
-    coluna.add_child(Estilo.legenda("imagem revelada", 18))
+    coluna.add_child(Estilo.legenda(tr("REVELACAO_ROTULO"), 18))
     var nome := Estilo.titulo(puzzle.nome, 46, puzzle.cor.lerp(Color.WHITE, 0.4))
     coluna.add_child(nome)
 
@@ -74,10 +74,9 @@ func _ready() -> void:
 
     _coreografar(imagem, simbolos, estrelas, puzzle)
 
-    var detalhe := "tempo %s" % Estilo.tempo_texto(tempo)
+    var detalhe := tr("REVELACAO_TEMPO") % Estilo.tempo_texto(tempo)
     if estrelas < 3:
-        detalhe += "   ·   3 estrelas: sem erros, sem dica e abaixo de %s" % \
-            Estilo.tempo_texto(puzzle.tempo_alvo)
+        detalhe += "   ·   " + (tr("REVELACAO_TRES_ESTRELAS") % Estilo.tempo_texto(puzzle.tempo_alvo))
     coluna.add_child(Estilo.legenda(detalhe, 16))
 
     var linha := HBoxContainer.new()
@@ -87,15 +86,15 @@ func _ready() -> void:
 
     var proxima_id := Catalogo.proxima_fase(id)
     if proxima_id > 0 and proxima_id <= Catalogo.fases.size():
-        var proxima := Estilo.botao("Próxima fase", 220)
+        var proxima := Estilo.botao(tr("REVELACAO_PROXIMA"), 220)
         proxima.pressed.connect(func():
             Audio.tocar("clique")
             Navegacao.ir_para("jogo", {"fase": proxima_id}))
         linha.add_child(proxima)
     else:
-        linha.add_child(Estilo.titulo("Você revelou todas as imagens!", 22, Estilo.SUCESSO))
+        linha.add_child(Estilo.titulo(tr("REVELACAO_TUDO"), 22, Estilo.SUCESSO))
 
-    var galeria := Estilo.botao("Galeria", 180)
+    var galeria := Estilo.botao(tr("MENU_GALERIA"), 180)
     galeria.pressed.connect(func():
         Audio.tocar("clique")
         Navegacao.ir_para("galeria"))
@@ -103,7 +102,7 @@ func _ready() -> void:
 
     Juice.entrada(linha, 1.55, 18.0)
 
-    var mapa := Estilo.botao("Mapa", 160)
+    var mapa := Estilo.botao(tr("REVELACAO_MAPA"), 160)
     mapa.pressed.connect(func():
         Audio.tocar("clique")
         Navegacao.ir_para("fases", {"capitulo": Catalogo.capitulo_da_fase(id)}))

@@ -85,11 +85,50 @@ static func usar_tema(claro: bool, contraste_alto := false) -> void:
 
 static var _tema: Theme = null
 
+const FONTE_BASE := "res://recursos/fontes/Nunito-Regular.ttf"
+const FONTE_FORTE := "res://recursos/fontes/Nunito-Bold.ttf"
+const FONTES_CJK := ["res://recursos/fontes/cjk-ja.ttf",
+                     "res://recursos/fontes/cjk-ko.ttf",
+                     "res://recursos/fontes/cjk-zh.ttf"]
+
+static var _fonte: FontFile = null
+static var _fonte_forte: FontFile = null
+
+## Nunito para as línguas de alfabeto latino, cirílico e grego, com as fontes
+## japonesa, coreana e chinesa como reserva. O Godot troca de fonte por glifo,
+## então uma frase mista sai correta sem nenhum código extra.
+static func fonte(forte := false) -> FontFile:
+    if forte and _fonte_forte != null:
+        return _fonte_forte
+    if not forte and _fonte != null:
+        return _fonte
+    var arquivo: FontFile = load(FONTE_FORTE if forte else FONTE_BASE)
+    if arquivo == null:
+        return null
+    var copia: FontFile = arquivo.duplicate()
+    var reservas: Array[Font] = []
+    for caminho in FONTES_CJK:
+        var reserva := load(caminho)
+        if reserva != null:
+            reservas.append(reserva)
+    copia.fallbacks = reservas
+    if forte:
+        _fonte_forte = copia
+    else:
+        _fonte = copia
+    return copia
+
 static func tema() -> Theme:
     if _tema != null:
         return _tema
     var t := Theme.new()
     t.default_font_size = 18
+    var base := fonte()
+    if base != null:
+        t.default_font = base
+    var forte := fonte(true)
+    if forte != null:
+        t.set_font("font", "Button", forte)
 
     t.set_stylebox("normal", "Button", _caixa(PAINEL, BORDA))
     t.set_stylebox("hover", "Button", _caixa(FUNDO_ALTO, ACENTO))
@@ -159,6 +198,9 @@ static func aplicar(raiz: Control, capitulo := -1) -> void:
 static func titulo(texto: String, tamanho := 44, cor := TEXTO) -> Label:
     var rotulo := Label.new()
     rotulo.text = texto
+    var forte := fonte(true)
+    if forte != null:
+        rotulo.add_theme_font_override("font", forte)
     rotulo.add_theme_font_size_override("font_size", tamanho)
     rotulo.add_theme_color_override("font_color", cor)
     rotulo.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER

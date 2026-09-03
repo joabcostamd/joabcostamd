@@ -11,27 +11,27 @@ func _ready() -> void:
     add_child(coluna)
 
     coluna.add_child(Estilo.titulo("REVELAR", 64, Estilo.DESTAQUE))
-    coluna.add_child(Estilo.legenda("resolva o enigma, revele a imagem", 19))
+    coluna.add_child(Estilo.legenda(tr("JOGO_LEMA"), 19))
     coluna.add_child(_espaco(28))
 
     var pendente := _primeira_pendente()
     if Progresso.total_resolvidas() > 0 and pendente > 0:
-        var continuar := Estilo.botao("Continuar  ·  fase %d" % pendente)
+        var continuar := Estilo.botao("%s  ·  %s %d" % [tr("MENU_CONTINUAR"), tr("JOGO_FASE"), pendente])
         continuar.pressed.connect(func():
             Audio.tocar("clique")
             Navegacao.ir_para("jogo", {"fase": pendente}))
         coluna.add_child(continuar)
 
-    for item in [["Jogar", "capitulos"], ["Galeria", "galeria"],
-                 ["Conquistas", "conquistas"], ["Seus números", "estatisticas"],
-                 ["Opções", "opcoes"], ["Créditos", "creditos"]]:
+    for item in [[tr("MENU_JOGAR"), "capitulos"], [tr("MENU_GALERIA"), "galeria"],
+                 [tr("CONQ_TITULO"), "conquistas"], [tr("EST_TITULO"), "estatisticas"],
+                 [tr("MENU_OPCOES"), "opcoes"], [tr("MENU_CREDITOS"), "creditos"]]:
         var botao := Estilo.botao(item[0])
         botao.pressed.connect(func():
             Audio.tocar("clique")
             Navegacao.ir_para(item[1]))
         coluna.add_child(botao)
 
-    var sair := Estilo.botao("Sair")
+    var sair := Estilo.botao(tr("MENU_SAIR"))
     sair.pressed.connect(func():
         Audio.tocar("clique")
         get_tree().quit())
@@ -39,9 +39,9 @@ func _ready() -> void:
 
     coluna.add_child(_espaco(22))
     var total := Catalogo.fases.size()
-    coluna.add_child(Estilo.legenda(
-        "%d de %d imagens reveladas   ·   %d estrelas" %
-        [Progresso.total_resolvidas(), total, Progresso.total_estrelas()], 17))
+    coluna.add_child(Estilo.legenda("%s   ·   %d %s" % [
+        tr("GALERIA_CONTAGEM") % [Progresso.total_resolvidas(), total],
+        Progresso.total_estrelas(), tr("EST_ESTRELAS").to_lower()], 17))
 
     # Centraliza a coluna inteira sem depender de âncoras frágeis.
     coluna.position = (size - coluna.get_combined_minimum_size()) * 0.5

@@ -234,7 +234,7 @@ func _conquistas() -> void:
     Progresso.registrar(1, 3, 10.0)
     var primeira: Conquistas.Conquista = null
     for c in Conquistas.todas():
-        if c.chave == "primeira":
+        if c.chave == "img1":
             primeira = c
     _ok("revelar a primeira imagem conclui a conquista",
         primeira != null and primeira.concluida())

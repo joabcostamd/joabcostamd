@@ -72,7 +72,7 @@ func _montar_hud(puzzle: Puzzle) -> Control:
     barra.add_theme_constant_override("separation", 24)
     barra.custom_minimum_size.y = 44
 
-    var titulo := Estilo.titulo("Fase %d  ·  %d×%d" % [puzzle.id, puzzle.lado, puzzle.lado], 24)
+    var titulo := Estilo.titulo("%s %d  ·  %d×%d" % [tr("JOGO_FASE"), puzzle.id, puzzle.lado, puzzle.lado], 24)
     titulo.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
     titulo.size_flags_horizontal = Control.SIZE_EXPAND_FILL
     barra.add_child(titulo)
@@ -105,7 +105,7 @@ func _montar_hud(puzzle: Puzzle) -> Control:
     _rotulo_tempo.custom_minimum_size.x = 90
     barra.add_child(_rotulo_tempo)
 
-    var pausar := Estilo.botao("Pausa", 120)
+    var pausar := Estilo.botao(tr("JOGO_PAUSA"), 120)
     pausar.pressed.connect(_abrir_pausa)
     barra.add_child(pausar)
     return barra
@@ -116,16 +116,16 @@ func _montar_ferramentas() -> Control:
     linha.add_theme_constant_override("separation", 14)
     linha.custom_minimum_size.y = 56
 
-    var desfazer := Estilo.botao("Desfazer  (Z)", 200)
+    var desfazer := Estilo.botao("%s  (Z)" % tr("JOGO_DESFAZER"), 200)
     desfazer.pressed.connect(_desfazer)
     linha.add_child(desfazer)
 
-    var dica := Estilo.botao("Dica  (H)", 170)
-    dica.tooltip_text = "Revela uma célula. Abre mão das 3 estrelas."
+    var dica := Estilo.botao("%s  (H)" % tr("JOGO_DICA"), 170)
+    dica.tooltip_text = tr("JOGO_DICA_AJUDA")
     dica.pressed.connect(_dica)
     linha.add_child(dica)
 
-    var ajuda := Estilo.legenda("botão esquerdo pinta  ·  botão direito marca X  ·  arraste preenche em linha", 15)
+    var ajuda := Estilo.legenda(tr("JOGO_AJUDA_CONTROLES"), 15)
     linha.add_child(ajuda)
     return linha
 
@@ -177,7 +177,7 @@ func _atualizar_hud() -> void:
         animacao.tween_property(_barra, "value", partida.progresso(), 0.22) \
             .set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
     if partida.modo_relaxado:
-        _rotulo_vidas.text = "modo relaxado"
+        _rotulo_vidas.text = tr("JOGO_MODO_RELAXADO")
         _rotulo_vidas.add_theme_color_override("font_color", Estilo.SUCESSO)
     else:
         _rotulo_vidas.text = "♥".repeat(maxi(partida.vidas, 0)) + "·".repeat(maxi(3 - partida.vidas, 0))
@@ -227,19 +227,19 @@ func _fechar_pausa() -> void:
     _pausa.visible = false
 
 func _montar_pausa() -> Control:
-    return _montar_sobreposicao("Pausa", "", [
-        ["Continuar", func(): _fechar_pausa()],
-        ["Reiniciar fase", func(): Navegacao.ir_para("jogo", {"fase": partida.puzzle.id})],
-        ["Opções", func(): Navegacao.ir_para("opcoes", {"volta": "jogo", "fase": partida.puzzle.id})],
-        ["Sair para o mapa", func(): Navegacao.ir_para("fases",
+    return _montar_sobreposicao(tr("JOGO_PAUSA"), "", [
+        [tr("PAUSA_CONTINUAR"), func(): _fechar_pausa()],
+        [tr("PAUSA_REINICIAR"), func(): Navegacao.ir_para("jogo", {"fase": partida.puzzle.id})],
+        [tr("MENU_OPCOES"), func(): Navegacao.ir_para("opcoes", {"volta": "jogo", "fase": partida.puzzle.id})],
+        [tr("PAUSA_SAIR_MAPA"), func(): Navegacao.ir_para("fases",
             {"capitulo": Catalogo.capitulo_da_fase(partida.puzzle.id)})],
     ])
 
 func _montar_derrota() -> Control:
-    return _montar_sobreposicao("Acabaram as vidas",
-        "Três erros encerram a partida. O modo relaxado, nas opções, tira esse limite.", [
-        ["Tentar de novo", func(): Navegacao.ir_para("jogo", {"fase": partida.puzzle.id})],
-        ["Sair para o mapa", func(): Navegacao.ir_para("fases",
+    return _montar_sobreposicao(tr("DERROTA_TITULO"),
+        tr("DERROTA_TEXTO"), [
+        [tr("DERROTA_TENTAR"), func(): Navegacao.ir_para("jogo", {"fase": partida.puzzle.id})],
+        [tr("PAUSA_SAIR_MAPA"), func(): Navegacao.ir_para("fases",
             {"capitulo": Catalogo.capitulo_da_fase(partida.puzzle.id)})],
     ])
 

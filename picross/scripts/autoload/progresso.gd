@@ -3,6 +3,18 @@ extends Node
 
 const CAMINHO := "user://progresso.save"
 
+## Idiomas com tradução completa. A ordem é a que aparece nas opções.
+const IDIOMAS := ["pt", "en", "es", "fr", "de", "it", "nl", "pl", "sv", "da",
+                  "nb", "fi", "cs", "hu", "ro", "tr", "ru", "uk", "ja", "ko", "zh"]
+const NOMES_IDIOMAS := {
+    "pt": "Português", "en": "English", "es": "Español", "fr": "Français",
+    "de": "Deutsch", "it": "Italiano", "nl": "Nederlands", "pl": "Polski",
+    "sv": "Svenska", "da": "Dansk", "nb": "Norsk", "fi": "Suomi",
+    "cs": "Čeština", "hu": "Magyar", "ro": "Română", "tr": "Türkçe",
+    "ru": "Русский", "uk": "Українська", "ja": "日本語", "ko": "한국어",
+    "zh": "中文",
+}
+
 signal fase_concluida(id: int, estrelas: int)
 signal opcoes_mudaram()
 
@@ -17,6 +29,7 @@ var opcoes := {
     "mostrar_tempo": true,
     "travar_arraste": true,
     "fundo_animado": true,
+    "idioma": "",          # vazio = segue o idioma do sistema
 }
 
 func _ready() -> void:
@@ -26,6 +39,16 @@ func _ready() -> void:
 ## Repassa as opções de aparência para o estilo, que é quem pinta tudo.
 func aplicar_aparencia() -> void:
     Estilo.usar_tema(bool(opcoes["tema_claro"]), bool(opcoes["alto_contraste"]))
+    aplicar_idioma()
+
+## Idioma salvo, ou o do sistema quando o jogador nunca escolheu.
+func aplicar_idioma() -> void:
+    var escolhido := str(opcoes.get("idioma", ""))
+    if escolhido == "":
+        escolhido = OS.get_locale_language()
+    if not escolhido in IDIOMAS:
+        escolhido = "en"
+    TranslationServer.set_locale(escolhido)
 
 func carregar() -> void:
     if not FileAccess.file_exists(CAMINHO):
@@ -111,7 +134,7 @@ func total_resolvidas() -> int:
 
 func ajustar(chave: String, valor) -> void:
     opcoes[chave] = valor
-    if chave in ["tema_claro", "alto_contraste"]:
+    if chave in ["tema_claro", "alto_contraste", "idioma"]:
         aplicar_aparencia()
     salvar()
     opcoes_mudaram.emit()

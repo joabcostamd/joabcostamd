@@ -44,6 +44,10 @@ func _talvez_capturar() -> void:
     var tela: String = args[indice + 1]
     if "--demo" in args:
         _preencher_progresso_demo()
+    var qual := args.find("--idioma")
+    if qual >= 0 and qual + 1 < args.size():
+        Progresso.opcoes["idioma"] = args[qual + 1]
+        Progresso.aplicar_idioma()
     if "--claro" in args:
         Progresso.opcoes["tema_claro"] = true
         Progresso.aplicar_aparencia()

@@ -16,7 +16,7 @@ func _ready() -> void:
     coluna.add_theme_constant_override("separation", 8)
     add_child(coluna)
 
-    coluna.add_child(Estilo.titulo("Opções", 38))
+    coluna.add_child(Estilo.titulo(tr("MENU_OPCOES"), 38))
 
     var rolagem := ScrollContainer.new()
     rolagem.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -28,34 +28,37 @@ func _ready() -> void:
     lista.add_theme_constant_override("separation", 6)
     rolagem.add_child(lista)
 
-    lista.add_child(_secao("Aparência"))
-    lista.add_child(_marcador("Tema claro", "tema_claro",
-        "Inverte a paleta inteira, inclusive as células."))
-    lista.add_child(_marcador("Alto contraste", "alto_contraste",
-        "Cores mais separadas, para leitura mais fácil."))
-    lista.add_child(_marcador("Fundo animado", "fundo_animado",
-        "Desligue se o movimento incomodar."))
+    lista.add_child(_secao(tr("OPCOES_IDIOMA")))
+    lista.add_child(_seletor_idioma())
 
-    lista.add_child(_secao("Jogo"))
-    lista.add_child(_marcador("Modo relaxado", "modo_relaxado",
-        "Erros não custam vidas."))
-    lista.add_child(_marcador("Destacar a célula errada", "marcar_erro_automatico",
-        "Marca em vermelho onde você pintou errado."))
-    lista.add_child(_marcador("Arraste em linha reta", "travar_arraste",
-        "Ao arrastar, o preenchimento trava no eixo puxado."))
-    lista.add_child(_marcador("Mostrar o tempo", "mostrar_tempo",
-        "Esconda se preferir jogar sem relógio."))
+    lista.add_child(_secao(tr("OPCOES_APARENCIA")))
+    lista.add_child(_marcador(tr("OPCOES_TEMA_CLARO"), "tema_claro",
+        tr("OPCOES_TEMA_CLARO_AJUDA")))
+    lista.add_child(_marcador(tr("OPCOES_CONTRASTE"), "alto_contraste",
+        tr("OPCOES_CONTRASTE_AJUDA")))
+    lista.add_child(_marcador(tr("OPCOES_FUNDO"), "fundo_animado",
+        tr("OPCOES_FUNDO_AJUDA")))
 
-    lista.add_child(_secao("Som"))
-    lista.add_child(_deslizante("Efeitos sonoros", "volume_efeitos"))
-    lista.add_child(_deslizante("Música", "volume_musica"))
+    lista.add_child(_secao(tr("OPCOES_JOGO")))
+    lista.add_child(_marcador(tr("OPCOES_RELAXADO"), "modo_relaxado",
+        tr("OPCOES_RELAXADO_AJUDA")))
+    lista.add_child(_marcador(tr("OPCOES_ERRO"), "marcar_erro_automatico",
+        tr("OPCOES_ERRO_AJUDA")))
+    lista.add_child(_marcador(tr("OPCOES_ARRASTE"), "travar_arraste",
+        tr("OPCOES_ARRASTE_AJUDA")))
+    lista.add_child(_marcador(tr("OPCOES_TEMPO"), "mostrar_tempo",
+        tr("OPCOES_TEMPO_AJUDA")))
 
-    lista.add_child(_secao("Dados"))
-    var apagar := Estilo.botao("Apagar todo o progresso", 420)
+    lista.add_child(_secao(tr("OPCOES_SOM")))
+    lista.add_child(_deslizante(tr("OPCOES_EFEITOS"), "volume_efeitos"))
+    lista.add_child(_deslizante(tr("OPCOES_MUSICA"), "volume_musica"))
+
+    lista.add_child(_secao(tr("OPCOES_DADOS")))
+    var apagar := Estilo.botao(tr("OPCOES_APAGAR"), 420)
     apagar.pressed.connect(_confirmar_apagar)
     lista.add_child(apagar)
 
-    var voltar := Estilo.botao("Voltar", 300)
+    var voltar := Estilo.botao(tr("COMUM_VOLTAR"), 300)
     voltar.pressed.connect(func():
         Audio.tocar("clique")
         var destino: String = Navegacao.parametro("volta", "menu")
@@ -69,6 +72,35 @@ func _ready() -> void:
     coluna.add_child(rodape)
 
     Juice.entrada(coluna)
+
+## Lista de idiomas: cada um escrito no próprio idioma, como se espera.
+func _seletor_idioma() -> Control:
+    var linha := HBoxContainer.new()
+    linha.add_theme_constant_override("separation", 16)
+    linha.custom_minimum_size.y = 48
+
+    var texto := Estilo.legenda(tr("OPCOES_IDIOMA"), 19, Estilo.TEXTO)
+    texto.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+    texto.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    linha.add_child(texto)
+
+    var caixa := OptionButton.new()
+    caixa.custom_minimum_size.x = 240
+    caixa.fit_to_longest_item = false
+    var atual := str(Progresso.opcoes.get("idioma", ""))
+    if atual == "":
+        atual = TranslationServer.get_locale().substr(0, 2)
+    for i in Progresso.IDIOMAS.size():
+        var codigo: String = Progresso.IDIOMAS[i]
+        caixa.add_item(Progresso.NOMES_IDIOMAS[codigo], i)
+        if codigo == atual:
+            caixa.select(i)
+    caixa.item_selected.connect(func(indice: int):
+        Audio.tocar("clique")
+        Progresso.ajustar("idioma", Progresso.IDIOMAS[indice])
+        Navegacao.ir_para("opcoes", Navegacao.parametros))
+    linha.add_child(caixa)
+    return linha
 
 func _secao(titulo: String) -> Control:
     var caixa := VBoxContainer.new()
@@ -147,9 +179,9 @@ func _confirmar_apagar() -> void:
     Audio.tocar("clique")
     var dialogo := ConfirmationDialog.new()
     dialogo.title = "Apagar progresso"
-    dialogo.dialog_text = "Isto apaga as %d fases resolvidas e esvazia a galeria.\nNão dá para desfazer." % Progresso.total_resolvidas()
-    dialogo.ok_button_text = "Apagar"
-    dialogo.cancel_button_text = "Cancelar"
+    dialogo.dialog_text = tr("OPCOES_APAGAR_AVISO") % Progresso.total_resolvidas()
+    dialogo.ok_button_text = tr("COMUM_APAGAR")
+    dialogo.cancel_button_text = tr("COMUM_CANCELAR")
     dialogo.confirmed.connect(func():
         Progresso.apagar_tudo()
         Audio.tocar("derrota")

@@ -10,15 +10,15 @@ func _ready() -> void:
     add_child(coluna)
 
     coluna.add_child(Estilo.titulo("REVELAR", 48, Estilo.DESTAQUE))
-    coluna.add_child(Estilo.legenda("um jogo de picross", 20))
+    coluna.add_child(Estilo.legenda(tr("CRED_SUB"), 20))
     coluna.add_child(_linha(24))
 
     for texto in [
-        "50 fases desenhadas à mão, em quatro capítulos",
-        "todas com solução única, garantida por um solucionador",
-        "a dificuldade de cada fase foi medida, não estimada",
-        "efeitos e trilha sintetizados por código, sem arquivos de áudio",
-        "feito em Godot 4.6",
+        tr("CRED_L1") % [Catalogo.fases.size(), Catalogo.capitulos.size()],
+        tr("CRED_L2"),
+        tr("CRED_L3"),
+        tr("CRED_L4"),
+        tr("CRED_L5"),
     ]:
         coluna.add_child(Estilo.legenda(texto, 18))
 
@@ -26,7 +26,7 @@ func _ready() -> void:
     coluna.add_child(Estilo.legenda("Joab Costa   ·   desenvolvido com Claude Code", 18, Estilo.TEXTO))
     coluna.add_child(_linha(28))
 
-    var voltar := Estilo.botao("Voltar", 240)
+    var voltar := Estilo.botao(tr("COMUM_VOLTAR"), 240)
     voltar.pressed.connect(func():
         Audio.tocar("clique")
         Navegacao.ir_para("menu"))

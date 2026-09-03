@@ -31,3 +31,7 @@ window/stretch/mode="canvas_items"
 [rendering]
 
 renderer/rendering_method="gl_compatibility"
+
+[internationalization]
+
+locale/translations=PackedStringArray("res://traducoes/textos.pt.translation", "res://traducoes/textos.en.translation", "res://traducoes/textos.es.translation", "res://traducoes/textos.fr.translation", "res://traducoes/textos.de.translation", "res://traducoes/textos.it.translation", "res://traducoes/textos.nl.translation", "res://traducoes/textos.pl.translation", "res://traducoes/textos.sv.translation", "res://traducoes/textos.da.translation", "res://traducoes/textos.nb.translation", "res://traducoes/textos.fi.translation", "res://traducoes/textos.cs.translation", "res://traducoes/textos.hu.translation", "res://traducoes/textos.ro.translation", "res://traducoes/textos.tr.translation", "res://traducoes/textos.ru.translation", "res://traducoes/textos.uk.translation", "res://traducoes/textos.ja.translation", "res://traducoes/textos.ko.translation", "res://traducoes/textos.zh.translation")

@@ -16,8 +16,8 @@ func _ready() -> void:
     coluna.add_theme_constant_override("separation", 10)
     add_child(coluna)
 
-    coluna.add_child(Estilo.titulo("Galeria", 40))
-    coluna.add_child(Estilo.legenda("%d de %d imagens reveladas" %
+    coluna.add_child(Estilo.titulo(tr("MENU_GALERIA"), 40))
+    coluna.add_child(Estilo.legenda(tr("GALERIA_CONTAGEM") %
         [Progresso.total_resolvidas(), Catalogo.fases.size()]))
 
     var rolagem := ScrollContainer.new()
@@ -35,7 +35,7 @@ func _ready() -> void:
     for puzzle in Catalogo.fases:
         grade.add_child(_moldura(puzzle))
 
-    var voltar := Estilo.botao("Voltar", 200)
+    var voltar := Estilo.botao(tr("COMUM_VOLTAR"), 200)
     voltar.pressed.connect(func():
         Audio.tocar("clique")
         Navegacao.ir_para("menu"))
@@ -97,12 +97,12 @@ func _ampliar(puzzle: Puzzle) -> void:
     imagem.animar(0.7)
     Audio.tocar("revelar", 1.1)
     coluna.add_child(Estilo.legenda(puzzle.legenda, 19))
-    coluna.add_child(Estilo.legenda("fase %d  ·  %d×%d  ·  %s  ·  melhor tempo %s" % [
+    coluna.add_child(Estilo.legenda("%s %d  ·  %d×%d  ·  %s  ·  %s" % [tr("JOGO_FASE"),
         puzzle.id, puzzle.lado, puzzle.lado,
         Estilo.estrelas_texto(Progresso.estrelas_de(puzzle.id)),
         Estilo.tempo_texto(Progresso.tempo_de(puzzle.id))], 16))
 
-    var fechar := Estilo.botao("Fechar", 180)
+    var fechar := Estilo.botao(tr("COMUM_FECHAR"), 180)
     fechar.pressed.connect(func():
         Audio.tocar("clique")
         _ampliada.queue_free()

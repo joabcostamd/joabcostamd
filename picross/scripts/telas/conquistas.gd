@@ -19,8 +19,8 @@ func _ready() -> void:
         if c.concluida():
             feitas += 1
 
-    coluna.add_child(Estilo.titulo("Conquistas", 38))
-    coluna.add_child(Estilo.legenda("%d de %d concluídas" % [feitas, lista.size()], 18))
+    coluna.add_child(Estilo.titulo(tr("CONQ_TITULO"), 38))
+    coluna.add_child(Estilo.legenda(tr("CONQ_CONTAGEM") % [feitas, lista.size()], 18))
 
     var rolagem := ScrollContainer.new()
     rolagem.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -35,7 +35,7 @@ func _ready() -> void:
     for c in lista:
         caixa.add_child(_linha(c))
 
-    var voltar := Estilo.botao("Voltar", 260)
+    var voltar := Estilo.botao(tr("COMUM_VOLTAR"), 260)
     voltar.pressed.connect(func():
         Audio.tocar("clique")
         Navegacao.ir_para("menu"))

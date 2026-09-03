@@ -49,11 +49,11 @@ func _ready() -> void:
     _grade.add_theme_constant_override("v_separation", 10)
     centralizar.add_child(_grade)
 
-    _vazio = Estilo.legenda("Nenhuma fase neste filtro.", 18)
+    _vazio = Estilo.legenda(tr("FASES_VAZIO"), 18)
     _vazio.visible = false
     coluna.add_child(_vazio)
 
-    var voltar := Estilo.botao("Voltar ao menu", 220)
+    var voltar := Estilo.botao(tr("COMUM_VOLTAR_MENU"), 220)
     voltar.pressed.connect(func():
         Audio.tocar("clique")
         Navegacao.ir_para("menu"))
@@ -107,8 +107,8 @@ func _montar_filtros() -> Control:
     linha.alignment = BoxContainer.ALIGNMENT_CENTER
     linha.add_theme_constant_override("separation", 8)
     _botoes_filtro.clear()
-    for item in [["Todas", Filtro.TODAS], ["A resolver", Filtro.PENDENTES],
-                 ["Sem 3 estrelas", Filtro.SEM_TRES_ESTRELAS]]:
+    for item in [[tr("FASES_TODAS"), Filtro.TODAS], [tr("FASES_PENDENTES"), Filtro.PENDENTES],
+                 [tr("FASES_SEM_TRES"), Filtro.SEM_TRES_ESTRELAS]]:
         var botao := Button.new()
         botao.text = item[0]
         botao.custom_minimum_size = Vector2(0, 40)
@@ -134,9 +134,9 @@ func _preencher() -> void:
     var estrelas := 0
     for numero in capitulo["fases"]:
         estrelas += Progresso.estrelas_de(int(numero))
-    _resumo.text = "%s  ·  %d×%d  ·  %d de %d resolvidas  ·  %d de %d estrelas" % [
+    _resumo.text = "%s  ·  %d×%d  ·  %d/%d  ·  %d/%d %s" % [
         capitulo["resumo"], capitulo["lado"], capitulo["lado"],
-        resolvidas, total, estrelas, total * 3]
+        resolvidas, total, estrelas, total * 3, tr("EST_ESTRELAS").to_lower()]
 
     var mostradas := 0
     for numero in capitulo["fases"]:
@@ -164,7 +164,7 @@ func _cartao(id: int) -> Control:
     var botao := Button.new()
     botao.custom_minimum_size = Vector2(122, 138)
     botao.disabled = not aberta
-    botao.tooltip_text = puzzle.nome if resolvida else "Ainda não revelada"
+    botao.tooltip_text = puzzle.nome if resolvida else tr("FASES_NAO_REVELADA")
     botao.pressed.connect(func():
         Audio.tocar("clique")
         Navegacao.ir_para("jogo", {"fase": id}))
@@ -197,8 +197,8 @@ func _cartao(id: int) -> Control:
         conteudo.add_child(Estilo.titulo(Estilo.estrelas_texto(Progresso.estrelas_de(id)),
             16, Estilo.DESTAQUE))
     elif aberta:
-        conteudo.add_child(Estilo.legenda("a revelar", 14))
+        conteudo.add_child(Estilo.legenda(tr("FASES_A_REVELAR"), 14))
         conteudo.add_child(Estilo.titulo("☆☆☆", 16, Estilo.BORDA))
     else:
-        conteudo.add_child(Estilo.legenda("bloqueada", 14, Estilo.BORDA))
+        conteudo.add_child(Estilo.legenda(tr("FASES_BLOQUEADA"), 14, Estilo.BORDA))
     return botao

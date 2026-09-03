@@ -14,7 +14,7 @@ func _ready() -> void:
     coluna.add_theme_constant_override("separation", 10)
     add_child(coluna)
 
-    coluna.add_child(Estilo.titulo("Seus números", 38))
+    coluna.add_child(Estilo.titulo(tr("EST_TITULO"), 38))
 
     var total_fases := Catalogo.fases.size()
     var resolvidas := Progresso.total_resolvidas()
@@ -35,19 +35,19 @@ func _ready() -> void:
     cartoes.add_theme_constant_override("h_separation", 12)
     cartoes.add_theme_constant_override("v_separation", 12)
     coluna.add_child(cartoes)
-    cartoes.add_child(_cartao("Imagens reveladas", "%d / %d" % [resolvidas, total_fases]))
-    cartoes.add_child(_cartao("Estrelas", "%d / %d" % [estrelas, total_fases * 3]))
-    cartoes.add_child(_cartao("Fases perfeitas", str(perfeitas)))
-    cartoes.add_child(_cartao("Células pintadas", _milhares(celulas)))
-    cartoes.add_child(_cartao("Tempo somado", _duracao(tempo_total)))
-    cartoes.add_child(_cartao("Conquistas", "%d / %d" %
+    cartoes.add_child(_cartao(tr("EST_REVELADAS"), "%d / %d" % [resolvidas, total_fases]))
+    cartoes.add_child(_cartao(tr("EST_ESTRELAS"), "%d / %d" % [estrelas, total_fases * 3]))
+    cartoes.add_child(_cartao(tr("EST_PERFEITAS"), str(perfeitas)))
+    cartoes.add_child(_cartao(tr("EST_CELULAS"), _milhares(celulas)))
+    cartoes.add_child(_cartao(tr("EST_TEMPO"), _duracao(tempo_total)))
+    cartoes.add_child(_cartao(tr("CONQ_TITULO"), "%d / %d" %
         [Conquistas.concluidas(), Conquistas.todas().size()]))
 
-    coluna.add_child(Estilo.titulo("Por capítulo", 24, Estilo.ACENTO))
+    coluna.add_child(Estilo.titulo(tr("EST_POR_CAPITULO"), 24, Estilo.ACENTO))
     for i in Catalogo.capitulos.size():
         coluna.add_child(_capitulo(i))
 
-    var voltar := Estilo.botao("Voltar", 260)
+    var voltar := Estilo.botao(tr("COMUM_VOLTAR"), 260)
     voltar.pressed.connect(func():
         Audio.tocar("clique")
         Navegacao.ir_para("menu"))

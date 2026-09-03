@@ -13,14 +13,14 @@ func _ready() -> void:
     coluna.offset_bottom = -40
     add_child(coluna)
 
-    coluna.add_child(Estilo.titulo("Capítulos", 42))
+    coluna.add_child(Estilo.titulo(tr("CAPITULOS_TITULO"), 42))
     coluna.add_child(Estilo.legenda(
-        "%d de %d imagens reveladas" % [Progresso.total_resolvidas(), Catalogo.fases.size()]))
+        tr("GALERIA_CONTAGEM") % [Progresso.total_resolvidas(), Catalogo.fases.size()]))
 
     for i in Catalogo.capitulos.size():
         coluna.add_child(_cartao(i))
 
-    var voltar := Estilo.botao("Voltar", 200)
+    var voltar := Estilo.botao(tr("COMUM_VOLTAR"), 200)
     voltar.pressed.connect(func():
         Audio.tocar("clique")
         Navegacao.ir_para("menu"))
@@ -57,7 +57,7 @@ func _cartao(indice: int) -> Control:
     texto.alignment = BoxContainer.ALIGNMENT_CENTER
     var nome := Estilo.titulo("%d. %s" % [indice + 1, capitulo["nome"]], 23)
     nome.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-    var resumo := Estilo.legenda(capitulo["resumo"] if aberto else "Termine o capítulo anterior para abrir", 16)
+    var resumo := Estilo.legenda(capitulo["resumo"] if aberto else tr("CAPITULO_TRANCADO"), 16)
     resumo.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
     texto.add_child(nome)
     texto.add_child(resumo)

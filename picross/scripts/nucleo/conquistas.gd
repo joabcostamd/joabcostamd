@@ -2,6 +2,9 @@ extends RefCounted
 class_name Conquistas
 ## Conquistas derivadas do progresso, sem estado próprio.
 ##
+## Os textos vêm de TranslationServer.translate e não de tr(): tr() é método
+## de Node, e estas funções são estáticas.
+##
 ## Nada é gravado além do que já existe: cada conquista é uma pergunta feita
 ## ao progresso. Assim elas nunca ficam dessincronizadas, e apagar o progresso
 ## apaga as conquistas junto, como o jogador espera.
@@ -32,24 +35,33 @@ static func todas() -> Array[Conquista]:
         if quantas >= 2:
             sem_erro += 1
 
-    lista.append(_nova("primeira", "Primeira imagem", "Revele a sua primeira imagem.", 1, resolvidas))
-    lista.append(_nova("dez", "Colecionador", "Revele 10 imagens.", 10, resolvidas))
-    lista.append(_nova("cinquenta", "Galeria cheia", "Revele 50 imagens.", 50, resolvidas))
-    lista.append(_nova("cem", "Metade do caminho", "Revele 100 imagens.", 100, resolvidas))
-    lista.append(_nova("duzentas", "Obra completa", "Revele todas as 200 imagens.", 200, resolvidas))
+    var total_fases := Catalogo.fases.size()
+    var total_estrelas := total_fases * 3
 
-    lista.append(_nova("estrelas100", "Cem estrelas", "Junte 100 estrelas.", 100, estrelas))
-    lista.append(_nova("estrelas300", "Trezentas estrelas", "Junte 300 estrelas.", 300, estrelas))
-    lista.append(_nova("estrelas600", "Céu estrelado", "Junte todas as 600 estrelas.", 600, estrelas))
+    var metas_imagens := [[1, "CONQ_N_PRIMEIRA"], [10, "CONQ_N_COLECIONADOR"],
+        [50, "CONQ_N_GALERIA"], [int(total_fases / 2.0), "CONQ_N_METADE"],
+        [total_fases, "CONQ_N_OBRA"]]
+    for meta in metas_imagens:
+        lista.append(_nova("img%d" % int(meta[0]), TranslationServer.translate(meta[1]),
+            TranslationServer.translate("CONQ_D_REVELE") % int(meta[0]), int(meta[0]), resolvidas))
 
-    lista.append(_nova("limpo10", "Mão firme", "Termine 10 fases sem perder vida.", 10, sem_erro))
-    lista.append(_nova("perfeito25", "Perfeccionista", "Faça 3 estrelas em 25 fases.", 25, perfeitas))
-    lista.append(_nova("perfeito100", "Impecável", "Faça 3 estrelas em 100 fases.", 100, perfeitas))
+    var metas_estrelas := [[100, "CONQ_N_CEM"], [300, "CONQ_N_TREZENTAS"],
+        [total_estrelas, "CONQ_N_CEU"]]
+    for meta in metas_estrelas:
+        lista.append(_nova("est%d" % int(meta[0]), TranslationServer.translate(meta[1]),
+            TranslationServer.translate("CONQ_D_ESTRELAS") % int(meta[0]), int(meta[0]), estrelas))
+
+    lista.append(_nova("limpo25", TranslationServer.translate("CONQ_N_MAO_FIRME"),
+        TranslationServer.translate("CONQ_D_SEM_ERRO") % 25, 25, sem_erro))
+    lista.append(_nova("perfeito25", TranslationServer.translate("CONQ_N_PERFEC"),
+        TranslationServer.translate("CONQ_D_PERFEITO") % 25, 25, perfeitas))
+    lista.append(_nova("perfeito100", TranslationServer.translate("CONQ_N_IMPECAVEL"),
+        TranslationServer.translate("CONQ_D_PERFEITO") % 100, 100, perfeitas))
 
     for i in Catalogo.capitulos.size():
         var capitulo: Dictionary = Catalogo.capitulos[i]
-        lista.append(_nova("cap%d" % i, "Capítulo %d completo" % (i + 1),
-            "Resolva todas as fases de %s." % capitulo["nome"],
+        lista.append(_nova("cap%d" % i, TranslationServer.translate("CONQ_N_CAPITULO") % (i + 1),
+            TranslationServer.translate("CONQ_D_CAPITULO") % capitulo["nome"],
             capitulo["fases"].size(), Progresso.resolvidas_do_capitulo(i)))
     return lista
 

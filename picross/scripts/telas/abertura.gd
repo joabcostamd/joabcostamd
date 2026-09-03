@@ -71,7 +71,7 @@ func _draw() -> void:
 
     var fonte := get_theme_default_font()
     var base := canto.y + _logo.size() * CELULA
-    draw_string(fonte, Vector2(0, base + 60), "resolva o enigma, revele a imagem",
+    draw_string(fonte, Vector2(0, base + 60), tr("JOGO_LEMA"),
                 HORIZONTAL_ALIGNMENT_CENTER, size.x, 22, Estilo.TEXTO_SUAVE)
     if _pode_seguir:
         var pulso := 0.55 + 0.35 * sin(_tempo * 2.6)
