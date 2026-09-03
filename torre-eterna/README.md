@@ -100,6 +100,15 @@ está dito em cada verbete.
 estourar desperdiça. Existe automação — e ela é **de propósito 40% pior** que a
 sua mão. É a única coisa que o jogo pede de você, e a razão para voltar à tela.
 
+**Marcos de melhoria.** Melhoria de idle costuma ser "+X%" repetido, e aí a
+ordem de compra não importa: compra-se a mais barata, sempre. Aqui quinze delas
+têm **marcos** — degraus que entregam uma coisa *diferente* do que a melhoria
+vende. O Canhão de Plasma passa crítico e depois multiplicador global; a
+Refrigeração passa um projétil a mais; o Fogo passa área; o Raio passa
+ricochete. Como o ouro é finito a cada instante, **qual degrau perseguir
+primeiro** é uma decisão de verdade, e o painel diz o quanto falta para o
+próximo.
+
 **Álbum de Ecos.** Bônus de coleção existe desde sempre; o torque aqui é
 registrar ao **ver**, não ao guardar. Duplicata deixa de ser lixo e vira
 micro-progresso, e o medo de descartar não existe — porque descartar não perde
