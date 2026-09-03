@@ -172,6 +172,19 @@ const GEMAS_SUPER := 25
 const POEIRA := {"comum": 5, "incomum": 14, "raro": 45, "epico": 160, "lendario": 600, "mitico": 2400}
 
 # ========================================================== AUTOMAÇÃO ====
+## Teto do rendimento dos juros, em "quantas ondas de ouro por segundo".
+##
+## Juros compostos sobre o estoque nao tem ponto fixo: com 10% ao segundo o
+## ouro cresce e^360 em uma hora e a economia inteira deixa de existir — matar
+## inimigo, vender carta, evento de ouro, nada mais importa perto do relogio.
+## O teto amarra o rendimento ao PROGRESSO (o que uma onda paga) em vez do
+## tempo parado, e mantem a fantasia: guardar ouro rende, mas nao substitui
+## jogar.
+const JUROS_TETO_ONDAS := 2.5
+
+static func juros_teto(onda: int, dt: float) -> float:
+	return Big.mul_f(ouro_onda(onda), JUROS_TETO_ONDAS * dt)
+
 ## Recarga entre dois golpes de contato do MESMO inimigo. So o chefe sobrevive
 ## ao proprio impacto e fica encostado; sem esta recarga ele batia a cada passo
 ## de fisica, ou seja, 60 golpes por segundo em vez de um.

@@ -59,10 +59,12 @@ func atualizar(dt: float) -> void:
 	if not Big.is_zero(esc_regen) and Big.lt(torre["escudo"], torre["escudo_max"]) and tempo_sem_dano > 2.0:
 		torre["escudo"] = Big.min_b(torre["escudo_max"], Big.add(torre["escudo"], Big.mul_f(esc_regen, dt)))
 
-	# juros sobre o ouro guardado
+	# juros sobre o ouro guardado, com teto (ver Bal.juros_teto)
 	var juros: float = j.stats.n("jurosOuro")
 	if juros > 0.0:
-		j.ganhar_ouro(Big.mul_f(s["moedas"]["ouro"], juros * dt), "juros", true)
+		var bruto := Big.mul_f(s["moedas"]["ouro"], juros * dt)
+		var teto := Bal.juros_teto(int(s["onda"]), dt)
+		j.ganhar_ouro(Big.min_b(bruto, teto), "juros", true)
 
 	# mira
 	var alcance: float = j.stats.n("alcance")

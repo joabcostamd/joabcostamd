@@ -169,6 +169,14 @@ func t_economia() -> void:
 	var mortos := int(s["stats"]["mortos"])
 	ok("estatisticas coerentes", mortos >= 0)
 
+	# Juros compostos sobre o estoque nao podem virar hiperinflacao: sem teto,
+	# 10% ao segundo faz o ouro crescer e^360 em uma hora.
+	var cofre := Big.from_log(120.0)                  # 1e120 guardado
+	var rendimento := Big.mul_f(cofre, 0.10 * (1.0 / 60.0))
+	var teto := Bal.juros_teto(30, 1.0 / 60.0)
+	ok("juros tem teto", Big.lt(teto, rendimento))
+	ok("teto cresce com a onda", Big.gt(Bal.juros_teto(200, 1.0), Bal.juros_teto(30, 1.0)))
+
 ## ------------------------------------------------------------- combate
 func t_combate() -> void:
 	g("Combate")
