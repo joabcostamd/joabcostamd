@@ -19,6 +19,7 @@ func _initialize() -> void:
 		_checar(caminho)
 	_checar_paineis()
 	_checar_recursos()
+	_checar_entradas()
 
 	print("===LINT=== arquivos=%d linhas=%d erros=%d avisos=%d" % [arquivos, linhas, erros.size(), avisos.size()])
 	for e in erros:
@@ -44,9 +45,11 @@ func _checar(caminho: String) -> void:
 		if limpa.begins_with("#"):
 			continue
 
-		# 1. emoji em string de interface: a fonte padrão não tem glifo
-		if limpa.contains('"') and _tem_emoji(_antes_do_comentario(linha)):
-			erros.append("%s:%d emoji em string (use Icone vetorial)" % [caminho, n])
+		# 1. emoji/símbolo sem glifo na fonte: sairia como quadradinho na tela
+		if limpa.contains('"'):
+			var fora := _sem_glifo(_antes_do_comentario(linha))
+			if fora != "":
+				erros.append("%s:%d sem glifo na fonte: %s (use Icone vetorial)" % [caminho, n, fora])
 
 		# 2. print() solto fora de ferramenta e fora de guarda de debug
 		if not eh_ferramenta and limpa.begins_with("print(") and not caminho.ends_with("main.gd"):
@@ -78,13 +81,19 @@ func _antes_do_comentario(linha: String) -> String:
 	var h := linha.find("#")
 	return linha if h < 0 else linha.substr(0, h)
 
-func _tem_emoji(s: String) -> bool:
+## A regra verdadeira não é "é emoji?", é "a fonte desenha isso?".
+## Emoji, setas, bolinhas geométricas — tudo que a fonte padrão não cobre vira
+## um quadradinho vazio na tela. Perguntamos direto para a fonte.
+func _sem_glifo(s: String) -> String:
+	var fonte := ThemeDB.fallback_font
+	if fonte == null:
+		return ""
+	var fora := ""
 	for i in s.length():
 		var c := s.unicode_at(i)
-		if (c >= 0x1F300 and c <= 0x1FAFF) or (c >= 0x2600 and c <= 0x27BF) \
-				or (c >= 0x2B00 and c <= 0x2BFF) or c == 0x2728 or c == 0x2B50:
-			return true
-	return false
+		if c > 127 and not fonte.has_char(c) and not fora.contains(s[i]):
+			fora += s[i]
+	return fora
 
 ## Todo painel referenciado pelo gerente precisa existir, e todo painel
 ## existente precisa estar registrado (senão vira código morto).
@@ -161,3 +170,62 @@ func _coletar(pasta: String, out: Array) -> void:
 			out.append(pasta.path_join(nome))
 		nome = d.get_next()
 	d.list_dir_end()
+
+## Entrada de ferramenta (`-s`) não pode citar classe do jogo.
+##
+## Por quê: em modo `-s` o Godot compila o script de entrada ANTES de registrar
+## os autoloads. Qualquer `class_name` que use `Bus`/`Cfg` falha a compilar — e
+## falha de forma INTERMITENTE, dependendo da ordem em que a engine resolve os
+## scripts. O portão de testes passou verde por semanas e depois começou a
+## quebrar sozinho por causa disso. A entrada fica magra; o corpo vai para
+## `tools/suites/` e é carregado dentro de `_initialize()`.
+func _checar_entradas() -> void:
+	var d := DirAccess.open("res://tools")
+	if d == null:
+		return
+	d.list_dir_begin()
+	var nome := d.get_next()
+	while nome != "":
+		if not d.current_is_dir() and nome.ends_with(".gd"):
+			_checar_entrada("res://tools/" + nome)
+		nome = d.get_next()
+	d.list_dir_end()
+
+func _checar_entrada(caminho: String) -> void:
+	var f := FileAccess.open(caminho, FileAccess.READ)
+	if f == null:
+		return
+	var texto := f.get_as_text()
+	f.close()
+	if not texto.begins_with("extends SceneTree"):
+		return
+	# `bootstrap`, `build_scene` e `probe` mexem em ProjectSettings/cenas e não
+	# tocam na simulação: para eles a regra não faz sentido.
+	for isento in ["bootstrap.gd", "build_scene.gd", "probe.gd", "test_big.gd"]:
+		if caminho.ends_with(isento):
+			return
+	var citadas: Array = []
+	for classe in CLASSES_DO_JOGO:
+		var re := RegEx.create_from_string("(?<![\\w.\"])" + classe + "(?![\\w\"])")
+		if re.search(_sem_comentarios(texto)) != null and not citadas.has(classe):
+			citadas.append(classe)
+	if not citadas.is_empty():
+		erros.append("%s é entrada `-s` e cita classe do jogo (%s): mova o corpo para tools/suites/" % [
+			caminho, ", ".join(citadas)])
+
+## Tudo que depende de autoload em tempo de parse, direta ou indiretamente.
+const CLASSES_DO_JOGO := [
+	"Jogo", "Bus", "Cfg", "SaveSys", "Audio",
+	"Economia", "Combate", "EnemyAI", "TorreSim", "Diretor", "Saque", "Progresso",
+	"Mecanicas", "Eventos", "Habilidades", "Offline", "Modificadores", "Estado",
+	"Arena", "StatEngine", "Prestigio",
+]
+
+func _sem_comentarios(texto: String) -> String:
+	var out := ""
+	for linha in texto.split("\n"):
+		var l := str(linha)
+		if l.strip_edges().begins_with("#"):
+			continue
+		out += _antes_do_comentario(l) + "\n"
+	return out

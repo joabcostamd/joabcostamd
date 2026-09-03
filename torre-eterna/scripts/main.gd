@@ -103,6 +103,8 @@ func _talvez_capturar() -> void:
 			_cartas_debug = int(a.substr(9))
 		elif a.begins_with("--abrir="):
 			_abrir_debug = a.substr(8)
+		elif a.begins_with("--clicar="):
+			_clicar_debug = a.substr(9)
 	if segundos < 0.0:
 		return
 	if _abrir_debug != "":
@@ -130,6 +132,7 @@ var _painel_alvo := ""
 var _tela_alvo := ""
 var _cartas_debug := 0
 var _abrir_debug := ""
+var _clicar_debug := ""
 
 func _capturar_em(segundos: float, saida: String) -> void:
 	await get_tree().create_timer(segundos).timeout
@@ -147,12 +150,36 @@ func _capturar_em(segundos: float, saida: String) -> void:
 	if _painel_alvo != "":
 		gerente.abrir(_painel_alvo)
 		await get_tree().create_timer(0.6).timeout
+	# `--clicar=Aba1>Aba2` aciona abas e botões pelo TEXTO, um por vez: é assim
+	# que a captura chega no que só existe depois de um clique, sem mouse.
+	if _clicar_debug != "":
+		for alvo in _clicar_debug.split(">", false):
+			var achou := _acionar(camada_ui, str(alvo).strip_edges())
+			print("===CLIQUE=== %s -> %s" % [str(alvo), "ok" if achou else "NAO ACHEI"])
+			await get_tree().create_timer(0.45).timeout
 	await RenderingServer.frame_post_draw
 	var img := get_viewport().get_texture().get_image()
 	var caminho := saida if saida.begins_with("user://") or saida.begins_with("res://") else saida
 	var err := img.save_png(caminho)
 	print("===CAPTURA=== %s -> %s" % [caminho, "ok" if err == OK else str(err)])
 	get_tree().quit()
+
+## Aciona o primeiro alvo visível cujo texto bate: aba de TabBar ou Button.
+## Só serve à captura automatizada (`--clicar=`).
+func _acionar(no: Node, texto: String) -> bool:
+	if no is TabBar and no.visible:
+		for i in no.tab_count:
+			if no.get_tab_title(i).strip_edges() == texto:
+				no.current_tab = i
+				no.tab_changed.emit(i)
+				return true
+	if no is Button and no.visible and str(no.text).strip_edges() == texto:
+		no.pressed.emit()
+		return true
+	for f in no.get_children():
+		if _acionar(f, texto):
+			return true
+	return false
 
 func _montar() -> void:
 	# --- mundo ---

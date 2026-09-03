@@ -756,82 +756,11 @@ func _ajustar_janela() -> void:
 	janela.offset_bottom = h * 0.5
 
 ## Camada de correção de cor sobre a imagem final (daltonismo / alto contraste).
-const SHADER_FILTRO := """
-shader_type canvas_item;
-uniform sampler2D tela : hint_screen_texture, repeat_disable, filter_nearest;
-uniform int modo = 0;
-uniform float contraste = 0.0;
 
-vec3 lms_de(vec3 c) {
-	return vec3(
-		17.8824 * c.r + 43.5161 * c.g + 4.11935 * c.b,
-		3.45565 * c.r + 27.1554 * c.g + 3.86714 * c.b,
-		0.0299566 * c.r + 0.184309 * c.g + 1.46709 * c.b);
-}
-
-vec3 rgb_de(vec3 l) {
-	return vec3(
-		0.0809444479 * l.x - 0.130504409 * l.y + 0.116721066 * l.z,
-		-0.0102485335 * l.x + 0.0540193266 * l.y - 0.113614708 * l.z,
-		-0.000365296938 * l.x - 0.00412161469 * l.y + 0.693511405 * l.z);
-}
-
-void fragment() {
-	vec3 c = texture(tela, SCREEN_UV).rgb;
-	if (modo > 0) {
-		vec3 l = lms_de(c);
-		vec3 s = l;
-		if (modo == 1) { s.x = 2.02344 * l.y - 2.52581 * l.z; }
-		else if (modo == 2) { s.y = 0.494207 * l.x + 1.24827 * l.z; }
-		else { s.z = -0.395913 * l.x + 0.801109 * l.y; }
-		vec3 sim = rgb_de(s);
-		vec3 err = c - sim;
-		vec3 desvio = vec3(
-			0.0,
-			0.6 * err.r + err.g,
-			0.6 * err.r + err.b);
-		c = clamp(c + desvio, vec3(0.0), vec3(1.0));
-	}
-	if (contraste > 0.0) {
-		c = clamp((c - 0.46) * (1.0 + 0.28 * contraste) + 0.5, vec3(0.0), vec3(1.0));
-		float cinza = dot(c, vec3(0.299, 0.587, 0.114));
-		c = clamp(mix(vec3(cinza), c, 1.0 + 0.2 * contraste), vec3(0.0), vec3(1.0));
-	}
-	COLOR = vec4(c, 1.0);
-}
-"""
-
+## O filtro mora no Cfg (autoload), para valer desde a abertura do jogo e não
+## só quando alguém abre este painel. Aqui só pedimos a reaplicação.
 func _aplicar_filtro() -> void:
-	var raiz := get_tree().root
-	if raiz == null:
-		return
-	var modo := int(Cfg.get_v("daltonismo", 0))
-	var contraste := 1.0 if bool(Cfg.get_v("alto_contraste", false)) else 0.0
-	var camada := raiz.get_node_or_null("FiltroAcessibilidade")
-	if modo <= 0 and contraste <= 0.0:
-		if camada != null:
-			camada.queue_free()
-		return
-	if camada == null:
-		camada = CanvasLayer.new()
-		camada.name = "FiltroAcessibilidade"
-		camada.layer = 120
-		var rc := ColorRect.new()
-		rc.name = "Filtro"
-		rc.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		rc.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		var sh := Shader.new()
-		sh.code = SHADER_FILTRO
-		var mat := ShaderMaterial.new()
-		mat.shader = sh
-		rc.material = mat
-		camada.add_child(rc)
-		raiz.add_child(camada)
-	var alvo := camada.get_node_or_null("Filtro")
-	if alvo != null and alvo.material is ShaderMaterial:
-		var m: ShaderMaterial = alvo.material
-		m.set_shader_parameter("modo", modo)
-		m.set_shader_parameter("contraste", contraste)
+	Cfg.aplicar()
 
 # =============================================================== atualização
 

@@ -32,6 +32,7 @@ var rotulos_adapt := {}
 var botoes_painel := {}
 var lbl_velocidade: Label
 var aviso_pontos: Label
+var ic_pontos: Control
 
 signal painel_pedido(nome: String)
 
@@ -117,6 +118,12 @@ func _construir() -> void:
 	var lv := UI.hbox(6)
 	lbl_nivel = UI.rotulo("Nível 1", 15, UI.ACENTO2)
 	lv.add_child(lbl_nivel)
+	# ponto de talento a gastar: icone VETORIAL (a fonte nao tem glifo de bolinha)
+	ic_pontos = Control.new()
+	ic_pontos.set_script(load("res://scripts/ui/icone_control.gd"))
+	ic_pontos.visible = false
+	lv.add_child(ic_pontos)
+	ic_pontos.configurar("estrela", UI.OURO, 13)
 	aviso_pontos = UI.rotulo("", 14, UI.OURO)
 	lv.add_child(aviso_pontos)
 	vitais.add_child(lv)
@@ -394,7 +401,8 @@ func _atualizar_lento() -> void:
 	lbl_nivel.text = "%s %d" % [Txt.t("nivel"), int(s["nivel"])]
 	barra_xp.value = Economia.progresso_nivel(s)
 	var pts := int(s["pontos_talento"])
-	aviso_pontos.text = ("  ●%d" % pts) if pts > 0 else ""
+	ic_pontos.visible = pts > 0
+	aviso_pontos.text = ("%d" % pts) if pts > 0 else ""
 
 	if Mecanicas.em_retomada(s):
 		var r: Dictionary = s["retomada"]
@@ -473,7 +481,7 @@ func _alternar_velocidade() -> void:
 		nova = 1.0
 	jogo.definir_velocidade(nova)
 	if teto <= 1.0:
-		Bus.toast("Desbloqueie Aceleração na árvore de Fragmentos", "info", "⏩")
+		Bus.toast("Desbloqueie Aceleração na árvore de Fragmentos", "info", "velocidade")
 
 func _alternar_mira() -> void:
 	var modos: Array = TorreSim.MODOS_MIRA

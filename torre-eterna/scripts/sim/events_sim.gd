@@ -244,7 +244,7 @@ static func aplicar(j, def: Dictionary, res: Dictionary) -> Dictionary:
 				"valor": v,
 				"restante": dur,
 				"fonte": Ux.txt(def, "nome", Cfg.ingles()),
-				"icone": "•",
+				"icone": "estrela",
 				"cor": str(def.get("cor", "#38bdf8")),
 			})
 			out["texto"] = "%s por %s" % [_desc_buff(res), Ux.tempo_curto(dur)]

@@ -76,7 +76,20 @@ func aplicar() -> void:
 		if DisplayServer.window_get_mode() != alvo:
 			DisplayServer.window_set_mode(alvo)
 	Engine.max_fps = int(v["limite_fps"])
+	_aplicar_escala()
 	_aplicar_filtro()
+
+## Escala global (interface e campo juntos) aplicada já na abertura — antes
+## isso só acontecia se o jogador reabrisse o painel de configurações.
+func _aplicar_escala() -> void:
+	if not is_inside_tree():
+		return
+	var e := float(v["escala_ui"])
+	if bool(v["fonte_grande"]):
+		e *= 1.12
+	var jan := get_window()
+	if jan != null:
+		jan.content_scale_factor = clampf(e, 0.7, 1.6)
 
 ## O filtro de acessibilidade é um CanvasLayer global criado sob demanda —
 ## fica acima de tudo, inclusive dos painéis, para a opção valer na hora.

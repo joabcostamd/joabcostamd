@@ -20,6 +20,12 @@ func _initialize() -> void:
 		var r = load(caminho)
 		if r == null:
 			falhas.append(caminho)
+			continue
+		# `load()` de um .gd com erro de sintaxe devolve um recurso VAZIO em vez
+		# de null — o portão passava enquanto o editor acusava "Parse Error".
+		# Um script que não compila também não instancia: é essa a pergunta.
+		if r is GDScript and not (r as GDScript).can_instantiate():
+			falhas.append(caminho + " (nao compila)")
 	# cenas e dados
 	for cena in _todos("res://scenes", ".tscn"):
 		if load(cena) == null:
