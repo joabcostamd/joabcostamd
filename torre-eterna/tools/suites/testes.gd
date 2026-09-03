@@ -44,6 +44,7 @@ func rodar(cena: SceneTree) -> void:
 	t_nada_mudo()
 	t_elites()
 	t_mira()
+	t_painel_melhorias()
 	t_rodape()
 	t_teto()
 	t_defesa()
@@ -88,7 +89,7 @@ func rodar(cena: SceneTree) -> void:
 		"Mods": 19, "Numeros de dano": 2, "Offline": 6,
 		"Ondas": 12, "Pista de ouro": 3, "Prestígio": 25,
 		"Progresso": 14, "Saque": 8, "Save": 41,
-		"Rodape": 26, "Sistemas": 6, "StatEngine": 5, "Teto": 25, "Áudio": 16,
+		"Painel de melhorias": 20, "Rodape": 26, "Sistemas": 6, "StatEngine": 5, "Teto": 25, "Áudio": 16,
 	}
 	for nome_g in minimo_por_grupo:
 		var rodou := int(por_grupo.get(nome_g, 0))
@@ -1266,6 +1267,39 @@ func t_mira() -> void:
 		arena.alvo_ids(Vector2(610.0, 400.0), 400.0, {}) == longe_e)
 	perto_e.intangivel = 0.0
 	arena.limpar_inimigos()
+
+## --------------------------------------------------------- painel de melhorias
+func t_painel_melhorias() -> void:
+	g("Painel de melhorias")
+	var P := load("res://scripts/ui/panel_upgrades.gd") as GDScript
+	ok("panel_upgrades.gd carrega", P != null)
+	if P == null:
+		return
+	# O LOTE DEGRADA, NAO TRAVA. Com "x25" escolhido e ouro para tres, o botao
+	# ficava desligado e so voltando para "x1" dava para comprar: o modo de
+	# compra em lote punia quem o escolhia.
+	ok("x25 com ouro para 3 compra 3", P.quantidade_do_lote(25, 0, -1, 3) == 3)
+	ok("x25 com ouro para 40 compra 25", P.quantidade_do_lote(25, 0, -1, 40) == 25)
+	ok("x10 respeita o teto da melhoria", P.quantidade_do_lote(10, 95, 100, 999) == 5)
+	ok("x10 respeita o bolso E o teto", P.quantidade_do_lote(10, 95, 100, 2) == 2)
+	ok("o lote nunca cai para zero", P.quantidade_do_lote(25, 0, -1, 0) == 1)
+	ok("MAX compra o que couber", P.quantidade_do_lote(-1, 0, -1, 137) == 137)
+	ok("MAX sem ouro ainda oferece 1", P.quantidade_do_lote(-1, 0, -1, 0) == 1)
+	ok("melhoria sem teto nao limita o lote", P.quantidade_do_lote(10, 500, -1, 999) == 10)
+
+	var txt_p := _ler("res://scripts/ui/panel_upgrades.gd")
+	# A aba "Tudo" e a memoria da aba: sem as duas, achar o que da para comprar
+	# custava sete cliques, e o painel voltava para a primeira categoria toda vez.
+	ok("existe a aba Tudo", txt_p.contains("ABA_TUDO"))
+	ok("a aba Tudo entra antes das categorias", txt_p.contains("abas.add_tab(Txt.t(\"upg_aba_tudo\"))"))
+	ok("a aba escolhida sobrevive ao fechar", txt_p.contains("static var ultima_aba_id"))
+	ok("...e e restaurada ao montar", txt_p.contains("abas.current_tab = cat_atual"))
+	ok("a aba Tudo ordena pelo custo", txt_p.contains("_peso_na_lista"))
+	# O botao dizia o preco e nunca o ganho.
+	ok("a linha tem rotulo de ganho", txt_p.contains("_texto_ganho("))
+	ok("o ganho e atualizado a cada ciclo", txt_p.contains('r["ganho"].text = _texto_ganho('))
+	for chave in ["upg_aba_tudo", "upg_ganho_flat", "upg_ganho_pct", "upg_ganho_mult"]:
+		ok("a chave %s existe nos dois idiomas" % chave, Txt.t(str(chave)) != str(chave))
 
 ## ------------------------------------------------------------ rodape do HUD
 func t_rodape() -> void:

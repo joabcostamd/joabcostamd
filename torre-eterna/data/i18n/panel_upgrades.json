@@ -1,46 +1,62 @@
 {
-  "upg_auto": {
-    "pt": "Auto",
-    "en": "Auto"
-  },
-  "upg_auto_dica": {
-    "pt": "Compra automática (desbloqueada na árvore de Fragmentos)",
-    "en": "Auto-buy (unlocked in the Shard tree)"
-  },
-  "upg_auto_bloqueado": {
-    "pt": "Compre 'Servo Automático' na árvore de Fragmentos",
-    "en": "Buy 'Auto Servitor' in the Shard tree"
-  },
-  "upg_max_curto": {
-    "pt": "MÁX",
-    "en": "MAX"
-  },
-  "upg_nv": {
-    "pt": "Nv {n}",
-    "en": "Lv {n}"
-  },
-  "upg_desbloqueia_onda": {
-    "pt": "Desbloqueia na onda {n}",
-    "en": "Unlocks at wave {n}"
-  },
-  "upg_desbloqueia_upg": {
-    "pt": "Desbloqueia com {u}",
-    "en": "Unlocks with {u}"
-  },
-  "upg_efeito_flat": {
-    "pt": "{s} +{v} (agora {t})",
-    "en": "{s} +{v} (now {t})"
-  },
-  "upg_efeito_pct": {
-    "pt": "{s} +{v} (agora +{t})",
-    "en": "{s} +{v} (now +{t})"
-  },
-  "upg_efeito_mult": {
-    "pt": "{s} ×{v} (agora ×{t})",
-    "en": "{s} ×{v} (now ×{t})"
-  },
-  "upg_desbloqueia_upg_nv": {
-    "pt": "Desbloqueia com {u} no nível {n}",
-    "en": "Unlocks with {u} at level {n}"
-  }
+ "upg_auto": {
+  "pt": "Auto",
+  "en": "Auto"
+ },
+ "upg_auto_dica": {
+  "pt": "Compra automática (desbloqueada na árvore de Fragmentos)",
+  "en": "Auto-buy (unlocked in the Shard tree)"
+ },
+ "upg_auto_bloqueado": {
+  "pt": "Compre 'Servo Automático' na árvore de Fragmentos",
+  "en": "Buy 'Auto Servitor' in the Shard tree"
+ },
+ "upg_max_curto": {
+  "pt": "MÁX",
+  "en": "MAX"
+ },
+ "upg_nv": {
+  "pt": "Nv {n}",
+  "en": "Lv {n}"
+ },
+ "upg_desbloqueia_onda": {
+  "pt": "Desbloqueia na onda {n}",
+  "en": "Unlocks at wave {n}"
+ },
+ "upg_desbloqueia_upg": {
+  "pt": "Desbloqueia com {u}",
+  "en": "Unlocks with {u}"
+ },
+ "upg_efeito_flat": {
+  "pt": "{s} +{v} (agora {t})",
+  "en": "{s} +{v} (now {t})"
+ },
+ "upg_efeito_pct": {
+  "pt": "{s} +{v} (agora +{t})",
+  "en": "{s} +{v} (now +{t})"
+ },
+ "upg_efeito_mult": {
+  "pt": "{s} ×{v} (agora ×{t})",
+  "en": "{s} ×{v} (now ×{t})"
+ },
+ "upg_desbloqueia_upg_nv": {
+  "pt": "Desbloqueia com {u} no nível {n}",
+  "en": "Unlocks with {u} at level {n}"
+ },
+ "upg_aba_tudo": {
+  "pt": "Tudo",
+  "en": "All"
+ },
+ "upg_ganho_flat": {
+  "pt": "+{v} {s}",
+  "en": "+{v} {s}"
+ },
+ "upg_ganho_pct": {
+  "pt": "+{v} {s}",
+  "en": "+{v} {s}"
+ },
+ "upg_ganho_mult": {
+  "pt": "×{v} {s}",
+  "en": "×{v} {s}"
+ }
 }
