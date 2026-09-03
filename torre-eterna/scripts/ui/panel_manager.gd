@@ -38,6 +38,13 @@ func _ready() -> void:
 	Bus.aviso.connect(_toast)
 	Bus.relatorio_offline.connect(_relatorio_offline)
 	Bus.evento_sorteado.connect(abrir_evento)
+	# Trocar o idioma com um painel aberto deixava título, abas e botões na
+	# língua velha — eles nascem em `montar()` e ninguém os reconstruía. Reabrir
+	# resolve, e tem que ser DIFERIDO: o pedido vem de dentro do callback do
+	# próprio seletor, que seria liberado no meio da própria execução.
+	Bus.config_mudou.connect(func(chave, _v):
+		if str(chave) == "idioma" and atual != "":
+			_reabrir.call_deferred(atual))
 	await get_tree().process_frame
 	_montar_overlay()
 	_escoar_fila_inicial()
@@ -126,6 +133,13 @@ func _aparar_toasts() -> void:
 		var velho := caixa_toast.get_child(0)
 		caixa_toast.remove_child(velho)
 		velho.queue_free()
+
+## Fecha e abre o mesmo painel, para ele renascer na língua nova.
+func _reabrir(nome: String) -> void:
+	if atual != nome:
+		return
+	fechar()
+	abrir(nome)
 
 func alternar(nome: String) -> void:
 	if atual == nome:

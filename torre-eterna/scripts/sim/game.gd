@@ -661,6 +661,14 @@ func transcender() -> bool:
 		"temporada": s["temporada"],
 		"album": s.get("album", {}),
 		"panteao": s.get("panteao", {}),
+		# O placar do Peregrino decide o Fim Verdadeiro: "o jogo só conta, para
+		# sempre". Sem estas três linhas a tela final lia 0 × 0 depois de
+		# transcender. A Caixa da Vigília e o total de missões são igualmente
+		# vitalícios.
+		"peregrinos_mortos": int(s.get("peregrinos_mortos", 0)),
+		"peregrinos_poupados": int(s.get("peregrinos_poupados", 0)),
+		"missoes_completas": int(s.get("missoes_completas", 0)),
+		"caixa": s.get("caixa", {"seladas": 0, "abertas": 0}),
 		"desbloqueios": s["desbloqueios"],
 		"tutorial": s["tutorial"],
 		"novidades": s["novidades"],
@@ -678,6 +686,10 @@ func transcender() -> bool:
 	s["temporada"] = guardar["temporada"]
 	s["album"] = guardar["album"]
 	s["panteao"] = guardar["panteao"]
+	s["peregrinos_mortos"] = guardar["peregrinos_mortos"]
+	s["peregrinos_poupados"] = guardar["peregrinos_poupados"]
+	s["missoes_completas"] = guardar["missoes_completas"]
+	s["caixa"] = guardar["caixa"]
 	s["desbloqueios"] = guardar["desbloqueios"]
 	s["tutorial"] = guardar["tutorial"]
 	s["novidades"] = guardar["novidades"]

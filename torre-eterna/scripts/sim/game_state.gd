@@ -134,7 +134,23 @@ static func novo() -> Dictionary:
 		# perder isso num prestígio é o pior tipo de bug que existe.
 		"album": {},             # id da carta -> quando foi vista pela primeira vez
 		"panteao": {},           # id do conjunto -> quantas vezes foi consagrado
+		# O placar do Peregrino é o que decide o Fim Verdadeiro. Estava sendo
+		# criado na marra por Mecanicas, então a Transcendência montava um estado
+		# novo sem ele e a tela final sempre lia 0 × 0 — a única pergunta que o
+		# jogo faz ao jogador, respondida com silêncio.
 		"peregrinos_mortos": 0,
+		"peregrinos_poupados": 0,
+		"peregrino_onda": 0,
+		"missoes_completas": 0,
+
+		# --- estado de mecânica criado em tempo de execução ---
+		# Estavam todos vindo à existência dentro de `Mecanicas`. Declarados aqui
+		# eles ganham valor padrão, entram no save e param de sumir num reset.
+		"caixa": {"seladas": 0, "abertas": 0},
+		"purga": {"carga": 0.0, "auto": false, "usos": 0, "perfeitas": 0, "estourou": 0, "brilho": 0.0},
+		"adaptacao": {},
+		"retomada": {},
+		"seg_por_onda_media": 18.0,
 		"novidades": {},
 
 		"buffs": [],             # [{id, stat, tipo, valor, restante, fonte, icone, cor}]

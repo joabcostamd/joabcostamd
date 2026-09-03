@@ -750,6 +750,16 @@ func t_save() -> void:
 	ok("jogo comeca limpo apos perda total", int(novo_estado["onda"]) == 1)
 	save.apagar()
 
+	# Um unico NaN/INF sai do JSON.stringify como `nan`/`inf`, que nao e JSON
+	# valido. O arquivo gravava assim mesmo e, no autosave seguinte, esse lixo
+	# virava o backup: dois autosaves e o jogador perdia save E backup sem
+	# nenhum aviso.
+	var podre := {"versao": 1, "onda": 5, "ruim": INF}
+	ok("save recusa numero nao-finito", not save.salvar(podre))
+	var so_bom := {"versao": 1, "onda": 5}
+	ok("save aceita estado sao", save.salvar(so_bom))
+	save.apagar()
+
 	# mesclagem preserva campos novos do padrao
 	var antigo := {"versao": 1, "onda": 5}
 	var mesclado := GameState.mesclar(GameState.novo(), antigo)
@@ -811,6 +821,22 @@ func t_habilidades() -> void:
 			if str(b.get(campo, "")) == "":
 				sem_verdade.append("%s.%s" % [str(b.get("id", "?")), campo])
 	ok("todo chefe tem Bestiario Verdadeiro", sem_verdade.is_empty(), str(sem_verdade))
+
+	# O placar do Peregrino decide o Fim Verdadeiro. A Transcendencia montava um
+	# estado novo sem ele e a tela final lia 0 x 0 — a unica pergunta que o jogo
+	# faz ao jogador, respondida com silencio.
+	jogo.s["peregrinos_poupados"] = 7
+	jogo.s["peregrinos_mortos"] = 3
+	jogo.s["missoes_completas"] = 21
+	jogo.s["caixa"] = {"seladas": 4, "abertas": 9}
+	jogo.s["onda_maxima"] = 700
+	jogo.s["onda_maxima_global"] = 700
+	jogo.s["prestigio"]["singularidades"] = 9
+	jogo.s["moedas"]["nucleos"] = Big.from(1.0e9)
+	jogo.transcender()
+	ok("placar do Peregrino sobrevive", int(jogo.s["peregrinos_poupados"]) == 7 and int(jogo.s["peregrinos_mortos"]) == 3)
+	ok("total de missoes sobrevive", int(jogo.s["missoes_completas"]) == 21)
+	ok("Caixa da Vigilia sobrevive", int(jogo.s["caixa"]["abertas"]) == 9)
 
 	var s: Dictionary = jogo.s
 	s["onda_maxima_global"] = 200

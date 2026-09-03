@@ -29,6 +29,16 @@ var ultimo_erro := ""
 
 func salvar(dados: Dictionary) -> bool:
 	var texto := JSON.stringify(dados)
+	# Um único NaN ou INF no estado sai do `JSON.stringify` como `nan`/`inf`,
+	# que NÃO é JSON válido: o arquivo grava, o jogo continua, e no próximo
+	# autosave esse arquivo quebrado vira o backup. Dois autosaves depois o
+	# jogador perdeu save E backup sem nunca ter visto um aviso. Por isso o
+	# save só acontece se o texto voltar a virar Dicionário.
+	if JSON.parse_string(texto) == null:
+		ultimo_erro = "O estado do jogo gerou JSON inválido (número não-finito?). O save anterior foi mantido."
+		push_error(ultimo_erro)
+		Bus.toast(Txt.t("save_falhou"), "ruim", "cadeado")
+		return false
 	# backup do save anterior antes de sobrescrever
 	if FileAccess.file_exists(cam()):
 		var antigo := FileAccess.open(cam(), FileAccess.READ)

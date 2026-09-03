@@ -66,5 +66,9 @@
   "sim_fenix": {
     "pt": "A torre renasce das cinzas!",
     "en": "The tower rises from the ashes!"
+  },
+  "save_falhou": {
+    "pt": "Não consegui salvar. O save anterior foi mantido.",
+    "en": "Could not save. Your previous save was kept."
   }
 }

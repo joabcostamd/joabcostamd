@@ -40,8 +40,8 @@
     "en": "The Swarm adapts to whatever you lean on.\nMix up your elements to get your damage back."
   },
   "hud_velocidade_trancada": {
-    "pt": "Desbloqueie Aceleração na árvore de Fragmentos",
-    "en": "Unlock Acceleration in the Fragment tree"
+    "pt": "Desbloqueie 'Motor Singular' na árvore de Núcleos",
+    "en": "Unlock 'Singular Engine' in the Cores tree"
   },
   "hud_farm": {
     "pt": "FARM",
@@ -54,5 +54,9 @@
   "hud_infinito_dica": {
     "pt": "Modo Infinito — as ondas não param",
     "en": "Infinite Mode — the waves never stop"
+  },
+  "hud_infinito_trancado": {
+    "pt": "Desbloqueie o Vazio Infinito na árvore de Éter",
+    "en": "Unlock the Infinite Void in the Ether tree"
   }
 }

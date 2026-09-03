@@ -70,6 +70,9 @@ func _i18n() -> void:
 const CAMPOS_TRADUZIVEIS := [
 	"nome", "desc", "descricao", "titulo", "lore",
 	"resetaTexto", "mantemTexto", "requisito", "dica",
+	# `autor` é a assinatura da entrada de lore ("TORRE-0 — log de sistema"):
+	# nome próprio mais TIPO DE DOCUMENTO, e o tipo precisa de tradução.
+	"autor", "verdade", "verdadeNome",
 ]
 
 func _i18n_conteudo() -> void:

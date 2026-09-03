@@ -46,6 +46,9 @@ func _ready() -> void:
 	Bus.nivel_subiu.connect(func(_n, _p): _pulsar_nivel())
 	Bus.habilidade_pronta.connect(_ao_hab_pronta)
 	Bus.ui_atualizar.connect(func(_c): _reconstruir_habilidades())
+	Bus.config_mudou.connect(func(chave, _v):
+		if str(chave) == "idioma" or str(chave) == "tudo":
+			_retraduzir())
 	Bus.onda_iniciou.connect(_ao_onda)
 	Bus.jogo_pronto.connect(func(): _reconstruir_habilidades())
 	if jogo != null and jogo.iniciado:
@@ -230,24 +233,29 @@ func _construir() -> void:
 	menu.offset_left = 14
 	menu.offset_right = 680
 	add_child(menu)
+	# [id, icone, dica pronta, cor, CHAVE do texto, tecla] — a chave fica guardada
+	# no botão para o rótulo poder ser retraduzido sem remontar a barra inteira.
 	var paineis := [
-		["upgrades", "espada", Txt.t("p_upgrades") + " (Q)", UI.VERMELHO],
-		["talentos", "arvore", Txt.t("p_talentos") + " (W)", UI.VERDE],
-		["cartas", "carta", Txt.t("p_cartas") + " (E)", UI.ACENTO],
-		["prestigio", "prestigio", Txt.t("p_prestigio") + " (R)", UI.ACENTO2],
-		["reliquias", "reliquia", Txt.t("p_reliquias"), UI.OURO],
-		["missoes", "missao", Txt.t("p_missoes"), UI.LARANJA],
-		["desafios", "desafio", Txt.t("p_desafios"), UI.ROSA],
-		["conquistas", "trofeu", Txt.t("p_conquistas") + " (T)", UI.OURO],
-		["codex", "livro", Txt.t("p_codex"), UI.TEXTO2],
-		["habilidades", "raio", Txt.t("p_habilidades"), UI.ACENTO],
-		["stats", "stats", Txt.t("p_stats"), UI.TEXTO2],
-		["config", "engrenagem", Txt.t("p_config") + " (O)", UI.TEXTO2],
+		["upgrades", "espada", Txt.t("p_upgrades") + " (Q)", UI.VERMELHO, "p_upgrades", " (Q)"],
+		["talentos", "arvore", Txt.t("p_talentos") + " (W)", UI.VERDE, "p_talentos", " (W)"],
+		["cartas", "carta", Txt.t("p_cartas") + " (E)", UI.ACENTO, "p_cartas", " (E)"],
+		["prestigio", "prestigio", Txt.t("p_prestigio") + " (R)", UI.ACENTO2, "p_prestigio", " (R)"],
+		["reliquias", "reliquia", Txt.t("p_reliquias"), UI.OURO, "p_reliquias", ""],
+		["missoes", "missao", Txt.t("p_missoes"), UI.LARANJA, "p_missoes", ""],
+		["desafios", "desafio", Txt.t("p_desafios"), UI.ROSA, "p_desafios", ""],
+		["conquistas", "trofeu", Txt.t("p_conquistas") + " (T)", UI.OURO, "p_conquistas", " (T)"],
+		["codex", "livro", Txt.t("p_codex"), UI.TEXTO2, "p_codex", ""],
+		["habilidades", "raio", Txt.t("p_habilidades"), UI.ACENTO, "p_habilidades", ""],
+		["stats", "stats", Txt.t("p_stats"), UI.TEXTO2, "p_stats", ""],
+		["config", "engrenagem", Txt.t("p_config") + " (O)", UI.TEXTO2, "p_config", " (O)"],
 	]
 	for p in paineis:
 		var b := _botao_com_icone(str(p[1]), str(p[2]), p[3], func(): painel_pedido.emit(str(p[0])))
 		menu.add_child(b)
 		botoes_painel[str(p[0])] = b
+		# guarda a CHAVE, não o texto: é o que permite retraduzir sem remontar
+		b.set_meta("chave_dica", str(p[4]))
+		b.set_meta("tecla_dica", str(p[5]))
 
 	# ---------- rodapé direito: velocidade / auto ----------
 	var acoes := UI.hbox(6)
@@ -526,7 +534,7 @@ func _alternar_velocidade() -> void:
 
 func _alternar_infinito() -> void:
 	if not jogo.alternar_infinito():
-		Bus.toast(Txt.t("infinito_trancado"), "info", "cadeado")
+		Bus.toast(Txt.t("hud_infinito_trancado"), "info", "cadeado")
 
 func _alternar_mira() -> void:
 	var modos: Array = TorreSim.MODOS_MIRA
@@ -538,6 +546,17 @@ func _alternar_mira() -> void:
 	# do modo, e o botão passa a dizer em qual modo você está sem precisar clicar.
 	Bus.toast("%s: %s" % [Txt.t("mira"), Txt.t("mira_" + novo)], "info", "alvo")
 	_atualizar_dica_mira()
+
+## Retraduz o que nasceu em `_construir()` e não passa pelo ciclo de update.
+func _retraduzir() -> void:
+	for id in botoes_painel.keys():
+		var b: Button = botoes_painel[id]
+		if not is_instance_valid(b) or not b.has_meta("chave_dica"):
+			continue
+		b.tooltip_text = Txt.t(str(b.get_meta("chave_dica"))) + str(b.get_meta("tecla_dica"))
+	_atualizar_dica_mira()
+	if b_infinito != null and is_instance_valid(b_infinito):
+		b_infinito.tooltip_text = Txt.t("hud_infinito_dica")
 
 func _atualizar_dica_mira() -> void:
 	if b_mira == null:
