@@ -44,6 +44,7 @@ func rodar(cena: SceneTree) -> void:
 	t_nada_mudo()
 	t_elites()
 	t_mira()
+	t_fim_de_sessao()
 	t_celebracao()
 	t_painel_melhorias()
 	t_rodape()
@@ -90,7 +91,7 @@ func rodar(cena: SceneTree) -> void:
 		"Mods": 19, "Numeros de dano": 2, "Offline": 6,
 		"Ondas": 12, "Pista de ouro": 3, "Prestígio": 25,
 		"Progresso": 14, "Saque": 8, "Save": 41,
-		"Celebracao": 25, "Painel de melhorias": 20, "Rodape": 26, "Sistemas": 6, "StatEngine": 5, "Teto": 38, "Áudio": 16,
+		"Celebracao": 25, "Fim de sessao": 15, "Painel de melhorias": 20, "Rodape": 26, "Sistemas": 6, "StatEngine": 5, "Teto": 38, "Áudio": 16,
 	}
 	for nome_g in minimo_por_grupo:
 		var rodou := int(por_grupo.get(nome_g, 0))
@@ -1268,6 +1269,55 @@ func t_mira() -> void:
 		arena.alvo_ids(Vector2(610.0, 400.0), 400.0, {}) == longe_e)
 	perto_e.intangivel = 0.0
 	arena.limpar_inimigos()
+
+## -------------------------------------------------------- fim de sessao / morte
+func t_fim_de_sessao() -> void:
+	g("Fim de sessao")
+	# MORRER ERA UM BOTAO DE PANICO GRATUITO: a torre voltava com vida cheia,
+	# escudo cheio e a arena LIMPA. Numa onda ruim, deixar cair era a melhor
+	# jogada disponivel. E o Contrato de Recompra promete, escrito no painel,
+	# "ao cair voce mantem TODO O OURO" — protegendo de uma perda inexistente.
+	ok("a perda por morte existe e e uma parcela sensata",
+		Bal.PERDA_OURO_MORTE > 0.0 and Bal.PERDA_OURO_MORTE < 0.6)
+	jogo.pas.erase("contrato_recompra")
+	jogo.recompras_usadas = 0
+	jogo.s["moedas"]["ouro"] = Big.from(1.0e9)
+	jogo.reviver_torre()
+	var sobrou := Big.to_f(jogo.s["moedas"]["ouro"])
+	ok("cair custa ouro nao gasto", sobrou < 1.0e9)
+	ok("...mas nao apaga o cofre", perto(sobrou, 1.0e9 * (1.0 - Bal.PERDA_OURO_MORTE), 1.0e6))
+	ok("a torre volta viva", bool(jogo.s["torre"]["viva"]))
+	# ...e a reliquia passa a valer o que promete.
+	jogo.pas["contrato_recompra"] = 1
+	jogo.recompras_usadas = 0
+	jogo.s["moedas"]["ouro"] = Big.from(1.0e9)
+	jogo.reviver_torre()
+	ok("com o Contrato de Recompra o ouro fica inteiro",
+		perto(Big.to_f(jogo.s["moedas"]["ouro"]), 1.0e9, 1.0e3))
+	jogo.pas.erase("contrato_recompra")
+
+	# COLETAR TUDO: o criterio ja existia dos dois lados, faltava o botao.
+	var st: Dictionary = GameState.novo()
+	ok("estado novo nao tem nada a coletar", Progresso.quantas_a_coletar(st) == 0)
+	st["missoes"]["diarias"].append({"id": "x", "alvo": 1, "pronta": true, "coletada": false})
+	st["missoes"]["diarias"].append({"id": "y", "alvo": 1, "pronta": false, "coletada": false})
+	st["missoes"]["semanais"].append({"id": "z", "alvo": 1, "pronta": true, "coletada": true})
+	ok("conta so a missao pronta e nao coletada", Progresso.quantas_a_coletar(st) == 1)
+
+	# RECICLAR DUPLICADAS: mesmo criterio da reciclagem automatica.
+	var st2: Dictionary = GameState.novo()
+	ok("inventario vazio nao tem duplicada", Saque.contar_duplicadas(st2) == 0)
+	var txt_m := _ler("res://scripts/ui/panel_missoes.gd")
+	ok("o painel de Missoes tem o botao de coletar tudo", txt_m.contains("b_coletar_tudo"))
+	ok("...e ele so aparece quando ha o que coletar",
+		txt_m.contains("b_coletar_tudo.visible = quantas > 0"))
+	var txt_c2 := _ler("res://scripts/ui/panel_cartas.gd")
+	ok("o painel de Cartas tem o botao de reciclar duplicadas",
+		txt_c2.contains("b_reciclar_dups"))
+	ok("...e ele so aparece quando ha duplicada",
+		txt_c2.contains("b_reciclar_dups.visible = dups > 0"))
+	for chave in ["mis_coletar_tudo", "mis_coletou_tudo", "car_reciclar_dups", "sim_perdeu_ouro"]:
+		ok("a chave %s existe" % chave, Txt.t(str(chave)) != str(chave))
 
 ## ------------------------------------------------------------- comemoracoes
 func t_celebracao() -> void:

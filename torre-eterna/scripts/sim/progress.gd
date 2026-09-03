@@ -410,6 +410,44 @@ static func coletar_missao(j, grupo: String, indice: int) -> bool:
 	ganhar_xp_temporada(j, int(def.get("xpTemporada", 10)))
 	return true
 
+## Quantas recompensas estao esperando um clique: missoes prontas + niveis de
+## temporada liberados. E o numero que o botao "Coletar tudo" mostra.
+static func quantas_a_coletar(s: Dictionary) -> int:
+	var n := 0
+	for grupo in ["diarias", "semanais"]:
+		for mi in (s["missoes"][grupo] as Array):
+			var m: Dictionary = mi
+			if bool(m.get("pronta", false)) and not bool(m.get("coletada", false)):
+				n += 1
+	var t: Dictionary = s["temporada"]
+	var coletadas: Array = t["coletadas"]
+	for r in Dados.temporada:
+		var nivel := int(r.get("nivel", 0))
+		if nivel <= int(t["nivel"]) and not coletadas.has(nivel):
+			n += 1
+	return n
+
+## COLETAR TUDO DE UMA VEZ. Fim de sessao era bracal: cada missao pronta e cada
+## nivel de temporada pedia um clique proprio, e sao ate dez de uma vez depois
+## de uma sessao longa. O criterio ja existia pronto nos dois lados; faltava o
+## botao. Devolve quantas foram coletadas.
+static func coletar_tudo(j) -> int:
+	var s: Dictionary = j.s
+	var n := 0
+	for grupo in ["diarias", "semanais"]:
+		var lista: Array = s["missoes"][grupo]
+		# De tras para frente NAO e necessario (coletar nao remove da lista),
+		# mas o indice tem que ser o mesmo que `coletar_missao` espera.
+		for i in lista.size():
+			if coletar_missao(j, grupo, i):
+				n += 1
+	var t: Dictionary = s["temporada"]
+	for r in Dados.temporada:
+		var nivel := int(r.get("nivel", 0))
+		if nivel <= int(t["nivel"]) and coletar_temporada(j, nivel):
+			n += 1
+	return n
+
 ## ----------------------------------------------------------- temporada
 
 static func xp_para_nivel(n: int) -> int:

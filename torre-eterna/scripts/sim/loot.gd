@@ -126,6 +126,32 @@ static func poeira_de(raridade: String, nivel: int) -> float:
 	var base := float(Bal.POEIRA.get(raridade, 5))
 	return base * (1.0 + 0.6 * float(nivel - 1))
 
+## Quantas cartas do inventario a reciclagem em lote levaria. Mesmo criterio da
+## reciclagem automatica: duplicada, nao equipada e nao melhor do que a que ja
+## esta guardada.
+static func contar_duplicadas(s: Dictionary) -> int:
+	var n := 0
+	for c in (s["cartas"]["inventario"] as Array):
+		if _descartavel(s, c):
+			n += 1
+	return n
+
+## RECICLAR AS DUPLICADAS DE UMA VEZ. O criterio ja existia (`_descartavel`, o
+## mesmo da reciclagem automatica) e so era usado no momento em que a carta cai.
+## Quem nao comprou a automacao juntava dezenas de duplicadas e tinha que
+## reciclar uma por uma, cada uma com dois cliques. Devolve quantas foram.
+static func reciclar_duplicadas(j) -> int:
+	var s: Dictionary = j.s
+	var inv: Array = s["cartas"]["inventario"]
+	var n := 0
+	# De tras para frente: `reciclar` remove do inventario, e um laco crescente
+	# pularia a carta seguinte a cada remocao.
+	for i in range(inv.size() - 1, -1, -1):
+		var c: Dictionary = inv[i]
+		if _descartavel(s, c) and reciclar(j, str(c["uid"])):
+			n += 1
+	return n
+
 static func reciclar(j, uid: String) -> bool:
 	var s: Dictionary = j.s
 	var inv: Array = s["cartas"]["inventario"]

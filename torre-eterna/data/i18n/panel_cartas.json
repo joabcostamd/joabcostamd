@@ -1,258 +1,270 @@
 {
-  "car_dica_poeira": {
-    "pt": "Poeira: sobra de carta reciclada. Serve para fundir as que você resolveu manter.",
-    "en": "Dust: what is left of a recycled card. Use it to fuse the ones you decided to keep."
-  },
-  "car_dica_slots": {
-    "pt": "Slots de carta. Mais slots vêm da relíquia 'Mão Extra'.",
-    "en": "Card slots. More slots come from the 'Spare Hand' relic."
-  },
-  "car_slots_n": {
-    "pt": "Slots  {a}/{b}",
-    "en": "Slots  {a}/{b}"
-  },
-  "car_equipadas": {
-    "pt": "Equipadas",
-    "en": "Equipped"
-  },
-  "car_dica_equipadas": {
-    "pt": "As cartas presas na torre agora. Só elas contam para os atributos.",
-    "en": "The cards bolted to the tower right now. Only these count toward your stats."
-  },
-  "car_inventario": {
-    "pt": "Inventário",
-    "en": "Inventory"
-  },
-  "car_novas_n": {
-    "pt": "· {n} nova(s)",
-    "en": "· {n} new"
-  },
-  "car_ordenar_por": {
-    "pt": "Ordenar por",
-    "en": "Sort by"
-  },
-  "car_ord_raridade": {
-    "pt": "Raridade",
-    "en": "Rarity"
-  },
-  "car_ord_nome": {
-    "pt": "Nome",
-    "en": "Name"
-  },
-  "car_grade_vazia": {
-    "pt": "Nenhuma carta ainda — derrote um chefe. Eles sempre deixam cair alguma peça de si.",
-    "en": "No cards yet — go kill a boss. They always drop a piece of themselves."
-  },
-  "car_aba_detalhe": {
-    "pt": "Detalhe",
-    "en": "Details"
-  },
-  "car_aba_conjuntos": {
-    "pt": "Conjuntos",
-    "en": "Sets"
-  },
-  "car_dica_conjuntos": {
-    "pt": "Equipe as três peças de um conjunto ao mesmo tempo para acender o bônus.",
-    "en": "Equip all three pieces of a set at the same time to light up the bonus."
-  },
-  "car_nv_abrev": {
-    "pt": "Nv",
-    "en": "Lv"
-  },
-  "car_slot_n": {
-    "pt": "slot {n}",
-    "en": "slot {n}"
-  },
-  "car_equipada_slot": {
-    "pt": "equipada no slot {n}",
-    "en": "equipped in slot {n}"
-  },
-  "car_equipada_slot_par": {
-    "pt": "(equipada no slot {n})",
-    "en": "(equipped in slot {n})"
-  },
-  "car_dica_slot_vazio": {
-    "pt": "Slot {n} vazio. Escolha uma carta no inventário e clique em Equipar.",
-    "en": "Slot {n} is empty. Pick a card in the inventory and hit Equip."
-  },
-  "car_toast_escolha": {
-    "pt": "Escolha uma carta no inventário primeiro",
-    "en": "Pick a card from the inventory first"
-  },
-  "car_sel_vazia": {
-    "pt": "Selecione uma carta para inspecionar.",
-    "en": "Select a card to inspect."
-  },
-  "car_sel_vazia_lore": {
-    "pt": "Cada uma é um pedaço de algo que já foi maior. A torre não pergunta de onde vieram.",
-    "en": "Each one is a piece of something that used to be bigger. The tower does not ask where they came from."
-  },
-  "car_efeitos_titulo": {
-    "pt": "Efeitos (já com raridade e nível)",
-    "en": "Effects (rarity and level applied)"
-  },
-  "car_sem_efeitos": {
-    "pt": "Nenhum efeito conhecido. Suspeito.",
-    "en": "No known effects. Suspicious."
-  },
-  "car_no_nivel": {
-    "pt": "No nível {n}: {t}",
-    "en": "At level {n}: {t}"
-  },
-  "car_ef_anulado": {
-    "pt": "{nome} anulado",
-    "en": "{nome} nullified"
-  },
-  "car_conjunto": {
-    "pt": "Conjunto",
-    "en": "Set"
-  },
-  "car_conj_completo": {
-    "pt": "Conjunto completo — bônus ativo.",
-    "en": "Set complete — bonus active."
-  },
-  "car_conj_faltam": {
-    "pt": "Faltam {n} peça(s) equipada(s).",
-    "en": "{n} more piece(s) to equip."
-  },
-  "car_sinergia": {
-    "pt": "Sinergia: combina com {nome}",
-    "en": "Synergy: pairs with {nome}"
-  },
-  "car_equipada_par": {
-    "pt": "(equipada)",
-    "en": "(equipped)"
-  },
-  "car_dica_sinergia": {
-    "pt": "Peças da mesma linhagem. Equipadas juntas, a torre fica mais coerente — e você também.",
-    "en": "Pieces of the same lineage. Equipped together, the tower makes more sense — and so do you."
-  },
-  "car_desequipar": {
-    "pt": "Desequipar",
-    "en": "Unequip"
-  },
-  "car_dica_desequipar": {
-    "pt": "Tira a carta do slot {n}. Ela volta para o inventário.",
-    "en": "Pulls the card out of slot {n}. It goes back to the inventory."
-  },
-  "car_equipar_no_slot": {
-    "pt": "Equipar no slot",
-    "en": "Equip in slot"
-  },
-  "car_slot_livre": {
-    "pt": "Slot {n} — livre",
-    "en": "Slot {n} — free"
-  },
-  "car_slot_troca": {
-    "pt": "Slot {n} — troca com {nome}",
-    "en": "Slot {n} — swaps with {nome}"
-  },
-  "car_nivel_maximo": {
-    "pt": "Nível máximo",
-    "en": "Max level"
-  },
-  "car_fundir_custo": {
-    "pt": "Fundir  —  {n} poeira",
-    "en": "Fuse  —  {n} dust"
-  },
-  "car_dica_fundir": {
-    "pt": "Funde poeira na carta e sobe um nível: cada nível vale +25% do efeito base.",
-    "en": "Fuses dust into the card and raises it one level: each level is worth +25% of the base effect."
-  },
-  "car_reciclar_ganho": {
-    "pt": "Reciclar  —  +{n} poeira",
-    "en": "Recycle  —  +{n} dust"
-  },
-  "car_dica_reciclar": {
-    "pt": "Desmancha a carta em poeira. Não tem volta.",
-    "en": "Grinds the card into dust. No going back."
-  },
-  "car_dica_reciclar_equipada": {
-    "pt": "Desequipe antes de desmanchar.",
-    "en": "Unequip it before scrapping."
-  },
-  "car_desmanchar": {
-    "pt": "Desmanchar",
-    "en": "Scrap"
-  },
-  "car_conf_titulo": {
-    "pt": "Desmanchar {nome}?",
-    "en": "Scrap {nome}?"
-  },
-  "car_conf_texto": {
-    "pt": "{rar} de nível {n} vira {p} de poeira. Não tem volta, e a torre não guarda rancor — você sim.",
-    "en": "A level {n} {rar} becomes {p} dust. No going back, and the tower holds no grudge — you will."
-  },
-  "car_toast_equipou": {
-    "pt": "Módulo acoplado no slot {n}",
-    "en": "Module locked into slot {n}"
-  },
-  "car_toast_falha_equipar": {
-    "pt": "Não deu para equipar",
-    "en": "Could not equip that"
-  },
-  "car_toast_slot_livre": {
-    "pt": "Slot {n} liberado",
-    "en": "Slot {n} freed"
-  },
-  "car_toast_no_teto": {
-    "pt": "Já está no nível máximo",
-    "en": "Already at max level"
-  },
-  "car_toast_fusao": {
-    "pt": "Fusão concluída — nível {n}",
-    "en": "Fusion done — level {n}"
-  },
-  "car_poeira_insuficiente": {
-    "pt": "Poeira insuficiente",
-    "en": "Not enough dust"
-  },
-  "car_toast_poeira": {
-    "pt": "+{n} de poeira",
-    "en": "+{n} dust"
-  },
-  "car_toast_esta_equipada": {
-    "pt": "Essa carta está equipada",
-    "en": "That card is equipped"
-  },
-  "car_auto_reciclar": {
-    "pt": "Reciclar dupl.",
-    "en": "Recycle dupes"
-  },
-  "car_auto_reciclar_dica": {
-    "pt": "Recicla sozinho toda carta duplicada de raridade igual ou pior à que você já tem. Nunca joga fora carta nova nem carta equipada.",
-    "en": "Automatically recycles any duplicate of equal or worse rarity than one you already own. Never discards a new card or an equipped one."
-  },
-  "car_auto_reciclar_bloqueado": {
-    "pt": "Desbloqueie a Bocarra Recicladora nas Relíquias",
-    "en": "Unlock the Recycling Maw in Relics"
-  },
-  "car_consagrar": {
-    "pt": "Consagrar",
-    "en": "Consecrate"
-  },
-  "car_consagrar_dica": {
-    "pt": "Destrói uma cópia de cada carta do conjunto, para sempre, em troca de um multiplicador eterno.",
-    "en": "Destroys one copy of every card in the set, forever, in exchange for an eternal multiplier."
-  },
-  "car_consagrado": {
-    "pt": "Consagrado ×{n}",
-    "en": "Consecrated ×{n}"
-  },
-  "car_cons_titulo": {
-    "pt": "Consagrar {nome}?",
-    "en": "Consecrate {nome}?"
-  },
-  "car_cons_texto": {
-    "pt": "As cartas do conjunto serão destruídas para sempre. Em troca, o Panteão dá +{d}% de dano e +{o}% de ouro, e o bônus nunca é perdido — nem na Transcendência.",
-    "en": "The set's cards will be destroyed forever. In exchange, the Pantheon grants +{d}% damage and +{o}% gold, and the bonus is never lost — not even at Transcendence."
-  },
-  "car_cons_feito": {
-    "pt": "{nome} consagrado. O Panteão lembra.",
-    "en": "{nome} consecrated. The Pantheon remembers."
-  },
-  "car_cons_faltam": {
-    "pt": "Você precisa de uma cópia de cada carta do conjunto.",
-    "en": "You need one copy of every card in the set."
-  }
+ "car_dica_poeira": {
+  "pt": "Poeira: sobra de carta reciclada. Serve para fundir as que você resolveu manter.",
+  "en": "Dust: what is left of a recycled card. Use it to fuse the ones you decided to keep."
+ },
+ "car_dica_slots": {
+  "pt": "Slots de carta. Mais slots vêm da relíquia 'Mão Extra'.",
+  "en": "Card slots. More slots come from the 'Spare Hand' relic."
+ },
+ "car_slots_n": {
+  "pt": "Slots  {a}/{b}",
+  "en": "Slots  {a}/{b}"
+ },
+ "car_equipadas": {
+  "pt": "Equipadas",
+  "en": "Equipped"
+ },
+ "car_dica_equipadas": {
+  "pt": "As cartas presas na torre agora. Só elas contam para os atributos.",
+  "en": "The cards bolted to the tower right now. Only these count toward your stats."
+ },
+ "car_inventario": {
+  "pt": "Inventário",
+  "en": "Inventory"
+ },
+ "car_novas_n": {
+  "pt": "· {n} nova(s)",
+  "en": "· {n} new"
+ },
+ "car_ordenar_por": {
+  "pt": "Ordenar por",
+  "en": "Sort by"
+ },
+ "car_ord_raridade": {
+  "pt": "Raridade",
+  "en": "Rarity"
+ },
+ "car_ord_nome": {
+  "pt": "Nome",
+  "en": "Name"
+ },
+ "car_grade_vazia": {
+  "pt": "Nenhuma carta ainda — derrote um chefe. Eles sempre deixam cair alguma peça de si.",
+  "en": "No cards yet — go kill a boss. They always drop a piece of themselves."
+ },
+ "car_aba_detalhe": {
+  "pt": "Detalhe",
+  "en": "Details"
+ },
+ "car_aba_conjuntos": {
+  "pt": "Conjuntos",
+  "en": "Sets"
+ },
+ "car_dica_conjuntos": {
+  "pt": "Equipe as três peças de um conjunto ao mesmo tempo para acender o bônus.",
+  "en": "Equip all three pieces of a set at the same time to light up the bonus."
+ },
+ "car_nv_abrev": {
+  "pt": "Nv",
+  "en": "Lv"
+ },
+ "car_slot_n": {
+  "pt": "slot {n}",
+  "en": "slot {n}"
+ },
+ "car_equipada_slot": {
+  "pt": "equipada no slot {n}",
+  "en": "equipped in slot {n}"
+ },
+ "car_equipada_slot_par": {
+  "pt": "(equipada no slot {n})",
+  "en": "(equipped in slot {n})"
+ },
+ "car_dica_slot_vazio": {
+  "pt": "Slot {n} vazio. Escolha uma carta no inventário e clique em Equipar.",
+  "en": "Slot {n} is empty. Pick a card in the inventory and hit Equip."
+ },
+ "car_toast_escolha": {
+  "pt": "Escolha uma carta no inventário primeiro",
+  "en": "Pick a card from the inventory first"
+ },
+ "car_sel_vazia": {
+  "pt": "Selecione uma carta para inspecionar.",
+  "en": "Select a card to inspect."
+ },
+ "car_sel_vazia_lore": {
+  "pt": "Cada uma é um pedaço de algo que já foi maior. A torre não pergunta de onde vieram.",
+  "en": "Each one is a piece of something that used to be bigger. The tower does not ask where they came from."
+ },
+ "car_efeitos_titulo": {
+  "pt": "Efeitos (já com raridade e nível)",
+  "en": "Effects (rarity and level applied)"
+ },
+ "car_sem_efeitos": {
+  "pt": "Nenhum efeito conhecido. Suspeito.",
+  "en": "No known effects. Suspicious."
+ },
+ "car_no_nivel": {
+  "pt": "No nível {n}: {t}",
+  "en": "At level {n}: {t}"
+ },
+ "car_ef_anulado": {
+  "pt": "{nome} anulado",
+  "en": "{nome} nullified"
+ },
+ "car_conjunto": {
+  "pt": "Conjunto",
+  "en": "Set"
+ },
+ "car_conj_completo": {
+  "pt": "Conjunto completo — bônus ativo.",
+  "en": "Set complete — bonus active."
+ },
+ "car_conj_faltam": {
+  "pt": "Faltam {n} peça(s) equipada(s).",
+  "en": "{n} more piece(s) to equip."
+ },
+ "car_sinergia": {
+  "pt": "Sinergia: combina com {nome}",
+  "en": "Synergy: pairs with {nome}"
+ },
+ "car_equipada_par": {
+  "pt": "(equipada)",
+  "en": "(equipped)"
+ },
+ "car_dica_sinergia": {
+  "pt": "Peças da mesma linhagem. Equipadas juntas, a torre fica mais coerente — e você também.",
+  "en": "Pieces of the same lineage. Equipped together, the tower makes more sense — and so do you."
+ },
+ "car_desequipar": {
+  "pt": "Desequipar",
+  "en": "Unequip"
+ },
+ "car_dica_desequipar": {
+  "pt": "Tira a carta do slot {n}. Ela volta para o inventário.",
+  "en": "Pulls the card out of slot {n}. It goes back to the inventory."
+ },
+ "car_equipar_no_slot": {
+  "pt": "Equipar no slot",
+  "en": "Equip in slot"
+ },
+ "car_slot_livre": {
+  "pt": "Slot {n} — livre",
+  "en": "Slot {n} — free"
+ },
+ "car_slot_troca": {
+  "pt": "Slot {n} — troca com {nome}",
+  "en": "Slot {n} — swaps with {nome}"
+ },
+ "car_nivel_maximo": {
+  "pt": "Nível máximo",
+  "en": "Max level"
+ },
+ "car_fundir_custo": {
+  "pt": "Fundir  —  {n} poeira",
+  "en": "Fuse  —  {n} dust"
+ },
+ "car_dica_fundir": {
+  "pt": "Funde poeira na carta e sobe um nível: cada nível vale +25% do efeito base.",
+  "en": "Fuses dust into the card and raises it one level: each level is worth +25% of the base effect."
+ },
+ "car_reciclar_ganho": {
+  "pt": "Reciclar  —  +{n} poeira",
+  "en": "Recycle  —  +{n} dust"
+ },
+ "car_dica_reciclar": {
+  "pt": "Desmancha a carta em poeira. Não tem volta.",
+  "en": "Grinds the card into dust. No going back."
+ },
+ "car_dica_reciclar_equipada": {
+  "pt": "Desequipe antes de desmanchar.",
+  "en": "Unequip it before scrapping."
+ },
+ "car_desmanchar": {
+  "pt": "Desmanchar",
+  "en": "Scrap"
+ },
+ "car_conf_titulo": {
+  "pt": "Desmanchar {nome}?",
+  "en": "Scrap {nome}?"
+ },
+ "car_conf_texto": {
+  "pt": "{rar} de nível {n} vira {p} de poeira. Não tem volta, e a torre não guarda rancor — você sim.",
+  "en": "A level {n} {rar} becomes {p} dust. No going back, and the tower holds no grudge — you will."
+ },
+ "car_toast_equipou": {
+  "pt": "Módulo acoplado no slot {n}",
+  "en": "Module locked into slot {n}"
+ },
+ "car_toast_falha_equipar": {
+  "pt": "Não deu para equipar",
+  "en": "Could not equip that"
+ },
+ "car_toast_slot_livre": {
+  "pt": "Slot {n} liberado",
+  "en": "Slot {n} freed"
+ },
+ "car_toast_no_teto": {
+  "pt": "Já está no nível máximo",
+  "en": "Already at max level"
+ },
+ "car_toast_fusao": {
+  "pt": "Fusão concluída — nível {n}",
+  "en": "Fusion done — level {n}"
+ },
+ "car_poeira_insuficiente": {
+  "pt": "Poeira insuficiente",
+  "en": "Not enough dust"
+ },
+ "car_toast_poeira": {
+  "pt": "+{n} de poeira",
+  "en": "+{n} dust"
+ },
+ "car_toast_esta_equipada": {
+  "pt": "Essa carta está equipada",
+  "en": "That card is equipped"
+ },
+ "car_auto_reciclar": {
+  "pt": "Reciclar dupl.",
+  "en": "Recycle dupes"
+ },
+ "car_auto_reciclar_dica": {
+  "pt": "Recicla sozinho toda carta duplicada de raridade igual ou pior à que você já tem. Nunca joga fora carta nova nem carta equipada.",
+  "en": "Automatically recycles any duplicate of equal or worse rarity than one you already own. Never discards a new card or an equipped one."
+ },
+ "car_auto_reciclar_bloqueado": {
+  "pt": "Desbloqueie a Bocarra Recicladora nas Relíquias",
+  "en": "Unlock the Recycling Maw in Relics"
+ },
+ "car_consagrar": {
+  "pt": "Consagrar",
+  "en": "Consecrate"
+ },
+ "car_consagrar_dica": {
+  "pt": "Destrói uma cópia de cada carta do conjunto, para sempre, em troca de um multiplicador eterno.",
+  "en": "Destroys one copy of every card in the set, forever, in exchange for an eternal multiplier."
+ },
+ "car_consagrado": {
+  "pt": "Consagrado ×{n}",
+  "en": "Consecrated ×{n}"
+ },
+ "car_cons_titulo": {
+  "pt": "Consagrar {nome}?",
+  "en": "Consecrate {nome}?"
+ },
+ "car_cons_texto": {
+  "pt": "As cartas do conjunto serão destruídas para sempre. Em troca, o Panteão dá +{d}% de dano e +{o}% de ouro, e o bônus nunca é perdido — nem na Transcendência.",
+  "en": "The set's cards will be destroyed forever. In exchange, the Pantheon grants +{d}% damage and +{o}% gold, and the bonus is never lost — not even at Transcendence."
+ },
+ "car_cons_feito": {
+  "pt": "{nome} consagrado. O Panteão lembra.",
+  "en": "{nome} consecrated. The Pantheon remembers."
+ },
+ "car_cons_faltam": {
+  "pt": "Você precisa de uma cópia de cada carta do conjunto.",
+  "en": "You need one copy of every card in the set."
+ },
+ "car_reciclar_dups": {
+  "pt": "Reciclar duplicadas ({n})",
+  "en": "Recycle duplicates ({n})"
+ },
+ "car_reciclar_dups_dica": {
+  "pt": "Recicla toda carta repetida que não está equipada e não é melhor do que a que você já tem.",
+  "en": "Recycles every duplicate card that is not equipped and not better than what you already hold."
+ },
+ "car_reciclou_dups": {
+  "pt": "{n} duplicada(s) recicladas",
+  "en": "{n} duplicate(s) recycled"
+ }
 }

@@ -419,6 +419,19 @@ func reviver_torre() -> void:
 		Bus.toast(Txt.f("sim_recompra", {"n": recompras - recompras_usadas}), "bom", "escudo")
 	else:
 		diretor.reiniciar_onda(Bal.PENALIDADE_MORTE)
+		# MORRER TINHA QUE CUSTAR, e nao custava: a torre voltava com vida
+		# cheia, escudo cheio e a ARENA LIMPA. Numa onda ruim, deixar a torre
+		# cair era a melhor jogada disponivel — um botao de panico gratuito no
+		# meio de um jogo cuja tensao inteira e "aguentar a onda".
+		#
+		# E o Contrato de Recompra promete, escrito no painel de Reliquias nos
+		# dois idiomas, "ao cair, voce MANTEM TODO O OURO" — uma reliquia de 220
+		# gemas protegendo o jogador de uma perda que nao existia. Agora existe:
+		# quem nao tem o contrato deixa uma parte do ouro nao gasto no chao.
+		var perdido := Big.mul_f(s["moedas"]["ouro"], Bal.PERDA_OURO_MORTE)
+		if not Big.is_zero(perdido):
+			s["moedas"]["ouro"] = Big.sub(s["moedas"]["ouro"], perdido)
+			Bus.toast(Txt.f("sim_perdeu_ouro", {"v": Fmt.big(perdido)}), "ruim", "ouro")
 	Bus.torre_renasceu.emit()
 
 func impacto_na_torre(e: Inimigo) -> void:

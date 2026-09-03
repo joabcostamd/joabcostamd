@@ -1,126 +1,130 @@
 {
-  "purga_sem_carga": {
-    "pt": "A Purga ainda não tem carga.",
-    "en": "The Purge has no charge yet."
-  },
-  "auto_compra_ligada": {
-    "pt": "Compra automática ligada",
-    "en": "Auto-buy on"
-  },
-  "auto_compra_desligada": {
-    "pt": "Compra automática desligada",
-    "en": "Auto-buy off"
-  },
-  "auto_compra_trancada": {
-    "pt": "Desbloqueie a Compra Automática na árvore de Fragmentos",
-    "en": "Unlock Auto-buy in the Fragment tree"
-  },
-  "infinito_ligado": {
-    "pt": "MODO INFINITO — as ondas não param mais",
-    "en": "INFINITE MODE — the waves never stop now"
-  },
-  "infinito_desligado": {
-    "pt": "Modo Infinito desligado",
-    "en": "Infinite Mode off"
-  },
-  "infinito_trancado": {
-    "pt": "Desbloqueie o Vazio Infinito na árvore de Éter",
-    "en": "Unlock the Infinite Void in the Ether tree"
-  },
-  "sim_purga_estourou": {
-    "pt": "O núcleo estourou sozinho — você perdeu a janela.",
-    "en": "The core burst on its own — you missed the window."
-  },
-  "sim_purga_estourou_1a": {
-    "pt": "O núcleo encheu e estourou. Da próxima, solte você.",
-    "en": "The core filled up and burst. Next time, you release it."
-  },
-  "sim_peregrino_chegou": {
-    "pt": "Algo atravessa a arena sem olhar para você.",
-    "en": "Something crosses the arena without looking at you."
-  },
-  "sim_peregrino_poupado": {
-    "pt": "O Peregrino seguiu em frente. A torre registrou.",
-    "en": "The Pilgrim moved on. The tower took note."
-  },
-  "sim_consagrado": {
-    "pt": "{n} consagrado. As cartas se foram; o poder ficou.",
-    "en": "{n} consecrated. The cards are gone; the power stayed."
-  },
-  "sim_retomada_superada": {
-    "pt": "Você já passou de onde parou. E ainda está acelerando.",
-    "en": "You are already past where you stopped. And still accelerating."
-  },
-  "sim_silencio": {
-    "pt": "O Silêncio bloqueou suas habilidades!",
-    "en": "The Silence has blocked your abilities!"
-  },
-  "sim_album": {
-    "pt": "Álbum de Ecos: {n} registrado para sempre.",
-    "en": "Album of Echoes: {n} recorded forever."
-  },
-  "sim_nova_habilidade": {
-    "pt": "Nova habilidade: {n}",
-    "en": "New ability: {n}"
-  },
-  "sim_fenix": {
-    "pt": "A torre renasce das cinzas!",
-    "en": "The tower rises from the ashes!"
-  },
-  "save_falhou": {
-    "pt": "Não consegui salvar. O save anterior foi mantido.",
-    "en": "Could not save. Your previous save was kept."
-  },
-  "sim_conquista": {
-    "pt": "Conquista: {n}{r}",
-    "en": "Achievement: {n}{r}"
-  },
-  "sim_torre_caiu": {
-    "pt": "A torre caiu. Volta em {s}s, {n} onda atrás.",
-    "en": "The tower fell. Back in {s}s, {n} wave behind."
-  },
-  "sim_recompra": {
-    "pt": "Contrato de Recompra: onda mantida. Restam {n} nesta onda.",
-    "en": "Buyback Contract: wave kept. {n} left this wave."
-  },
-  "sim_revive_extra": {
-    "pt": "Segundo fôlego. Restam {n} nesta onda.",
-    "en": "Second wind. {n} left this wave."
-  },
-  "sv_json_invalido": {
-    "pt": "O estado do jogo gerou JSON inválido (número não-finito?). O save anterior foi mantido.",
-    "en": "The game state produced invalid JSON (non-finite number?). The previous save was kept."
-  },
-  "sv_abrir_falhou": {
-    "pt": "Não consegui abrir o arquivo de save (erro {e}).",
-    "en": "Could not open the save file (error {e})."
-  },
-  "sv_grava_incompleta": {
-    "pt": "A gravação do save saiu incompleta (disco cheio?). O save anterior foi mantido.",
-    "en": "The save write came out incomplete (disk full?). The previous save was kept."
-  },
-  "sv_substituir_falhou": {
-    "pt": "Não consegui substituir o arquivo de save.",
-    "en": "Could not replace the save file."
-  },
-  "sv_ilegivel": {
-    "pt": "Encontrei o arquivo de save e não consegui ler nem ele nem o backup.",
-    "en": "I found the save file and could read neither it nor the backup."
-  },
-  "sv_assinatura": {
-    "pt": "Código de save inválido (assinatura não reconhecida).",
-    "en": "Invalid save code (unrecognised signature)."
-  },
-  "sv_incompleto": {
-    "pt": "Código de save incompleto.",
-    "en": "Incomplete save code."
-  },
-  "sv_checksum": {
-    "pt": "Código de save corrompido (checksum não confere).",
-    "en": "Corrupted save code (checksum mismatch)."
-  },
-  "sv_conteudo_ilegivel": {
-    "pt": "Conteúdo do save não pôde ser lido.",
-    "en": "The save contents could not be read."
-  }
+ "purga_sem_carga": {
+  "pt": "A Purga ainda não tem carga.",
+  "en": "The Purge has no charge yet."
+ },
+ "auto_compra_ligada": {
+  "pt": "Compra automática ligada",
+  "en": "Auto-buy on"
+ },
+ "auto_compra_desligada": {
+  "pt": "Compra automática desligada",
+  "en": "Auto-buy off"
+ },
+ "auto_compra_trancada": {
+  "pt": "Desbloqueie a Compra Automática na árvore de Fragmentos",
+  "en": "Unlock Auto-buy in the Fragment tree"
+ },
+ "infinito_ligado": {
+  "pt": "MODO INFINITO — as ondas não param mais",
+  "en": "INFINITE MODE — the waves never stop now"
+ },
+ "infinito_desligado": {
+  "pt": "Modo Infinito desligado",
+  "en": "Infinite Mode off"
+ },
+ "infinito_trancado": {
+  "pt": "Desbloqueie o Vazio Infinito na árvore de Éter",
+  "en": "Unlock the Infinite Void in the Ether tree"
+ },
+ "sim_purga_estourou": {
+  "pt": "O núcleo estourou sozinho — você perdeu a janela.",
+  "en": "The core burst on its own — you missed the window."
+ },
+ "sim_purga_estourou_1a": {
+  "pt": "O núcleo encheu e estourou. Da próxima, solte você.",
+  "en": "The core filled up and burst. Next time, you release it."
+ },
+ "sim_peregrino_chegou": {
+  "pt": "Algo atravessa a arena sem olhar para você.",
+  "en": "Something crosses the arena without looking at you."
+ },
+ "sim_peregrino_poupado": {
+  "pt": "O Peregrino seguiu em frente. A torre registrou.",
+  "en": "The Pilgrim moved on. The tower took note."
+ },
+ "sim_consagrado": {
+  "pt": "{n} consagrado. As cartas se foram; o poder ficou.",
+  "en": "{n} consecrated. The cards are gone; the power stayed."
+ },
+ "sim_retomada_superada": {
+  "pt": "Você já passou de onde parou. E ainda está acelerando.",
+  "en": "You are already past where you stopped. And still accelerating."
+ },
+ "sim_silencio": {
+  "pt": "O Silêncio bloqueou suas habilidades!",
+  "en": "The Silence has blocked your abilities!"
+ },
+ "sim_album": {
+  "pt": "Álbum de Ecos: {n} registrado para sempre.",
+  "en": "Album of Echoes: {n} recorded forever."
+ },
+ "sim_nova_habilidade": {
+  "pt": "Nova habilidade: {n}",
+  "en": "New ability: {n}"
+ },
+ "sim_fenix": {
+  "pt": "A torre renasce das cinzas!",
+  "en": "The tower rises from the ashes!"
+ },
+ "save_falhou": {
+  "pt": "Não consegui salvar. O save anterior foi mantido.",
+  "en": "Could not save. Your previous save was kept."
+ },
+ "sim_conquista": {
+  "pt": "Conquista: {n}{r}",
+  "en": "Achievement: {n}{r}"
+ },
+ "sim_torre_caiu": {
+  "pt": "A torre caiu. Volta em {s}s, {n} onda atrás.",
+  "en": "The tower fell. Back in {s}s, {n} wave behind."
+ },
+ "sim_recompra": {
+  "pt": "Contrato de Recompra: onda mantida. Restam {n} nesta onda.",
+  "en": "Buyback Contract: wave kept. {n} left this wave."
+ },
+ "sim_revive_extra": {
+  "pt": "Segundo fôlego. Restam {n} nesta onda.",
+  "en": "Second wind. {n} left this wave."
+ },
+ "sv_json_invalido": {
+  "pt": "O estado do jogo gerou JSON inválido (número não-finito?). O save anterior foi mantido.",
+  "en": "The game state produced invalid JSON (non-finite number?). The previous save was kept."
+ },
+ "sv_abrir_falhou": {
+  "pt": "Não consegui abrir o arquivo de save (erro {e}).",
+  "en": "Could not open the save file (error {e})."
+ },
+ "sv_grava_incompleta": {
+  "pt": "A gravação do save saiu incompleta (disco cheio?). O save anterior foi mantido.",
+  "en": "The save write came out incomplete (disk full?). The previous save was kept."
+ },
+ "sv_substituir_falhou": {
+  "pt": "Não consegui substituir o arquivo de save.",
+  "en": "Could not replace the save file."
+ },
+ "sv_ilegivel": {
+  "pt": "Encontrei o arquivo de save e não consegui ler nem ele nem o backup.",
+  "en": "I found the save file and could read neither it nor the backup."
+ },
+ "sv_assinatura": {
+  "pt": "Código de save inválido (assinatura não reconhecida).",
+  "en": "Invalid save code (unrecognised signature)."
+ },
+ "sv_incompleto": {
+  "pt": "Código de save incompleto.",
+  "en": "Incomplete save code."
+ },
+ "sv_checksum": {
+  "pt": "Código de save corrompido (checksum não confere).",
+  "en": "Corrupted save code (checksum mismatch)."
+ },
+ "sv_conteudo_ilegivel": {
+  "pt": "Conteúdo do save não pôde ser lido.",
+  "en": "The save contents could not be read."
+ },
+ "sim_perdeu_ouro": {
+  "pt": "A torre caiu — {v} de ouro ficou no chão",
+  "en": "The tower fell — {v} gold left on the ground"
+ }
 }

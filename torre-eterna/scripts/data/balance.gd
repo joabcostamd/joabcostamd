@@ -124,6 +124,12 @@ const ESCUDO_REGEN_POR_PONTO := 0.002
 const IFRAMES := 0.35
 const RESPAWN := 3.0
 const PENALIDADE_MORTE := 1
+## Quanto do ouro NAO GASTO fica no chao quando a torre cai.
+##
+## Um quarto: doi o bastante para deixar a torre cair nunca ser a jogada certa,
+## pouco o bastante para nao apagar uma sessao. Nao toca no que ja virou
+## melhoria — so no que estava parado no cofre.
+const PERDA_OURO_MORTE := 0.25
 const RAIO_TORRE := 34.0
 
 ## Dano (log10) que um inimigo causa ao alcançar a torre.

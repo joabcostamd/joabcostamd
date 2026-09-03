@@ -10,6 +10,7 @@ const SEG_DIA := 86400
 const SEG_SEMANA := 604800
 
 var conteudo: VBoxContainer
+var b_coletar_tudo: Button
 var lbl_diario: Label
 var lbl_semanal: Label
 var lbl_vazio_d: Label
@@ -48,6 +49,16 @@ func montar(c: VBoxContainer) -> void:
 	conteudo = UI.vbox(10)
 	conteudo.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	margem.add_child(conteudo)
+
+	# COLETAR TUDO. Fim de sessao era bracal: cada missao pronta e cada nivel de
+	# temporada pedia o seu proprio clique, e depois de uma sessao longa sao ate
+	# dez. O botao so aparece quando ha o que coletar, e diz quantos.
+	var topo := UI.hbox(8)
+	topo.alignment = BoxContainer.ALIGNMENT_END
+	b_coletar_tudo = UI.botao("", _coletar_tudo)
+	b_coletar_tudo.custom_minimum_size = Vector2(210, 38)
+	topo.add_child(b_coletar_tudo)
+	conteudo.add_child(topo)
 
 	# ---------------------------------------------------------- diárias
 	lbl_diario = UI.rotulo("", 13, UI.TEXTO2)
@@ -349,9 +360,21 @@ func _centralizar_trilha() -> void:
 
 # ---------------------------------------------------------- atualização
 
+func _coletar_tudo() -> void:
+	var n := Progresso.coletar_tudo(jogo)
+	if n <= 0:
+		return
+	Bus.toast(Txt.f("mis_coletou_tudo", {"n": n}), "bom", "missao")
+	UI.pulsar(b_coletar_tudo, UI.VERDE)
+	Bus.ui_atualizar.emit(true)
+
 func atualizar() -> void:
 	if jogo == null or lbl_diario == null:
 		return
+	if b_coletar_tudo != null:
+		var quantas := Progresso.quantas_a_coletar(jogo.s)
+		b_coletar_tudo.visible = quantas > 0
+		b_coletar_tudo.text = Txt.f("mis_coletar_tudo", {"n": quantas})
 	if _assinatura_atual() != assinatura:
 		_reconstruir_missoes()
 

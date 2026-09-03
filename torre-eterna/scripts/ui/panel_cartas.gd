@@ -36,6 +36,7 @@ var lbl_poeira: Label
 var lbl_slots: Label
 var lbl_inv: Label
 var check_reciclar: CheckButton
+var b_reciclar_dups: Button
 var caixa_slots: HBoxContainer
 var grade: GridContainer
 var lbl_grade_vazia: Label
@@ -127,6 +128,15 @@ func montar(c: VBoxContainer) -> void:
 		jogo.s["auto"]["reciclar"] = v
 		jogo.marcar_sujo())
 	linha_inv.add_child(check_reciclar)
+
+	# RECICLAR DUPLICADAS DE UMA VEZ. O criterio (`_descartavel`) ja existia e so
+	# rodava no instante em que a carta cai. Quem nao comprou a automacao juntava
+	# dezenas de duplicadas e reciclava uma por uma, dois cliques cada. So
+	# aparece quando ha duplicada, e diz quantas.
+	b_reciclar_dups = UI.botao("", _reciclar_duplicadas)
+	b_reciclar_dups.custom_minimum_size = Vector2(200, 32)
+	b_reciclar_dups.tooltip_text = Txt.t("car_reciclar_dups_dica")
+	linha_inv.add_child(b_reciclar_dups)
 
 	linha_inv.add_child(UI.rotulo(Txt.t("car_ordenar_por"), 12, UI.TEXTO3))
 	for par in [["raridade", Txt.t("car_ord_raridade")], ["nivel", Txt.t("nivel")], ["nome", Txt.t("car_ord_nome")]]:
@@ -944,9 +954,21 @@ func _atualizar_conjuntos() -> void:
 
 # ---------------------------------------------------------------- atualizar
 
+func _reciclar_duplicadas() -> void:
+	var n := Saque.reciclar_duplicadas(jogo)
+	if n <= 0:
+		return
+	Bus.toast(Txt.f("car_reciclou_dups", {"n": n}), "bom", "poeira")
+	_reconstruir()
+	Bus.ui_atualizar.emit(true)
+
 func atualizar() -> void:
 	if jogo == null or lbl_poeira == null:
 		return
+	if b_reciclar_dups != null:
+		var dups := Saque.contar_duplicadas(jogo.s)
+		b_reciclar_dups.visible = dups > 0
+		b_reciclar_dups.text = Txt.f("car_reciclar_dups", {"n": dups})
 	if _slots() != slots or _assinatura() != assinatura:
 		_reconstruir()
 		return
