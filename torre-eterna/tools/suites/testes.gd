@@ -90,7 +90,7 @@ func rodar(cena: SceneTree) -> void:
 		"Mods": 19, "Numeros de dano": 2, "Offline": 6,
 		"Ondas": 12, "Pista de ouro": 3, "Prestígio": 25,
 		"Progresso": 14, "Saque": 8, "Save": 41,
-		"Celebracao": 25, "Painel de melhorias": 20, "Rodape": 26, "Sistemas": 6, "StatEngine": 5, "Teto": 25, "Áudio": 16,
+		"Celebracao": 25, "Painel de melhorias": 20, "Rodape": 26, "Sistemas": 6, "StatEngine": 5, "Teto": 38, "Áudio": 16,
 	}
 	for nome_g in minimo_por_grupo:
 		var rodou := int(por_grupo.get(nome_g, 0))
@@ -1464,7 +1464,11 @@ func t_teto() -> void:
 	# `tetoFixo`: nivel que vira ENTIDADE nao cresce, senao a onda 200 pediria
 	# 1.191 projeteis por disparo num pool de 800.
 	ok("teto fixo ignora o recorde", Bal.teto_upgrade(14, 400, true) == 14)
-	var contadores := ["multishot", "perfuracao", "ricochete", "orbe"]
+	# Sete melhorias tem teto de projeto: quatro viram ENTIDADE (multishot, orbe,
+	# perfuracao, ricochete) e tres viram ESPACO ou VELOCIDADE (alcance, area,
+	# vel_projetil). Crescer qualquer uma delas custa quadro, nao poder.
+	var contadores := ["multishot", "perfuracao", "ricochete", "orbe",
+		"alcance", "area", "vel_projetil"]
 	for id_c in contadores:
 		var def_c: Dictionary = Dados.upgrade_por_id.get(str(id_c), {})
 		ok("%s existe no catalogo" % id_c, not def_c.is_empty())
@@ -1495,6 +1499,36 @@ func t_teto() -> void:
 	var txt_t := _ler("res://scripts/sim/tower.gd")
 	ok("o disparo usa o teto de projeteis", txt_t.contains("Bal.PROJETEIS_TETO"))
 	ok("os orbes usam o teto de orbes", txt_t.contains("Bal.ORBES_TETO"))
+
+	# O RAIO DE AREA NUNCA PASSA DA DIAGONAL DA ARENA. `em_area` varre celulas da
+	# grade dentro do quadrado do raio: o custo e o raio AO QUADRADO. Medido, a
+	# onda 197 pedia raio 10.944 px numa arena de 1280x720 — 93.000 celulas por
+	# impacto, ~180 impactos por quadro, e o simulador caiu de 40x tempo real
+	# para menos de 1x.
+	var arena_t: Arena = jogo.arena
+	arena_t.limpar_tudo()
+	arena_t.redimensionar(1280.0, 720.0)
+	var perto_a = EnemyAI.criar(Dados.inimigo_por_id["grunhido"], 10, jogo, {})
+	ok("criou o inimigo do teste de area", perto_a != null)
+	if perto_a != null:
+		perto_a.pos = Vector2(700.0, 380.0)
+		arena_t.reconstruir_grade()
+		var t0 := Time.get_ticks_usec()
+		var achados_normal: int = arena_t.em_area(Vector2(640.0, 360.0), 200.0).size()
+		var custo_normal := Time.get_ticks_usec() - t0
+		t0 = Time.get_ticks_usec()
+		var achados_absurdo: int = arena_t.em_area(Vector2(640.0, 360.0), 400000.0).size()
+		var custo_absurdo := Time.get_ticks_usec() - t0
+		ok("um raio de 200 px acha o inimigo", achados_normal == 1)
+		ok("um raio absurdo acha o mesmo inimigo", achados_absurdo == 1)
+		# Sem o corte, 400.000 px dariam 123 milhoes de celulas: a diferenca nao
+		# seria "um pouco mais cara", seria o jogo parando. Duas ordens de
+		# grandeza e folga suficiente para nao virar teste instavel.
+		ok("um raio absurdo nao custa 100x mais que um normal",
+			custo_absurdo <= maxi(400, custo_normal * 100))
+	arena_t.limpar_tudo()
+	var txt_a := _ler("res://scripts/sim/arena.gd")
+	ok("o corte do raio esta em em_area", txt_a.contains("raio = minf(raio, sqrt("))
 
 ## ------------------------------------------------------- defesa da torre
 func t_defesa() -> void:

@@ -184,8 +184,19 @@ func _chave(p: Vector2) -> int:
 	return int(floor(p.x / CELULA)) * 4096 + int(floor(p.y / CELULA))
 
 ## Inimigos dentro de um raio (usa buffer interno — copie se for guardar).
+## REDE DE SEGURANCA: o raio nunca passa da diagonal da arena.
+##
+## `em_area` varre as celulas da grade dentro do quadrado do raio, entao o custo
+## e proporcional ao raio AO QUADRADO. Um raio maior que a arena nao acha um
+## inimigo a mais — so varre celulas vazias. Medido: com o teto de melhoria
+## crescendo, a onda 197 dava raio 10.944 px numa arena de 1280x720, ou seja
+## 93.000 celulas por impacto, ~180 impactos por quadro: dezesseis milhoes de
+## consultas por quadro, e o simulador caiu de 40x tempo real para menos de 1x.
+## O `area` agora tem `tetoFixo` no JSON; isto aqui e para o dia em que alguem
+## mexer noutro numero e nao lembrar deste efeito.
 func em_area(p: Vector2, raio: float) -> Array[Inimigo]:
 	_buffer.clear()
+	raio = minf(raio, sqrt(largura * largura + altura * altura))
 	var c0 := Vector2i(int(floor((p.x - raio) / CELULA)), int(floor((p.y - raio) / CELULA)))
 	var c1 := Vector2i(int(floor((p.x + raio) / CELULA)), int(floor((p.y + raio) / CELULA)))
 	var r2 := raio * raio

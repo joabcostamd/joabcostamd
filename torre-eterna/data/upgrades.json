@@ -149,6 +149,7 @@
    "base": 70,
    "cresc": 1.135,
    "max": 45,
+   "tetoFixo": true,
    "efeito": [
     {
      "stat": "alcance",
@@ -168,6 +169,7 @@
    "base": 55,
    "cresc": 1.12,
    "max": 35,
+   "tetoFixo": true,
    "efeito": [
     {
      "stat": "velProjetil",
@@ -257,6 +259,7 @@
    "base": 1100,
    "cresc": 1.26,
    "max": 45,
+   "tetoFixo": true,
    "efeito": [
     {
      "stat": "area",
