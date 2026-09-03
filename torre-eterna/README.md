@@ -44,7 +44,7 @@ cd torre-eterna
 # Verificação estrutural (todo script compila? dados presentes?)
 godot --headless --path . -s res://tools/verificar.gd
 
-# Suíte de testes da simulação — 112 testes, sem mocks
+# Suíte de testes da simulação — 218 testes, sem mocks
 godot --headless --path . -s res://tools/testes.gd
 
 # Convenções do projeto (emoji na interface, print solto, painel órfão, mídia)
@@ -116,9 +116,11 @@ império enquanto você assiste, com a marca da run anterior para ultrapassar) e
 a **Aglomeração** (o teto de entidades vira economia: tela cheia rende mais).
 
 ### Números
-- **22** tipos de inimigo · **9** modificadores de elite · **10** chefes · **2** super-chefes
+- **23** tipos de inimigo · **9** modificadores de elite · **10** chefes · **2** super-chefes
 - **40** entradas de lore em 8 capítulos · **30** dicas
 - **6** moedas · **6** raridades · **41** atributos de torre
+- **940** chaves de interface e **1.210** textos de conteúdo, em português e inglês
+- **218** testes da simulação · **0** imagem · **0** arquivo de som
 
 ---
 
