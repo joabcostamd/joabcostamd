@@ -39,6 +39,7 @@ var b_mira: Button
 var b_infinito: Button
 var b_farm: Button
 var b_autopurga: Button
+var b_poupar: Button
 var aviso_pontos: Label
 var ic_pontos: Control
 
@@ -337,6 +338,13 @@ func _construir() -> void:
 	# botao so existe quando o desbloqueio existe.
 	b_autopurga = _botao_com_icone("purga", Txt.t("hud_autopurga_dica"), UI.ACENTO2, _alternar_autopurga)
 	acoes.add_child(b_autopurga)
+	# O PEREGRINO SO E DECISAO SE DER PARA POUPAR. A contagem dos dois lados
+	# existia, mas nenhum modo de mira o excluia e nao havia cessar-fogo: a
+	# torre atirava sozinha e a "escolha" se resolvia sempre do mesmo jeito.
+	# O botao aparece so enquanto ha um Peregrino vivo na arena — que e
+	# exatamente quando a decisao existe.
+	b_poupar = _botao_com_icone("coracao", Txt.t("hud_poupar_dica"), UI.VERDE, _alternar_poupar)
+	acoes.add_child(b_poupar)
 	acoes.add_child(_botao_com_icone("salvar", Txt.t("salvar_agora") + " (F5)", UI.TEXTO2, _salvar_agora))
 
 	# a Purga fica à esquerda da barra de habilidades, com destaque próprio
@@ -623,6 +631,14 @@ func _atualizar_lento() -> void:
 	if b_farm != null:
 		b_farm.visible = jogo.esp["desbloqueios"].has("modoFarm")
 		b_farm.modulate = UI.OURO if bool(jogo.s["modo_farm"]) else Color.WHITE
+	if b_poupar != null:
+		var tem_peregrino := false
+		for e in jogo.arena.inimigos:
+			if e.peregrino and e.vivo():
+				tem_peregrino = true
+				break
+		b_poupar.visible = tem_peregrino
+		b_poupar.modulate = UI.VERDE if jogo.arena.poupar_peregrino else Color.WHITE
 	if b_autopurga != null:
 		b_autopurga.visible = jogo.esp["desbloqueios"].has("autoPurga")
 		b_autopurga.modulate = UI.ACENTO2 if bool(Mecanicas.estado_purga(jogo.s)["auto"]) else Color.WHITE
@@ -704,6 +720,13 @@ func _salvar_agora() -> void:
 func _alternar_infinito() -> void:
 	if not jogo.alternar_infinito():
 		Bus.toast(Txt.t("hud_infinito_trancado"), "info", "cadeado")
+
+func _alternar_poupar() -> void:
+	var ligado: bool = not jogo.arena.poupar_peregrino
+	jogo.arena.poupar_peregrino = ligado
+	jogo.s["poupar_peregrino"] = ligado
+	Bus.ui_atualizar.emit(false)
+	Bus.toast(Txt.t("hud_poupar_on" if ligado else "hud_poupar_off"), "info", "coracao")
 
 func _alternar_autopurga() -> void:
 	if not jogo.esp["desbloqueios"].has("autoPurga"):

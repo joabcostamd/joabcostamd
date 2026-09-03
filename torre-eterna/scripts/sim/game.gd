@@ -97,6 +97,10 @@ func iniciar() -> void:
 		s = GameState.mesclar(GameState.novo(), salvo)
 
 	arena.redimensionar(1280.0, 720.0)
+	# A escolha de poupar o Peregrino e do jogador e mora no save: sem esta
+	# linha ela se perdia toda vez que o jogo abria, e uma decisao que o jogo
+	# esquece nao e uma decisao.
+	arena.poupar_peregrino = bool(s.get("poupar_peregrino", false))
 	torre = TorreSim.new(self)
 	diretor = Diretor.new(self)
 

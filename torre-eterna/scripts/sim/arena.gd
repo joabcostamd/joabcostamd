@@ -12,6 +12,15 @@ var largura := 1280.0
 var altura := 720.0
 var centro := Vector2(640, 360)
 
+## Quando ligado, a mira NUNCA escolhe o Peregrino.
+##
+## O README vende o Peregrino como decisao: "matar rende 40x ouro, poupar nao
+## rende nada — o jogo so conta, para sempre, e usa a contagem no final". A
+## contagem existia dos dois lados, mas POUPAR ERA IMPOSSIVEL: nenhum dos modos
+## de mira o excluia e nao havia cessar-fogo. A torre atirava nele
+## automaticamente e a "escolha" se resolvia sozinha, sempre do mesmo jeito.
+var poupar_peregrino := false
+
 var inimigos: Array[Inimigo] = []
 var projeteis: Array[Projetil] = []
 var coletaveis: Array[Coletavel] = []
@@ -222,6 +231,8 @@ func primeiro_colidindo(pos: Vector2, raio: float, ignorar: Dictionary) -> Inimi
 				# mais que a conta que ela faz.
 				if not e.ativo or e.morrendo > 0.0 or e.intangivel > 0.0 or ignorar.has(e.id):
 					continue
+				if poupar_peregrino and e.peregrino:
+					continue
 				var dx := e.pos.x - px
 				var dy := e.pos.y - py
 				var rr := e.raio + raio
@@ -260,6 +271,8 @@ func alvo(origem: Vector2, alcance: float, modo: String = "proximo", excluir: Ar
 	for e in inimigos:
 		if not e.vivo() or e.intangivel > 0.0:
 			continue
+		if poupar_peregrino and e.peregrino:
+			continue
 		if tem_excluir and excluir.has(e):
 			continue
 		var dx := e.pos.x - ox
@@ -293,6 +306,8 @@ func alvo_no_raio(origem: Vector2, raio: float, excluir: Array = []) -> Inimigo:
 	var tem_ex := not excluir.is_empty()
 	for e in em_area(origem, raio):
 		if not e.vivo() or e.intangivel > 0.0:
+			continue
+		if poupar_peregrino and e.peregrino:
 			continue
 		if tem_ex and excluir.has(e):
 			continue
@@ -346,6 +361,8 @@ func alvo_ids(origem: Vector2, alcance: float, ids: Dictionary) -> Inimigo:
 				for item in celula:
 					var e: Inimigo = item
 					if not e.ativo or e.morrendo > 0.0 or e.intangivel > 0.0 or ids.has(e.id):
+						continue
+					if poupar_peregrino and e.peregrino:
 						continue
 					var ddx := e.pos.x - ox2
 					var ddy := e.pos.y - oy2

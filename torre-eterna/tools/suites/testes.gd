@@ -80,7 +80,7 @@ func rodar(cena: SceneTree) -> void:
 		"Acessibilidade": 11, "Alcancavel": 8, "Big": 12,
 		"Chaves dinamicas": 3, "Combate": 9, "Defesa": 27,
 		"Dicas": 5, "Economia": 9, "Elites": 11,
-		"Eventos": 12, "Feedback": 2, "Ferramentas": 3, "Daltonismo": 9, "Tempo": 5, "Conteudo lido": 7, "Fmt": 6,
+		"Eventos": 12, "Feedback": 2, "Ferramentas": 3, "Daltonismo": 9, "Tempo": 5, "Conteudo lido": 11, "Fmt": 6,
 		"Habilidades": 17, "Icones": 2, "Integridade": 9,
 		"Longo prazo": 7, "Mecânicas": 59, "Mira": 6,
 		"Mods": 19, "Numeros de dano": 2, "Offline": 6,
@@ -545,6 +545,38 @@ func t_conteudo_lido() -> void:
 		assinaturas[assin] = str(sc.get("id", ""))
 	ok("cada super-chefe tem luta propria, nao so outra pele",
 		repetidos.is_empty(), str(repetidos))
+
+	# O PEREGRINO SO E ESCOLHA SE DER PARA POUPAR. A contagem dos dois lados
+	# existia (`peregrino_morto` e `peregrino_poupado`), mas nenhum modo de mira
+	# o excluia: a torre atirava sozinha e a decisao que o README vende se
+	# resolvia sempre do mesmo jeito.
+	var arena_p := Arena.new()
+	arena_p.redimensionar(1280.0, 720.0)
+	var def_per: Dictionary = Dados.inimigo_por_id.get("peregrino", {})
+	if def_per.is_empty():
+		for d_i in Dados.inimigos:
+			if bool(d_i.get("peregrino", false)):
+				def_per = d_i
+				break
+	ok("o Peregrino existe no conteudo", not def_per.is_empty())
+	if not def_per.is_empty():
+		jogo.arena.limpar_inimigos()
+		var per := EnemyAI.criar(def_per, 30, jogo, {})
+		if per != null:
+			per.peregrino = true
+			per.pos = Vector2(700.0, 400.0)
+			jogo.arena.reconstruir_grade()
+			jogo.arena.poupar_peregrino = false
+			var mirado = jogo.arena.alvo(jogo.arena.centro, 900.0, "proximo")
+			ok("com a mira normal, a torre escolhe o Peregrino", mirado == per)
+			jogo.arena.poupar_peregrino = true
+			var poupado = jogo.arena.alvo(jogo.arena.centro, 900.0, "proximo")
+			ok("poupando, a mira NAO escolhe o Peregrino", poupado != per,
+				"a escolha do jogador tem que valer")
+			ok("e o projetil no ar tambem respeita",
+				jogo.arena.primeiro_colidindo(per.pos, 40.0, {}) == null)
+			jogo.arena.poupar_peregrino = false
+		jogo.arena.limpar_inimigos()
 
 	# Toda mecanica declarada no conteudo precisa de um braco no codigo.
 	# Varre a simulacao INTEIRA, nao so game.gd: `segmentos` mora em enemy_ai.gd

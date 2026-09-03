@@ -102,5 +102,17 @@
   "hud_autopurga_off": {
     "pt": "Purga automática desligada.",
     "en": "Auto Purge off."
+  },
+  "hud_poupar_dica": {
+    "pt": "Poupar o Peregrino: a torre deixa de mirar nele. Matar rende 40× ouro; poupar não rende nada — o jogo só conta.",
+    "en": "Spare the Pilgrim: the tower stops aiming at it. Killing pays 40× gold; sparing pays nothing — the game just counts."
+  },
+  "hud_poupar_on": {
+    "pt": "A torre vai poupar o Peregrino.",
+    "en": "The tower will spare the Pilgrim."
+  },
+  "hud_poupar_off": {
+    "pt": "A torre vai atirar no Peregrino.",
+    "en": "The tower will shoot the Pilgrim."
   }
 }

@@ -38,6 +38,10 @@ static func novo() -> Dictionary:
 		## (nó "Vazio Infinito"), que prometia isso e não tinha nada por trás.
 		"modo_infinito": false,
 
+		## A torre poupa o Peregrino? Sem isto a "escolha" que o jogo anuncia
+		## se resolvia sozinha: nao havia como nao atirar nele.
+		"poupar_peregrino": false,
+
 		"nivel": 1,
 		"xp": Big.ZERO,
 		"pontos_talento": 0,
