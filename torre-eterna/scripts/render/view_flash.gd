@@ -88,10 +88,22 @@ func _draw() -> void:
 	# inteira e o banner de chefe/prestígio piscava por cima, os dois sem
 	# perguntar nada a ninguém: desligar "Flashes" não desligava nem um nem
 	# outro. Agora os três obedecem à mesma chave.
+	# O BANNER E INFORMACAO, NAO CLARAO — E VOLTA A SOBREVIVER A OPCAO.
+	#
+	# Uma correcao anterior poe os tres (clarao, vinheta e banner) sob a mesma
+	# chave, e para dois deles isso esta certo. Para o banner, nao: ele e um
+	# retangulo preto com fade de 0,35 s, nao pisca nada, e carrega o nome do
+	# chefe e a `dica` dele — a unica orientacao tatica que o jogo da no momento
+	# em que ela serve —, alem do nome e da lore da camada de prestigio. Quem
+	# desligava "Flashes" por fotossensibilidade perdia essa informacao inteira.
+	#
+	# E o mesmo principio que a vinheta ja segue tres linhas abaixo: com
+	# movimento reduzido ela continua avisando do perigo, so que parada. Tira-se
+	# o movimento, nao o aviso.
+	_desenhar_banner(tam)
 	var pode_piscar := bool(Cfg.get_v("flashes", true))
 	if not pode_piscar:
 		return
-	_desenhar_banner(tam)
 	# vinheta vermelha quando a torre está em perigo
 	var torre: Dictionary = jogo.s["torre"]
 	var frac := Big.frac(torre["vida"], torre["vida_max"])

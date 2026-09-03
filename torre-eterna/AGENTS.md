@@ -12,7 +12,7 @@ cd torre-eterna
 godot --headless --path . -s res://tools/verificar.gd       # todo script compila, dados presentes
 godot --headless --path . -s res://tools/lint.gd            # convenções do projeto
 godot --headless --path . -s res://tools/validar_dados.gd   # conteúdo obedece ao contrato
-godot --headless --path . -s res://tools/testes.gd          # 757 testes da simulação
+godot --headless --path . -s res://tools/testes.gd          # 771 testes da simulação
 godot --headless --path . -s res://tools/perf.gd -- 412      # custo de um passo com a arena cheia
 godot --headless --path . -s res://agent_verify.gd          # verificação estrutural do kit
 

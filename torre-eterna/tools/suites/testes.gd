@@ -1706,6 +1706,74 @@ func t_celebracao() -> void:
 			_ler("res://scripts/ui/panel_codex.gd").contains("g2.columns = 2"),
 			"tres fichas de elite somam ~880 px e estouram a coluna")
 
+	# --- SETE ACHADOS DO JUIZ DE JUICE, cada um com o portao dele ---
+
+	# 1. O overkill chegava sempre no piso do clamp: `Combate.matar` so emite
+	# acima de 0,25 e limita em `OVERKILL_TETO` = 0,5, entao a fracao esta
+	# SEMPRE em (0,25 .. 0,50]. Dividir por 6 dava no maximo 0,083 e o piso 0,15
+	# vencia em 100% dos casos — os dois ramos de feedback (> 0,45 e > 0,8)
+	# eram codigo morto e matar com mil vezes o dano necessario produzia a mesma
+	# imagem que matar com 26% de sobra.
+	var forca_ok := func(frac: float) -> float:
+		return clampf((clampf(frac, 0.0, Bal.OVERKILL_TETO) - 0.25) * 4.0, 0.12, 1.0)
+	ok("overkill fraco fica embaixo", perto(float(forca_ok.call(0.26)), 0.12, 0.02),
+		str(forca_ok.call(0.26)))
+	ok("overkill no teto chega no maximo", perto(float(forca_ok.call(0.5)), 1.0, 1e-9),
+		str(forca_ok.call(0.5)))
+	ok("e o ramo do tremor volta a ser alcancavel", float(forca_ok.call(0.37)) > 0.45,
+		str(forca_ok.call(0.37)))
+	ok("assim como o do zoom", float(forca_ok.call(0.47)) > 0.8, str(forca_ok.call(0.47)))
+	var fonte_vc := _ler("res://scripts/render/view_campo.gd")
+	ok("a conta do overkill usa a faixa que de fato chega",
+		fonte_vc.contains("clampf((f - 0.25) * 4.0, 0.12, 1.0)"),
+		"dividir por 6 deixa os dois ramos mortos de novo")
+
+	# 2. Todo projetil com area tremia a tela, e a guarda de amplitude do Juice
+	# entao engolia o tremor do critico e o da morte de dourado.
+	ok("o tiro de rotina nao treme a tela",
+		_ler("res://scripts/sim/tower.gd").contains('"tremor": false'),
+		"sem a marca, a explosao do proprio tiro sacode a tela sem parar")
+	ok("e quem desenha respeita a marca",
+		fonte_vc.contains('if bool(dados.get("tremor", true)):'))
+
+	# 3. "Movimento reduzido" prometia tirar movimento e nao tirava o zoom.
+	var fonte_j := _ler("res://scripts/render/juice.gd")
+	ok("o zoom respeita movimento reduzido",
+		fonte_j.contains("zoom = 1.0 + forca * Cfg.forca_tremor()"),
+		"escalar a tela inteira e o movimento que mais provoca enjoo")
+	# Em CODIGO, nao no texto: o comentario que explica por que ela saiu deve
+	# continuar la — e ele cita o nome.
+	ok("e a aberracao morta saiu junto",
+		not _sem_comentario(fonte_j).contains("aberracao"),
+		"era escrita, decaida e nunca lida")
+
+	# 4. O hitstop contava no relogio escalado: 0,64 s de tela parada com camera
+	# lenta, e 40 ms com o turbo — o oposto do que ele existe para fazer.
+	ok("o hitstop conta em segundo de verdade",
+		_ler("res://scripts/sim/game.gd").contains("hitstop -= delta / maxf(0.05, Engine.time_scale)"),
+		"com delta cru, a camera lenta multiplica o congelamento por quatro")
+
+	# 5. A comemoracao cobria o banner do chefe justamente nas ondas de virada
+	# de era, que sao multiplas de 10 e portanto ondas de chefe.
+	var fonte_cel2 := _ler("res://scripts/ui/celebracao.gd")
+	ok("a comemoracao escuta o banner cinematografico",
+		fonte_cel2.contains("Bus.banner_cinematico.connect"))
+	ok("e espera ele sair", fonte_cel2.contains("if _banner_ate > 0.0:\n\t\treturn true"))
+
+	# 6. Desligar "Flashes" apagava a apresentacao inteira do chefe junto com os
+	# claroes — e com ela a dica tatica e o nome da camada de prestigio.
+	var fonte_vf := _ler("res://scripts/render/view_flash.gd")
+	var i_banner: int = fonte_vf.find("_desenhar_banner(tam)")
+	var i_piscar: int = fonte_vf.find("var pode_piscar := bool(Cfg.get_v(\"flashes\", true))")
+	ok("o banner e desenhado antes da guarda de flashes",
+		i_banner > 0 and i_piscar > 0 and i_banner < i_piscar,
+		"banner em %d, guarda em %d" % [i_banner, i_piscar])
+
+	# 7. A queda da torre tinha tremor, clarao, explosao e camera lenta; a volta
+	# tinha um som e mais nada.
+	ok("a volta da torre tem visual", fonte_vc.contains("Bus.torre_renasceu.connect"),
+		"o unico ouvinte do sinal era o motor de audio")
+
 	# COMEMORACAO EM ANDAMENTO NAO PODE ESCREVER POR CIMA DE PAINEL ABERTO.
 	#
 	# A guarda existia e so impedia de COMECAR. Uma que ja estava rodando seguia

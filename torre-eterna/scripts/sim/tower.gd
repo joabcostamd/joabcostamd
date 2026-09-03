@@ -364,7 +364,9 @@ func _impacto(p: Projetil, alvo: Inimigo) -> bool:
 		Combate.dano_area(p.pos, p.area, Big.mul_f(p.dano, 0.6), j, {
 			"crit": p.critico, "penetracao": opt["penetracao"], "queda": true, "ignorar": [alvo],
 		})
-		Bus.particulas.emit("explosao", p.pos, {"raio": p.area, "cor": p.cor})
+		# `tremor: false`: o estilhaco do proprio tiro acontece dezenas de vezes
+		# por segundo e nao pode sacudir a tela (ver `view_campo._ao_particulas`).
+		Bus.particulas.emit("explosao", p.pos, {"raio": p.area, "cor": p.cor, "tremor": false})
 	else:
 		Bus.particulas.emit("impacto", p.pos, {"ang": p.ang, "cor": p.cor, "crit": p.critico})
 

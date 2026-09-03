@@ -27,6 +27,15 @@ func _conectar() -> void:
 	Bus.inimigo_morreu.connect(_ao_morrer)
 	Bus.torre_atingida.connect(_ao_torre_atingida)
 	Bus.torre_caiu.connect(_ao_torre_cair)
+	# A QUEDA TINHA TUDO E A VOLTA NAO TINHA NADA.
+	#
+	# `torre_caiu` da tremor 34, clarao, explosao de 220 px e camera lenta de
+	# 900 ms. `torre_renasceu` tinha um unico ouvinte no repositorio inteiro: o
+	# motor de audio. Depois dos tres segundos de espera anunciados no aviso, a
+	# torre voltava a atirar em silencio visual completo — quem estivesse
+	# olhando outra coisa nao tinha marca nenhuma do instante. E um arco que o
+	# jogo abre com forca e nao fecha.
+	Bus.torre_renasceu.connect(_ao_torre_renascer)
 	Bus.particulas.connect(_ao_particulas)
 	Bus.tremor_pedido.connect(func(a, d): juice.tremer(a, d))
 	Bus.camera_lenta.connect(func(e, ms): juice.camera_lenta(e, ms))
@@ -116,8 +125,22 @@ func _ao_combo(v: int) -> void:
 ## Overkill: o excesso de dano vira estilhaco e um anel que cresce com o exagero.
 ## O sinal existia, era emitido pela simulacao, e ninguem escutava.
 func _ao_overkill(e, fracao: float) -> void:
-	var f := clampf(fracao, 0.0, 12.0)
-	var forca := clampf(f / 6.0, 0.15, 1.0)
+	# A FAIXA QUE CHEGA AQUI E ESTREITA, E A CONTA ESPERAVA UMA LARGA.
+	#
+	# `Combate.matar` so emite quando a fracao passa de 0,25 e a limita a
+	# `Bal.OVERKILL_TETO` = 0,5. Ou seja, `fracao` esta SEMPRE em (0,25 .. 0,50].
+	# Dividir por 6 dava no maximo 0,083, e o piso de 0,15 do `clampf` vencia em
+	# 100% dos casos: `forca` era a constante 0,15, os dois ramos abaixo (`>
+	# 0,45` e `> 0,8`) nunca rodavam, e a contagem de estilhacos era sempre 9.
+	# Matar com mil vezes o dano necessario produzia exatamente a mesma imagem
+	# que matar com 26% de sobra — o exagero estava desligado sem parecer
+	# desligado. O `clampf(fracao, 0.0, 12.0)` original mostra que a conta foi
+	# escrita esperando valores ate 12, que nunca existiram.
+	#
+	# Agora a faixa real e esticada sobre 0..1, com um piso pequeno para o
+	# overkill mais fraco ainda ler como alguma coisa.
+	var f := clampf(fracao, 0.0, Bal.OVERKILL_TETO)
+	var forca := clampf((f - 0.25) * 4.0, 0.12, 1.0)
 	particulas.estilhaco(e.pos, e.cor, int(6.0 + forca * 22.0), 220.0 + forca * 420.0)
 	particulas.anel(e.pos, Color(1, 0.95, 0.75, 0.9), e.raio * (3.0 + forca * 5.0), 0.2, 3.5)
 	if forca > 0.45:
@@ -168,6 +191,11 @@ func _ao_onda_falhou(_n: int) -> void:
 ## Comemoracao curta na torre: anel + faisca + um empurrao de camera. Serve a
 ## conquista, missao, nivel e carta — eventos diferentes, mesma gramatica visual,
 ## para o jogador aprender a ler "ganhei algo" sem precisar de texto.
+## A torre volta: anel verde, faiscas e um pulso curto. Deliberadamente MENOR
+## que a queda — voltar e alivio, nao catastrofe.
+func _ao_torre_renascer() -> void:
+	_celebrar(Color("#4ade80"), 0.12, 4.0, 0.02)
+
 func _celebrar(cor: Color, flash_forca: float, tremor: float, zoom: float) -> void:
 	var c: Vector2 = jogo.arena.centro
 	particulas.anel(c, cor, 200.0, 0.5, 3.5)
@@ -192,7 +220,19 @@ func _ao_particulas(tipo: String, pos: Vector2, dados: Dictionary) -> void:
 			particulas.impacto(pos, float(dados.get("ang", 0.0)), cor, bool(dados.get("crit", false)))
 		"explosao":
 			particulas.explosao(pos, float(dados.get("raio", 60.0)), cor)
-			juice.tremer(clampf(float(dados.get("raio", 60.0)) * 0.05, 2.0, 12.0), 0.2)
+			# TREMER SO NO QUE E EVENTO, NAO NO QUE E ROTINA.
+			#
+			# Todo projetil com area emitia "explosao", e o `clampf` tem PISO
+			# 2,0: mesmo a Carga Explosiva de nivel 1 tremia. Com cadencia alta
+			# a janela de 0,2 s era reposta antes de expirar e a tela tremia
+			# SEM PARAR, num jogo que se olha por horas. Pior: a guarda
+			# `amplitude <= tremor_amp * 0.6` do `Juice.tremer` descarta o que
+			# for menor que o tremor em curso — com area alta, o tremor do
+			# critico (2,6) e o da morte de dourado (4,0) paravam de acontecer.
+			# Os dois unicos tremores que diziam "aconteceu algo especial"
+			# sumiam, trocados por um chacoalho de fundo que nao informa nada.
+			if bool(dados.get("tremor", true)):
+				juice.tremer(clampf(float(dados.get("raio", 60.0)) * 0.05, 2.0, 12.0), 0.2)
 		"pulso":
 			particulas.anel(pos, cor, float(dados.get("raio", 80.0)), 0.5, 3.0)
 		"faisca":

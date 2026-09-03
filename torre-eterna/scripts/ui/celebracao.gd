@@ -68,6 +68,7 @@ func _ready() -> void:
 	# acabou nao fazem mais sentido) e SO ENTAO entra a dele.
 	Bus.prestigio_feito.connect(_ao_prestigio)
 	Bus.era_mudou.connect(_ao_era)
+	Bus.banner_cinematico.connect(func(seg: float): _banner_ate = maxf(_banner_ate, float(seg)))
 	set_process(true)
 
 func _ao_prestigio(camada: String, ganho: float) -> void:
@@ -99,8 +100,26 @@ func _ao_celebrar(tipo: String, dados: Dictionary) -> void:
 ## Com um painel aberto a comemoração espera. Ela é desenhada acima de tudo (a
 ## camada de UI inteira) e, sem esta guarda, cobria o painel que o jogador
 ## estava lendo — o oposto do que uma comemoração deve fazer.
+## Quanto tempo ainda resta de banner cinematografico na tela.
+var _banner_ate := 0.0
+
 func _ocupado() -> bool:
 	if gerente != null and is_instance_valid(gerente) and str(gerente.atual) != "":
+		return true
+	# O BANNER DO CHEFE E A COMEMORACAO DISPUTAM A MESMA FAIXA DA TELA.
+	#
+	# O banner ocupa de 26% a 26%+74px da altura; a comemoracao desenha um veu
+	# de tela cheia, catorze raios e dois aneis em volta do centro, cobrindo
+	# essa faixa de ponta a ponta. E o encontro nao e raro: `waves.gd` emite
+	# `era_mudou` uma linha antes de `onda_iniciou`, e as eras comecam em ondas
+	# multiplas de 10 — que sao ondas de chefe. Nessas ondas o nome do chefe e a
+	# dica dele, unica orientacao tatica que o jogo da na hora que serve, saiam
+	# por baixo dos raios. O marco de melhoria cai na mesma armadilha sempre que
+	# a pessoa gasta ouro no comeco de uma onda de chefe.
+	#
+	# Os avisos de rodape ja aprenderam a fugir do banner do mesmo jeito (ver
+	# `panel_manager`); a comemoracao so nao tinha sido ensinada.
+	if _banner_ate > 0.0:
 		return true
 	return get_tree().paused
 
@@ -122,6 +141,8 @@ func _process(dt: float) -> void:
 	# estiver aberto, e volta de onde parou quando ele fechar. Deixar o relógio
 	# correndo escondido seria pior — a pessoa perderia a comemoração inteira
 	# sem nunca vê-la.
+	if _banner_ate > 0.0:
+		_banner_ate = maxf(0.0, _banner_ate - dt)
 	var ocupado := _ocupado()
 	if ocupado:
 		if not _estava_ocupado:

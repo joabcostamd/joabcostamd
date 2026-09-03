@@ -12,7 +12,6 @@ var zoom := 1.0
 var zoom_alvo := 1.0
 var flash_cor := Color(1, 1, 1, 0)
 var flash_forca := 0.0
-var aberracao := 0.0
 var rng := RngX.new()
 var _timer_lenta := 0.0
 
@@ -55,9 +54,19 @@ func flash(cor: Color, forca: float) -> void:
 	flash_cor = cor
 	flash_forca = maxf(flash_forca, forca)
 
+## O ZOOM TAMBEM E MOVIMENTO, E A OPCAO PROMETE TIRAR MOVIMENTO.
+##
+## "Movimento reduzido" zerava o tremor e cortava particulas, e o zoom escapava
+## inteiro: com a opcao LIGADA a tela ainda pulsava a cada morte de chefe, Nova,
+## Purga, nivel novo, conquista, missao, carta lendaria, onda limpa e a cada 25
+## de combo. Escalar o campo de visao inteiro e justamente o movimento que
+## provoca enjoo — quem liga a opcao por necessidade continuava sem poder jogar,
+## e a promessa escrita no painel era falsa.
+##
+## `aberracao` saiu junto: era escrita aqui, decaida no `atualizar`, e nunca
+## lida por ninguem.
 func zoom_punch(forca: float) -> void:
-	zoom = 1.0 + forca
-	aberracao = maxf(aberracao, forca * 2.4)
+	zoom = 1.0 + forca * Cfg.forca_tremor()
 
 ## A camera lenta e um FATOR, nao um relogio.
 ##
@@ -102,7 +111,6 @@ func atualizar(dt: float, velocidade_base: float) -> void:
 
 	zoom = lerpf(zoom, zoom_alvo, minf(1.0, dt_real * 9.0))
 	flash_forca = maxf(0.0, flash_forca - dt_real * 3.2)
-	aberracao = maxf(0.0, aberracao - dt_real * 4.0)
 
 	if _timer_lenta > 0.0:
 		_timer_lenta -= dt_real

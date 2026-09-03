@@ -152,7 +152,20 @@ func _cartao(def: Dictionary) -> Control:
 
 	var cx := UI.painel(UI.PAINEL2.darkened(0.16), 12)
 	cx.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	cx.custom_minimum_size = Vector2(490, 0)
+	# A FICHA NAO PEDE LARGURA: ELA ACEITA A QUE SOBRAR.
+	#
+	# Ela pedia 490 px de minimo, e os minimos dos filhos (texto a 270, coluna
+	# de compra a 156) somavam mais que isso. Duas fichas assim nao cabiam nos
+	# ~1.190 px do painel: em portugues o botao "Comprar" virava "Com", o "Max"
+	# virava "Ma" e sobrava barra de rolagem horizontal. Baixar os numeros um
+	# pouco so diminuiu o corte — a conta continuava estourando, porque a soma
+	# de minimos e que mandava.
+	#
+	# Sem minimo proprio, a grade divide a largura do painel em duas colunas
+	# iguais (~590 cada) e a ficha se ajusta: sobra folga para o texto nos dois
+	# idiomas e os botoes ficam inteiros. Os minimos dos filhos continuam la
+	# como piso.
+	cx.custom_minimum_size = Vector2(0, 0)
 
 	var h := UI.hbox(10)
 	cx.add_child(h)
@@ -179,33 +192,33 @@ func _cartao(def: Dictionary) -> Control:
 
 	var ldesc := UI.rotulo(txt(def, "desc"), 12, UI.TEXTO2)
 	ldesc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	ldesc.custom_minimum_size.x = 270
+	ldesc.custom_minimum_size.x = 235
 	v.add_child(ldesc)
 
 	var latual := UI.rotulo("", 12, UI.VERDE)
 	latual.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	latual.custom_minimum_size.x = 270
+	latual.custom_minimum_size.x = 235
 	v.add_child(latual)
 
 	var lprox := UI.rotulo("", 11, UI.ACENTO)
 	lprox.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	lprox.custom_minimum_size.x = 270
+	lprox.custom_minimum_size.x = 235
 	v.add_child(lprox)
 
 	var lbloq := UI.rotulo("", 12, UI.LARANJA)
 	lbloq.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	lbloq.custom_minimum_size.x = 270
+	lbloq.custom_minimum_size.x = 235
 	lbloq.visible = false
 	v.add_child(lbloq)
 
 	var llore := UI.rotulo("“" + txt(def, "lore") + "”", 11, UI.TEXTO3)
 	llore.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	llore.custom_minimum_size.x = 270
+	llore.custom_minimum_size.x = 235
 	v.add_child(llore)
 
 	# --- compra ---
 	var d := UI.vbox(4)
-	d.custom_minimum_size.x = 156
+	d.custom_minimum_size.x = 140
 	d.alignment = BoxContainer.ALIGNMENT_CENTER
 	h.add_child(d)
 
@@ -218,10 +231,10 @@ func _cartao(def: Dictionary) -> Control:
 	d.add_child(linha_custo)
 
 	var b1 := UI.botao(Txt.t("comprar"), func(): _comprar(id, 1), Txt.t("rel_dica_comprar_1"))
-	b1.custom_minimum_size = Vector2(150, 34)
+	b1.custom_minimum_size = Vector2(132, 34)
 	d.add_child(b1)
 	var bm := UI.botao(Txt.t("rel_btn_max"), func(): _comprar(id, -1), Txt.t("rel_dica_comprar_max"))
-	bm.custom_minimum_size = Vector2(150, 28)
+	bm.custom_minimum_size = Vector2(132, 28)
 	bm.add_theme_font_size_override("font_size", 13)
 	d.add_child(bm)
 

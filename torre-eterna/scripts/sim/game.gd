@@ -227,7 +227,17 @@ func sincronizar_torre(cheia: bool) -> void:
 
 func _process(delta: float) -> void:
 	if hitstop > 0.0:
-		hitstop -= delta
+		# O HITSTOP CONTA EM SEGUNDO DE VERDADE, NAO EM SEGUNDO DE JOGO.
+		#
+		# `delta` chega multiplicado por `Engine.time_scale`, e a camera lenta
+		# mexe exatamente nesse fator — o Juice ja foi consertado por isso, o
+		# hitstop tinha ficado no relogio antigo. O Julgamento pede
+		# `hitstop_ms(160)` E `camera_lenta(0.25, 700)` no mesmo instante: a
+		# 0,25x os 0,16 s viravam 0,64 s de simulacao TOTALMENTE parada, e a
+		# habilidade mais forte do jogo lia como travamento. Do outro lado, com
+		# o turbo em 4x o mesmo hitstop durava 40 ms — o impacto evaporava bem
+		# quando havia mais coisa na tela.
+		hitstop -= delta / maxf(0.05, Engine.time_scale)
 
 func _physics_process(dt: float) -> void:
 	if not iniciado or pausado or hitstop > 0.0:
