@@ -75,12 +75,33 @@ func rodar(cena: SceneTree) -> void:
 	print("tempo | onda | ouro | dano | vida | inimigos | nivel | frag")
 
 	var onda_no_terco := 0
+	## Onda em que TODAS as melhorias com teto ficaram no maximo. -1 = nunca.
+	var onda_catalogo_vazio := -1
 	var passo_do_terco := int(float(passos) * 0.66)
 	for i in passos:
 		if i == passo_do_terco:
 			onda_no_terco = int(j.s["onda_maxima"])
 		j.simular(DT)
 		# compra automática básica para simular um jogador ativo
+		# QUANDO o catalogo esvaziou, nao SE ele esta vazio no fim.
+		#
+		# O portao perguntava `onda_maxima < ONDA_CATALOGO_VIVO` no FIM da
+		# simulacao. Se o catalogo esvaziasse na onda 67 e o jogador seguisse ate
+		# a 261, a conta dava 261 >= 200 e o portao passava — medindo onde o
+		# jogador chegou em vez de quando a tela de melhorias ficou sem decisao,
+		# que e a pergunta que a rubrica faz.
+		if onda_catalogo_vazio < 0 and i % 120 == 0:
+			var cheio := 0
+			var teto_tot := 0
+			for def_u in Dados.upgrades:
+				var mx := int(def_u.get("max", -1))
+				if mx < 0:
+					continue
+				teto_tot += 1
+				if int(j.s["upgrades"].get(str(def_u.get("id", "")), 0)) >= Bal.teto_upgrade(mx, int(j.s["onda_maxima_global"])):
+					cheio += 1
+			if teto_tot > 0 and cheio >= teto_tot:
+				onda_catalogo_vazio = int(j.s["onda_maxima"])
 		if i % 20 == 0:
 			if auto_tudo:
 				# A automação do JOGO só compra melhoria com ouro. Talento,
@@ -204,9 +225,11 @@ func rodar(cena: SceneTree) -> void:
 	# economia — está nomeado como trabalho futuro, não escondido atrás de um
 	# número que passa.
 	const ONDA_CATALOGO_VIVO := 200
-	if com_teto > 0 and no_teto >= com_teto and int(j.s["onda_maxima"]) < ONDA_CATALOGO_VIVO:
-		falhas.append("catalogo esvaziou na onda %d, antes da %d" % [
-			int(j.s["onda_maxima"]), ONDA_CATALOGO_VIVO])
+	if onda_catalogo_vazio >= 0:
+		print("catalogo esvaziou na onda %d" % onda_catalogo_vazio)
+	if onda_catalogo_vazio >= 0 and onda_catalogo_vazio < ONDA_CATALOGO_VIVO:
+		falhas.append("catalogo esvaziou na onda %d, antes da %d — a tela de melhorias fica sem decisao a partir dai" % [
+			onda_catalogo_vazio, ONDA_CATALOGO_VIVO])
 
 	for f in falhas:
 		print("  FALHOU: ", f)

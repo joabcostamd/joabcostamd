@@ -411,6 +411,15 @@ static func atualizar(dt: float, j) -> void:
 			vel *= (1.0 - e.gelo_forca)
 		if e.atordoado > 0.0 or j.tempo_congelado > 0.0:
 			vel = 0.0
+		# ATIRADOR PARA PARA ATIRAR. A primeira versao do `cuspir` deixava ele
+		# fazer as DUAS coisas: disparava de 420px E continuava avancando para
+		# bater na torre. O portao de balanceamento reprovou na hora — a onda
+		# maxima caiu de 261 para 97 —, e estava certo: acordar uma habilidade
+		# morta nao pode significar somar o dano novo em cima de todo o antigo.
+		# Quem atira de longe nao encosta; e por isso que atirador e uma ameaca
+		# diferente de um bruto, e nao um bruto que tambem atira.
+		if e.hab == "cuspir" and e.pos.distance_to(j.arena.centro) <= float(e.def.get("alcance", 420.0)):
+			vel = 0.0
 		e.velocidade = vel
 
 		if e.elite_mod == "regenerativo" and Big.lt(e.hp, e.hp_max):
