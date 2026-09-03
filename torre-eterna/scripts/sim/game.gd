@@ -514,6 +514,35 @@ func atualizar_chefe(e: Inimigo, dt: float) -> void:
 		"engolir":
 			# "Engole projeteis e coletaveis, e engorda com cada gole."
 			_engolir(e, dt)
+		"combinado_vazio":
+			# O TRONO VAZIO. Ele e o `aniquilador` declaravam `mecanica`, `fases`
+			# e `invoca` IDENTICOS e caiam no mesmo braco: eram o mesmo chefe com
+			# duas peles e dois nomes. Pior, a dica do Trono promete "Fissuras +
+			# silencio: leve armadura e vida" — e fissura era coisa que a luta
+			# nao tinha, entao o conselho mandava o jogador se preparar para algo
+			# inexistente.
+			#
+			# Agora ele e o oposto do Aniquilador: invoca pouco, mas ABRE FISSURAS
+			# — drena o escudo da torre e amplifica o dano que ela recebe — e
+			# silencia desde a primeira fase. Contra o Aniquilador se guarda
+			# habilidade; contra o Trono se leva armadura e vida, que e
+			# exatamente o que a dica sempre disse.
+			e.cd -= dt
+			if e.cd <= 0.0:
+				e.cd = maxf(2.6, 6.0 - 0.6 * float(e.fase))
+				dano_na_torre(Bal.mul_contato(e, int(s["onda"]), 1.15, s["torre"]["vida_max"]), e)
+				Bus.particulas.emit("pulso", e.pos, {"raio": 300.0, "cor": "#a855f7"})
+				tremor(11.0, 0.34)
+				silenciado = maxf(silenciado, 2.0 + 0.6 * float(e.fase))
+				if e.fase >= 2:
+					_invocar_do_chefe(e, 1)
+			# A fissura come o escudo: o que protege some antes do que dói.
+			var t_tr: Dictionary = s["torre"]
+			if not Big.is_zero(t_tr["escudo"]):
+				t_tr["escudo"] = Big.max_b(Big.ZERO,
+					Big.sub(t_tr["escudo"], Big.mul_f(t_tr["escudo_max"], 0.22 * dt)))
+			if e.fase >= 1:
+				_engolir(e, dt)
 		"combinado":
 			# "Tudo que o Enxame aprendeu, ao mesmo tempo, em fases." Cada fase
 			# acrescenta uma mecanica em vez de trocar: e o que "ao mesmo tempo"

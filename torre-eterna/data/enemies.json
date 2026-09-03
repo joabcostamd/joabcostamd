@@ -757,14 +757,12 @@
       "ouro": 1.3,
       "vel": 0.42,
       "fases": 5,
-      "mecanica": "combinado",
+      "mecanica": "combinado_vazio",
       "lore": "Não ataca a torre. Ataca a ideia de que ela deveria existir.",
       "loreEn": "It does not attack the tower. It attacks the idea of it.",
       "dica": "Fissuras + silêncio: leve armadura e vida.",
       "dicaEn": "Rifts plus silence: bring armor and health.",
       "invoca": [
-        "bruto",
-        "coloso",
         "voador",
         "enxame"
       ],

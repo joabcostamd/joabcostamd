@@ -80,7 +80,7 @@ func rodar(cena: SceneTree) -> void:
 		"Acessibilidade": 11, "Alcancavel": 8, "Big": 12,
 		"Chaves dinamicas": 3, "Combate": 9, "Defesa": 27,
 		"Dicas": 5, "Economia": 9, "Elites": 11,
-		"Eventos": 12, "Feedback": 2, "Ferramentas": 3, "Daltonismo": 9, "Tempo": 5, "Conteudo lido": 5, "Fmt": 6,
+		"Eventos": 12, "Feedback": 2, "Ferramentas": 3, "Daltonismo": 9, "Tempo": 5, "Conteudo lido": 7, "Fmt": 6,
 		"Habilidades": 17, "Icones": 2, "Integridade": 9,
 		"Longo prazo": 7, "Mecânicas": 59, "Mira": 6,
 		"Mods": 19, "Numeros de dano": 2, "Offline": 6,
@@ -530,6 +530,38 @@ func t_conteudo_lido() -> void:
 			sem_leitor.append(campo)
 	ok("campo de conteudo declarado tem leitor na simulacao",
 		sem_leitor.is_empty(), str(sem_leitor))
+
+	# CHEFE COM PELE DIFERENTE E MECANICA IGUAL NAO E OUTRO CHEFE.
+	# `aniquilador` e `trono_vazio` declaravam mecanica, fases e invoca
+	# identicos e caiam no mesmo braco do codigo: dois nomes, uma luta. E a
+	# dica do Trono prometia "fissuras", coisa que a luta nao tinha.
+	var assinaturas := {}
+	var repetidos: Array = []
+	for sc in Dados.super_chefes:
+		var assin := "%s|%s|%s" % [str(sc.get("mecanica", "")), str(sc.get("fases", 0)),
+			str(sc.get("invoca", []))]
+		if assinaturas.has(assin):
+			repetidos.append("%s == %s" % [str(sc.get("id", "")), str(assinaturas[assin])])
+		assinaturas[assin] = str(sc.get("id", ""))
+	ok("cada super-chefe tem luta propria, nao so outra pele",
+		repetidos.is_empty(), str(repetidos))
+
+	# Toda mecanica declarada no conteudo precisa de um braco no codigo.
+	# Varre a simulacao INTEIRA, nao so game.gd: `segmentos` mora em enemy_ai.gd
+	# e `refletir` em tower.gd, e a primeira versao deste teste os acusou de
+	# mortos por olhar um arquivo so. Teste que acusa o inocente perde a
+	# autoridade para acusar o culpado.
+	var codigo_jogo := ""
+	for arq_sim in _listar_gd("res://scripts/sim"):
+		codigo_jogo += _sem_comentario(FileAccess.get_file_as_string(arq_sim))
+	var sem_braco: Array = []
+	for lista in [Dados.chefes, Dados.super_chefes]:
+		for b_def in lista:
+			var mec := str(b_def.get("mecanica", ""))
+			if mec != "" and not codigo_jogo.contains('"%s"' % mec):
+				sem_braco.append("%s -> %s" % [str(b_def.get("id", "")), mec])
+	ok("toda mecanica de chefe tem braco no codigo",
+		sem_braco.is_empty(), str(sem_braco))
 
 	# SINERGIA: a dupla equipada tem que pagar mais que as cartas soltas.
 	var achou_par := {}
