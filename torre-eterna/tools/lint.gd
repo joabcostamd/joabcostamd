@@ -449,11 +449,25 @@ func _checar_passivas() -> void:
 
 	for chave in declaradas.keys():
 		var k := str(chave)
-		# basta o nome aparecer no código da simulação: além de `pas.has`, há
-		# leitor legítimo por comparação direta (Espelho do Operador).
-		if lidas.contains('"%s"' % k):
+		# NAO basta o nome aparecer em algum lugar do codigo.
+		#
+		# A regra antiga aceitava a passiva se a string existisse em qualquer
+		# ponto de scripts/ — inclusive num rotulo de interface, numa lista morta
+		# ou num dicionario de traducao. Uma passiva pode ter nome em cinco
+		# arquivos de UI e nao ser lida uma vez pela simulacao, e a regra dizia
+		# que estava tudo bem. Agora exige um contexto de LEITURA de verdade:
+		# `pas.has(...)`, `pas.get(...)`, `pas[...]` ou `_tem_passiva(def, ...)`,
+		# que sao as quatro formas pelas quais o jogo pergunta se a passiva esta
+		# ativa. Medido antes de apertar: 16 das 17 ja passavam pelo criterio
+		# apertado, entao a regra frouxa nao estava escondendo bagunca — estava
+		# so pronta para deixar a proxima passar.
+		var lida := (lidas.contains('pas.has("%s")' % k)
+			or lidas.contains('pas.get("%s' % k)
+			or lidas.contains('pas["%s"]' % k)
+			or lidas.contains('_tem_passiva(def, "%s")' % k))
+		if lida:
 			continue
-		erros.append("passiva declarada em %s e nunca lida: \"%s\"" % [str(declaradas[chave]), k])
+		erros.append("passiva declarada em %s e nunca LIDA pela simulacao: \"%s\" (o nome aparecer em scripts/ nao basta)" % [str(declaradas[chave]), k])
 
 ## Só o que está dentro de um `efeito` conta. `chave` também aparece em
 ## CONDIÇÃO de missão e conquista ({"tipo": "inimigoTipo", "chave": "grunhido"}),

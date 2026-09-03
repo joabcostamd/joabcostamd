@@ -10,6 +10,7 @@ var arvore: SceneTree
 ## O soak ascende sozinho, e o limiar sobe a cada ascensão: sem isso a
 ## ferramenta fica presa num laço de quarenta ondas para sempre.
 const ASCENDER_INICIAL := 40
+const SEMENTE := 20260903
 const ASCENDER_PASSO := 1.6
 var root: Node
 
@@ -45,6 +46,13 @@ func rodar(cena: SceneTree) -> void:
 	save.apagar()
 	jogo = root.get_node_or_null("Jogo")
 	jogo.stats = StatEngine.new()
+	# SEMENTE FIXA. Este e o unico portao longo com veredito, e rodava com o
+	# gerador global sem semente: uma hora de jogo cujo resultado mudava a cada
+	# execucao, entao "passou" e "reprovou" nunca se referiam ao mesmo jogo. O
+	# portao de balanceamento e o de desempenho ja tinham sido consertados pelo
+	# mesmo motivo; este ficou para tras. Portao que muda de resposta sem o
+	# codigo mudar nao mede nada.
+	jogo.rng = RngX.new(SEMENTE)
 	jogo.iniciar()
 	jogo.s["auto"]["comprar"] = true
 	jogo.s["desbloqueios"]["autoCompra"] = true

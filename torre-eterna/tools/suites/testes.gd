@@ -61,14 +61,40 @@ func rodar(cena: SceneTree) -> void:
 	t_habilidades()
 	t_integridade()
 
-	# Piso de asserções. Sem ele, `falhou == 0` também é verdade quando um
-	# subsistema inteiro deixa de ser exercitado — um `return` cedo por alvo
-	# nulo, uma lista de dados vazia — e a suíte imprime PASS tendo rodado
-	# metade. O piso sobe junto com a suíte: é o número atual menos uma folga
-	# pequena, então perder um bloco reprova, e adicionar teste nunca reprova.
-	var piso := 250
+	# PISO POR GRUPO, nao um numero global.
+	#
+	# O piso global era 250 contra 371 assercoes reais: 121 de folga, mais do que
+	# QUALQUER grupo da suite. Ou seja, dava para um grupo inteiro parar de rodar
+	# — um `return` cedo por alvo nulo, uma lista de dados vazia — e a suite
+	# imprimir PASS, que e exatamente o que o piso existia para impedir. Um
+	# auditor demonstrou isso comentando a chamada de um grupo de 57 assercoes;
+	# quem pegou foi o conferidor de documentacao, por acidente, nao o piso.
+	#
+	# Agora cada grupo tem o proprio minimo. Perder um bloco reprova NOMEANDO o
+	# bloco, e acrescentar teste continua nunca reprovando.
+	var minimo_por_grupo := {
+		"Acessibilidade": 11, "Alcancavel": 7, "Big": 12,
+		"Chaves dinamicas": 3, "Combate": 9, "Defesa": 27,
+		"Dicas": 5, "Economia": 9, "Elites": 11,
+		"Eventos": 12, "Feedback": 2, "Fmt": 6,
+		"Habilidades": 17, "Icones": 2, "Integridade": 9,
+		"Longo prazo": 7, "Mecânicas": 59, "Mira": 6,
+		"Mods": 19, "Numeros de dano": 2, "Offline": 6,
+		"Ondas": 12, "Pista de ouro": 3, "Prestígio": 25,
+		"Progresso": 14, "Saque": 8, "Save": 41,
+		"Sistemas": 6, "StatEngine": 5, "Áudio": 16,
+	}
+	for nome_g in minimo_por_grupo:
+		var rodou := int(por_grupo.get(nome_g, 0))
+		var min_g := int(minimo_por_grupo[nome_g])
+		if rodou < min_g:
+			print("  FALHOU [suite] o grupo '%s' rodou %d assercoes, o minimo e %d — ele saiu cedo ou sumiu" % [
+				nome_g, rodou, min_g])
+			falhou += 1
+	# Piso global continua, agora so como rede contra a suite encolher inteira.
+	var piso := 360
 	if passou < piso:
-		print("  FALHOU [suite] rodou %d assercoes, piso e %d — algum bloco saiu cedo" % [passou, piso])
+		print("  FALHOU [suite] rodou %d assercoes, piso e %d" % [passou, piso])
 		falhou += 1
 
 	# Os numeros que a documentacao promete tem que ser os que os portoes medem.
@@ -234,10 +260,16 @@ func _contar_em(pasta: String, exts: Array) -> int:
 	d.list_dir_end()
 	return n
 
+## Quantas assercoes cada grupo rodou nesta execucao.
+var por_grupo := {}
+
 func g(nome: String) -> void:
 	grupo = nome
+	if not por_grupo.has(nome):
+		por_grupo[nome] = 0
 
 func ok(nome: String, cond: bool, detalhe: String = "") -> void:
+	por_grupo[grupo] = int(por_grupo.get(grupo, 0)) + 1
 	if cond:
 		passou += 1
 	else:
