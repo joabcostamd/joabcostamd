@@ -484,6 +484,16 @@ func t_mecanicas() -> void:
 	ok("purga pune com tutorial dispensado",
 		Mecanicas._purga_ja_explicada({"tutorial": {"completo": true, "vistas": []}}))
 
+	# A Retomada ia para o save. Quem fechava o jogo no meio voltava dentro de
+	# uma, sem velocidade (ela mora no no, nao no estado) e com a compra
+	# automatica ligada a forca.
+	jogo.s["auto"]["comprar"] = false
+	Mecanicas.iniciar_retomada(jogo, 30)
+	ok("retomada liga a compra automatica", bool(jogo.s["auto"]["comprar"]))
+	Mecanicas.encerrar_retomada(jogo)
+	ok("encerrar devolve a compra automatica", not bool(jogo.s["auto"]["comprar"]))
+	ok("encerrar limpa o estado", not Mecanicas.em_retomada(jogo.s))
+
 	var s: Dictionary = jogo.s
 
 	# --- A Purga ---
@@ -798,6 +808,12 @@ func t_offline() -> void:
 	ok("da ouro", Big.gt(jogo.s["moedas"]["ouro"], ouro_antes))
 	var r3 := Offline.calcular(jogo, 3600.0 * 500.0)
 	ok("corta no teto", float(r3.get("cortado", 0.0)) > 0.0)
+	# A ancora do offline nunca anda para tras: relogio atrasado apagaria tempo
+	# real em silencio, relogio adiantado pagaria o teto quantas vezes quisesse.
+	var futuro := int(Time.get_unix_time_from_system()) + 86400
+	jogo.s["tick_em"] = futuro
+	jogo.salvar()
+	ok("ancora nao volta no tempo", int(jogo.s["tick_em"]) >= futuro)
 	# O relatorio precisa continuar guardado no Jogo. A interface conectava o
 	# sinal um quadro DEPOIS de ele ser emitido e o relatorio nunca aparecia;
 	# agora o painel tambem pode ler o estado guardado.

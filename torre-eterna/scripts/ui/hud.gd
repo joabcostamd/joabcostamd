@@ -279,7 +279,7 @@ func _construir() -> void:
 	# porta nenhuma no jogo. Agora tem: o botao so aparece quando o no e comprado.
 	b_infinito = _botao_com_icone("nova", Txt.t("hud_infinito_dica"), UI.ACENTO2, _alternar_infinito)
 	acoes.add_child(b_infinito)
-	acoes.add_child(_botao_com_icone("salvar", Txt.t("salvar_agora") + " (F5)", UI.TEXTO2, func(): jogo.salvar(); Bus.toast(Txt.t("jogo_salvo"), "bom")))
+	acoes.add_child(_botao_com_icone("salvar", Txt.t("salvar_agora") + " (F5)", UI.TEXTO2, _salvar_agora))
 
 	# a Purga fica à esquerda da barra de habilidades, com destaque próprio
 	var b_purga := Button.new()
@@ -531,6 +531,14 @@ func _alternar_velocidade() -> void:
 	jogo.definir_velocidade(nova)
 	if teto <= 1.0:
 		Bus.toast(Txt.t("hud_velocidade_trancada"), "info", "velocidade")
+
+## Dizia "Jogo salvo" mesmo quando a gravação falhava — que é justamente a hora
+## em que o jogador precisa saber a verdade.
+func _salvar_agora() -> void:
+	if jogo.salvar():
+		Bus.toast(Txt.t("jogo_salvo"), "bom", "salvar")
+	else:
+		Bus.toast(Txt.t("save_falhou"), "ruim", "cadeado")
 
 func _alternar_infinito() -> void:
 	if not jogo.alternar_infinito():

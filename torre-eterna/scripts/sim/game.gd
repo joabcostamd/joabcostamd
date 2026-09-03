@@ -69,14 +69,38 @@ func iniciar() -> void:
 	Progresso.gerar_missoes(self)
 	sincronizar_torre(true)
 
-	# progresso offline
+	# Progresso offline, com âncora que só anda para a frente.
+	#
+	# `tick_em` é o relógio do sistema, e o relógio do sistema é do jogador:
+	# adiantá-lo pagava o teto offline quantas vezes ele quisesse, e atrasá-lo
+	# dava um `fora` negativo que empurrava a âncora para trás e apagava tempo
+	# real em silêncio. O `maxi` mantém a âncora monotônica: relógio para trás
+	# não paga nada e não estraga nada; relógio para a frente paga uma vez e a
+	# âncora avança junto, então a segunda vez não paga de novo.
 	var agora := int(Time.get_unix_time_from_system())
-	var fora := float(agora - int(s.get("tick_em", agora)))
+	var ancora := int(s.get("tick_em", agora))
+	var fora := float(agora - ancora)
 	if fora > Bal.OFFLINE_MIN_SEG and not salvo.is_empty():
 		relatorio_offline = Offline.calcular(self, fora)
 		if bool(relatorio_offline.get("aplicado", false)):
 			Bus.relatorio_offline.emit(relatorio_offline)
-	s["tick_em"] = agora
+	s["tick_em"] = maxi(ancora, agora)
+
+	# A Retomada é uma explosão de 6× logo depois do prestígio, e o estado dela
+	# ia para o save. Quem fechava o jogo no meio voltava DENTRO de uma Retomada
+	# sem velocidade nenhuma (a velocidade mora no nó, não no estado) e com a
+	# compra automática ligada à força. Encerrar na abertura devolve tudo ao
+	# lugar; a explosão vale a sessão em que aconteceu.
+	if Mecanicas.em_retomada(s):
+		Mecanicas.encerrar_retomada(self)
+
+	# "Nesta sessão" era persistido e nunca zerado: o painel de Estatísticas
+	# mostrava o tempo de vida inteiro do save numa linha que promete a sessão.
+	s["stats"]["tempo_sessao"] = 0.0
+
+	# A velocidade escolhida era gravada e nunca reaplicada: o painel mostrava
+	# ×3 e o jogo rodava a ×1.
+	definir_velocidade(float(s["auto"].get("velocidade", 1.0)))
 
 	diretor.iniciar_onda(int(s["onda"]))
 	iniciado = true
@@ -764,8 +788,10 @@ func encerrar_desafio(vitoria: bool) -> void:
 ## ================================================================ save ====
 
 func salvar() -> bool:
-	s["salvo_em"] = int(Time.get_unix_time_from_system())
-	s["tick_em"] = s["salvo_em"]
+	var agora := int(Time.get_unix_time_from_system())
+	s["salvo_em"] = agora
+	# a âncora do offline nunca anda para trás (ver `iniciar`)
+	s["tick_em"] = maxi(int(s.get("tick_em", agora)), agora)
 	return SaveSys.salvar(s)
 
 func exportar() -> String:

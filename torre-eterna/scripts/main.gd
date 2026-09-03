@@ -308,8 +308,7 @@ func _unhandled_input(evento: InputEvent) -> void:
 	elif evento.is_action_pressed("painel_config"):
 		gerente.alternar("config")
 	elif evento.is_action_pressed("salvar_agora"):
-		jogo.salvar()
-		Bus.toast(Txt.t("jogo_salvo"), "bom", "salvar")
+		hud._salvar_agora()
 	elif evento.is_action_pressed("tela_cheia"):
 		Cfg.set_v("tela_cheia", not bool(Cfg.get_v("tela_cheia", false)))
 	elif evento.is_action_pressed("debug_toggle"):
