@@ -24,10 +24,8 @@ func configurar() -> void:
 func montar(c: VBoxContainer) -> void:
 	# ---- barra superior: ouro + lote + auto ----
 	var topo := UI.hbox(10)
-	var ic := Control.new()
-	ic.set_script(load("res://scripts/ui/icone_control.gd"))
+	var ic := UI.icone("ouro", UI.OURO, 20)
 	topo.add_child(ic)
-	ic.configurar("ouro", UI.OURO, 20)
 	lbl_ouro = UI.rotulo("0", 19, UI.OURO)
 	topo.add_child(lbl_ouro)
 	topo.add_child(UI.espacador())

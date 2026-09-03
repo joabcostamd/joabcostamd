@@ -62,10 +62,8 @@ func _montar_janela() -> void:
 	janela.add_child(v)
 
 	cabecalho = UI.hbox(10)
-	var ic := Control.new()
-	ic.set_script(load("res://scripts/ui/icone_control.gd"))
+	var ic := UI.icone(titulo_icone, UI.ACENTO, 24)
 	cabecalho.add_child(ic)
-	ic.configurar(titulo_icone, UI.ACENTO, 24)
 	cabecalho.add_child(UI.titulo(titulo_texto, 22))
 	cabecalho.add_child(UI.espacador())
 	var fechar := Button.new()
@@ -101,10 +99,8 @@ func linha(icone: String, cor: Color) -> Dictionary:
 	cx.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	var h := UI.hbox(10)
 	cx.add_child(h)
-	var ic := Control.new()
-	ic.set_script(load("res://scripts/ui/icone_control.gd"))
+	var ic := UI.icone(icone, cor, 26)
 	h.add_child(ic)
-	ic.configurar(icone, cor, 26)
 	var textos := UI.vbox(1)
 	textos.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	h.add_child(textos)
@@ -116,10 +112,8 @@ func linha(icone: String, cor: Color) -> Dictionary:
 ## Rótulo de custo colorido conforme a posse.
 func custo_label(moeda: String, valor_log: float, tem: bool) -> HBoxContainer:
 	var h := UI.hbox(4)
-	var ic := Control.new()
-	ic.set_script(load("res://scripts/ui/icone_control.gd"))
+	var ic := UI.icone(Icone.da_moeda(moeda), UI.MOEDA_COR.get(moeda, UI.OURO) if tem else UI.TEXTO3, 15)
 	h.add_child(ic)
-	ic.configurar(Icone.da_moeda(moeda), UI.MOEDA_COR.get(moeda, UI.OURO) if tem else UI.TEXTO3, 15)
 	h.add_child(UI.rotulo(Fmt.big(valor_log), 14, UI.TEXTO if tem else UI.TEXTO3))
 	return h
 

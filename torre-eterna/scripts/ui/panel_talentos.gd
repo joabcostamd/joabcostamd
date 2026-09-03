@@ -53,10 +53,8 @@ func montar(c: VBoxContainer) -> void:
 
 func _topo() -> HBoxContainer:
 	var topo := UI.hbox(8)
-	var ic := Control.new()
-	ic.set_script(load("res://scripts/ui/icone_control.gd"))
+	var ic := UI.icone("estrela", UI.ACENTO2, 22)
 	topo.add_child(ic)
-	ic.configurar("estrela", UI.ACENTO2, 22)
 
 	lbl_pontos = UI.rotulo("0", 22, UI.ACENTO2)
 	topo.add_child(lbl_pontos)
@@ -79,10 +77,8 @@ func _confirmacao() -> PanelContainer:
 	caixa_confirma.add_theme_stylebox_override("panel", UI.caixa(UI.PAINEL2.darkened(0.1), 10, 1, UI.VERMELHO.darkened(0.35)))
 	caixa_confirma.visible = false
 	var h := UI.hbox(10)
-	var ic := Control.new()
-	ic.set_script(load("res://scripts/ui/icone_control.gd"))
+	var ic := UI.icone("cadeado", UI.VERMELHO, 18)
 	h.add_child(ic)
-	ic.configurar("cadeado", UI.VERMELHO, 18)
 	lbl_confirma = UI.rotulo("", 13, UI.TEXTO)
 	h.add_child(lbl_confirma)
 	h.add_child(UI.espacador())
@@ -109,10 +105,8 @@ func _coluna(ramo: Dictionary) -> PanelContainer:
 	cx.add_child(v)
 
 	var cab := UI.hbox(8)
-	var ic := Control.new()
-	ic.set_script(load("res://scripts/ui/icone_control.gd"))
+	var ic := UI.icone(_icone_ramo(id), cor, 22)
 	cab.add_child(ic)
-	ic.configurar(_icone_ramo(id), cor, 22)
 	var textos := UI.vbox(0)
 	textos.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	cab.add_child(textos)

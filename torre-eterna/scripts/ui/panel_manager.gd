@@ -160,10 +160,8 @@ func _toast(texto: String, tipo: String, icone: String) -> void:
 	var h := UI.hbox(8)
 	if icone != "":
 		# `icone` é NOME de ícone vetorial (ver scripts/ui/icone.gd), nunca emoji
-		var ic := Control.new()
-		ic.set_script(load("res://scripts/ui/icone_control.gd"))
+		var ic := UI.icone(icone, cor, 18)
 		h.add_child(ic)
-		ic.configurar(icone, cor, 18)
 	h.add_child(UI.rotulo(texto, 15, cor))
 	cx.add_child(h)
 	caixa_toast.add_child(cx)
@@ -251,9 +249,7 @@ func _relatorio_offline(dados: Dictionary) -> void:
 ## Linha "ícone + valor" sem emoji (a fonte padrão não tem glifo).
 func _linha_ganho(icone: String, cor: Color, texto: String, tamanho: int) -> HBoxContainer:
 	var h := UI.hbox(8)
-	var ic := Control.new()
-	ic.set_script(load("res://scripts/ui/icone_control.gd"))
+	var ic := UI.icone(icone, cor, float(tamanho))
 	h.add_child(ic)
-	ic.configurar(icone, cor, float(tamanho))
 	h.add_child(UI.rotulo(texto, tamanho, cor))
 	return h

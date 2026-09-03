@@ -179,6 +179,20 @@ static func botao_icone(icone: String, dica: String, ao_clicar: Callable) -> But
 	b.add_theme_font_size_override("font_size", 19)
 	return b
 
+## Um ícone vetorial pronto para entrar num container.
+##
+## O mesmo trio `Control.new()` + `set_script(load(...))` + `configurar(...)`
+## estava repetido 60 vezes espalhado por 18 arquivos. Aqui ele tem um nome, e
+## o caminho do script aparece UMA vez — mover ou renomear o desenhador de
+## ícones deixa de ser uma caçada.
+const SCRIPT_ICONE := preload("res://scripts/ui/icone_control.gd")
+
+static func icone(nome: String, cor: Color = TEXTO, tamanho: int = 18) -> Control:
+	var ic := Control.new()
+	ic.set_script(SCRIPT_ICONE)
+	ic.configurar(nome, cor, tamanho)
+	return ic
+
 static func vbox(sep: int = 6) -> VBoxContainer:
 	var v := VBoxContainer.new()
 	v.add_theme_constant_override("separation", sep)

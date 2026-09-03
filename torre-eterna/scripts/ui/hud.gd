@@ -62,10 +62,8 @@ func _construir() -> void:
 		var cx := UI.painel(UI.PAINEL.darkened(0.15), 9)
 		cx.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		var h := UI.hbox(5)
-		var ic := Control.new()
-		ic.set_script(load("res://scripts/ui/icone_control.gd"))
+		var ic := UI.icone(Icone.da_moeda(chave), UI.MOEDA_COR.get(chave, UI.TEXTO), 17)
 		h.add_child(ic)
-		ic.configurar(Icone.da_moeda(chave), UI.MOEDA_COR.get(chave, UI.TEXTO), 17)
 		var l := UI.rotulo("0", 15, UI.MOEDA_COR.get(chave, UI.TEXTO))
 		h.add_child(l)
 		cx.add_child(h)
@@ -133,10 +131,8 @@ func _construir() -> void:
 	vitais.add_child(barra_xp)
 
 	var hv := UI.hbox(6)
-	var ic_v := Control.new()
-	ic_v.set_script(load("res://scripts/ui/icone_control.gd"))
+	var ic_v := UI.icone("coracao", UI.VERMELHO, 14)
 	hv.add_child(ic_v)
-	ic_v.configurar("coracao", UI.VERMELHO, 14)
 	lbl_vida = UI.rotulo("100 / 100", 14, UI.TEXTO2)
 	hv.add_child(lbl_vida)
 	vitais.add_child(hv)
@@ -158,10 +154,8 @@ func _construir() -> void:
 	for chave in ["fogo", "gelo", "raio", "veneno", "vazio"]:
 		var linha_a := UI.hbox(2)
 		linha_a.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		var ic_a := Control.new()
-		ic_a.set_script(load("res://scripts/ui/icone_control.gd"))
+		var ic_a := UI.icone(chave if chave != "vazio" else "vazio", Color.html(str(Bal.ELEMENTOS[chave]["cor"])), 13)
 		linha_a.add_child(ic_a)
-		ic_a.configurar(chave if chave != "vazio" else "vazio", Color.html(str(Bal.ELEMENTOS[chave]["cor"])), 13)
 		var l_a := UI.rotulo("", 11, UI.TEXTO3)
 		linha_a.add_child(l_a)
 		caixa_adapt.add_child(linha_a)
@@ -461,10 +455,8 @@ func _atualizar_buffs() -> void:
 	while caixa_buffs.get_child_count() < buffs.size():
 		var cx := UI.hbox(3)
 		cx.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		var ic := Control.new()
-		ic.set_script(load("res://scripts/ui/icone_control.gd"))
+		var ic := UI.icone("estrela", UI.ACENTO, 14)
 		cx.add_child(ic)
-		ic.configurar("estrela", UI.ACENTO, 14)
 		cx.add_child(UI.rotulo("", 12, UI.TEXTO2))
 		caixa_buffs.add_child(cx)
 	for i in caixa_buffs.get_child_count():

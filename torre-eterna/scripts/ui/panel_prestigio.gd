@@ -94,10 +94,8 @@ func _chip(chave: String, icone: String, cor: Color, legenda: String, dica: Stri
 	cx.mouse_filter = Control.MOUSE_FILTER_STOP
 	var h := UI.hbox(6)
 	cx.add_child(h)
-	var ic := Control.new()
-	ic.set_script(load("res://scripts/ui/icone_control.gd"))
+	var ic := UI.icone(icone, cor, 17)
 	h.add_child(ic)
-	ic.configurar(icone, cor, 17)
 	var v := UI.vbox(0)
 	h.add_child(v)
 	var l := UI.rotulo("0", 15, cor)
@@ -374,10 +372,8 @@ func _card(def: Dictionary, chave: String, cor: Color) -> PanelContainer:
 
 	var cab := UI.hbox(8)
 	v.add_child(cab)
-	var ic := Control.new()
-	ic.set_script(load("res://scripts/ui/icone_control.gd"))
+	var ic := UI.icone(_icone_no(id), cor, 24)
 	cab.add_child(ic)
-	ic.configurar(_icone_no(id), cor, 24)
 	var t := UI.vbox(0)
 	t.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	cab.add_child(t)
@@ -396,10 +392,8 @@ func _card(def: Dictionary, chave: String, cor: Color) -> PanelContainer:
 
 	var rodape := UI.hbox(6)
 	v.add_child(rodape)
-	var ic_custo := Control.new()
-	ic_custo.set_script(load("res://scripts/ui/icone_control.gd"))
+	var ic_custo := UI.icone(Icone.da_moeda(chave), UI.MOEDA_COR.get(chave, UI.TEXTO), 14)
 	rodape.add_child(ic_custo)
-	ic_custo.configurar(Icone.da_moeda(chave), UI.MOEDA_COR.get(chave, UI.TEXTO), 14)
 	var lbl_custo := UI.rotulo("", 13, UI.TEXTO)
 	rodape.add_child(lbl_custo)
 	rodape.add_child(UI.espacador())

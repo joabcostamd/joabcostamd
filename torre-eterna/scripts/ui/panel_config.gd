@@ -294,7 +294,7 @@ func _aba_graficos() -> void:
 	l["direita"].add_child(_menu("qualidade", [Txt.t("cfg_q_baixa"), Txt.t("cfg_q_media"), Txt.t("cfg_q_alta"), Txt.t("cfg_q_ultra")],
 		[0, 1, 2, 3], Txt.t("cfg_qualidade_dica")))
 
-	var l2 := _opcao(b, "estrela", UI.ACENTO, Txt.t("cfg_densidade"), Txt.t("cfg_densidade_desc"))
+	var l2 := _opcao(b, "estrela", UI.ACENTO, Txt.t("c_particulas"), Txt.t("cfg_densidade_desc"))
 	l2["direita"].add_child(_slider("particulas", 0.0, 2.0, 0.05, false, 62,
 		func(x: float) -> String: return "%d%%" % int(round(x * 100.0)),
 		Txt.t("cfg_densidade_dica")))
@@ -510,10 +510,8 @@ func _aba_sobre() -> void:
 	var v := UI.vbox(6)
 	capa.add_child(v)
 	var h := UI.hbox(12)
-	var ic := Control.new()
-	ic.set_script(load("res://scripts/ui/icone_control.gd"))
+	var ic := UI.icone("torre", UI.ACENTO, 46)
 	h.add_child(ic)
-	ic.configurar("torre", UI.ACENTO, 46)
 	var vt := UI.vbox(2)
 	h.add_child(vt)
 	var t := UI.titulo(NOME_JOGO, 30)
@@ -615,7 +613,7 @@ func _importar() -> void:
 		jogo.salvar()
 		_reconstruir()
 	else:
-		lbl_erro.text = SaveSys.ultimo_erro if SaveSys.ultimo_erro != "" else Txt.t("cfg_codigo_ilegivel")
+		lbl_erro.text = SaveSys.ultimo_erro if SaveSys.ultimo_erro != "" else Txt.t("save_invalido")
 		UI.pulsar(caixa_importar, UI.VERMELHO)
 
 func _apagar_passo() -> void:
@@ -802,10 +800,8 @@ func _bloco(icone: String, cor: Color, titulo: String, subtitulo: String) -> Dic
 	var v := UI.vbox(6)
 	cx.add_child(v)
 	var h := UI.hbox(8)
-	var ic := Control.new()
-	ic.set_script(load("res://scripts/ui/icone_control.gd"))
+	var ic := UI.icone(icone, cor, 20)
 	h.add_child(ic)
-	ic.configurar(icone, cor, 20)
 	h.add_child(UI.rotulo(titulo, 17, cor))
 	v.add_child(h)
 	if subtitulo != "":

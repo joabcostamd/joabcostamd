@@ -53,10 +53,8 @@ func montar(c: VBoxContainer) -> void:
 	var th := UI.hbox(18)
 	topo.add_child(th)
 
-	var ic := Control.new()
-	ic.set_script(load("res://scripts/ui/icone_control.gd"))
+	var ic := UI.icone("trofeu", UI.OURO, 34)
 	th.add_child(ic)
-	ic.configurar("trofeu", UI.OURO, 34)
 
 	var esq := UI.vbox(3)
 	esq.size_flags_horizontal = Control.SIZE_EXPAND_FILL

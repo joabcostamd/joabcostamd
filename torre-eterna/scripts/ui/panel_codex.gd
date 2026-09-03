@@ -247,10 +247,8 @@ func _tile(def: Dictionary) -> Control:
 
 	var linha_n := UI.hbox(4)
 	linha_n.alignment = BoxContainer.ALIGNMENT_CENTER
-	var ic := Control.new()
-	ic.set_script(load("res://scripts/ui/icone_control.gd"))
+	var ic := UI.icone("espada" if aba == 0 else "trofeu", cor if conhecido else UI.TEXTO3, 12)
 	linha_n.add_child(ic)
-	ic.configurar("espada" if aba == 0 else "trofeu", cor if conhecido else UI.TEXTO3, 12)
 	var lc := UI.rotulo(Fmt.inteiro(n) if conhecido else "—", 12, UI.TEXTO2 if conhecido else UI.TEXTO3)
 	linha_n.add_child(lc)
 	v.add_child(linha_n)
@@ -266,10 +264,8 @@ func _chip_elite(el: Dictionary) -> Control:
 	cx.tooltip_text = txt(el, "desc")
 	var h := UI.hbox(6)
 	cx.add_child(h)
-	var ponto := Control.new()
-	ponto.set_script(load("res://scripts/ui/icone_control.gd"))
+	var ponto := UI.icone("orbe", cor, 14)
 	h.add_child(ponto)
-	ponto.configurar("orbe", cor, 14)
 	var v := UI.vbox(0)
 	v.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	h.add_child(v)
@@ -333,10 +329,8 @@ func _mostrar_ficha() -> void:
 	detalhe.add_child(cab)
 
 	var sub := UI.hbox(6)
-	var ica := Control.new()
-	ica.set_script(load("res://scripts/ui/icone_control.gd"))
+	var ica := UI.icone("trofeu" if chefe else "espada", UI.OURO, 15)
 	sub.add_child(ica)
-	ica.configurar("trofeu" if chefe else "espada", UI.OURO, 15)
 	lbl_abates = UI.rotulo("", 13, UI.TEXTO2)
 	lbl_abates.tooltip_text = Txt.t("cdx_dica_abates")
 	sub.add_child(lbl_abates)
@@ -433,10 +427,8 @@ func _montar_historia() -> void:
 				abertas += 1
 
 		var cab := UI.hbox(6)
-		var ic := Control.new()
-		ic.set_script(load("res://scripts/ui/icone_control.gd"))
+		var ic := UI.icone(_icone_capitulo(cid), cor if abertas > 0 else UI.TEXTO3, 17)
 		cab.add_child(ic)
-		ic.configurar(_icone_capitulo(cid), cor if abertas > 0 else UI.TEXTO3, 17)
 		var lt := UI.rotulo("%d. %s" % [int(cap.get("ordem", 0)), txt(cap, "nome")], 14,
 			cor if abertas > 0 else UI.TEXTO3)
 		lt.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -490,10 +482,8 @@ func _botao_entrada(ent: Dictionary, cor: Color) -> Control:
 	h.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	h.offset_left = 10.0
 	h.offset_right = -8.0
-	var ic := Control.new()
-	ic.set_script(load("res://scripts/ui/icone_control.gd"))
+	var ic := UI.icone(_icone_entrada(ent) if aberta else "cadeado", cor if aberta else UI.TEXTO3, 13)
 	h.add_child(ic)
-	ic.configurar(_icone_entrada(ent) if aberta else "cadeado", cor if aberta else UI.TEXTO3, 13)
 	var l := UI.rotulo(txt(ent, "titulo") if aberta else Txt.t("cdx_entrada_selada"), 13,
 		UI.TEXTO if aberta else UI.TEXTO3)
 	l.clip_text = true
@@ -518,10 +508,8 @@ func _mostrar_entrada() -> void:
 	var aberta := Progresso.cond_atendida(jogo.s, ent.get("cond", {}))
 
 	var cab := UI.hbox(8)
-	var ic := Control.new()
-	ic.set_script(load("res://scripts/ui/icone_control.gd"))
+	var ic := UI.icone(_icone_capitulo(str(cap.get("id", ""))), cor, 18)
 	cab.add_child(ic)
-	ic.configurar(_icone_capitulo(str(cap.get("id", ""))), cor, 18)
 	cab.add_child(UI.rotulo(txt(cap, "nome").to_upper(), 12, cor))
 	cab.add_child(UI.espacador())
 	cab.add_child(UI.rotulo(Txt.f("cdx_entrada_de", {"a": int(ent.get("ordem", 0)),
@@ -882,10 +870,8 @@ func _bloco(titulo: String, icone: String, cor: Color, pai: VBoxContainer = null
 	var v := UI.vbox(3)
 	cx.add_child(v)
 	var h := UI.hbox(5)
-	var ic := Control.new()
-	ic.set_script(load("res://scripts/ui/icone_control.gd"))
+	var ic := UI.icone(icone, cor, 13)
 	h.add_child(ic)
-	ic.configurar(icone, cor, 13)
 	h.add_child(UI.rotulo(titulo.to_upper(), 10, cor.lerp(UI.TEXTO3, 0.4)))
 	v.add_child(h)
 	return v
@@ -893,10 +879,8 @@ func _bloco(titulo: String, icone: String, cor: Color, pai: VBoxContainer = null
 func _titulo_secao(texto: String, icone: String, cor: Color, dica: String) -> HBoxContainer:
 	var h := UI.hbox(6)
 	h.tooltip_text = dica
-	var ic := Control.new()
-	ic.set_script(load("res://scripts/ui/icone_control.gd"))
+	var ic := UI.icone(icone, cor, 16)
 	h.add_child(ic)
-	ic.configurar(icone, cor, 16)
 	h.add_child(UI.rotulo(texto, 14, UI.TEXTO2))
 	return h
 
@@ -940,10 +924,8 @@ func _mini(icone: String, cor: Color, rotulo: String, valor: String, dica: Strin
 	p.add_child(v)
 	var h := UI.hbox(4)
 	h.alignment = BoxContainer.ALIGNMENT_CENTER
-	var ic := Control.new()
-	ic.set_script(load("res://scripts/ui/icone_control.gd"))
+	var ic := UI.icone(icone, cor, 14)
 	h.add_child(ic)
-	ic.configurar(icone, cor, 14)
 	h.add_child(UI.rotulo(valor, 14, UI.TEXTO))
 	v.add_child(h)
 	var l := UI.rotulo(rotulo, 10, UI.TEXTO3)

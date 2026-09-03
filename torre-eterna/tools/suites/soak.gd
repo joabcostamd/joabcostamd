@@ -22,7 +22,6 @@ var maior_projeteis := 0
 var maior_coletaveis := 0
 var maior_buffs := 0
 var maior_inventario := 0
-var prestigios := 0
 
 func rodar(cena: SceneTree) -> void:
 	arvore = cena
@@ -46,7 +45,15 @@ func rodar(cena: SceneTree) -> void:
 	jogo.s["desbloqueios"]["autoCompra"] = true
 	jogo.s["auto"]["habilidades"] = true
 	jogo.s["desbloqueios"]["autoHabilidade"] = true
+	# O soak rodava uma hora inteira sem ascender NENHUMA vez — e o prestígio é
+	# justamente onde moram os piores bugs de estado (a Transcendência já apagou
+	# o Álbum e o Panteão, e o congelamento de tempo já sobreviveu à ascensão).
+	# Ascende sozinho assim que compensa, para o teste passar por esse caminho.
+	jogo.s["desbloqueios"]["autoAscensao"] = true
+	jogo.s["prestigio"]["auto_ascender"] = true
+	jogo.s["prestigio"]["auto_ascender_onda"] = 40
 	jogo.marcar_sujo()
+	jogo.recalcular()
 
 	var passos := int(horas * 3600.0 / DT)
 	var ultima_onda := 1
@@ -70,10 +77,11 @@ func rodar(cena: SceneTree) -> void:
 			checagens += 1
 			_checar_invariantes(t)
 
-		# prestígio periódico: exercita reset, Retomada e persistência
-		if i % 216000 == 0 and i > 0 and Prestigio.pode_ascender(jogo.s):
+		# Prestígio periódico: exercita reset, Retomada e persistência. Antes o
+		# intervalo era de uma hora simulada, então um soak de `-- 1` nunca
+		# chegava a ascender e o caminho mais perigoso do jogo ficava sem teste.
+		if i % 54000 == 0 and i > 0 and Prestigio.pode_ascender(jogo.s):
 			jogo.ascender()
-			prestigios += 1
 			_checar_invariantes(t)
 
 		# salvar/carregar no meio da partida
@@ -83,7 +91,10 @@ func rodar(cena: SceneTree) -> void:
 	print("\n=== PICOS ===")
 	print("inimigos %d · projeteis %d · coletaveis %d · buffs %d · inventario %d" % [
 		maior_inimigos, maior_projeteis, maior_coletaveis, maior_buffs, maior_inventario])
-	print("onda maxima %d · prestigios %d · checagens %d" % [int(jogo.s["onda_maxima_global"]), prestigios, checagens])
+	# Conta do ESTADO, não de uma variável local: a ascensão automática também
+	# vale, e ela não passa pelo laço daqui.
+	print("onda maxima %d · ascensoes %d · checagens %d" % [
+		int(jogo.s["onda_maxima_global"]), int(jogo.s["prestigio"]["ascensoes"]), checagens])
 	print("\n=== SOAK === falhas=%d" % falhas.size())
 	for f in falhas:
 		print("  FALHA: ", f)

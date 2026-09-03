@@ -1,6 +1,6 @@
 {
   "cfg_rodape_opcoes": {"pt": "As opções ficam fora do save — sobrevivem até a um apagar tudo.", "en": "Settings live outside the save — they survive even an erase-everything."},
-  "cfg_restaurar_dica": {"pt": "Devolve TODAS as opções ao estado de fábrica. Não toca no seu progresso.", "en": "Returns EVERY option to its factory state. Your progress is untouched."},
+  "cfg_restaurar_dica": {"pt": "Devolve TODAS as opções ao estado de fábrica. Não toca no seu progresso.", "en": "Resets EVERY option to its factory default. It does not touch your progress."},
   "cfg_confirmar_padroes": {"pt": "Confirmar padrões", "en": "Confirm defaults"},
   "cfg_restaurado": {"pt": "Configurações de fábrica restauradas", "en": "Factory settings restored"},
 
@@ -15,12 +15,12 @@
   "cfg_notacao_desc": {"pt": "Como os valores gigantes aparecem no HUD e nos painéis.", "en": "How the huge values show up in the HUD and the panels."},
   "cfg_notacao_dica": {"pt": "Clique também numa linha da prévia abaixo para escolher.", "en": "You can also click a row in the preview below to choose."},
   "cfg_previa": {"pt": "Prévia", "en": "Preview"},
-  "cfg_previa_titulo": {"pt": "Prévia do mesmo número ({n}) — clique para escolher", "en": "The same number in every notation ({n}) — click to choose"},
+  "cfg_previa_titulo": {"pt": "Prévia do mesmo número ({n}) — clique para escolher", "en": "The same number ({n}) in every notation — click to choose"},
 
   "cfg_not_mista": {"pt": "Mista", "en": "Mixed"},
   "cfg_not_mista_d": {"pt": "Letras até Vg, depois científica. O padrão sensato.", "en": "Letters up to Vg, then scientific. The sensible default."},
   "cfg_not_letras": {"pt": "Letras", "en": "Letters"},
-  "cfg_not_letras_d": {"pt": "1,23 K · 4,56 M · 7,89 Qa — e segue o alfabeto quando acabam os nomes.", "en": "1.23 K · 4.56 M · 7.89 Qa — then it walks the alphabet when the names run out."},
+  "cfg_not_letras_d": {"pt": "1,23 K · 4,56 M · 7,89 Qa — e segue o alfabeto quando acabam os nomes.", "en": "1.23 K · 4.56 M · 7.89 Qa — then straight down the alphabet when the names run out."},
   "cfg_not_cientifica": {"pt": "Científica", "en": "Scientific"},
   "cfg_not_cientifica_d": {"pt": "1,23e15. Compacta e fria.", "en": "1.23e15. Compact and cold."},
   "cfg_not_engenharia": {"pt": "Engenharia", "en": "Engineering"},
@@ -66,7 +66,6 @@
   "cfg_q_media": {"pt": "Média", "en": "Medium"},
   "cfg_q_alta": {"pt": "Alta", "en": "High"},
   "cfg_q_ultra": {"pt": "Ultra", "en": "Ultra"},
-  "cfg_densidade": {"pt": "Densidade de partículas", "en": "Particle density"},
   "cfg_densidade_desc": {"pt": "Multiplicador fino por cima da qualidade. Em 0% o jogo fica silencioso visualmente, mas roda em qualquer coisa.", "en": "A fine multiplier on top of quality. At 0% the game goes visually quiet, but it runs on anything."},
   "cfg_densidade_dica": {"pt": "De 0% a 200% das partículas normais.", "en": "From 0% to 200% of the normal particles."},
   "cfg_densidade_resultado": {"pt": "Resultado final: {p} das partículas base{extra}", "en": "Final result: {p} of the base particles{extra}"},
@@ -137,7 +136,6 @@
   "cfg_colar_dica": {"pt": "Cola o que estiver na área de transferência.", "en": "Pastes whatever is on the clipboard."},
   "cfg_codigo_gerado": {"pt": "Código gerado — copie e guarde", "en": "Code generated — copy it and keep it"},
   "cfg_cole_antes": {"pt": "Cole um código antes de importar.", "en": "Paste a code before importing."},
-  "cfg_codigo_ilegivel": {"pt": "Não consegui ler esse código.", "en": "I could not read that code."},
   "cfg_apagar_titulo": {"pt": "Isto apaga o save e o backup. Você perde, para sempre:", "en": "This erases the save and the backup. You lose, forever:"},
   "cfg_apagar_config_nota": {"pt": "As configurações desta janela NÃO são apagadas.", "en": "The settings in this window are NOT erased."},
   "cfg_exportar_antes": {"pt": "Exportar antes", "en": "Export first"},
@@ -162,7 +160,7 @@
   "cfg_at_prestigio": {"pt": "Abrir Prestígio", "en": "Open Prestige"},
   "cfg_at_conquistas": {"pt": "Abrir Conquistas", "en": "Open Achievements"},
   "cfg_at_config": {"pt": "Abrir Configurações (este painel)", "en": "Open Settings (this panel)"},
-  "cfg_at_comprar_max": {"pt": "Comprar o máximo da melhoria em foco", "en": "Buy the max of the focused upgrade"},
+  "cfg_at_comprar_max": {"pt": "Comprar o máximo da melhoria em foco", "en": "Buy max on the focused upgrade"},
   "cfg_at_auto": {"pt": "Ligar/desligar a compra automática", "en": "Toggle auto-buy"},
   "cfg_at_turbo": {"pt": "Alternar a velocidade do jogo", "en": "Cycle the game speed"},
   "cfg_at_purga": {"pt": "Purga — limpa a tela quando a coisa aperta", "en": "Purge — clears the screen when things get tight"},
@@ -206,6 +204,6 @@
   "cfg_cred_arte_v": {"pt": "Vetorial, gerada em código (scripts/ui/icone.gd)", "en": "Vector, generated in code (scripts/ui/icone.gd)"},
   "cfg_cred_audio_v": {"pt": "Sintetizado em tempo de execução", "en": "Synthesized at runtime"},
   "cfg_agradecimentos": {"pt": "Agradecimentos", "en": "Thanks"},
-  "cfg_cred_obrigado_v": {"pt": "A quem testou até a onda 500 e reclamou do tremor de tela", "en": "To whoever played to wave 500 and complained about the screen shake"},
+  "cfg_cred_obrigado_v": {"pt": "A quem testou até a onda 500 e reclamou do tremor de tela", "en": "To whoever tested all the way to wave 500 and complained about the screen shake"},
   "cfg_rodape_sobre": {"pt": "A torre é eterna. Você, não — mas o save fica.", "en": "The tower is eternal. You are not — but the save stays."}
 }

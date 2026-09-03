@@ -76,10 +76,8 @@ func _vazio_trancado() -> PanelContainer:
 	cx.add_child(v)
 	var h := UI.hbox(10)
 	v.add_child(h)
-	var ic := Control.new()
-	ic.set_script(load("res://scripts/ui/icone_control.gd"))
+	var ic := UI.icone("cadeado", UI.TEXTO3, 26)
 	h.add_child(ic)
-	ic.configurar("cadeado", UI.TEXTO3, 26)
 	h.add_child(UI.rotulo(Txt.t("dsf_trancado_titulo"), 18, UI.TEXTO2))
 	var l := UI.rotulo(Txt.t("dsf_trancado_corpo"), 13, UI.TEXTO3)
 	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -200,10 +198,8 @@ func _cartao(def: Dictionary) -> PanelContainer:
 	# ---- cabeçalho ----
 	var cab := UI.hbox(10)
 	v.add_child(cab)
-	var ic := Control.new()
-	ic.set_script(load("res://scripts/ui/icone_control.gd"))
+	var ic := UI.icone(_icone_desafio(id), cor, 28)
 	cab.add_child(ic)
-	ic.configurar(_icone_desafio(id), cor, 28)
 
 	var t := UI.vbox(1)
 	t.size_flags_horizontal = Control.SIZE_EXPAND_FILL

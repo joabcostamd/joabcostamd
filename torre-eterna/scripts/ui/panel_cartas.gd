@@ -54,10 +54,8 @@ func montar(c: VBoxContainer) -> void:
 
 	# ---- barra superior ----
 	var topo := UI.hbox(8)
-	var ic := Control.new()
-	ic.set_script(load("res://scripts/ui/icone_control.gd"))
+	var ic := UI.icone("poeira", UI.MOEDA_COR["poeira"], 20)
 	topo.add_child(ic)
-	ic.configurar("poeira", UI.MOEDA_COR["poeira"], 20)
 	lbl_poeira = UI.rotulo("0", 18, UI.MOEDA_COR["poeira"])
 	lbl_poeira.tooltip_text = Txt.t("car_dica_poeira")
 	topo.add_child(lbl_poeira)
@@ -179,10 +177,8 @@ func _definir_aba(chave: String) -> void:
 func _secao(texto: String, icone: String, dica: String) -> HBoxContainer:
 	var h := UI.hbox(6)
 	h.tooltip_text = dica
-	var ic := Control.new()
-	ic.set_script(load("res://scripts/ui/icone_control.gd"))
+	var ic := UI.icone(icone, UI.ACENTO, 16)
 	h.add_child(ic)
-	ic.configurar(icone, UI.ACENTO, 16)
 	h.add_child(UI.rotulo(texto, 15, UI.TEXTO2))
 	return h
 

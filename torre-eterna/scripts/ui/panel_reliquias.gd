@@ -68,10 +68,8 @@ func montar(c: VBoxContainer) -> void:
 	var topo := UI.hbox(16)
 	for moeda in MOEDAS:
 		var h := UI.hbox(5)
-		var ic := Control.new()
-		ic.set_script(load("res://scripts/ui/icone_control.gd"))
+		var ic := UI.icone(Icone.da_moeda(moeda), UI.MOEDA_COR.get(moeda, UI.OURO), 20)
 		h.add_child(ic)
-		ic.configurar(Icone.da_moeda(moeda), UI.MOEDA_COR.get(moeda, UI.OURO), 20)
 		var l := UI.rotulo("0", 18, UI.MOEDA_COR.get(moeda, UI.OURO))
 		h.add_child(l)
 		h.add_child(UI.rotulo(_nome_moeda(moeda), 12, UI.TEXTO3))
@@ -162,10 +160,8 @@ func _cartao(def: Dictionary) -> Control:
 	# --- ícone ---
 	var col_ic := UI.vbox(4)
 	h.add_child(col_ic)
-	var ic := Control.new()
-	ic.set_script(load("res://scripts/ui/icone_control.gd"))
+	var ic := UI.icone(_icone_de(id), cor, 34)
 	col_ic.add_child(ic)
-	ic.configurar(_icone_de(id), cor, 34)
 	col_ic.add_child(UI.espacador(0, false))
 
 	# --- textos ---
@@ -215,10 +211,8 @@ func _cartao(def: Dictionary) -> Control:
 
 	var linha_custo := UI.hbox(4)
 	linha_custo.alignment = BoxContainer.ALIGNMENT_END
-	var ic2 := Control.new()
-	ic2.set_script(load("res://scripts/ui/icone_control.gd"))
+	var ic2 := UI.icone(Icone.da_moeda(moeda), cor, 15)
 	linha_custo.add_child(ic2)
-	ic2.configurar(Icone.da_moeda(moeda), cor, 15)
 	var lcusto := UI.rotulo("0", 14, UI.TEXTO)
 	linha_custo.add_child(lcusto)
 	d.add_child(linha_custo)

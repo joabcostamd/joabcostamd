@@ -200,10 +200,8 @@ func _mostrar(passo: Dictionary) -> void:
 	balao.add_child(v)
 
 	var topo := UI.hbox(8)
-	var ic := Control.new()
-	ic.set_script(load("res://scripts/ui/icone_control.gd"))
+	var ic := UI.icone("torre", UI.ACENTO, 18)
 	topo.add_child(ic)
-	ic.configurar("torre", UI.ACENTO, 18)
 	topo.add_child(UI.rotulo(Txt.t("tut_a_torre"), 11, UI.TEXTO3))
 	topo.add_child(UI.espacador())
 	topo.add_child(UI.rotulo(Txt.t("tut_dispensar"), 10, UI.TEXTO3.darkened(0.1)))

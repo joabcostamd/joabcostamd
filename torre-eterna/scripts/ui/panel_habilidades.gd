@@ -17,10 +17,8 @@ func configurar() -> void:
 
 func montar(c: VBoxContainer) -> void:
 	var topo := UI.hbox(8)
-	var ic := Control.new()
-	ic.set_script(load("res://scripts/ui/icone_control.gd"))
+	var ic := UI.icone("gema", UI.MOEDA_COR["gemas"], 20)
 	topo.add_child(ic)
-	ic.configurar("gema", UI.MOEDA_COR["gemas"], 20)
 	lbl_gemas = UI.rotulo("0", 19, UI.MOEDA_COR["gemas"])
 	topo.add_child(lbl_gemas)
 	topo.add_child(UI.rotulo(Txt.t("m_gemas"), 13, UI.TEXTO2))
@@ -148,10 +146,8 @@ func _cartao(def: Dictionary) -> PanelContainer:
 
 	var caixa_lock := UI.hbox(6)
 	caixa_lock.alignment = BoxContainer.ALIGNMENT_CENTER
-	var ic_lock := Control.new()
-	ic_lock.set_script(load("res://scripts/ui/icone_control.gd"))
+	var ic_lock := UI.icone("cadeado", UI.TEXTO3, 18)
 	caixa_lock.add_child(ic_lock)
-	ic_lock.configurar("cadeado", UI.TEXTO3, 18)
 	var lbl_lock := UI.rotulo("", 13, UI.TEXTO3)
 	caixa_lock.add_child(lbl_lock)
 	caixa_lock.visible = false

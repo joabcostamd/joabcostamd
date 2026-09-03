@@ -84,10 +84,8 @@ func montar(c: VBoxContainer) -> void:
 	var cabeca := UI.painel(UI.PAINEL2.darkened(0.1), 12)
 	var ch := UI.hbox(14)
 	cabeca.add_child(ch)
-	var ic := Control.new()
-	ic.set_script(load("res://scripts/ui/icone_control.gd"))
+	var ic := UI.icone("estrela", UI.ROSA, 30)
 	ch.add_child(ic)
-	ic.configurar("estrela", UI.ROSA, 30)
 	var cv := UI.vbox(3)
 	cv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	lbl_nivel = UI.rotulo(Txt.t("nivel") + " 0", 18, UI.TEXTO)
@@ -115,10 +113,8 @@ func montar(c: VBoxContainer) -> void:
 
 func _secao(titulo: String, icone: String, cor: Color, dica: String, extra: Label) -> HBoxContainer:
 	var h := UI.hbox(8)
-	var ic := Control.new()
-	ic.set_script(load("res://scripts/ui/icone_control.gd"))
+	var ic := UI.icone(icone, cor, 20)
 	h.add_child(ic)
-	ic.configurar(icone, cor, 20)
 	var l := UI.rotulo(titulo, 18, cor)
 	l.tooltip_text = dica
 	h.add_child(l)
@@ -182,10 +178,8 @@ func _linha_missao(grupo: String, indice: int) -> void:
 	lp.add_child(lbl_prog)
 	lp.add_child(UI.rotulo("·", 12, UI.BORDA_FORTE))
 	var rec: Dictionary = def.get("recompensa", {})
-	var ic_rec := Control.new()
-	ic_rec.set_script(load("res://scripts/ui/icone_control.gd"))
+	var ic_rec := UI.icone(_icone_recompensa(rec), _cor_recompensa(rec), 14)
 	lp.add_child(ic_rec)
-	ic_rec.configurar(_icone_recompensa(rec), _cor_recompensa(rec), 14)
 	lp.add_child(UI.rotulo(_texto_recompensa(rec), 12, _cor_recompensa(rec)))
 	lp.add_child(UI.rotulo("·", 12, UI.BORDA_FORTE))
 	var lxp := UI.rotulo(Txt.f("mis_xp_temporada", {"n": int(def.get("xpTemporada", 10))}), 12, UI.ROSA)
