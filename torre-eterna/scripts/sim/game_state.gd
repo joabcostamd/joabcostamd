@@ -75,7 +75,11 @@ static func novo() -> Dictionary:
 			"rerrolagens_usadas": 0,
 		},
 		"desafios": {"ativo": "", "completos": {}, "tentativas": {}},
-		"eventos": {"ativo": "", "historico": [], "proximo_em": 180.0},
+		# `unicos_vistos` precisa viver FORA do histórico: o histórico é rolante
+		# (corta em 60) e era ele que servia de memória do "já vi". Os três
+		# eventos de lore da torre voltavam ao sorteio assim que saíam da
+		# janela — e como são os de maior peso do arquivo, voltavam logo.
+		"eventos": {"ativo": "", "historico": [], "proximo_em": 180.0, "unicos_vistos": []},
 		"temporada": {"id": 0, "xp": 0, "nivel": 0, "coletadas": []},
 
 		"prestigio": {

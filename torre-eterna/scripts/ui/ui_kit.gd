@@ -162,7 +162,41 @@ static func rotulo(texto: String, tamanho: int = 15, cor: Color = TEXTO, negrito
 		l.add_theme_color_override("font_outline_color", cor.darkened(0.6))
 		l.add_theme_constant_override("outline_size", 0)
 	l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	# O padrão do Label no Godot é `MOUSE_FILTER_IGNORE`, e é por aqui que sai
+	# quase todo texto do jogo. Com IGNORE o nó nunca recebe o mouse, e
+	# `tooltip_text` posto nele vira decoração: a dica não abre nunca. PASS (e
+	# não STOP) porque o rótulo passa a receber o evento sem tirá-lo de quem
+	# está atrás — nada que já funcionava para de funcionar.
+	l.mouse_filter = Control.MOUSE_FILTER_PASS
 	return l
+
+## Faz toda dica da subárvore ser alcançável pelo mouse.
+##
+## `tooltip_text` num nó que não recebe mouse é decoração: a dica nunca abre. E
+## não basta o nó — um ancestral `MOUSE_FILTER_IGNORE` engole o evento antes de
+## ele descer. As caixas do HUD e dos painéis são IGNORE de propósito (para não
+## roubar clique do campo), então quem escrevia uma dica ali escrevia no vazio.
+## Esta varredura sobe de cada nó com dica até a raiz e troca IGNORE por PASS —
+## PASS recebe o evento e continua passando adiante, então nada que já
+## funcionava para de funcionar. Roda uma vez, quando a tela termina de montar.
+static func liberar_dicas(raiz: Node) -> int:
+	var abertos := 0
+	for no in _com_dica(raiz):
+		var atual: Node = no
+		while atual != null and atual != raiz.get_parent():
+			if atual is Control and (atual as Control).mouse_filter == Control.MOUSE_FILTER_IGNORE:
+				(atual as Control).mouse_filter = Control.MOUSE_FILTER_PASS
+				abertos += 1
+			atual = atual.get_parent()
+	return abertos
+
+static func _com_dica(no: Node) -> Array:
+	var out: Array = []
+	if no is Control and str((no as Control).tooltip_text) != "":
+		out.append(no)
+	for filho in no.get_children():
+		out.append_array(_com_dica(filho))
+	return out
 
 static func titulo(texto: String, tamanho: int = 22) -> Label:
 	var l := rotulo(texto, tamanho, Color.WHITE)

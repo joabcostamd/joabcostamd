@@ -273,12 +273,39 @@ func simular(dt: float) -> void:
 		tempo_amostra = 0.0
 		Progresso.checar_conquistas(self)
 		Progresso.checar_missoes(self)
+		_amostrar_historico()
 
 	# autosave
 	tempo_autosave += dt
 	if tempo_autosave >= float(Cfg.get_v("autosave_seg", 20.0)):
 		tempo_autosave = 0.0
 		salvar()
+
+## Ponto na curva de progresso da run, para o gráfico do painel Estatísticas.
+##
+## `stats.historico` era declarado no estado e LIDO pelo painel, e nada no jogo
+## escrevia nele: o gráfico mostrava "sem amostras" para sempre. Amostra a cada
+## 15 s de jogo e, ao encher, joga fora um ponto sim outro não — assim a curva
+## cobre a run inteira sem o array crescer para sempre dentro do save.
+const HISTORICO_PONTOS := 400
+const HISTORICO_INTERVALO := 15.0
+
+func _amostrar_historico() -> void:
+	var st: Dictionary = s["stats"]
+	var hist: Array = st.get("historico", [])
+	var t := float(st["tempo_total"])
+	if not hist.is_empty():
+		var ultimo: Dictionary = hist[hist.size() - 1]
+		if t - float(ultimo.get("t", 0.0)) < HISTORICO_INTERVALO:
+			return
+	hist.append({"t": t, "onda": int(s["onda"])})
+	if hist.size() > HISTORICO_PONTOS:
+		var ralo: Array = []
+		for i in hist.size():
+			if i % 2 == 0 or i == hist.size() - 1:
+				ralo.append(hist[i])
+		hist = ralo
+	st["historico"] = hist
 
 ## ========================================================= callbacks ====
 

@@ -24,6 +24,10 @@ func _ready() -> void:
 	_montar_janela()
 	montar(corpo)
 	atualizar()
+	# As caixas do painel sao IGNORE de proposito, e ancestral IGNORE engole o
+	# evento antes de chegar ao no com a dica: sem esta passada, dica escrita em
+	# rotulo nunca abre.
+	UI.liberar_dicas(self)
 	UI.saltar(janela, 1.04)
 
 ## Sobrescreva para definir título/tamanho.

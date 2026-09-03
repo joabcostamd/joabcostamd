@@ -43,6 +43,7 @@ func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_construir()
+	UI.liberar_dicas(self)
 	Bus.nivel_subiu.connect(func(_n, _p): _pulsar_nivel())
 	Bus.habilidade_pronta.connect(_ao_hab_pronta)
 	Bus.ui_atualizar.connect(func(_c): _reconstruir_habilidades())
@@ -360,6 +361,8 @@ func _reconstruir_habilidades() -> void:
 		pb.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		b.add_child(pb)
 		botoes_hab[id] = {"botao": b, "barra": pb}
+	# nos novos entram com as dicas fechadas de fabrica
+	UI.liberar_dicas(caixa_hab)
 
 func _desc_hab(def: Dictionary, nivel: int) -> String:
 	var d := Ux.txt(def, "desc", Cfg.ingles())

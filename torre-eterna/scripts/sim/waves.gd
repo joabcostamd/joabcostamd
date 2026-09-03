@@ -118,13 +118,22 @@ func concluir() -> void:
 	j.recompensa_de_onda(int(s["onda"]))
 	Bus.onda_limpa.emit(int(s["onda"]), float(s["tempo_na_onda"]))
 	estado = "intervalo"
-	# No Modo Infinito não existe respiro entre ondas: a próxima começa no
-	# quadro seguinte e o combate nunca para.
+	# No Modo Infinito o respiro é curto, não inexistente.
+	#
+	# Era `timer = 0.0`, e o estado "intervalo" durava exatamente UM tique de
+	# física. `Eventos._momento_bom` exige esse estado, e o relógio de eventos
+	# só o consulta no quadro em que zera — a chance de coincidir com aquele
+	# único quadro é perto de nada. Ligar o Modo Infinito, que é o último nó do
+	# Éter, desligava os eventos aleatórios do jogo inteiro sem dizer nada.
 	if bool(s.get("modo_infinito", false)):
-		timer = 0.0
+		timer = INTERVALO_INFINITO
 	else:
 		timer = 1.6 if bool(s["em_chefe"]) else intervalo_entre_ondas
 	chefe_atual = null
+
+## Respiro entre ondas no Modo Infinito: curto o bastante para o combate
+## parecer contínuo, longo o bastante para o sorteio de eventos enxergar.
+const INTERVALO_INFINITO := 0.35
 
 func reiniciar_onda(penalidade: int = 1) -> void:
 	var s: Dictionary = j.s

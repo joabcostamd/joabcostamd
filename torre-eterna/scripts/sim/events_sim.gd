@@ -113,10 +113,18 @@ static func sortear(j) -> Dictionary:
 	var s: Dictionary = j.s
 	var ev := estado(s)
 	var hist: Array = ev["historico"]
+	# Memória dos `unico`: lista própria, imune ao corte do histórico.
 	var ja_vistos := {}
+	for visto in ev.get("unicos_vistos", []):
+		ja_vistos[str(visto)] = true
+	# Retrocompatibilidade com save antigo, que só tinha o histórico: o que
+	# estiver lá e for `unico` continua contando como visto.
 	for item in hist:
 		var h: Dictionary = item
-		ja_vistos[str(h.get("id", ""))] = true
+		var hid := str(h.get("id", ""))
+		var hdef: Dictionary = Dados.evento_por_id.get(hid, {})
+		if bool(hdef.get("unico", false)):
+			ja_vistos[hid] = true
 	var recentes: Array = []
 	for i in range(maxi(0, hist.size() - MEMORIA), hist.size()):
 		var h2: Dictionary = hist[i]
@@ -189,6 +197,14 @@ static func resolver(j, evento_id: String, indice_opcao: int) -> Dictionary:
 	})
 	while hist.size() > HISTORICO_MAX:
 		hist.pop_front()
+
+	# Um evento `unico` sai do pool para sempre — por isso a memória dele não
+	# pode morar num array que é cortado.
+	if bool(def.get("unico", false)):
+		var vistos: Array = ev.get("unicos_vistos", [])
+		if not vistos.has(evento_id):
+			vistos.append(evento_id)
+		ev["unicos_vistos"] = vistos
 
 	ev["ativo"] = ""
 	reagendar(j)

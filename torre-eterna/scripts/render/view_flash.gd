@@ -71,12 +71,24 @@ func _draw() -> void:
 		campo.juice.desenhar_flash(self, tam)
 	if jogo == null or not jogo.iniciado:
 		return
+	# A opção se chama, literalmente, "Clarões e vinhetas de perigo" — mas só o
+	# clarão do Juice a consultava. A vinheta pulsante de perigo cobria a tela
+	# inteira e o banner de chefe/prestígio piscava por cima, os dois sem
+	# perguntar nada a ninguém: desligar "Flashes" não desligava nem um nem
+	# outro. Agora os três obedecem à mesma chave.
+	var pode_piscar := bool(Cfg.get_v("flashes", true))
+	if not pode_piscar:
+		return
 	_desenhar_banner(tam)
 	# vinheta vermelha quando a torre está em perigo
 	var torre: Dictionary = jogo.s["torre"]
 	var frac := Big.frac(torre["vida"], torre["vida_max"])
 	if frac < 0.35 and bool(torre["viva"]):
-		var forca := (1.0 - frac / 0.35) * (0.28 + sin(t * 5.0) * 0.08)
+		# Com movimento reduzido a vinheta continua avisando do perigo, só que
+		# parada: quem liga a opção não pode perder a informação junto com a
+		# animação. Sem o seno, dois quadros seguidos saem idênticos.
+		var pulso := sin(t * 5.0) * 0.08 if not bool(Cfg.get_v("movimento_reduzido", false)) else 0.0
+		var forca := (1.0 - frac / 0.35) * (0.28 + pulso)
 		var passos := 6
 		for i in passos:
 			var f := float(i) / float(passos)

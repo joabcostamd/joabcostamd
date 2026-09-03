@@ -44,6 +44,8 @@ func rodar(cena: SceneTree) -> void:
 	t_mecanicas()
 	t_eventos()
 	t_acessibilidade()
+	t_longo_prazo()
+	t_dicas()
 	t_audio()
 	t_save()
 	t_offline()
@@ -967,6 +969,101 @@ func _luz_relativa(c: Color) -> float:
 		var f := float(v)
 		out.append(f / 12.92 if f <= 0.03928 else pow((f + 0.055) / 1.055, 2.4))
 	return 0.2126 * out[0] + 0.7152 * out[1] + 0.0722 * out[2]
+
+## Dica escrita e inalcancavel e dica que nunca abre. O padrao do Label no
+## Godot e IGNORE, `UI.rotulo` devolve Label, e as caixas do HUD e dos paineis
+## sao IGNORE de proposito: eram 82 dicas escritas no vazio, incluindo as duas
+## unicas explicacoes de numero do HUD.
+func t_dicas() -> void:
+	g("Dicas")
+	var raiz := Control.new()
+	raiz.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var caixa := UI.hbox(4)
+	caixa.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	raiz.add_child(caixa)
+	var lbl := UI.rotulo("x", 12)
+	caixa.add_child(lbl)
+	ok("rotulo do UI recebe mouse", lbl.mouse_filter != Control.MOUSE_FILTER_IGNORE)
+
+	lbl.tooltip_text = "explicacao"
+	var abertos := UI.liberar_dicas(raiz)
+	ok("a varredura abre o caminho ate a raiz", abertos >= 2, "%d nos abertos" % abertos)
+	var travado := false
+	var atual: Node = lbl
+	while atual != null:
+		if atual is Control and (atual as Control).mouse_filter == Control.MOUSE_FILTER_IGNORE:
+			travado = true
+		atual = atual.get_parent()
+	ok("nenhum ancestral engole o evento", not travado)
+
+	# sem dica, nada e mexido: a varredura nao pode roubar clique do campo
+	var raiz2 := Control.new()
+	raiz2.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var mudo := Control.new()
+	mudo.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	raiz2.add_child(mudo)
+	ok("sem dica a varredura nao mexe em nada", UI.liberar_dicas(raiz2) == 0)
+	ok("no sem dica continua ignorando", mudo.mouse_filter == Control.MOUSE_FILTER_IGNORE)
+	raiz.free()
+	raiz2.free()
+
+## ----------------------------------------------- promessas de longo prazo
+func t_longo_prazo() -> void:
+	g("Longo prazo")
+	# O grafico do painel Estatisticas lia `stats.historico` e NADA no jogo
+	# escrevia nele: mostrava "sem amostras" para sempre.
+	jogo.s["stats"]["historico"] = []
+	jogo.s["stats"]["tempo_total"] = 0.0
+	for i in 400:
+		jogo.s["stats"]["tempo_total"] = float(i) * 16.0
+		jogo._amostrar_historico()
+	var h: Array = jogo.s["stats"]["historico"]
+	ok("o jogo amostra a curva da run", h.size() >= 2, "%d pontos" % h.size())
+	ok("ponto tem tempo e onda", h[0] is Dictionary and h[0].has("t") and h[0].has("onda"))
+	# chamar de novo sem o tempo andar nao pode criar ponto
+	var n_antes: int = jogo.s["stats"]["historico"].size()
+	jogo._amostrar_historico()
+	jogo._amostrar_historico()
+	ok("nao amostra duas vezes no mesmo instante", jogo.s["stats"]["historico"].size() == n_antes,
+		"%d -> %d" % [n_antes, jogo.s["stats"]["historico"].size()])
+	# e nao cresce para sempre dentro do save
+	for i in 4000:
+		jogo.s["stats"]["tempo_total"] = 6400.0 + float(i) * 16.0
+		jogo._amostrar_historico()
+	ok("historico tem teto", jogo.s["stats"]["historico"].size() <= jogo.HISTORICO_PONTOS,
+		"%d pontos" % jogo.s["stats"]["historico"].size())
+
+	# Os eventos `unico` sao os beats de lore da torre. A memoria de "ja vi" era
+	# o historico rolante, cortado em 60: eles voltavam ao sorteio assim que
+	# saiam da janela — e como sao os de maior peso, voltavam logo.
+	var unicos: Array = []
+	for e_def in Dados.eventos:
+		if bool(e_def.get("unico", false)):
+			unicos.append(str(e_def.get("id", "")))
+	ok("existem eventos unicos", not unicos.is_empty(), "%d" % unicos.size())
+	if not unicos.is_empty():
+		var ev: Dictionary = Eventos.estado(jogo.s)
+		ev["unicos_vistos"] = []
+		ev["historico"] = []
+		ev["unicos_vistos"].append(unicos[0])
+		# enche o historico bem alem do corte
+		for i in 200:
+			ev["historico"].append({"id": "ruido_%d" % i, "onda": 1})
+		while ev["historico"].size() > Eventos.HISTORICO_MAX:
+			ev["historico"].pop_front()
+		jogo.s["onda_maxima_global"] = 9999
+		var voltou := false
+		for i in 300:
+			var sorteado := Eventos.sortear(jogo)
+			if str(sorteado.get("id", "")) == unicos[0]:
+				voltou = true
+				break
+		ok("evento unico nao volta depois do corte do historico", not voltou, unicos[0])
+
+	# O Modo Infinito e o ultimo no do Eter, e zerar o intervalo entre ondas
+	# desligava os eventos aleatorios: o estado "intervalo" durava um quadro.
+	ok("modo infinito tem respiro de verdade", Diretor.INTERVALO_INFINITO > 1.0 / 60.0,
+		"%.3f s" % Diretor.INTERVALO_INFINITO)
 
 func t_audio() -> void:
 	g("Áudio")
