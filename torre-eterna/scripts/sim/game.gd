@@ -39,6 +39,9 @@ func _ready() -> void:
 	Dados.carregar()
 	stats = StatEngine.new()
 	s = GameState.novo()
+	# Quem congela o tempo e a simulacao, entao o pedido tem que chegar aqui.
+	# Ficava sem ouvinte: a Purga pedia hitstop e nada acontecia.
+	Bus.hitstop_pedido.connect(hitstop_ms)
 	# a UI chama iniciar() quando a cena principal estiver pronta
 	set_physics_process(false)
 
@@ -613,27 +616,44 @@ func transcender() -> bool:
 	if not Prestigio.pode_transcender(s):
 		return false
 	var ganho := Prestigio.previa_eter(self)
+	# A Transcendência monta um estado NOVO — então tudo que precisa sobreviver
+	# tem que estar listado aqui. O Álbum e o Panteão prometem, na própria
+	# documentação, ser "imunes a todos os prestígios"; ficavam de fora e eram
+	# apagados. O tutorial e as conquistas vistas também: ninguém quer refazer
+	# o tutorial nem rever comemoração antiga.
 	var guardar := {
 		"eter": Big.add(s["moedas"]["eter"], ganho),
 		"arvore_eter": s["prestigio"]["arvore_eter"],
 		"transcendencias": int(s["prestigio"]["transcendencias"]) + 1,
 		"conquistas": s["conquistas"],
+		"conquistas_vistas": s["conquistas_vistas"],
 		"codex": s["codex"],
 		"stats": s["stats"],
 		"onda_global": int(s["onda_maxima_global"]),
 		"criado_em": int(s["criado_em"]),
 		"temporada": s["temporada"],
+		"album": s.get("album", {}),
+		"panteao": s.get("panteao", {}),
+		"desbloqueios": s["desbloqueios"],
+		"tutorial": s["tutorial"],
+		"novidades": s["novidades"],
 	}
 	s = GameState.novo()
 	s["moedas"]["eter"] = guardar["eter"]
 	s["prestigio"]["arvore_eter"] = guardar["arvore_eter"]
 	s["prestigio"]["transcendencias"] = guardar["transcendencias"]
 	s["conquistas"] = guardar["conquistas"]
+	s["conquistas_vistas"] = guardar["conquistas_vistas"]
 	s["codex"] = guardar["codex"]
 	s["stats"] = guardar["stats"]
 	s["onda_maxima_global"] = guardar["onda_global"]
 	s["criado_em"] = guardar["criado_em"]
 	s["temporada"] = guardar["temporada"]
+	s["album"] = guardar["album"]
+	s["panteao"] = guardar["panteao"]
+	s["desbloqueios"] = guardar["desbloqueios"]
+	s["tutorial"] = guardar["tutorial"]
+	s["novidades"] = guardar["novidades"]
 	_resetar_run()
 	Bus.prestigio_feito.emit("transcendencia", ganho)
 	return true

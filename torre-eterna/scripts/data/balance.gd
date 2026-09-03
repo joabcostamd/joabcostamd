@@ -172,6 +172,14 @@ const GEMAS_SUPER := 25
 const POEIRA := {"comum": 5, "incomum": 14, "raro": 45, "epico": 160, "lendario": 600, "mitico": 2400}
 
 # ========================================================== AUTOMAÇÃO ====
+## O inimigo "refletir" devolve uma fracao do golpe na torre. Fica aqui, e nao
+## solto no codigo da torre, porque ja passou uma vez em unidade errada: o valor
+## LINEAR foi entregue onde se esperava log10 e a torre morria num tiro.
+const REFLEXO_FRAC := 0.02
+
+static func dano_refletido(dano_log: float) -> float:
+	return Big.mul_f(dano_log, REFLEXO_FRAC)
+
 const INTERVALO_AUTOCOMPRA := 0.35
 
 ## Quanto do cofre a compra automatica pode gastar de uma vez. Um terco: alto o

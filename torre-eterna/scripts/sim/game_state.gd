@@ -122,6 +122,15 @@ static func novo() -> Dictionary:
 
 		"desbloqueios": {},
 		"tutorial": {"passo": 0, "completo": false, "vistas": []},
+
+		# --- coleções eternas: sobrevivem a TODOS os prestígios ---
+		# Estavam sendo criadas na marra por Mecanicas (`if not s.has(...)`), o que
+		# funcionava até a Transcendência montar um estado novo e apagar as duas.
+		# O Panteão é o único sistema onde o jogador destrói cartas de verdade —
+		# perder isso num prestígio é o pior tipo de bug que existe.
+		"album": {},             # id da carta -> quando foi vista pela primeira vez
+		"panteao": {},           # id do conjunto -> quantas vezes foi consagrado
+		"peregrinos_mortos": 0,
 		"novidades": {},
 
 		"buffs": [],             # [{id, stat, tipo, valor, restante, fonte, icone, cor}]

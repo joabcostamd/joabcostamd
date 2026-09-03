@@ -1,0 +1,20 @@
+{
+  "cel_purga": {"pt": "PURGA PERFEITA", "en": "PERFECT PURGE"},
+  "cel_purga_sub": {"pt": "{n} varridos no tempo exato", "en": "{n} swept at the exact beat"},
+
+  "cel_panteao": {"pt": "CONSAGRADO", "en": "CONSECRATED"},
+  "cel_panteao_sub": {"pt": "As cartas se foram. O poder ficou — nível {n}.", "en": "The cards are gone. The power stayed — level {n}."},
+
+  "cel_lendario": {"pt": "LENDÁRIA", "en": "LEGENDARY"},
+
+  "cel_fenix": {"pt": "FÊNIX", "en": "PHOENIX"},
+
+  "cel_temporada": {"pt": "TEMPORADA", "en": "SEASON"},
+  "cel_temporada_sub": {"pt": "Nível {n} da temporada", "en": "Season level {n}"},
+
+  "cel_retomada": {"pt": "RETOMADA", "en": "RECLAIM"},
+  "cel_retomada_sub": {"pt": "Volte à onda {n} e o tempo destrava", "en": "Get back to wave {n} and time unlocks"},
+
+  "cel_retomada_ok": {"pt": "RETOMOU", "en": "RECLAIMED"},
+  "cel_retomada_ok_sub": {"pt": "Onda {n} — de volta, e mais fundo", "en": "Wave {n} — back, and deeper"}
+}

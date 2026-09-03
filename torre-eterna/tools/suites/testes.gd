@@ -207,6 +207,12 @@ func t_combate() -> void:
 ## ------------------------------------------------------- defesa da torre
 func t_defesa() -> void:
 	g("Defesa")
+	# Reflexo em log10, nao linear: ja foi entregue como valor linear e a torre
+	# morria num tiro so (10^(2e18) de dano com um golpe de 1e20).
+	var golpe := Big.from(1.0e20)
+	var refletido := Bal.dano_refletido(golpe)
+	ok("reflexo continua em log10", refletido < 19.0 and refletido > 18.0)
+	ok("reflexo e 2%% do golpe", perto(Big.to_f(refletido), 2.0e18, 1.0e12))
 	# comprar vida PRECISA aumentar a sobrevivência (regressão: antes o dano de
 	# contato era % da vida máxima, então vida extra não servia para nada)
 	var hp10 := Bal.hp_onda(10)
@@ -304,6 +310,25 @@ func t_prestigio() -> void:
 	ok("mantem conquistas", conq_agora == conquistas_antes)
 	ok("mantem recorde global", int(jogo.s["onda_maxima_global"]) >= 60)
 	ok("conta ascensao", int(jogo.s["prestigio"]["ascensoes"]) == 1)
+
+	# --- as colecoes eternas precisam atravessar TODOS os prestigios ---
+	# A Transcendencia monta um estado novo do zero; o Album e o Panteao ja
+	# foram apagados por ela uma vez, e o Panteao e o unico sistema em que o
+	# jogador destroi cartas de verdade para sempre.
+	Mecanicas.registrar_no_album(jogo.s, "carta_teste_eterna")
+	jogo.s["panteao"]["conjunto_teste"] = 3
+	jogo.s["tutorial"]["completo"] = true
+	jogo.s["onda_maxima"] = 700
+	jogo.s["onda_maxima_global"] = 700
+	jogo.s["prestigio"]["singularidades"] = 9
+	jogo.s["moedas"]["nucleos"] = Big.from(1.0e9)
+	ok("pode transcender", Prestigio.pode_transcender(jogo.s))
+	jogo.transcender()
+	ok("album sobrevive a transcendencia", jogo.s["album"].has("carta_teste_eterna"))
+	ok("panteao sobrevive a transcendencia", int(jogo.s["panteao"].get("conjunto_teste", 0)) == 3)
+	ok("tutorial nao volta do zero", bool(jogo.s["tutorial"]["completo"]))
+	ok("conta transcendencia", int(jogo.s["prestigio"]["transcendencias"]) == 1)
+	ok("reseta fragmentos", Big.is_zero(jogo.s["moedas"]["fragmentos"]))
 
 ## ------------------------------------------------------------- saque
 func t_saque() -> void:

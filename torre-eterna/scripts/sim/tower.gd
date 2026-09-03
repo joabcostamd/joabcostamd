@@ -212,7 +212,7 @@ func _impacto(p: Projetil, alvo: Inimigo) -> bool:
 	}
 
 	if alvo.hab == "refletir" and not p.critico:
-		j.dano_na_torre(Big.to_f(p.dano) * 0.02, alvo, {"reflexo": true})
+		j.dano_na_torre(Bal.dano_refletido(p.dano), alvo, {"reflexo": true})
 	if bool(alvo.def.get("invisivel", false)):
 		alvo.revelado = true
 

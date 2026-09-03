@@ -105,6 +105,8 @@ func _talvez_capturar() -> void:
 			_abrir_debug = a.substr(8)
 		elif a.begins_with("--clicar="):
 			_clicar_debug = a.substr(9)
+		elif a.begins_with("--celebrar="):
+			_celebrar_debug = a.substr(11)
 	if segundos < 0.0:
 		return
 	if _abrir_debug != "":
@@ -117,6 +119,8 @@ func _talvez_capturar() -> void:
 		for i in _cartas_debug:
 			Saque.criar_carta(jogo, "", i % 3 == 0)
 		Bus.ui_atualizar.emit(true)
+	if _celebrar_debug != "":
+		Bus.celebracao.emit(_celebrar_debug, {"mortos": 47, "nivel": 3, "alvo": 210, "onda": 211})
 	if onda > 0:
 		jogo.s["onda_maxima"] = onda
 		jogo.s["onda_maxima_global"] = onda
@@ -133,6 +137,7 @@ var _tela_alvo := ""
 var _cartas_debug := 0
 var _abrir_debug := ""
 var _clicar_debug := ""
+var _celebrar_debug := ""
 
 func _capturar_em(segundos: float, saida: String) -> void:
 	await get_tree().create_timer(segundos).timeout
@@ -223,6 +228,11 @@ func _montar() -> void:
 	raiz_ui.add_child(gerente)
 	gerente.raiz = raiz_ui
 	hud.painel_pedido.connect(func(nome): gerente.alternar(nome))
+
+	# --- comemorações: `Bus.celebracao` era emitido e ninguém escutava ---
+	var celebra := Control.new()
+	celebra.set_script(load("res://scripts/ui/celebracao.gd"))
+	camada_ui.add_child(celebra)
 
 	# --- tutorial: balões que aparecem na hora certa e somem sozinhos ---
 	var tutorial := Control.new()
