@@ -234,6 +234,18 @@ func _aba_jogo() -> void:
 	var l5 := _opcao(b3, "estrela", UI.VERDE, Txt.t("cfg_dicas"), Txt.t("cfg_dicas_desc"))
 	l5["direita"].add_child(_check("dicas", Txt.t("cfg_dicas_dica")))
 
+	# A CHAVE DA TRAVA. Quando o boot acha um save ilegivel, o jogo para de
+	# gravar para nao apagar o que talvez de para recuperar — e ate agora nao
+	# existia caminho nenhum para religar. Quem tivesse um save corrompido
+	# jogava para sempre sem gravar nada. A linha so aparece quando a trava
+	# esta ligada; no uso normal ninguem ve.
+	if jogo != null and jogo.salvamento_travado:
+		var lt := _opcao(b3, "cadeado", UI.VERMELHO, Txt.t("sv_travado_titulo"),
+			Txt.t("sv_travado_texto"))
+		lt["direita"].add_child(UI.botao(Txt.t("sv_travado_botao"), func():
+			jogo.destravar_salvamento()
+			Bus.ui_atualizar.emit(true)))
+
 	var l6 := _opcao(b3, "salvar", UI.VERDE, Txt.t("cfg_autosave"), Txt.t("cfg_autosave_desc"))
 	l6["direita"].add_child(_slider("autosave_seg", 5, 120, 5, false, 84,
 		func(x: float) -> String: return "%d s" % int(x),

@@ -287,6 +287,20 @@ static func habilidade(e: Inimigo, dt: float, j) -> void:
 	if e.hab == "":
 		return
 	match e.hab:
+		"cuspir":
+			# O `atirador` declara `"hab": "cuspir"` e o codex EXPLICA a
+			# habilidade ao jogador, nos dois idiomas — e `grep '"cuspir"'` na
+			# simulacao devolvia zero. O inimigo cujo nome e "atirador" nunca
+			# atirou: andava ate a torre e batia nela como qualquer outro.
+			# `projetil_inimigo` ja existia pronto, esperando quem o chamasse.
+			e.cd -= dt
+			if e.cd > 0.0:
+				return
+			e.cd = maxf(1.6, float(e.def.get("recarga", 2.4)))
+			var dist_c := e.pos.distance_to(j.arena.centro)
+			if dist_c <= float(e.def.get("alcance", 420.0)):
+				j.projetil_inimigo(e)
+				Bus.particulas.emit("faisca", e.pos, {"cor": e.cor, "qtd": 4})
 		"curar":
 			e.cd -= dt
 			if e.cd > 0.0:

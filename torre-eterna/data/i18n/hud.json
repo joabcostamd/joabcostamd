@@ -114,5 +114,21 @@
   "hud_poupar_off": {
     "pt": "A torre vai atirar no Peregrino.",
     "en": "The tower will shoot the Pilgrim."
+  },
+  "sv_travado_titulo": {
+    "pt": "O save anterior não pôde ser lido",
+    "en": "The previous save could not be read"
+  },
+  "sv_travado_texto": {
+    "pt": "Para não apagar o que talvez ainda dê para recuperar, o jogo parou de salvar. O arquivo com problema foi guardado em quarentena. Você pode continuar jogando desta partida nova e voltar a salvar — isso substitui o save antigo.",
+    "en": "To avoid overwriting what might still be recoverable, the game stopped saving. The damaged file was quarantined. You can keep playing this new run and resume saving — that replaces the old save."
+  },
+  "sv_travado_botao": {
+    "pt": "Voltar a salvar",
+    "en": "Resume saving"
+  },
+  "sv_destravado": {
+    "pt": "Salvamento religado. A partir de agora esta partida é gravada.",
+    "en": "Saving re-enabled. This run is recorded from now on."
   }
 }

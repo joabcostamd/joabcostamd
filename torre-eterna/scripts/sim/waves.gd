@@ -29,6 +29,13 @@ func iniciar_onda(n: int) -> void:
 	estado = "chefe" if bool(s["em_chefe"]) else "ativa"
 	if n > int(s["onda_maxima"]):
 		s["onda_maxima"] = n
+	# A linha de chegada do desafio, FORA do `if` do recorde — o comentario logo
+	# abaixo ja explica por que: basta um caminho que mexa no recorde por fora
+	# (carregar save, salto de onda) para a checagem nunca rodar. `ondaMax` era
+	# lido por ninguem e `encerrar_desafio(true)` nao tinha chamador: o desafio
+	# nunca terminava, e quem entrava ficava preso nos modificadores duros para
+	# sempre, sem vitoria possivel.
+	j.checar_fim_do_desafio()
 	if n > int(s["onda_maxima_global"]):
 		s["onda_maxima_global"] = n
 	# A checagem roda em TODA onda, não só quando o recorde sobe. Antes ficava

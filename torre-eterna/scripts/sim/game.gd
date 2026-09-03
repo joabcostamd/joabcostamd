@@ -185,6 +185,21 @@ func _aplicar_mods_desafio() -> void:
 	mods_dif["xp"] *= float(m.get("xp", 1.0))
 	mods_dif["densidade"] *= float(m.get("densidade", 1.0))
 	mods_dif["ondaAuto"] = float(m.get("ondaAuto", 0.0))
+	mods_dif["ondaMax"] = float(m.get("ondaMax", 0.0))
+
+## `ondaMax` e a linha de chegada do desafio, e nenhum codigo a lia.
+##
+## Doze dos catorze desafios declaram um teto de onda (40, 50, 60...), o painel
+## anuncia esse numero ao jogador como a meta, e `encerrar_desafio(true)` estava
+## escrito e pronto — sem UM chamador. O desafio nunca terminava: quem entrasse
+## ficava preso nos modificadores duros para sempre, sem vitoria possivel, ate
+## desistir na mao. A recompensa por vencer existia e era inalcancavel.
+func checar_fim_do_desafio() -> void:
+	if str(s["desafios"]["ativo"]) == "":
+		return
+	var teto := int(mods_dif.get("ondaMax", 0.0))
+	if teto > 0 and int(s["onda_maxima"]) >= teto:
+		encerrar_desafio(true)
 
 func sincronizar_torre(cheia: bool) -> void:
 	var t: Dictionary = s["torre"]
@@ -1049,6 +1064,20 @@ func iniciar_desafio(id: String) -> bool:
 	_resetar_run()
 	Bus.desafio_iniciado.emit(id)
 	return true
+
+## Religa o salvamento depois de um save ilegivel no boot.
+##
+## `salvamento_travado` era uma trava de MAO UNICA: o boot a ligava, o sinal
+## `save_ilegivel` era emitido e NINGUEM escutava, e nao existia caminho para
+## desligar. O comentario da trava dizia "destrancar e decisao de quem joga" e
+## o jogo nunca dava essa decisao a ninguem: quem tivesse um save corrompido
+## jogava para sempre sem gravar nada, sem saber por que.
+func destravar_salvamento() -> void:
+	if not salvamento_travado:
+		return
+	salvamento_travado = false
+	Bus.toast(Txt.t("sv_destravado"), "bom", "salvar")
+	salvar()
 
 func encerrar_desafio(vitoria: bool) -> void:
 	var id := str(s["desafios"]["ativo"])

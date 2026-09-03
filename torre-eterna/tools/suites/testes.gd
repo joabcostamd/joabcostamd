@@ -80,7 +80,7 @@ func rodar(cena: SceneTree) -> void:
 		"Acessibilidade": 11, "Alcancavel": 8, "Big": 12,
 		"Chaves dinamicas": 3, "Combate": 9, "Defesa": 27,
 		"Dicas": 5, "Economia": 9, "Elites": 11,
-		"Eventos": 12, "Feedback": 2, "Ferramentas": 3, "Daltonismo": 9, "Tempo": 5, "Conteudo lido": 11, "Fmt": 6,
+		"Eventos": 12, "Feedback": 2, "Ferramentas": 3, "Daltonismo": 9, "Tempo": 5, "Conteudo lido": 16, "Fmt": 6,
 		"Habilidades": 17, "Icones": 2, "Integridade": 9,
 		"Longo prazo": 7, "Mecânicas": 61, "Mira": 6,
 		"Mods": 19, "Numeros de dano": 2, "Offline": 6,
@@ -594,6 +594,43 @@ func t_conteudo_lido() -> void:
 				sem_braco.append("%s -> %s" % [str(b_def.get("id", "")), mec])
 	ok("toda mecanica de chefe tem braco no codigo",
 		sem_braco.is_empty(), str(sem_braco))
+
+	# `cuspir`: o `atirador` declara a habilidade, o codex EXPLICA ela ao
+	# jogador, e a simulacao nao tinha o braco. O inimigo cujo nome e "atirador"
+	# nunca atirou: andava ate a torre e batia como qualquer outro.
+	var codigo_hab := ""
+	for arq_h in _listar_gd("res://scripts/sim"):
+		codigo_hab += _sem_comentario(FileAccess.get_file_as_string(arq_h))
+	var habs_sem_braco: Array = []
+	for e_def in Dados.inimigos:
+		var h := str(e_def.get("hab", ""))
+		if h != "" and not codigo_hab.contains('"%s"' % h):
+			habs_sem_braco.append("%s -> %s" % [str(e_def.get("id", "")), h])
+	ok("toda habilidade de inimigo tem braco na simulacao",
+		habs_sem_braco.is_empty(), str(habs_sem_braco))
+
+	# `ondaMax`: doze dos catorze desafios declaram a linha de chegada, o painel
+	# anuncia esse numero como a meta, e `encerrar_desafio(true)` nao tinha UM
+	# chamador — o desafio nunca terminava e a recompensa era inalcancavel.
+	var com_teto := 0
+	for d_def in Dados.desafios:
+		if float(d_def.get("mods", {}).get("ondaMax", 0.0)) > 0.0:
+			com_teto += 1
+	ok("os desafios declaram linha de chegada", com_teto > 0, "%d de %d" % [com_teto, Dados.desafios.size()])
+	ok("alguem le ondaMax e encerra o desafio",
+		codigo_hab.contains("ondaMax") and codigo_hab.contains("encerrar_desafio(true)"),
+		"encerrar_desafio(true) precisa de chamador")
+
+	# `salvamento_travado` era trava de MAO UNICA: ligava no boot, o sinal nao
+	# tinha ouvinte e nao existia caminho para religar. Trancar sem oferecer a
+	# chave nao e proteger, e prender.
+	var codigo_ui2 := ""
+	for arq_u in _listar_gd("res://scripts/ui"):
+		codigo_ui2 += _sem_comentario(FileAccess.get_file_as_string(arq_u))
+	ok("o save travado tem quem avise o jogador",
+		codigo_ui2.contains("save_ilegivel"), "ninguem escuta o sinal")
+	ok("o save travado tem como destravar",
+		codigo_ui2.contains("destravar_salvamento("), "sem caminho de volta")
 
 	# SINERGIA: a dupla equipada tem que pagar mais que as cartas soltas.
 	var achou_par := {}

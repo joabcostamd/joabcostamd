@@ -32,7 +32,7 @@ suíte reprovou):
 | 1.6 | `verificar.gd` escrevia FAIL e saía 0 quando faltava dado | Veredito e código de saída concordam, cobrado por teste em todas as ferramentas |
 | 1.7 | Critério 12 prometia "separação percebida medida" sem instrumento nenhum | Instrumento em CIELAB (ΔE 76). **Desmentiu o comentário do shader**: a média piora nos três modos; o filtro troca média por pior caso, e é o pior caso que importa |
 
-## 2. Promessas que o jogo faz e não cumpre — 6 de 8 resolvidas
+## 2. Promessas que o jogo faz e não cumpre — ✅ FECHADO
 
 | # | Pendência | Estado |
 |---|---|---|
@@ -42,8 +42,8 @@ suíte reprovou):
 | 2.4 | Os 2 super-chefes eram o mesmo chefe com duas peles, e a dica prometia fissuras inexistentes | ✅ Trono Vazio ganhou luta própria (drena escudo, silencia desde a fase 1). Teste proíbe assinatura repetida |
 | 2.7 | Peregrino: a mira nunca o excluía, então **poupar era impossível** | ✅ Escolha real, botão só quando ele está na tela, respeitada até pelo projétil no ar |
 | 2.8 | Adaptação não afetava Gelo e Vazio, mas o HUD mostrava −62% para os cinco | ✅ Vale para os cinco; teste prova |
-| 2.5 | `cuspir` e `ondaMax` declarados e não implementados | ⬜ pendente |
-| 2.6 | `salvamento_travado`: trava de mão única, sem ouvinte e sem destravar | ⬜ pendente |
+| 2.5 | `cuspir` anunciada no codex e sem braço — o inimigo chamado "atirador" nunca atirou. `ondaMax` era a linha de chegada de 12 dos 14 desafios e ninguém lia: `encerrar_desafio(true)` não tinha chamador, então o desafio **nunca terminava** e a recompensa era inalcançável | ✅ |
+| 2.6 | `salvamento_travado`: o boot trancava, o sinal `save_ilegivel` não tinha ouvinte e **não existia caminho para religar** — quem tivesse save corrompido jogava para sempre sem gravar, sem saber por quê | ✅ Avisa e oferece a chave em Configurações |
 
 ## 3. Economia e ritmo (o mais caro de consertar, e o que mais decide)
 

@@ -41,6 +41,11 @@ func _ready() -> void:
 	Bus.aviso.connect(_toast)
 	Bus.relatorio_offline.connect(_relatorio_offline)
 	Bus.evento_sorteado.connect(abrir_evento)
+	# `save_ilegivel` era emitido e NINGUEM escutava: quem tinha um save
+	# corrompido jogava para sempre sem gravar nada e sem saber por que. A trava
+	# existe por um bom motivo (gravar por cima apagaria o que talvez de para
+	# recuperar), mas trancar sem oferecer a chave nao e proteger, e prender.
+	Bus.save_ilegivel.connect(_ao_save_ilegivel)
 	# Trocar o idioma com um painel aberto deixava título, abas e botões na
 	# língua velha — eles nascem em `montar()` e ninguém os reconstruía. Reabrir
 	# resolve, e tem que ser DIFERIDO: o pedido vem de dentro do callback do
@@ -90,6 +95,7 @@ func _escoar_fila_inicial() -> void:
 		match str(e[0]):
 			"toast": _toast(str(e[1]), str(e[2]), str(e[3]))
 			"offline": _relatorio_offline(e[1])
+			"save_ilegivel": _ao_save_ilegivel("")
 
 func _montar_overlay() -> void:
 	fundo_escuro = ColorRect.new()
@@ -242,6 +248,16 @@ func abrir_evento(def: Dictionary) -> void:
 	# cima da escolha que o jogador precisa ler. Com a caixa fugindo para o
 	# rodapé, o aviso continua visível e deixa de disputar espaço com o texto.
 	_posicionar_toasts()
+
+## O save do boot nao pode ser lido: avisa e oferece religar o salvamento.
+func _ao_save_ilegivel(_motivo: String) -> void:
+	if not _pronto_para_desenhar():
+		_fila_inicial.append(["save_ilegivel", "", "", ""])
+		return
+	_toast(Txt.t("sv_travado_titulo"), "ruim", "cadeado")
+	# O aviso curto some; a explicacao e a escolha ficam onde o jogador possa
+	# achar quando quiser, sem tapar a tela no meio de uma onda.
+	Bus.toast(Txt.t("sv_travado_texto"), "info", "cadeado")
 
 ## ------------------------------------------------------------- toasts
 
