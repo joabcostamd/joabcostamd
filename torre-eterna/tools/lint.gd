@@ -30,6 +30,7 @@ func _initialize() -> void:
 	_checar_tipos_cond()
 	_checar_tremor()
 	_checar_texto_cru()
+	_checar_aleatorio()
 
 	print("===LINT=== arquivos=%d linhas=%d erros=%d avisos=%d" % [arquivos, linhas, erros.size(), avisos.size()])
 	for e in erros:
@@ -477,6 +478,38 @@ func _coletar_passivas(o, arquivo: String, saida: Dictionary) -> void:
 ## revivesExtra, ondaInicial...). `slotsHabilidade` estava declarado numa
 ## relíquia comprável e pressupunha um sistema de slots de habilidade que este
 ## jogo nunca teve: a relíquia custava núcleos e não fazia absolutamente nada.
+## A simulação não pode sortear pelo gerador GLOBAL.
+##
+## `randf()`, `randi()`, `randf_range()` e `Array.shuffle()` usam o gerador do
+## Godot, que ninguém semeia. Uma simulação que os use deixa de ser
+## reproduzível — e o portão de balanceamento passou a depender disso: com o
+## gerador global, duas execuções do MESMO código deram onda 50 em 14m55 e em
+## 15m07, uma reprovando e a outra passando. Portão que muda de resposta sem o
+## código mudar não mede nada. Tudo que sorteia dentro de `scripts/sim` e
+## `scripts/data` passa pelo `RngX` do jogo, que tem semente.
+func _checar_aleatorio() -> void:
+	var proibidos := ["randf(", "randi(", "randf_range(", "randi_range(", "randfn("]
+	for caminho in _todos_gd():
+		if not (caminho.begins_with("res://scripts/sim") or caminho.begins_with("res://scripts/data")):
+			continue
+		var f := FileAccess.open(caminho, FileAccess.READ)
+		if f == null:
+			continue
+		var n := 0
+		while not f.eof_reached():
+			var linha := f.get_line()
+			n += 1
+			var limpa := _sem_strings(linha.strip_edges())
+			var c := limpa.find("#")
+			if c >= 0:
+				limpa = limpa.substr(0, c)
+			for nome in proibidos:
+				if limpa.contains(nome) and not limpa.contains("rng." + nome):
+					erros.append("%s:%d usa o sorteio global (%s) — a simulacao tem que sortear pelo RngX" % [
+						caminho, n, nome])
+			if limpa.contains(".shuffle()"):
+				erros.append("%s:%d usa Array.shuffle(), que e global — use rng.embaralhar()" % [caminho, n])
+
 ## Texto em português escrito direto no código, sem passar pelo `Txt`.
 ##
 ## A regra de i18n só conferia se uma chave USADA existia — nunca se um texto

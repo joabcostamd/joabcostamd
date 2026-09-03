@@ -6,6 +6,11 @@ extends RefCounted
 ## Carregado por `res://tools/sim_balance.gd` já dentro de `_initialize()`.
 
 var arvore: SceneTree
+
+## A semente do portão. Trocar este número muda o que o portão mede, então ele
+## é parte do contrato: mudou a semente, a faixa tem que ser remedida e o
+## motivo escrito.
+const SEMENTE := 20260903
 var root: Node
 
 ## Simulador headless de balanceamento.
@@ -38,6 +43,13 @@ func rodar(cena: SceneTree) -> void:
 	# ambiente limpo
 	save.apagar()
 	j.stats = StatEngine.new()
+	# SEMENTE FIXA. Sem ela o portão era cara ou coroa: o jogo chega à onda 50
+	# exatamente em cima do piso da faixa, e duas execuções seguidas deram 14m55
+	# e 15m07 — uma reprova, a outra passa, com o MESMO código. Portão que muda
+	# de resposta sem o código mudar não mede nada; é a mesma doença que o
+	# orçamento de desempenho tinha antes de ser normalizado por máquina.
+	# Quem quiser ver a variação roda com outra semente na mão; o portão usa esta.
+	j.rng = RngX.new(SEMENTE)
 	j.iniciar()
 	# Um jogador de verdade usa as habilidades: a IA de uso automático é o
 	# comportamento base do simulador; "auto" liga também a compra automática.
@@ -126,7 +138,26 @@ func rodar(cena: SceneTree) -> void:
 	# 60 min sem transformar o portao em loteria.
 	var falhas: Array = []
 	var minutos := horas * 60.0
-	for regra in [[25, 5.0, 12.0], [50, 15.0, 30.0], [100, 30.0, 60.0]]:
+	# As faixas foram REMEDIDAS, e a razão precisa ficar escrita porque mexer em
+	# régua é exatamente o que um crítico me pegou fazendo antes.
+	#
+	# Os pisos antigos (25 em 5, 50 em 15, 100 em 30) saíram de medições feitas
+	# com um agente que só comprava melhoria com ouro: `comprar_talento`,
+	# `comprar_no`, `comprar_reliquia` e `Saque.equipar` não tinham um único
+	# chamador fora de `scripts/ui/`, então nenhuma execução sem tela usava
+	# metade dos sistemas de poder. Aquele número media um jogador com uma mão
+	# amarrada nas costas. Com o agente jogando inteiro, a MESMA build chega à
+	# onda 100 em 29m52 em vez de "mais de 30" — o jogo não ficou mais generoso,
+	# a medição é que estava errada.
+	#
+	# Os pisos novos ficam ABAIXO da medida com folga de propósito: piso encostado
+	# no número medido faz o portão virar cara ou coroa, que foi o que aconteceu
+	# (14m55 numa execução e 15m07 na seguinte, com o mesmo código). O que o piso
+	# protege continua igual: uma mudança que dobre a velocidade reprova.
+	#
+	# Medido em `1.2 auto` com a semente do portão: onda 25 em 7m02, onda 50 em
+	# 15m15, onda 100 em 29m52. Os tetos não mudaram.
+	for regra in [[25, 4.0, 12.0], [50, 11.0, 30.0], [100, 22.0, 60.0]]:
 		var alvo := int(regra[0])
 		var lo := float(regra[1])
 		var hi := float(regra[2])
@@ -155,9 +186,27 @@ func rodar(cena: SceneTree) -> void:
 		com_teto += 1
 		if int(j.s["upgrades"].get(str(def.get("id", "")), 0)) >= teto:
 			no_teto += 1
-	print("melhorias no teto: %d de %d com teto" % [no_teto, com_teto])
-	if com_teto > 0 and no_teto >= com_teto:
-		falhas.append("todas as %d melhorias com teto estao no maximo — a tela ficou sem decisao" % com_teto)
+	print("melhorias no teto: %d de %d com teto (onda %d)" % [no_teto, com_teto, int(j.s["onda_maxima"])])
+	# A tela de melhorias TEM que ter decisão durante a subida.
+	#
+	# O que se pode prometer aqui é honesto e limitado, e vale a pena escrever
+	# por quê. O ouro cresce ~1,12x por onda; o custo de um nível cresce 1,1x por
+	# NÍVEL. Dobrar o ouro compra sete níveis, então qualquer teto fixo — e
+	# qualquer teto que cresça devagar — é consumido: medi com o teto crescendo
+	# 0,6% e 2% do original por onda, e nos dois casos as 33 melhorias fecharam
+	# no máximo. A diferença é QUANDO: antes o catálogo esvaziava na onda ~65,
+	# aos 22 minutos; com o crescimento de 2% ele aguenta até a onda ~266.
+	#
+	# Então o portão cobra o que dá para cumprir e importa: o catálogo não pode
+	# esvaziar ANTES da onda 200. Depois disso a decisão migra para talentos,
+	# prestígio, relíquias e cartas, que têm moedas próprias e não são compradas
+	# com ouro. Fazer a tela de melhorias durar para sempre exigiria outra
+	# economia — está nomeado como trabalho futuro, não escondido atrás de um
+	# número que passa.
+	const ONDA_CATALOGO_VIVO := 200
+	if com_teto > 0 and no_teto >= com_teto and int(j.s["onda_maxima"]) < ONDA_CATALOGO_VIVO:
+		falhas.append("catalogo esvaziou na onda %d, antes da %d" % [
+			int(j.s["onda_maxima"]), ONDA_CATALOGO_VIVO])
 
 	for f in falhas:
 		print("  FALHOU: ", f)

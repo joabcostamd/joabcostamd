@@ -84,6 +84,12 @@ func _conferir_doc(total_testes: int) -> int:
 	var erros := 0
 	var reais := {
 		"testes": total_testes,
+		"inimigos": Dados.inimigos.size(),
+		"elites": Dados.elites.size(),
+		"chefes": Dados.chefes.size(),
+		"super_chefes": Dados.super_chefes.size(),
+		"stats": Dados.stat_defs.size(),
+		"raridades": Dados.raridades.size(),
 		"scripts": _contar_gd(),
 		"chaves_i18n": _contar_i18n(),
 		"imagens": _contar_por_extensao(["png", "jpg", "jpeg", "webp"]),
@@ -92,6 +98,12 @@ func _conferir_doc(total_testes: int) -> int:
 	# arquivo -> [[regex, chave], ...]. O grupo 1 do regex e o numero.
 	var alvos := {
 		"res://README.md": [
+			["- \\*\\*([\\d.]+)\\*\\* tipos de inimigo", "inimigos"],
+			["\\*\\*([\\d.]+)\\*\\* modificadores de elite", "elites"],
+			["\\*\\*([\\d.]+)\\*\\* chefes", "chefes"],
+			["\\*\\*([\\d.]+)\\*\\* super-chefes", "super_chefes"],
+			["\\*\\*([\\d.]+)\\*\\* atributos de torre", "stats"],
+			["\\*\\*([\\d.]+)\\*\\* raridades", "raridades"],
 			["(?m)^# Su[ií]te de testes da simula[cç][aã]o — ([\\d.]+) testes", "testes"],
 			["(?m)^- \\*\\*([\\d.]+)\\*\\* testes da simula[cç][aã]o", "testes"],
 			["(?m)^- \\*\\*([\\d.]+)\\*\\* chaves de interface", "chaves_i18n"],

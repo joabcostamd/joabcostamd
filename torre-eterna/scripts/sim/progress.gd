@@ -276,7 +276,9 @@ static func _sortear(modelos: Array, qtd: int, progresso: int, j) -> Array:
 	if modelos.is_empty():
 		return []
 	var pool := modelos.duplicate()
-	pool.shuffle()
+	# Com a semente do jogo, não com o gerador global: senão a simulação deixa
+	# de ser reproduzível e o portão de balanceamento vira cara ou coroa.
+	j.rng.embaralhar(pool)
 	var out: Array = []
 	for i in mini(qtd, pool.size()):
 		var def: Dictionary = pool[i]

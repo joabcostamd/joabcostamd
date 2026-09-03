@@ -510,7 +510,7 @@ func _invocar_do_chefe(e: Inimigo, quantos: int) -> void:
 			def_cria = pool[i % pool.size()]
 		var cria := EnemyAI.criar(def_cria, onda, self, {"perto_de": e.pos})
 		if cria != null:
-			cria.pos = e.pos + Vector2(randf_range(-40.0, 40.0), randf_range(-40.0, 40.0))
+			cria.pos = e.pos + Vector2(rng.entre(-40.0, 40.0), rng.entre(-40.0, 40.0))
 	Bus.particulas.emit("pulso", e.pos, {"raio": 120.0, "cor": e.cor})
 
 ## "Engole projeteis e coletaveis, e engorda com cada gole": tudo que estiver

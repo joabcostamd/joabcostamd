@@ -126,9 +126,9 @@ entidades vira economia, e a tela cheia rende mais em vez de render menos.
 ### Números
 - **23** tipos de inimigo · **9** modificadores de elite · **10** chefes · **2** super-chefes
 - **40** entradas de lore em 8 capítulos · **30** dicas
-- **6** moedas · **6** raridades · **41** atributos de torre
+- **6** moedas · **6** raridades · **39** atributos de torre
 - **1.012** chaves de interface e **1.286** textos de conteúdo, em português e inglês
-- **342** testes da simulação · **0** imagem · **0** arquivo de som
+- **342** testes da simulação · **0** arquivo de som · a única imagem do repositório é `icon.svg`, o ícone do projeto
 
 ---
 

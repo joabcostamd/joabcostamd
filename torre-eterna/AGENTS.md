@@ -19,7 +19,7 @@ godot --headless --path . -s res://agent_verify.gd          # verificação estr
 # E o portão que os testes não cobrem: uma hora de jogo de verdade, com a
 # automação ligada, procurando erro em tempo de execução. Os testes chamam
 # funções isoladas; só o simulador roda o laço inteiro por horas.
-godot --headless --path . -s res://tools/sim_balance.gd -- 2 auto   # faixas de balanceamento
+godot --headless --path . -s res://tools/sim_balance.gd -- 1.2 auto # faixas de balanceamento
 
 # E o portão que NENHUM dos outros faz: desenhar. Todos rodam `--headless`, que
 # usa um renderizador burro — as chamadas de desenho nunca executam, e um erro

@@ -29,6 +29,18 @@ func sinal() -> float:
 func angulo() -> float:
 	return rng.randf() * TAU
 
+## Embaralha NO LUGAR, com esta semente.
+##
+## `Array.shuffle()` usa o gerador global do Godot, que ninguém semeia: uma
+## simulação que o usasse deixava de ser reproduzível, e um portão que muda de
+## resposta sem o código mudar não mede nada.
+func embaralhar(arr: Array) -> void:
+	for i in range(arr.size() - 1, 0, -1):
+		var k := inteiro(0, i)
+		var tmp = arr[i]
+		arr[i] = arr[k]
+		arr[k] = tmp
+
 func escolher(arr: Array) -> Variant:
 	if arr.is_empty():
 		return null

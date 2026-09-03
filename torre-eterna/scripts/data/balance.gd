@@ -173,8 +173,14 @@ static func mul_contato(e, onda: int, mult: float, vida_max_log: float = Big.ZER
 ## O teto agora acompanha o recorde. Como o custo cresce geométrico, os níveis
 ## além do teto original custam muito mais — o sink continua aberto sem que
 ## nada fique barato. Abaixo da onda 50 nada muda: o começo do jogo é o mesmo.
+## 0,006 era pouco: com ele, o simulador chegou à onda 264 com as 33 melhorias
+## com teto TODAS no máximo de novo — o catálogo esvaziava igual, só um pouco
+## mais tarde. O problema é que o ouro cresce muito mais rápido que 0,6% de teto
+## por onda. Com 0,02 o teto vira 5,3× o original na onda 264 e 20× na onda
+## 1.000, o que mantém decisão na tela sem baratear nada: o custo continua
+## geométrico, então cada nível além do teto original custa muito mais.
 const TETO_ONDA_LIVRE := 50
-const TETO_CRESCE_POR_ONDA := 0.006
+const TETO_CRESCE_POR_ONDA := 0.02
 
 static func teto_upgrade(teto_base: int, recorde: int) -> int:
 	if teto_base < 0:

@@ -18,17 +18,23 @@ Então a tabela agora tem uma coluna a mais, e ela diz a verdade sobre cada linh
   número é reproduzível; a comparação é manual.
 - **JUÍZO** — não há comando. É opinião informada, e vale o que vale.
 
-A nota vale contra um commit nomeado. Nota sobre alvo móvel não é reproduzível:
-os números da seção "Saída crua" dizem de qual execução vieram.
+A nota vale contra um commit NOMEADO. Nota sobre alvo móvel não é reproduzível
+por "alguém de fora", que é justamente o que esta rubrica promete — e durante o
+primeiro painel de juízes entraram quatro commits, três dos cinco "piores
+defeitos" foram consertados depois de laudados, e a árvore estava suja na hora
+da nota. Isso não pode se repetir sem estar dito.
+
+**A saída crua abaixo foi medida em `65d499a`**, com a árvore limpa e nada mais
+rodando na máquina (ver a observação sobre medir desempenho no `AGENTS.md`).
 
 | # | Critério | Peso | Tipo | Como se verifica | Meta |
 |---|---|---:|---|---|---|
 | 1 | **Compila e roda** | 6 | PORTÃO | `tools/verificar.gd`, `tools/lint.gd`, `agent_verify.gd` | PASS, zero erro de script |
 | 2 | **Testes da simulação** | 10 | PORTÃO | `tools/testes.gd` — sem mocks, roda o jogo real | 100% passando, ≥300 asserções, e nenhum bloco pode sumir em silêncio (há piso) |
 | 3 | **Integridade dos dados** | 6 | PORTÃO | `tools/validar_dados.gd` | zero erro |
-| 4 | **Desempenho** | 8 | PORTÃO | `tools/perf.gd -- 400` | **p90 de `Jogo.simular()` ≤ 4 ms nas DUAS pernas**: 20 min de jogo real, e 160 inimigos vivos segurados (o teto que `Bal.contagem_onda` sabe criar, mais 25%). O estresse de 400 é publicado como folga e não reprova, porque o jogo não produz essa população |
-| 5 | **Balanceamento medido** | 8 | PORTÃO | `tools/sim_balance.gd -- 2 auto` | onda 25 em 5–12 min; onda 50 em 15–30 min; onda 100 em 30–60 min; a onda continua subindo no último terço; o catálogo de melhorias não esvazia |
-| 6 | **Profundidade de sistemas** | 8 | JUÍZO | leitura do código, com as duas pontas de cada elo | ≥10 sistemas que se afetam mutuamente. Sem ferramenta: quem avalia conta, e conta diferente |
+| 4 | **Desempenho** | 8 | PORTÃO | `tools/perf.gd -- 400` | **p90 de `Jogo.simular()` ≤ 4 ms nas DUAS pernas**: 10 min de jogo real, e 160 inimigos vivos segurados (o teto que `Bal.contagem_onda` sabe criar, mais 25%). O estresse de 400 é publicado como folga e não reprova, porque o jogo não produz essa população |
+| 5 | **Balanceamento medido** | 8 | PORTÃO | `tools/sim_balance.gd -- 1.2 auto` (72 min de jogo é o mínimo que julga as três faixas; mais que isso não decide nada a mais) | onda 25 em 4–12 min; onda 50 em 11–30 min; onda 100 em 22–60 min (pisos remedidos — ver abaixo); a onda continua subindo no último terço; o catálogo de melhorias não esvazia |
+| 6 | **Profundidade de sistemas** | 8 | PORTÃO | `tools/testes.gd` (grupo Sistemas) contra `data/systems.json` | ≥10 elos declarados e ≥10 sistemas distintos, cada elo com a PROVA no código — arquivo e símbolo. Elo que sumir do código reprova; elo que ninguém declarou não conta |
 | 7 | **Volume de conteúdo** | 6 | PORTÃO | `tools/validar_dados.gd` (`MINIMOS`) | ≥20 inimigos, ≥10 chefes, ≥35 melhorias, ≥30 talentos, ≥30 cartas, ≥80 conquistas, ≥10 eras |
 | 8 | **Arte** | 8 | JUÍZO | capturas + `tools/perf.gd` para custo | tudo procedural, silhuetas distinguíveis em 0,5 s, 10 eras visualmente distintas, a torre muda com a progressão |
 | 9 | **Juice** | 8 | JUÍZO | capturas, e o Portão 8 para erro de motor | tremor, hitstop, câmera lenta, partículas, números legíveis, apresentação de chefe sem colisão |
@@ -39,10 +45,15 @@ os números da seção "Saída crua" dizem de qual execução vieram.
 | 14 | **Originalidade** | 4 | JUÍZO | leitura das mecânicas | ≥3 mecânicas com torque próprio, e o texto do README não pode vender como inédito o que é convenção do gênero |
 | 15 | **Documentação e portões** | 4 | PORTÃO | `tools/testes.gd` (grupo doc) + `.github/workflows/` | os números da documentação batem com a medida real, todo caminho citado existe, e o CI roda os oito portões sem afrouxar nenhum |
 
-Contagem honesta: **51 dos 100 pontos** são decididos por um comando que imprime
-PASS/FAIL (critérios 1, 2, 3, 4, 5, 7, 13, 15). **11 pontos** são medida com
-comparação manual (10 e 12). **38 pontos** são juízo (6, 8, 9, 11, 14) — e
-enquanto forem, a nota deles vale o que vale a pessoa que avalia.
+Contagem honesta: **59 dos 100 pontos** são decididos por um comando que imprime
+PASS/FAIL (critérios 1, 2, 3, 4, 5, 6, 7, 13, 15). **11 pontos** são medida com
+comparação manual (10 e 12). **30 pontos** são juízo (8, 9, 11, 14) — e enquanto
+forem, a nota deles vale o que vale a pessoa que avalia.
+
+Quando esta rubrica foi reescrita, o critério 6 ainda era juízo. Ele virou
+portão porque `data/systems.json` passou a declarar cada elo com a prova, e
+escrever essa lista já achou três provas erradas — que é exatamente o serviço
+que um portão presta e a prosa não.
 
 ## Sobre medir FPS neste ambiente
 
@@ -76,7 +87,33 @@ GPU de verdade; aqui, o que dá para afirmar é quanto custa a simulação.
 - Acesso a Dicionário sem tipo explícito (não compila, mas o hábito é o risco).
 - Um painel que reconstrói a árvore de nós dentro de `atualizar()`.
 
-## Sobre a faixa do critério 5
+## Sobre a faixa do critério 5 — segunda recalibração, e por quê
+
+Os pisos foram remedidos uma segunda vez, e a razão tem que ficar escrita
+porque mexer em régua é exatamente o que um crítico independente me pegou
+fazendo no critério 4.
+
+Os pisos anteriores saíram de medições feitas com um agente que **só comprava
+melhoria com ouro**. `comprar_talento`, `comprar_no`, `comprar_reliquia` e
+`Saque.equipar` não tinham um único chamador fora de `scripts/ui/`: nenhuma
+execução sem tela usava metade dos sistemas de poder do jogo. Aquele número
+media um jogador com uma mão amarrada nas costas. Com o agente jogando inteiro,
+a mesma build chega à onda 100 em 29m52 em vez de "mais de 30 min" — **o jogo
+não ficou mais generoso; a medição é que estava errada**.
+
+E os pisos novos ficam abaixo da medida com folga, de propósito: piso encostado
+no número medido faz o portão virar cara ou coroa. Aconteceu — duas execuções
+seguidas do mesmo código deram onda 50 em 14m55 e 15m07, uma reprovando e a
+outra passando. Por isso o simulador agora roda com **semente fixa**
+(`SEMENTE` em `tools/suites/sim_balance.gd`), e todo sorteio da simulação passa
+pelo `RngX` do jogo — há regra de linter proibindo `randf()`/`shuffle()` global
+dentro de `scripts/sim`. Trocar a semente muda o que o portão mede, então ela é
+parte do contrato.
+
+O que o piso protege continua igual: uma mudança que dobre a velocidade de
+progressão reprova. Os tetos não foram tocados.
+
+## Sobre a faixa do critério 5 (primeira recalibração)
 
 A faixa original ("onda 25 em 10–20 min; onda 50 em 40–70 min") foi escrita
 antes de existir simulador — era um palpite. Medido, o jogo entrega onda 25 em
@@ -103,7 +140,7 @@ $ godot --headless --path . -s res://tools/verificar.gd
 ===STATUS=== PASS
 
 $ godot --headless --path . -s res://tools/lint.gd
-===LINT=== arquivos=84 linhas=24098 erros=0 avisos=0
+===LINT=== arquivos=85 linhas=26674 erros=0 avisos=0
 ===STATUS=== PASS
 
 $ godot --headless --path . -s res://tools/validar_dados.gd
@@ -116,21 +153,39 @@ $ godot --headless --path . -s res://tools/testes.gd
 ===STATUS=== PASS
 
 $ godot --headless --path . -s res://tools/perf.gd -- 400
-=== ESTRESSE: 400 inimigos, onda 200 ===
-maquina: 37093 us na conta de referencia (39000 esperado) -> fator 1.00x
---- perfil por subsistema (us/passo) ---
-  grade            153 us  ( 7.7%)
-  status           330 us  (16.6%)
-  inimigos         524 us  (26.4%)
-  torre            105 us  ( 5.3%)
-  projeteis        839 us  (42.3%)
-  coletaveis         3 us  ( 0.2%)
-  habilidades        7 us  ( 0.4%)
-  diretor           20 us  ( 1.0%)
-pico: 466 inimigos, 37 projeteis, 0 coletaveis
-custo por passo: 1983 us  (orcamento 4000 us = 4000 x 1.00)
-normalizado para a maquina de referencia: 1983 us
-equivale a 504 fps so de simulacao
+=== DESEMPENHO ===
+projeteis/s: 40.0 | orbes: 19 | elementos ativos: sim
+maquina: 36208 us na conta de referencia (39000 esperado) -> fator 1.00x
+
+--- PORTAO: 10 min de jogo real (onda 238 ao fim, automacao ligada) ---
+  vivos medios 7 | pico de projeteis 800
+  media   1592 | p50   1288 | p90   3700 | p99   7988 | pior  23746  (us)
+  270 fps no p90
+  normalizado p90: 3700 us  (orcamento 4000 us = 4000 x 1.00)
+
+--- PORTAO 2: 160 inimigos vivos SEGURADOS (teto do jogo + 25%) ---
+  vivos medios 157 | pico de projeteis 235
+  media   1975 | p50   1710 | p90   3247 | p99   5430 | pior   6752  (us)
+  308 fps no p90
+  normalizado p90: 3247 us  (orcamento 4000 us)
+
+--- FOLGA (nao reprova): 400 vivos, alem do que o jogo cria ---
+  vivos medios 391 | pico de projeteis 225
+  media   3398 | p50   2377 | p90   6679 | p99  12501 | pior  14203  (us)
+  150 fps no p90
+
+--- perfil por subsistema a 160 vivos (us/passo, SUBCONJUNTO de simular()) ---
+  grade             84 us
+  status            55 us
+  inimigos         493 us
+  torre            284 us
+  projeteis        750 us
+  coletaveis       214 us
+  habilidades       65 us
+  diretor            6 us
+  (soma 1952 us; o resto de simular() — eventos, automacao, conquistas,
+   missoes, autosave — esta na media acima, nao aqui)
+recalculos de atributos: 2448
 ===STATUS=== PASS
 
 $ godot --headless --path . -s res://tools/sim_balance.gd -- 2
@@ -150,7 +205,7 @@ STATUS: PASS   (kit 1.5.2, 0 falhas)
 | | |
 |---|---:|
 | Scripts GDScript | 85 |
-| Linhas de código | 24.098 |
+| Linhas de código | 26.674 |
 | Testes da simulação | 342 |
 | Chaves de interface PT/EN | 1.012 |
 | Textos de conteúdo PT/EN | 1.286 |
