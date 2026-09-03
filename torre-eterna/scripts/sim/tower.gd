@@ -37,12 +37,12 @@ func atualizar(dt: float) -> void:
 	tempo_sem_dano += dt
 
 	# regeneração (bloqueada por parasitas grudados)
-	var regen: float = j.stats.n("regen")
-	if regen > 0.0 and j.parasitas == 0 and float(torre["vida"]) < float(torre["vida_max"]):
-		torre["vida"] = minf(float(torre["vida_max"]), float(torre["vida"]) + regen * dt)
-	var esc_regen: float = j.stats.n("escudoRegen")
-	if esc_regen > 0.0 and float(torre["escudo"]) < float(torre["escudo_max"]) and tempo_sem_dano > 2.0:
-		torre["escudo"] = minf(float(torre["escudo_max"]), float(torre["escudo"]) + esc_regen * dt)
+	var regen: float = j.stats.b("regen")
+	if not Big.is_zero(regen) and j.parasitas == 0 and Big.lt(torre["vida"], torre["vida_max"]):
+		torre["vida"] = Big.min_b(torre["vida_max"], Big.add(torre["vida"], Big.mul_f(regen, dt)))
+	var esc_regen: float = j.stats.b("escudoRegen")
+	if not Big.is_zero(esc_regen) and Big.lt(torre["escudo"], torre["escudo_max"]) and tempo_sem_dano > 2.0:
+		torre["escudo"] = Big.min_b(torre["escudo_max"], Big.add(torre["escudo"], Big.mul_f(esc_regen, dt)))
 
 	# juros sobre o ouro guardado
 	var juros: float = j.stats.n("jurosOuro")
@@ -281,43 +281,50 @@ func atualizar_orbes(dt: float) -> void:
 
 ## -------------------------------------------------------------- defesa
 
-func levar_dano(quantidade: float, fonte, opt: Dictionary = {}) -> float:
+## `dano_log` está em log10, como todo valor grande do jogo.
+func levar_dano(dano_log: float, fonte, opt: Dictionary = {}) -> float:
 	var s: Dictionary = j.s
 	var torre: Dictionary = s["torre"]
 	if not bool(torre["viva"]):
-		return 0.0
+		return Big.ZERO
 	if iframes > 0.0 and not bool(opt.get("ignora_iframes", false)):
-		return 0.0
+		return Big.ZERO
 
 	var armadura: float = j.stats.n("armadura")
-	var dano := quantidade * (Bal.ARMADURA_K / (Bal.ARMADURA_K + armadura))
-	dano *= float(j.mods_dif.get("danoTorre", 1.0))
+	var dano := Big.mul_f(dano_log, Bal.ARMADURA_K / (Bal.ARMADURA_K + armadura))
+	dano = Big.mul_f(dano, float(j.mods_dif.get("danoTorre", 1.0)))
 
-	if float(torre["escudo"]) > 0.0:
-		var absorvido := minf(float(torre["escudo"]), dano)
-		torre["escudo"] = float(torre["escudo"]) - absorvido
-		dano -= absorvido
-		if float(torre["escudo"]) <= 0.0 and j.pas.has("escudo_explosivo"):
+	if not Big.is_zero(torre["escudo"]):
+		var esc: float = torre["escudo"]
+		if Big.gte(esc, dano):
+			torre["escudo"] = Big.sub(esc, dano)
+			iframes = 0.0 if bool(opt.get("drenar", false)) else Bal.IFRAMES
+			tempo_sem_dano = 0.0
+			Bus.torre_atingida.emit(dano, torre["vida"], torre["vida_max"])
+			return dano
+		dano = Big.sub(dano, esc)
+		torre["escudo"] = Big.ZERO
+		if j.pas.has("escudo_explosivo"):
 			var centro_x: Vector2 = j.arena.centro
 			Combate.dano_area(centro_x, 200.0, Big.mul_f(j.stats.b("dano"), 20.0 * float(j.pas["escudo_explosivo"])), j, {"crit": true})
 			Bus.particulas.emit("explosao", centro_x, {"raio": 200.0, "cor": "#60a5fa"})
 
-	if dano > 0.0:
-		torre["vida"] = float(torre["vida"]) - dano
+	if not Big.is_zero(dano):
+		torre["vida"] = Big.sub(torre["vida"], dano)
 		iframes = 0.0 if bool(opt.get("drenar", false)) else Bal.IFRAMES
 		tempo_sem_dano = 0.0
 
-	Bus.torre_atingida.emit(dano, float(torre["vida"]), float(torre["vida_max"]))
+	Bus.torre_atingida.emit(dano, torre["vida"], torre["vida_max"])
 
-	if float(torre["vida"]) <= 0.0:
+	if Big.is_zero(torre["vida"]):
 		if j.pas.has("fenix") and not j.fenix_usada:
 			j.fenix_usada = true
-			torre["vida"] = float(torre["vida_max"]) * 0.4
+			torre["vida"] = Big.mul_f(torre["vida_max"], 0.4)
 			iframes = 2.0
 			Bus.celebracao.emit("fenix", {})
-			Bus.toast("A torre renasce das cinzas!", "epico", "🔥")
+			Bus.toast("A torre renasce das cinzas!", "epico")
 			return dano
-		torre["vida"] = 0.0
+		torre["vida"] = Big.ZERO
 		torre["viva"] = false
 		torre["tempo_morta"] = Bal.RESPAWN
 		s["stats"]["mortes"] = int(s["stats"]["mortes"]) + 1

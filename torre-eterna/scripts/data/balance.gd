@@ -82,12 +82,34 @@ const COMBO_JANELA := 2.6
 const COMBO_BONUS_POR := 0.006
 const COMBO_TETO := 250
 const OVERKILL_TETO := 0.5
-const DANO_CONTATO_FRAC := 0.055
-const DANO_CONTATO_CHEFE := 0.22
+## Dano de contato: fração da vida MÁXIMA DO INIMIGO (que escala com a onda),
+## com um piso linear para o começo do jogo ainda ter tensão.
+## Antes isso era uma fração da vida da torre — o que tornava comprar vida inútil.
+const DANO_CONTATO_FRAC := 0.013
+const DANO_CONTATO_CHEFE := 0.040
+const DANO_CONTATO_PISO_BASE := 2.0
+const DANO_CONTATO_PISO_ONDA := 0.45
 const IFRAMES := 0.35
 const RESPAWN := 3.0
 const PENALIDADE_MORTE := 1
 const RAIO_TORRE := 34.0
+
+## Dano (log10) que um inimigo causa ao alcançar a torre.
+static func dano_contato(hp_inimigo_log: float, onda: int, chefe: bool, escala: float) -> float:
+	var frac := DANO_CONTATO_CHEFE if chefe else DANO_CONTATO_FRAC
+	var por_hp := Big.mul_f(hp_inimigo_log, frac)
+	# o piso também respeita o arquétipo: chefe machuca mais mesmo no começo
+	var piso := Big.mul_f(
+		Big.from(DANO_CONTATO_PISO_BASE + float(onda) * DANO_CONTATO_PISO_ONDA),
+		frac / DANO_CONTATO_FRAC)
+	var base := Big.max_b(por_hp, piso)
+	if escala > 1.0:
+		base = Big.mul_f(base, sqrt(escala))
+	return base
+
+## Atalho: dano de contato de um inimigo específico, multiplicado.
+static func mul_contato(e, onda: int, mult: float) -> float:
+	return Big.mul_f(dano_contato(e.hp_max, onda, e.chefe, e.escala), mult)
 
 static func fator_armadura(armadura: float, penetracao: float) -> float:
 	var a := maxf(0.0, armadura * (1.0 - minf(0.95, penetracao)))
@@ -136,9 +158,11 @@ const OFFLINE_HORAS_TETO := 48.0
 const OFFLINE_MIN_SEG := 30.0
 
 # ================================================================ LOOT ====
-const CHANCE_CARTA := 0.0016
+const CHANCE_CARTA := 0.0009
+const CHANCE_CARTA_TETO := 0.010
+const CHANCE_CARTA_ELITE_TETO := 0.06
 const CHANCE_CARTA_CHEFE := 1.0
-const CHANCE_CARTA_ELITE := 0.022
+const CHANCE_CARTA_ELITE := 0.018
 const PITY_PASSO := 0.0009
 const GEMAS_CHEFE := 3
 const GEMAS_SUPER := 25

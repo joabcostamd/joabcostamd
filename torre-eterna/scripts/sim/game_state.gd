@@ -39,11 +39,12 @@ static func novo() -> Dictionary:
 		"pontos_talento": 0,
 		"pontos_talento_gastos": 0,
 
+		# vida/escudo em log10 (Big), como todo valor que pode explodir
 		"torre": {
-			"vida": 100.0,
-			"vida_max": 100.0,
-			"escudo": 0.0,
-			"escudo_max": 0.0,
+			"vida": Big.from(100.0),
+			"vida_max": Big.from(100.0),
+			"escudo": Big.ZERO,
+			"escudo_max": Big.ZERO,
 			"viva": true,
 			"tempo_morta": 0.0,
 			"mira": "proximo",

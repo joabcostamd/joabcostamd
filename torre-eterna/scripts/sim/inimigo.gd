@@ -32,6 +32,8 @@ var dourado := false
 var elite_mod := ""
 var segmento := false
 var dividido := false
+var peregrino := false
+var saiu := false
 
 var fase := 0
 var fase_prox := 0.0
@@ -84,6 +86,8 @@ func limpar() -> void:
 	dourado = false
 	segmento = false
 	dividido = false
+	peregrino = false
+	saiu = false
 	elite_mod = ""
 	def = {}
 	queimadura = 0

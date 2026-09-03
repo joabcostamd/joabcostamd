@@ -71,7 +71,7 @@ static func usar(id: String, j) -> bool:
 					Combate.aplicar_dano(e, dano, j, {"crit": true, "penetracao": 1.0})
 			Bus.particulas.emit("nova", centro, {"raio": maxf(j.arena.largura, j.arena.altura), "cor": cor})
 			j.tremor(22.0, 0.55)
-			j.hitstop(90.0)
+			j.hitstop_ms(90.0)
 		"buff":
 			for item in def.get("buffs", []):
 				var b: Dictionary = item
@@ -124,9 +124,9 @@ static func usar(id: String, j) -> bool:
 			}
 		"cura":
 			var frac := valor(def, "cura", nivel) / 100.0
-			var cura := float(s["torre"]["vida_max"]) * frac
+			var cura := Big.mul_f(s["torre"]["vida_max"], frac)
 			j.curar_torre(cura)
-			s["torre"]["escudo"] = minf(float(s["torre"]["vida_max"]), float(s["torre"]["escudo"]) + cura)
+			s["torre"]["escudo"] = Big.min_b(s["torre"]["vida_max"], Big.add(s["torre"]["escudo"], cura))
 			Bus.particulas.emit("aura", centro, {"cor": cor, "dur": 1.2})
 		"julgamento":
 			var mult := valor(def, "dano", nivel)
@@ -141,7 +141,7 @@ static func usar(id: String, j) -> bool:
 					Combate.aplicar_dano(e3, Big.mul_f(e3.hp, 10.0), j, {"puro": true})
 			Bus.particulas.emit("julgamento", centro, {})
 			j.tremor(34.0, 0.9)
-			j.hitstop(160.0)
+			j.hitstop_ms(160.0)
 			j.camera_lenta(0.25, 700.0)
 
 	Bus.habilidade_usada.emit(id, nivel)
@@ -219,8 +219,7 @@ static func atualizar(dt: float, j) -> void:
 ## Uso automático (IA de prioridade).
 static func auto_usar(j) -> bool:
 	var s: Dictionary = j.s
-	var vmax := float(s["torre"]["vida_max"])
-	var perigo := (float(s["torre"]["vida"]) / vmax) if vmax > 0.0 else 1.0
+	var perigo := Big.frac(s["torre"]["vida"], s["torre"]["vida_max"])
 	var vivos: int = j.arena.contagem_viva()
 	var em_chefe := bool(s["em_chefe"])
 

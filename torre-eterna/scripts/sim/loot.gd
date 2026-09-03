@@ -36,13 +36,17 @@ static func rolar_raridade(j, bonus_sorte: float = 1.0) -> String:
 static func tentar_drop(e: Inimigo, j) -> void:
 	if Dados.cartas.is_empty():
 		return
+	# A sorte multiplica, mas cada categoria tem teto — senão vira chuva de cartas.
 	var chance := Bal.CHANCE_CARTA
+	var teto := Bal.CHANCE_CARTA_TETO
 	if e.chefe:
 		chance = Bal.CHANCE_CARTA_CHEFE
+		teto = 1.0
 	elif e.elite:
 		chance = Bal.CHANCE_CARTA_ELITE
-	chance *= float(j.stats.n("chanceDrop"))
-	if not j.rng.chance(minf(1.0, chance)):
+		teto = Bal.CHANCE_CARTA_ELITE_TETO
+	chance = minf(teto, chance * float(j.stats.n("chanceDrop")))
+	if not j.rng.chance(chance):
 		return
 	criar_carta(j, "", e.chefe)
 
@@ -72,6 +76,10 @@ static func criar_carta(j, id_forcado: String = "", garantir_boa: bool = false) 
 	}
 	s["cartas"]["proximo_uid"] = int(s["cartas"]["proximo_uid"]) + 1
 	s["cartas"]["inventario"].append(inst)
+	# Álbum de Ecos: ver a carta já é progresso permanente, imune a prestígio.
+	if Mecanicas.registrar_no_album(s, str(inst["id"])):
+		j.marcar_sujo()
+		Bus.toast("Álbum de Ecos: %s registrado para sempre." % str(def.get("nome", "")), "epico")
 	s["cartas"]["novas"].append(inst["uid"])
 	s["stats"]["cartas_obtidas"] = int(s["stats"]["cartas_obtidas"]) + 1
 	if raridade == "lendario" or raridade == "mitico":

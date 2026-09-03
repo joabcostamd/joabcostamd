@@ -24,6 +24,7 @@ const ACOES := {
 	"painel_config": [KEY_O],
 	"comprar_max": [KEY_SHIFT],
 	"turbo": [KEY_SPACE],
+	"purga": [KEY_P],
 	"alternar_auto": [KEY_A],
 	"salvar_agora": [KEY_F5],
 	"tela_cheia": [KEY_F11],

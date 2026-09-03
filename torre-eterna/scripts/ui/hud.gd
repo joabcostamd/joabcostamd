@@ -205,6 +205,14 @@ func _construir() -> void:
 	acoes.add_child(_botao_com_icone("alvo", "Modo de mira", UI.VERDE, _alternar_mira))
 	acoes.add_child(_botao_com_icone("salvar", "Salvar agora (F5)", UI.TEXTO2, func(): jogo.salvar(); Bus.toast("Jogo salvo", "bom")))
 
+	# a Purga fica à esquerda da barra de habilidades, com destaque próprio
+	var b_purga := Button.new()
+	b_purga.set_script(load("res://scripts/ui/botao_purga.gd"))
+	caixa_hab.add_child(b_purga)
+	var sep := Control.new()
+	sep.custom_minimum_size = Vector2(14, 1)
+	caixa_hab.add_child(sep)
+
 	_reconstruir_habilidades()
 
 ## Botão quadrado com ícone vetorial centralizado.
@@ -223,8 +231,10 @@ func _botao_com_icone(icone: String, dica: String, cor: Color, ao_clicar: Callab
 	return b
 
 func _reconstruir_habilidades() -> void:
-	for c in caixa_hab.get_children():
-		c.queue_free()
+	# preserva o botão da Purga e o separador (os dois primeiros filhos)
+	var filhos := caixa_hab.get_children()
+	for i in range(filhos.size() - 1, 1, -1):
+		filhos[i].queue_free()
 	botoes_hab.clear()
 	if jogo == null:
 		return
@@ -314,20 +324,19 @@ func _atualizar_lento() -> void:
 	barra_onda.value = clampf(float(s["mortos_na_onda"]) / float(nec), 0.0, 1.0)
 	if bool(s["em_chefe"]):
 		var chefe := Dados.chefe_da_onda(onda)
-		lbl_chefe.text = "☠ " + Ux.txt(chefe, "nome", Cfg.ingles())
+		lbl_chefe.text = Ux.txt(chefe, "nome", Cfg.ingles())
 		barra_onda.add_theme_stylebox_override("fill", UI.caixa(UI.VERMELHO, 3, 0))
 	else:
 		lbl_chefe.text = ""
 		barra_onda.add_theme_stylebox_override("fill", UI.caixa(UI.ACENTO, 3, 0))
 
 	var torre: Dictionary = s["torre"]
-	var vmax := maxf(1.0, float(torre["vida_max"]))
-	barra_vida.value = clampf(float(torre["vida"]) / vmax, 0.0, 1.0)
-	lbl_vida.text = "%s / %s" % [Fmt.num(float(torre["vida"]), 0), Fmt.num(vmax, 0)]
-	var emax := float(torre["escudo_max"])
-	barra_escudo.visible = emax > 0.0
-	if emax > 0.0:
-		barra_escudo.value = clampf(float(torre["escudo"]) / emax, 0.0, 1.0)
+	barra_vida.value = Big.frac(torre["vida"], torre["vida_max"])
+	lbl_vida.text = "%s / %s" % [Fmt.big(torre["vida"]), Fmt.big(torre["vida_max"])]
+	var tem_escudo: bool = not Big.is_zero(torre["escudo_max"])
+	barra_escudo.visible = tem_escudo
+	if tem_escudo:
+		barra_escudo.value = Big.frac(torre["escudo"], torre["escudo_max"])
 
 	lbl_nivel.text = "Nível %d" % int(s["nivel"])
 	barra_xp.value = Economia.progresso_nivel(s)

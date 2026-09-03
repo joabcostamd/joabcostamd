@@ -52,8 +52,8 @@ static func aplicar_dano(e: Inimigo, dano: float, j, opt: Dictionary = {}) -> Di
 
 	var rv := float(opt.get("roubodeVida", 0.0))
 	if rv > 0.0 and j.s["torre"]["viva"]:
-		var cura: float = minf(Big.to_f(dmg) * rv, float(j.s["torre"]["vida_max"]) * 0.05)
-		if cura > 0.0:
+		var cura := Big.min_b(Big.mul_f(dmg, rv), Big.mul_f(j.s["torre"]["vida_max"], 0.05))
+		if not Big.is_zero(cura):
 			j.curar_torre(cura)
 
 	Bus.inimigo_atingido.emit(e, dmg, bool(opt.get("crit", false)), str(opt.get("elemento", "")))
@@ -106,9 +106,12 @@ static func corrente(origem: Inimigo, dano: float, saltos: int, j, opt: Dictiona
 	return pontos
 
 ## Aplica um status elemental.
-static func aplicar_elemento(e: Inimigo, elemento: String, dano_base: float, j) -> void:
+static func aplicar_elemento(e: Inimigo, elemento: String, dano_base_bruto: float, j) -> void:
 	if not Bal.ELEMENTOS.has(elemento) or not e.vivo():
 		return
+	# O Enxame se adapta: o elemento que você mais usa passa a doer menos.
+	Mecanicas.registrar_elemento(j.s, elemento)
+	var dano_base := Big.mul_f(dano_base_bruto, Mecanicas.fator_elemento(j.s, elemento))
 	var d: Dictionary = Bal.ELEMENTOS[elemento]
 	match elemento:
 		"fogo":
@@ -187,7 +190,9 @@ static func matar(e: Inimigo, j, overkill: float = Big.ZERO, critico: bool = fal
 
 	# ouro com bônus de combo e overkill
 	var bonus_combo := 1.0 + float(s["combo"]["atual"]) * float(j.esp.get("comboBonus", Bal.COMBO_BONUS_POR))
-	var ouro := Big.mul_f(e.ouro, bonus_combo)
+	# Aglomeração: o teto de entidades vira economia — tela cheia rende mais.
+	var aglom := Mecanicas.fator_aglomeracao(j.arena.contagem_viva())
+	var ouro := Big.mul_f(e.ouro, bonus_combo * aglom)
 	if not Big.is_zero(overkill):
 		var frac := minf(Bal.OVERKILL_TETO, Big.to_f(Big.div(overkill, e.hp_max)))
 		ouro = Big.mul_f(ouro, 1.0 + frac)

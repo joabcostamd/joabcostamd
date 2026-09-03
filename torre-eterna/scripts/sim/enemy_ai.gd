@@ -126,7 +126,21 @@ static func spawn_chefe(onda: int, j) -> Inimigo:
 	var def := Dados.chefe_da_onda(onda)
 	if def.is_empty():
 		return null
-	var e: Inimigo = criar(def, onda, j, {"chefe": true, "super": Bal.eh_super_chefe(onda)})
+	# Chefe entra DENTRO da tela, com cerimônia — não caminhando meia arena.
+	var centro_c: Vector2 = j.arena.centro
+	var dir_c: Vector2 = j.rng.direcao()
+	var dist: float = minf(j.arena.largura, j.arena.altura) * 0.33
+	var e: Inimigo = criar(def, onda, j, {
+		"chefe": true, "super": Bal.eh_super_chefe(onda),
+		"pos": centro_c + dir_c * dist,
+	})
+	if e != null:
+		e.entrada = 0.9
+		e.atordoado = 0.9
+		Bus.particulas.emit("pulso", e.pos, {"raio": 180.0, "cor": e.cor})
+		Bus.particulas.emit("explosao", e.pos, {"raio": 90.0, "cor": e.cor})
+		Bus.tremor_pedido.emit(16.0, 0.5)
+		Bus.camera_lenta.emit(0.35, 700.0)
 	if e != null and str(def.get("mecanica", "")) == "segmentos":
 		var n := int(def.get("segmentos", 6))
 		for i in n:
@@ -227,6 +241,13 @@ static func mover(e: Inimigo, dt: float, j) -> void:
 			var novo_d := maxf(Bal.RAIO_TORRE, d4 - e.velocidade * dt * 0.45)
 			e.pos = centro + Vector2(cos(novo_ang), sin(novo_ang)) * novo_d
 			e.dir_ang = (centro - e.pos).angle()
+		"passa":
+			# O Peregrino não vai à torre: atravessa a arena em linha reta.
+			if e.estado == 0:
+				e.estado = 1
+				var alvo_ang: float = (centro - e.pos).angle() + float(j.rng.entre(-0.55, 0.55))
+				e.dir_ang = alvo_ang
+			e.pos += Vector2(cos(e.dir_ang), sin(e.dir_ang)) * e.velocidade * dt
 		"estatico":
 			e.dir_ang = (centro - e.pos).angle()
 		_:
@@ -274,7 +295,7 @@ static func habilidade(e: Inimigo, dt: float, j) -> void:
 				e.cd -= dt
 				if e.cd <= 0.0:
 					e.cd = 1.0
-					j.dano_na_torre(float(j.s["torre"]["vida_max"]) * 0.012, e, {"drenar": true})
+					j.dano_na_torre(Bal.mul_contato(e, int(j.s["onda"]), 0.5), e, {"drenar": true})
 		"chocar":
 			e.cd -= dt
 			if e.cd > 0.0:
@@ -370,6 +391,15 @@ static func atualizar(dt: float, j) -> void:
 			j.atualizar_chefe(e, dt)
 
 		e.ang = e.dir_ang
+
+		# O Peregrino nunca encosta na torre; ele só vai embora.
+		if e.peregrino:
+			if not e.saiu and j.arena.fora_da_arena(e.pos, 60.0) and e.t > 2.0:
+				e.saiu = true
+				Mecanicas.peregrino_poupado(j)
+				e.morrendo = 0.2
+				e.hp = Big.ZERO
+			continue
 
 		var d := e.pos.distance_to(centro)
 		if d <= Bal.RAIO_TORRE + e.raio * 0.7:

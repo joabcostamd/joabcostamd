@@ -45,8 +45,15 @@ func add_pct(chave: String, v: float, fonte: String = "") -> void:
 	if fonte != "":
 		fontes[chave].append({"fonte": fonte, "tipo": "pct", "valor": v})
 
+## v == 0.0 é válido e ANULA o atributo (cartas de trade-off dependem disso).
 func add_mult(chave: String, v: float, fonte: String = "") -> void:
-	if not mult.has(chave) or v <= 0.0 or is_inf(v) or is_nan(v):
+	if not mult.has(chave) or v < 0.0 or is_inf(v) or is_nan(v):
+		return
+	if v == 0.0:
+		mult[chave] = 0.0
+		mult_log[chave] = 0.0
+		if fonte != "":
+			fontes[chave].append({"fonte": fonte, "tipo": "mult", "valor": 0.0})
 		return
 	# multiplicadores enormes vão para o acumulador logarítmico
 	if v > 1.0e30 or float(mult[chave]) > 1.0e250:
@@ -69,6 +76,9 @@ func calcular() -> void:
 	for k in _chaves:
 		var def: Dictionary = Dados.stat_defs.get(k, {})
 		var base := float(def.get("base", 0.0))
+		if float(mult[k]) == 0.0:
+			valor[k] = Big.ZERO if GRANDES.has(k) else 0.0
+			continue
 		var fator: float = maxf(0.0, 1.0 + float(pct[k])) * float(mult[k])
 		if GRANDES.has(k):
 			var v: float = Big.mul_f(Big.from(base + float(flat[k])), fator)

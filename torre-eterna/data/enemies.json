@@ -396,6 +396,23 @@
    "peso": 14,
    "lore": "Acelera quanto mais perto chega. Não deixe encostar.",
    "loreEn": "Accelerates the closer it gets."
+  },
+  {
+   "id": "peregrino",
+   "nome": "O Peregrino",
+   "nomeEn": "The Pilgrim",
+   "forma": "peregrino",
+   "cor": "#fde68a",
+   "cor2": "#78350f",
+   "hp": 2.2,
+   "ouro": 1.0,
+   "vel": 0.55,
+   "esc": 1.25,
+   "mov": "passa",
+   "onda": 30,
+   "peso": 0,
+   "lore": "Atravessa a arena sem olhar para a torre. Não ataca, não desvia, não para. Matar rende uma fortuna. Poupar não rende nada — a torre apenas anota.",
+   "loreEn": "Crosses the arena without looking at the tower. Killing it pays a fortune. Sparing it pays nothing — the tower simply takes note."
   }
  ],
  "elites": [
@@ -657,7 +674,13 @@
    "mecanica": "combinado",
    "lore": "Tudo que o Enxame aprendeu, num só corpo.",
    "loreEn": "Everything the Swarm learned, in one body.",
-   "dica": "Guarde TODAS as habilidades para a fase 4."
+   "dica": "Guarde TODAS as habilidades para a fase 4.",
+   "invoca": [
+    "bruto",
+    "coloso",
+    "voador",
+    "enxame"
+   ]
   },
   {
    "id": "trono_vazio",
@@ -673,7 +696,13 @@
    "mecanica": "combinado",
    "lore": "Não ataca a torre. Ataca a ideia de que ela deveria existir.",
    "loreEn": "It does not attack the tower. It attacks the idea of it.",
-   "dica": "Fissuras + silêncio: leve armadura e vida."
+   "dica": "Fissuras + silêncio: leve armadura e vida.",
+   "invoca": [
+    "bruto",
+    "coloso",
+    "voador",
+    "enxame"
+   ]
   }
  ]
 }

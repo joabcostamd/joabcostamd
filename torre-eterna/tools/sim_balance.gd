@@ -27,11 +27,13 @@ func _initialize() -> void:
 	save.apagar()
 	j.stats = StatEngine.new()
 	j.iniciar()
+	# Um jogador de verdade usa as habilidades: a IA de uso automático é o
+	# comportamento base do simulador; "auto" liga também a compra automática.
+	j.s["auto"]["habilidades"] = true
+	j.esp["desbloqueios"]["autoHabilidade"] = true
 	if auto_tudo:
 		j.s["auto"]["comprar"] = true
 		j.esp["desbloqueios"]["autoCompra"] = true
-		j.s["auto"]["habilidades"] = true
-		j.esp["desbloqueios"]["autoHabilidade"] = true
 
 	var passos := int(horas * 3600.0 / DT)
 	var marcos := {}
@@ -55,10 +57,10 @@ func _initialize() -> void:
 		var t: float = j.s["stats"]["tempo_total"]
 		if t >= proximo_relatorio:
 			proximo_relatorio += maxf(60.0, horas * 3600.0 / 24.0)
-			print("%6s | %4d | %9s | %8s | %6d | %3d | %3d | %s" % [
+			print("%6s | %4d | %9s | %8s | %10s | %3d | %3d | %s" % [
 				Ux.tempo_curto(t), int(j.s["onda"]),
 				Fmt.big(j.s["moedas"]["ouro"]), Fmt.big(j.stats.b("dano")),
-				int(j.s["torre"]["vida"]), j.arena.inimigos.size(),
+				Fmt.big(j.s["torre"]["vida"]), j.arena.inimigos.size(),
 				int(j.s["nivel"]), Fmt.big(j.s["moedas"]["fragmentos"]),
 			])
 		for marco in [10, 25, 50, 75, 100, 150, 200, 300, 500]:

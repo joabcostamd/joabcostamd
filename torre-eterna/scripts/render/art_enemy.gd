@@ -10,7 +10,8 @@ static func desenhar(ci: CanvasItem, e: Inimigo, t: float, detalhe: float = 1.0)
 	var pulso := 1.0 + sin(t * 3.0 + e.fase_anim) * 0.05
 	var entrada := 1.0
 	if e.entrada > 0.0:
-		entrada = Ux.ease_out_back(clampf(1.0 - e.entrada / 0.35, 0.0, 1.0))
+		var dur_ent: float = 0.9 if e.chefe else 0.35
+		entrada = Ux.ease_out_back(clampf(1.0 - e.entrada / dur_ent, 0.0, 1.0))
 	var morte := 1.0
 	var alfa := 1.0
 	if e.morrendo > 0.0:
@@ -75,6 +76,7 @@ static func desenhar(ci: CanvasItem, e: Inimigo, t: float, detalhe: float = 1.0)
 		"boca": _boca(ci, p, r, e.ang, t, cor, cor2, alfa)
 		"caos": _caos(ci, p, r, t, e.fase_anim, cor, cor2, alfa)
 		"foice": _foice(ci, p, r, e.ang, cor, cor2, alfa)
+		"peregrino": _peregrino(ci, p, r, t, cor, cor2, alfa)
 		# --- chefes ---
 		"tita": _tita(ci, p, r, e.ang, t, cor, cor2, alfa)
 		"rainha": _rainha(ci, p, r, t, cor, cor2, alfa)
@@ -282,6 +284,21 @@ static func _foice(ci: CanvasItem, p: Vector2, r: float, ang: float, c: Color, c
 		var k := lerpf(-1.2, 1.2, float(i) / 11.0)
 		pts.append(p + Vector2(cos(ang + k), sin(ang + k)) * r * (1.5 - absf(k) * 0.35))
 	ci.draw_polyline(pts, c, 3.5, true)
+
+## Uma silhueta encapuzada com um halo lento. Não parece uma ameaça — não é.
+static func _peregrino(ci: CanvasItem, p: Vector2, r: float, t: float, c: Color, c2: Color, a: float) -> void:
+	ci.draw_circle(p, r * 2.1, Color(c.r, c.g, c.b, 0.10 * a))
+	ci.draw_arc(p, r * 1.55, t * 0.5, t * 0.5 + PI * 1.7, 32, Color(c.r, c.g, c.b, 0.45 * a), 1.6, true)
+	# manto
+	ci.draw_colored_polygon(PackedVector2Array([
+		p + Vector2(0, -r * 1.0), p + Vector2(r * 0.62, r * 0.9),
+		p + Vector2(0, r * 1.15), p + Vector2(-r * 0.62, r * 0.9)]), c2)
+	# capuz
+	ci.draw_circle(p + Vector2(0, -r * 0.55), r * 0.46, c)
+	ci.draw_circle(p + Vector2(0, -r * 0.5), r * 0.3, Color(0.04, 0.03, 0.02, 0.9 * a))
+	# cajado
+	ci.draw_line(p + Vector2(r * 0.7, -r * 1.1), p + Vector2(r * 0.55, r * 1.1), Color(c.r, c.g, c.b, 0.85 * a), 2.0, true)
+	ci.draw_circle(p + Vector2(r * 0.7, -r * 1.15), r * 0.17 * (1.0 + sin(t * 2.0) * 0.15), Color(1, 0.95, 0.7, a))
 
 ## ----------------------------------------------------------- chefes
 

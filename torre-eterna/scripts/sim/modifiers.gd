@@ -62,7 +62,9 @@ static func aplicar_efeitos(m: StatEngine, efeitos, n: int, fonte: String, esp: 
 			"pct":
 				m.add_pct(stat, valor * float(n), fonte)
 			"mult":
-				if valor > 0.0:
+				if valor <= 0.0:
+					m.add_mult(stat, 0.0, fonte)          # anulador
+				else:
 					m.add_mult_log(stat, (log(valor) / 2.302585092994046) * float(n), fonte)
 
 ## Reconstrói o motor de atributos a partir do estado.
@@ -126,11 +128,19 @@ static func recalcular(s: Dictionary, m: StatEngine) -> Dictionary:
 				continue
 			if not ef.has("stat"):
 				continue
-			var v := float(ef.get("valor", 0.0)) * mult_rar * escala_nivel
+			var bruto := float(ef.get("valor", 0.0))
+			var tipo_ef := str(ef.get("tipo", "flat"))
+			# Em multiplicadores a raridade escala o BÔNUS (o que passa de 1), não o valor
+			# inteiro; e penalidades (valor < 1) nunca são amplificadas pela raridade.
+			var v := bruto * mult_rar * escala_nivel
+			if tipo_ef == "mult":
+				v = (1.0 + (bruto - 1.0) * mult_rar * escala_nivel) if bruto >= 1.0 else bruto
 			var stat := str(ef["stat"])
-			match str(ef.get("tipo", "flat")):
+			match tipo_ef:
 				"mult":
-					if v > 0.0:
+					if v <= 0.0:
+						m.add_mult(stat, 0.0, str(def.get("nome", "")))
+					else:
 						m.add_mult(stat, v, str(def.get("nome", "")))
 				"pct":
 					m.add_pct(stat, v, str(def.get("nome", "")))
@@ -168,6 +178,16 @@ static func recalcular(s: Dictionary, m: StatEngine) -> Dictionary:
 		m.add_pct("multiplicador", b, "Conquistas")
 		m.add_pct("ganhoOuro", b, "Conquistas")
 
+	# ------------------------------------------------- Álbum de Ecos
+	var album := Mecanicas.bonus_album(s)
+	if int(album["n"]) > 0:
+		m.add_pct("multiplicador", float(album["dano"]), "Álbum de Ecos")
+		m.add_pct("ganhoOuro", float(album["ouro"]), "Álbum de Ecos")
+
+	# desbloqueios permanentes guardados no estado
+	for k in s["desbloqueios"].keys():
+		esp["desbloqueios"][str(k)] = true
+
 	# ------------------------------------------------------------- era
 	var era: Dictionary = Dados.era_atual(int(s["onda"]))
 	if era.has("regra") and (era["regra"] is Dictionary):
@@ -198,8 +218,7 @@ static func recalcular(s: Dictionary, m: StatEngine) -> Dictionary:
 		var pilhas := mini(25, int(s["combo"]["atual"]))
 		m.add_pct("dano", 0.02 * float(pilhas), "Sede de Sangue")
 	if pas.has("ultima_chama"):
-		var vmax := float(s["torre"]["vida_max"])
-		var frac := (float(s["torre"]["vida"]) / vmax) if vmax > 0.0 else 1.0
+		var frac := Big.frac(s["torre"]["vida"], s["torre"]["vida_max"])
 		if frac < 0.3:
 			m.add_mult("multiplicador", 2.0, "Última Chama")
 	if pas.has("combo_estendido"):

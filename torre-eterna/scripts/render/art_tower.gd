@@ -14,7 +14,7 @@ static func desenhar(ci: CanvasItem, j, t: float, detalhe: float = 1.0) -> void:
 	# nível visual: cresce com o dano acumulado (log), de 0 a 6
 	var poder := clampf(j.stats.b("dano") / 12.0, 0.0, 6.0)
 	var anéis := 1 + int(poder)
-	var vida_frac := clampf(float(torre["vida"]) / maxf(1.0, float(torre["vida_max"])), 0.0, 1.0)
+	var vida_frac := Big.frac(torre["vida"], torre["vida_max"])
 	var cor_nucleo := Color("#7dd3fc").lerp(Color("#f472b6"), clampf(poder / 6.0, 0.0, 1.0))
 	if not viva:
 		cor_nucleo = Color("#64748b")
@@ -80,9 +80,8 @@ static func desenhar(ci: CanvasItem, j, t: float, detalhe: float = 1.0) -> void:
 			ci.draw_circle(c + base_off + d * comp, r * 0.28 * f, Color(1, 0.96, 0.8, 0.75 * f))
 
 	# --- escudo ---
-	var esc_max := float(torre["escudo_max"])
-	if esc_max > 0.0:
-		var ef := clampf(float(torre["escudo"]) / esc_max, 0.0, 1.0)
+	if not Big.is_zero(torre["escudo_max"]):
+		var ef := Big.frac(torre["escudo"], torre["escudo_max"])
 		if ef > 0.001:
 			ci.draw_arc(c, r * 1.62, 0, TAU, 56, Color(0.35, 0.7, 1.0, 0.16 + ef * 0.22), 4.0, true)
 			ci.draw_arc(c, r * 1.62, -PI * 0.5, -PI * 0.5 + TAU * ef, 56, Color(0.55, 0.85, 1.0, 0.75), 2.5, true)

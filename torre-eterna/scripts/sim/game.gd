@@ -110,25 +110,24 @@ func _aplicar_mods_desafio() -> void:
 
 func sincronizar_torre(cheia: bool) -> void:
 	var t: Dictionary = s["torre"]
-	var novo_max := stats.n("vidaMax")
-	var esc_max := stats.n("escudoMax")
-	if not is_finite(novo_max) or novo_max <= 0.0:
+	var novo_max := stats.b("vidaMax")
+	var esc_max := stats.b("escudoMax")
+	if Big.is_zero(novo_max):
 		return
-	var frac_antes := (float(t["vida"]) / float(t["vida_max"])) if float(t["vida_max"]) > 0.0 else 1.0
-	var desafio_vida := 0.0
+	var frac_antes := Big.frac(t["vida"], t["vida_max"])
 	var did := str(s["desafios"]["ativo"])
 	if did != "":
-		desafio_vida = float(Dados.desafio_por_id.get(did, {}).get("mods", {}).get("vidaFixa", 0.0))
-	if desafio_vida > 0.0:
-		novo_max = desafio_vida
+		var vf := float(Dados.desafio_por_id.get(did, {}).get("mods", {}).get("vidaFixa", 0.0))
+		if vf > 0.0:
+			novo_max = Big.from(vf)
 	t["vida_max"] = novo_max
 	t["escudo_max"] = esc_max
 	if cheia:
 		t["vida"] = novo_max
 		t["escudo"] = esc_max
 	else:
-		t["vida"] = minf(novo_max, maxf(float(t["vida"]), novo_max * minf(1.0, frac_antes)))
-		t["escudo"] = minf(float(t["escudo"]), esc_max)
+		t["vida"] = Big.min_b(novo_max, Big.max_b(t["vida"], Big.mul_f(novo_max, minf(1.0, frac_antes))))
+		t["escudo"] = Big.min_b(t["escudo"], esc_max)
 
 ## =============================================================== loop ====
 
@@ -169,6 +168,9 @@ func simular(dt: float) -> void:
 				mudou = true
 		if mudou:
 			marcar_sujo()
+
+	Mecanicas.atualizar_purga(dt, self)
+	Mecanicas.decair_adaptacao(dt, self.s)
 
 	arena.reconstruir_grade()
 	Combate.atualizar_status(dt, self)
@@ -220,20 +222,22 @@ func ganhar_ouro(valor: float, fonte: String = "", silencioso: bool = false) -> 
 func ganhar_xp(valor: float) -> void:
 	Economia.ganhar_xp(valor, self)
 
-func curar_torre(v: float) -> void:
+## `v_log` em log10.
+func curar_torre(v_log: float) -> void:
 	var t: Dictionary = s["torre"]
-	t["vida"] = minf(float(t["vida_max"]), float(t["vida"]) + v)
+	t["vida"] = Big.min_b(t["vida_max"], Big.add(t["vida"], v_log))
 
-func dano_na_torre(quantidade: float, fonte, opt: Dictionary = {}) -> float:
+## `dano_log` em log10.
+func dano_na_torre(dano_log: float, fonte, opt: Dictionary = {}) -> float:
 	if invulneravel > 0.0:
-		return 0.0
-	return torre.levar_dano(quantidade, fonte, opt)
+		return Big.ZERO
+	return torre.levar_dano(dano_log, fonte, opt)
 
 func reviver_torre() -> void:
 	var t: Dictionary = s["torre"]
 	t["viva"] = true
-	t["vida"] = float(t["vida_max"])
-	t["escudo"] = float(t["escudo_max"])
+	t["vida"] = t["vida_max"]
+	t["escudo"] = t["escudo_max"]
 	invulneravel = 2.5
 	fenix_usada = false
 	arena.limpar_inimigos()
@@ -241,8 +245,7 @@ func reviver_torre() -> void:
 	Bus.torre_renasceu.emit()
 
 func impacto_na_torre(e: Inimigo) -> void:
-	var frac := Bal.DANO_CONTATO_CHEFE if e.chefe else Bal.DANO_CONTATO_FRAC
-	var dano := float(s["torre"]["vida_max"]) * frac * (sqrt(e.escala) if e.escala > 1.0 else 1.0)
+	var dano := Bal.dano_contato(e.hp_max, int(s["onda"]), e.chefe, e.escala)
 	dano_na_torre(dano, e)
 	Bus.inimigo_chegou.emit(e, dano)
 
@@ -258,6 +261,10 @@ func impacto_na_torre(e: Inimigo) -> void:
 	Bus.combo_quebrou.emit()
 
 func ao_morrer_inimigo(e: Inimigo, critico: bool) -> void:
+	if e.peregrino:
+		if not e.saiu:
+			Mecanicas.peregrino_morto(self)
+		return
 	Saque.tentar_drop(e, self)
 	if e.def.has("divide") and not e.dividido:
 		EnemyAI.dividir(e, self)
@@ -280,7 +287,7 @@ func projetil_inimigo(e: Inimigo) -> void:
 	p.cor = Color.html("#fb7185")
 	p.tipo = "acido"
 	p.origem = "inimigo"
-	p.dano_torre = float(s["torre"]["vida_max"]) * 0.02
+	p.dano_torre = Big.mul_f(Bal.dano_contato(Bal.hp_onda(int(s["onda"])), int(s["onda"]), false, 1.0), 0.6)
 
 func atualizar_chefe(e: Inimigo, dt: float) -> void:
 	var fases := maxi(1, int(e.def.get("fases", 1)))
@@ -298,7 +305,7 @@ func atualizar_chefe(e: Inimigo, dt: float) -> void:
 			e.cd -= dt
 			if e.cd <= 0.0:
 				e.cd = maxf(2.0, 5.0 - float(e.fase))
-				dano_na_torre(float(s["torre"]["vida_max"]) * 0.05, e)
+				dano_na_torre(Bal.mul_contato(e, int(s["onda"]), 1.6), e)
 				Bus.particulas.emit("pulso", e.pos, {"raio": 260.0, "cor": "#fb923c"})
 				tremor(10.0, 0.3)
 		"escudo_regen":
@@ -315,8 +322,7 @@ func atualizar_chefe(e: Inimigo, dt: float) -> void:
 			if e.cd <= 0.0:
 				e.cd = 7.0
 				e.pos = arena.centro + Vector2(cos(e.dir_ang), sin(e.dir_ang)) * (Bal.RAIO_TORRE + 60.0)
-				var drenado := float(s["torre"]["vida_max"]) * 0.08
-				dano_na_torre(drenado, e)
+				dano_na_torre(Bal.mul_contato(e, int(s["onda"]), 2.0), e)
 				e.hp = Big.min_b(Big.add(e.hp, Big.mul_f(e.hp_max, 0.05)), e.hp_max)
 		"fissuras":
 			e.cd -= dt
@@ -337,6 +343,7 @@ func adicionar_buff(b: Dictionary) -> void:
 
 func recompensa_de_onda(onda: int) -> void:
 	Economia.recompensa_onda(onda, self)
+	Mecanicas.talvez_peregrino(onda + 1, self)
 	fenix_usada = false
 	if pas.has("imortal_pos_onda"):
 		invulneravel = maxf(invulneravel, 2.0)
@@ -519,7 +526,13 @@ func comprar_reliquia(id: String, qtd: int = 1) -> int:
 	return n
 
 func usar_habilidade(id: String) -> bool:
+	if id == "purga":
+		return Mecanicas.disparar_purga(self, false)
 	return Habilidades.usar(id, self)
+
+## A Purga: a única ação que exige o jogador (e recompensa o timing).
+func purgar() -> bool:
+	return Mecanicas.disparar_purga(self, false)
 
 func melhorar_habilidade(id: String) -> bool:
 	var def: Dictionary = Dados.habilidade_por_id.get(id, {})
