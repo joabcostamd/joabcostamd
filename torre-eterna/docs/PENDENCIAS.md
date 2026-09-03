@@ -51,7 +51,7 @@ suíte reprovou):
 | 2.5 | `cuspir` anunciada no codex e sem braço — o inimigo chamado "atirador" nunca atirou. `ondaMax` era a linha de chegada de 12 dos 14 desafios e ninguém lia: `encerrar_desafio(true)` não tinha chamador, então o desafio **nunca terminava** e a recompensa era inalcançável | ✅ |
 | 2.6 | `salvamento_travado`: o boot trancava, o sinal `save_ilegivel` não tinha ouvinte e **não existia caminho para religar** — quem tivesse save corrompido jogava para sempre sem gravar, sem saber por quê | ✅ Avisa e oferece a chave em Configurações |
 
-## 3. Economia e ritmo — 🟡 PARCIAL (3.3 pela metade, 3.7 em aberto)
+## 3. Economia e ritmo — 🟡 PARCIAL (só a camada 3 do prestígio em aberto)
 
 | # | Pendência | Prova |
 |---|---|---|
@@ -62,11 +62,11 @@ suíte reprovou):
 | 3.5 | ✅ **FECHADO.**  **Nada mata a torre hoje**, e morrer limpa a tela de graça: não há estado de derrota real. | `scripts/sim/game.gd` |
 | 3.6 | ✅ **FECHADO.** **A Retomada é corrida impossível de ganhar**: 10 s reais × 6 = 60 s de jogo, contra 16–18 s por onda. Termina por relógio, não por progresso. | `scripts/sim/mecanicas.gd` |
 
-### 3.7 — NOVO, medido nesta rodada
+### 3.7 — surgiu e fechou nesta rodada
 
 | # | Pendência | Prova |
 |---|---|---|
-| 3.7 | **A perna de 160 vivos do portão de desempenho continua acima do orçamento**: 8.537 us contra 4.000. Caiu de 22.672 us (2,7×) consertando morteiro, vida de projétil, dano contínuo e corrente de raio; o que sobra é o custo intrínseco de 53 impactos por passo — doze perfurações vezes quinze projéteis. Mexer nisso é mudar o jogo, não otimizá-lo. A perna do JOGO REAL passa com folga (1.854 us de 4.000). | `tools/perf.gd -- 412` |
+| 3.7 | ✅ **FECHADO, e com uma lição sobre a régua.** A perna de 160 vivos chegou a medir **22.672 us** contra um orçamento de 4.000. Quatro defeitos reais explicam a maior parte: o morteiro explodia uma vez por corpo atravessado, o projétil vivia 3,5 s fixos mesmo cruzando a arena em 1,8 s, o dano contínuo cobrava a cada quadro e a corrente de raio partia a cada acerto. Corrigidos, e **com a máquina parada**, as duas pernas passam: **1.914 us** no jogo real e **3.708 us** na perna cheia, contra 4.090 de orçamento. O resto do que eu tinha lido como regressão era disputa de CPU — eu media desempenho com outros processos do Godot rodando, que é exatamente o erro que o `AGENTS.md` avisa para não cometer. | `tools/perf.gd -- 412` |
 
 ## 4. Experiência do jogador — ✅ FECHADO
 
