@@ -27,7 +27,7 @@
   "car_sel_vazia": {"pt": "Selecione uma carta para inspecionar.", "en": "Select a card to inspect."},
   "car_sel_vazia_lore": {"pt": "Cada uma é um pedaço de algo que já foi maior. A torre não pergunta de onde vieram.", "en": "Each one is a piece of something that used to be bigger. The tower does not ask where they came from."},
 
-  "car_efeitos_titulo": {"pt": "Efeitos (já com raridade e nível)", "en": "Effects (rarity and level included)"},
+  "car_efeitos_titulo": {"pt": "Efeitos (já com raridade e nível)", "en": "Effects (rarity and level applied)"},
   "car_sem_efeitos": {"pt": "Nenhum efeito conhecido. Suspeito.", "en": "No known effects. Suspicious."},
   "car_no_nivel": {"pt": "No nível {n}: {t}", "en": "At level {n}: {t}"},
   "car_ef_anulado": {"pt": "{nome} anulado", "en": "{nome} nullified"},
@@ -48,7 +48,7 @@
 
   "car_nivel_maximo": {"pt": "Nível máximo", "en": "Max level"},
   "car_fundir_custo": {"pt": "Fundir  —  {n} poeira", "en": "Fuse  —  {n} dust"},
-  "car_dica_fundir": {"pt": "Funde poeira na carta e sobe um nível: cada nível vale +25% do efeito base.", "en": "Melts dust into the card and raises it one level: each level is worth +25% of the base effect."},
+  "car_dica_fundir": {"pt": "Funde poeira na carta e sobe um nível: cada nível vale +25% do efeito base.", "en": "Fuses dust into the card and raises it one level: each level is worth +25% of the base effect."},
   "car_reciclar_ganho": {"pt": "Reciclar  —  +{n} poeira", "en": "Recycle  —  +{n} dust"},
   "car_dica_reciclar": {"pt": "Desmancha a carta em poeira. Não tem volta.", "en": "Grinds the card into dust. No going back."},
   "car_dica_reciclar_equipada": {"pt": "Desequipe antes de desmanchar.", "en": "Unequip it before scrapping."},

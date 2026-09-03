@@ -14,5 +14,17 @@
   "auto_compra_trancada": {
     "pt": "Desbloqueie a Compra Automática na árvore de Fragmentos",
     "en": "Unlock Auto-buy in the Fragment tree"
+  },
+  "infinito_ligado": {
+    "pt": "MODO INFINITO — as ondas não param mais",
+    "en": "INFINITE MODE — the waves never stop now"
+  },
+  "infinito_desligado": {
+    "pt": "Modo Infinito desligado",
+    "en": "Infinite Mode off"
+  },
+  "infinito_trancado": {
+    "pt": "Desbloqueie o Vazio Infinito na árvore de Éter",
+    "en": "Unlock the Infinite Void in the Ether tree"
   }
 }

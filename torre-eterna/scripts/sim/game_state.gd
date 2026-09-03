@@ -33,6 +33,10 @@ static func novo() -> Dictionary:
 		"tempo_na_onda": 0.0,
 		"modo_farm": false,
 		"onda_farm": 1,
+		## Modo Infinito: as ondas deixam de ter intervalo e a contagem de
+		## inimigos deixa de ter teto. É o desbloqueio do topo da árvore de Éter
+		## (nó "Vazio Infinito"), que prometia isso e não tinha nada por trás.
+		"modo_infinito": false,
 
 		"nivel": 1,
 		"xp": Big.ZERO,

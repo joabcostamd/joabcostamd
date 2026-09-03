@@ -113,6 +113,8 @@ func _talvez_capturar() -> void:
 			Cfg.set_v("daltonismo", int(a.substr(13)))
 		elif a == "--contraste":
 			Cfg.set_v("alto_contraste", true)
+		elif a == "--codex":
+			_codex_debug = true
 	if segundos < 0.0:
 		return
 	if _abrir_debug != "":
@@ -124,6 +126,12 @@ func _talvez_capturar() -> void:
 	if _cartas_debug > 0:
 		for i in _cartas_debug:
 			Saque.criar_carta(jogo, "", i % 3 == 0)
+		Bus.ui_atualizar.emit(true)
+	if _codex_debug:
+		for e in Dados.inimigos:
+			jogo.s["codex"]["inimigos"][str(e["id"])] = 9
+		for b in Dados.chefes + Dados.super_chefes:
+			jogo.s["codex"]["chefes"][str(b["id"])] = 3
 		Bus.ui_atualizar.emit(true)
 	if _celebrar_debug != "":
 		Bus.celebracao.emit(_celebrar_debug, {"mortos": 47, "nivel": 3, "alvo": 210, "onda": 211})
@@ -144,6 +152,7 @@ var _cartas_debug := 0
 var _abrir_debug := ""
 var _clicar_debug := ""
 var _celebrar_debug := ""
+var _codex_debug := false
 
 func _capturar_em(segundos: float, saida: String) -> void:
 	await get_tree().create_timer(segundos).timeout

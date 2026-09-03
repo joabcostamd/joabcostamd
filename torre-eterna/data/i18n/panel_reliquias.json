@@ -1,7 +1,7 @@
 {
   "rel_sub": {"pt": "Bônus permanentes: sobrevivem à Ascensão, à Singularidade e a você.", "en": "Permanent bonuses: they outlive Ascension, the Singularity and you."},
   "rel_total_dica": {"pt": "Relíquias com pelo menos um nível, de todas as que existem.", "en": "Relics at level 1 or higher, out of every relic there is."},
-  "rel_vazio_moeda": {"pt": "Nenhuma relíquia nesta moeda ainda.", "en": "No relics in this currency yet."},
+  "rel_vazio_moeda": {"pt": "Nenhuma relíquia nesta moeda ainda.", "en": "No relics for this currency yet."},
 
   "rel_dica_fragmentos": {"pt": "Fragmentos: vêm da Ascensão. O pó do que a torre já foi.", "en": "Shards: they come from Ascension. The dust of what the tower used to be."},
   "rel_dica_gemas": {"pt": "Gemas: caem de chefes e missões. Duras de conseguir, fáceis de gastar.", "en": "Gems: they drop from bosses and missions. Hard to get, easy to spend."},
@@ -16,13 +16,13 @@
   "rel_travada_singularidades": {"pt": "Travada — {a} singularidades (você tem {b})", "en": "Locked — {a} singularities (you have {b})"},
 
   "rel_sem_nivel": {"pt": "Ainda sem nível — nenhum efeito.", "en": "No levels yet — no effect."},
-  "rel_no_teto": {"pt": "Nada além disso. Já foi longe.", "en": "Nothing beyond this. You went far enough."},
+  "rel_no_teto": {"pt": "Nada além disso. Já foi longe.", "en": "Nothing beyond this. You've gone far enough."},
   "rel_desbloqueia": {"pt": "Desbloqueia {o}", "en": "Unlocks {o}"},
 
   "rel_comprou": {"pt": "{nome} — nível {n}", "en": "{nome} — level {n}"},
   "rel_faltam": {"pt": "Faltam {m}", "en": "Not enough {m}"},
 
-  "rel_esp_offline_horas": {"pt": "Horas de acúmulo offline", "en": "Offline accrual hours"},
+  "rel_esp_offline_horas": {"pt": "Horas de acúmulo offline", "en": "Offline hours"},
   "rel_esp_offline_eficiencia": {"pt": "Eficiência offline", "en": "Offline efficiency"},
   "rel_esp_rerolls": {"pt": "Rerrolagens diárias", "en": "Daily rerolls"},
   "rel_esp_revives": {"pt": "Renascimentos por onda", "en": "Revives per wave"},
@@ -45,9 +45,9 @@
 
   "rel_pas_salva_coral": {"pt": "Salva coral: de tempos em tempos a torre despeja projéteis em círculo.", "en": "Choir volley: every so often the tower dumps projectiles in a full circle."},
   "rel_pas_contrato_recompra": {"pt": "Contrato de recompra: cancela uma morte por onda e devolve parte da vida.", "en": "Buyback contract: cancels one death per wave and gives back part of your HP."},
-  "rel_pas_sino_de_recomeco": {"pt": "Sino do recomeço: zera o tempo de recarga das habilidades a cada onda.", "en": "Restart bell: clears every ability cooldown at each wave."},
+  "rel_pas_sino_de_recomeco": {"pt": "Sino do recomeço: zera o tempo de recarga das habilidades a cada onda.", "en": "Reset bell: clears every ability cooldown at each wave."},
   "rel_pas_combo_imortal": {"pt": "Combo imortal: o combo só cai quando a torre toma dano.", "en": "Immortal combo: the combo only drops when the tower takes damage."},
-  "rel_pas_coleira_dourada": {"pt": "Coleira dourada: mais inimigos dourados, e eles não fogem mais.", "en": "Golden collar: more golden enemies, and they stop running away."},
+  "rel_pas_coleira_dourada": {"pt": "Coleira dourada: mais inimigos dourados, e eles não fogem mais.", "en": "Golden leash: more golden enemies, and they stop running away."},
   "rel_pas_heranca_dourada": {"pt": "Herança dourada: guarda parte do ouro ao ascender.", "en": "Golden inheritance: keeps part of your gold when you ascend."},
-  "rel_pas_espelho_do_operador": {"pt": "Espelho do operador: sua relíquia mais cara conta duas vezes.", "en": "Operator's mirror: your most expensive relic counts twice."}
+  "rel_pas_espelho_do_operador": {"pt": "Espelho do operador: sua relíquia mais cara conta duas vezes.", "en": "Operator’s mirror: your most expensive relic counts twice."}
 }

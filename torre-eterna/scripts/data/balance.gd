@@ -26,8 +26,21 @@ static func ouro_onda(w: int) -> float:
 static func xp_onda(w: int) -> float:
 	return Big.mul_f(Big.from(XP_BASE), pow(XP_CRESC, float(w - 1)))
 
-static func contagem_onda(w: int) -> int:
+static func contagem_onda(w: int, infinito: bool = false) -> int:
+	if infinito:
+		# Sem teto: a onda continua engordando para sempre. O limite passa a ser
+		# o teto de entidades da arena, que é a mecânica da Aglomeração — tela
+		# cheia rende mais.
+		return 8 + w / 3
 	return 8 + mini(22, w / 3)
+
+## No Modo Infinito o inimigo também não para de crescer: o expoente da vida
+## ganha um empurrão suave por onda, para que "infinito" seja um desafio de
+## verdade e não uma esteira. Fora do modo, devolve 1,0 e nada muda.
+static func escala_infinito(w: int, infinito: bool) -> float:
+	if not infinito:
+		return 1.0
+	return 1.0 + float(w) * 0.004
 
 static func eh_chefe(w: int) -> bool:
 	return w % 10 == 0

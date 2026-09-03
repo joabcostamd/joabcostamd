@@ -2,9 +2,9 @@
   "dsf_filtro_abertos": {"pt": "Disponíveis", "en": "Available"},
   "dsf_filtro_completos": {"pt": "Vencidos", "en": "Beaten"},
 
-  "dsf_sem_catalogo": {"pt": "Nenhum desafio catalogado — o Enxame não teve ideias hoje.", "en": "No challenges catalogued — the Swarm ran out of ideas today."},
+  "dsf_sem_catalogo": {"pt": "Nenhum desafio catalogado — o Enxame não teve ideias hoje.", "en": "No challenges cataloged — the Swarm ran out of ideas today."},
   "dsf_trancado_titulo": {"pt": "Os Desafios ainda estão lacrados", "en": "The Challenges are still sealed"},
-  "dsf_trancado_corpo": {"pt": "Compre 'Provações' na árvore de Núcleos (painel de Prestígio) para abrir as provações.\nSão runs com as regras torcidas: você aceita uma desvantagem e leva um bônus permanente.", "en": "Buy 'Trials' in the Core tree (Prestige panel) to open the trials.\nThey are runs with the rules bent: you accept a handicap and walk out with a permanent bonus."},
+  "dsf_trancado_corpo": {"pt": "Compre 'Provações' na árvore de Núcleos (painel de Prestígio) para abrir as provações.\nSão runs com as regras torcidas: você aceita uma desvantagem e leva um bônus permanente.", "en": "Buy 'Trials' in the Cores tree (Prestige panel) to open the trials.\nThey are runs with the rules bent: you accept a handicap and walk out with a permanent bonus."},
 
   "dsf_faixa_titulo": {"pt": "DESAFIO EM ANDAMENTO", "en": "CHALLENGE IN PROGRESS"},
   "dsf_faixa_progresso": {"pt": "Onda {a} de {b} — chegue lá e a recompensa é sua para sempre.", "en": "Wave {a} of {b} — get there and the reward is yours forever."},
@@ -13,7 +13,7 @@
   "dsf_abandonar": {"pt": "Abandonar", "en": "Abandon"},
   "dsf_abandonar_dica": {"pt": "Encerra o desafio e reinicia a run normal.", "en": "Ends the challenge and restarts the normal run."},
 
-  "dsf_vazio_abertos": {"pt": "Nenhum desafio disponível agora — suba de onda, acumule núcleos e ascensões e eles vão abrindo.", "en": "No challenge available right now — climb waves, stack cores and ascensions and they open up on their own."},
+  "dsf_vazio_abertos": {"pt": "Nenhum desafio disponível agora — suba de onda, acumule núcleos e ascensões e eles vão abrindo.", "en": "No challenge available right now — climb waves, stack cores and ascensions, and they open up on their own."},
   "dsf_vazio_completos": {"pt": "Nenhum desafio vencido ainda. O primeiro é sempre o mais caro.", "en": "No challenge beaten yet. The first one always costs the most."},
 
   "dsf_progresso": {"pt": "{a} de {b} provações vencidas", "en": "{a} of {b} trials beaten"},
@@ -49,7 +49,7 @@
   "dsf_toast_vencido": {"pt": "Desafio vencido: {nome}", "en": "Challenge beaten: {nome}"},
 
   "dsf_mod_sem_habilidades": {"pt": "Sem habilidades ativas", "en": "No active abilities"},
-  "dsf_mod_sem_upgrades": {"pt": "Loja de melhorias fechada a run inteira", "en": "Upgrade shop shut for the whole run"},
+  "dsf_mod_sem_upgrades": {"pt": "Loja de melhorias fechada a run inteira", "en": "Upgrade shop closed for the whole run"},
   "dsf_mod_sem_orbes": {"pt": "Sem orbes — de carta, talento ou habilidade", "en": "No orbs — from cards, talents or abilities"},
   "dsf_mod_sem_critico": {"pt": "Sem acertos críticos", "en": "No critical hits"},
   "dsf_mod_sem_regen": {"pt": "Sem regeneração de vida", "en": "No health regeneration"},

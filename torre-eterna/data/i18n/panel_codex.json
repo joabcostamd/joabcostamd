@@ -1,147 +1,542 @@
 {
-  "cdx_aba_bestiario": {"pt": "Bestiário", "en": "Bestiary"},
-  "cdx_aba_chefes": {"pt": "Chefes", "en": "Bosses"},
-  "cdx_aba_historia": {"pt": "História", "en": "Story"},
-  "cdx_dica_progresso": {"pt": "Quanto do arquivo você já preencheu.", "en": "How much of the archive you have filled in."},
-  "cdx_outra": {"pt": "Outra", "en": "Another"},
-  "cdx_outra_dica": {"pt": "Sorteia outra dica do arquivo.", "en": "Draws another tip from the archive."},
-  "cdx_dicas_vazias": {"pt": "O arquivo de dicas está vazio. Improvise.", "en": "The tip archive is empty. Improvise."},
-
-  "cdx_sem_criaturas": {"pt": "Nenhuma criatura catalogada — os dados não carregaram.", "en": "No creatures catalogued — the data never loaded."},
-  "cdx_variantes_elite": {"pt": "Variantes de elite", "en": "Elite variants"},
-  "cdx_variantes_elite_dica": {"pt": "Qualquer inimigo pode vir com uma destas marcas — vale mais e incomoda mais.", "en": "Any enemy can show up wearing one of these marks — worth more, annoys more."},
-  "cdx_tile_abates": {"pt": "{nome} — {n} abate(s).", "en": "{nome} — {n} kill(s)."},
-  "cdx_nao_catalogado": {"pt": "Ainda não catalogado. Derrote um para abrir a ficha.", "en": "Not catalogued yet. Kill one to open its file."},
-
-  "cdx_escolha_criatura": {"pt": "Escolha uma criatura na grade para abrir a ficha.", "en": "Pick a creature from the grid to open its file."},
-  "cdx_especime_nao_catalogado": {"pt": "Espécime não catalogado", "en": "Uncatalogued specimen"},
-  "cdx_falta_chefe": {"pt": "A Torre só registra o que morre na frente dela. Derrote um chefe destes para abrir esta ficha.", "en": "The Tower only records what dies in front of it. Kill one of these bosses to open this file."},
-  "cdx_falta_inimigo": {"pt": "A Torre só registra o que morre na frente dela. Derrote um destes para abrir esta ficha.", "en": "The Tower only records what dies in front of it. Kill one of these to open this file."},
-  "cdx_onde_procurar": {"pt": "Onde procurar", "en": "Where to look"},
-  "cdx_derrotado": {"pt": "DERROTADO", "en": "DEFEATED"},
-  "cdx_dica_abates": {"pt": "Quantos deste tipo você já derrubou.", "en": "How many of this type you have put down."},
-  "cdx_m_vida": {"pt": "Vida", "en": "HP"},
-  "cdx_m_velocidade": {"pt": "Velocidade", "en": "Speed"},
-  "cdx_mult_vida": {"pt": "Multiplicador sobre a vida-base da onda.", "en": "Multiplier on the wave's base HP."},
-  "cdx_mult_ouro": {"pt": "Multiplicador sobre o ouro-base da onda.", "en": "Multiplier on the wave's base gold."},
-  "cdx_mult_velocidade": {"pt": "Multiplicador sobre a velocidade-base da onda.", "en": "Multiplier on the wave's base speed."},
-  "cdx_comportamento": {"pt": "Comportamento", "en": "Behavior"},
-  "cdx_habilidade_especial": {"pt": "Habilidade especial", "en": "Special ability"},
-  "cdx_mecanica_chefe": {"pt": "Mecânica de chefe", "en": "Boss mechanic"},
-  "cdx_arquivo": {"pt": "Arquivo", "en": "Archive"},
-  "cdx_dica": {"pt": "Dica", "en": "Tip"},
-  "cdx_abates_um": {"pt": "{n} abate", "en": "{n} kill"},
-  "cdx_abates_n": {"pt": "{n} abates", "en": "{n} kills"},
-
-  "cdx_arquivo_vazio": {"pt": "Arquivo vazio.", "en": "Empty archive."},
-  "cdx_trancada": {"pt": "Trancada — {cond}", "en": "Locked — {cond}"},
-  "cdx_entrada_selada": {"pt": "Entrada selada", "en": "Sealed entry"},
-  "cdx_escolha_entrada": {"pt": "Escolha uma entrada no índice à esquerda.", "en": "Pick an entry from the index on the left."},
-  "cdx_entrada_de": {"pt": "Entrada {a} de {b}", "en": "Entry {a} of {b}"},
-  "cdx_selada_aviso": {"pt": "A Torre arquivou este documento, mas ainda não o entregou. Ela tem critérios.", "en": "The Tower filed this document but has not handed it over yet. It has standards."},
-
-  "cdx_progresso_arquivo": {"pt": "Arquivo: {a}/{b} entradas", "en": "Archive: {a}/{b} entries"},
-  "cdx_progresso_chefes": {"pt": "Chefes derrotados: {a}/{b}", "en": "Bosses defeated: {a}/{b}"},
-  "cdx_progresso_catalogados": {"pt": "Catalogados: {a}/{b}", "en": "Catalogued: {a}/{b}"},
-
-  "cdx_guarda_onda": {"pt": "Guarda a onda {n}", "en": "Guards wave {n}"},
-  "cdx_aparicao_irregular": {"pt": "Aparição irregular", "en": "Shows up off-schedule"},
-  "cdx_a_partir_onda": {"pt": "A partir da onda {n}", "en": "From wave {n} on"},
-
-  "cdx_mov_chefe_base": {"pt": "Avança devagar e sem desvio — não precisa de pressa.", "en": "Advances slowly and without swerving — it is in no hurry."},
-  "cdx_mov_chefe_fases": {"pt": "Muda de comportamento a cada uma das {n} fases, e cada troca o atordoa por um instante.", "en": "Changes behavior at each of its {n} phases, and every switch stuns it for a moment."},
-  "cdx_mov_direto": {"pt": "Avança em linha reta até a torre. Sem truque, sem hesitação.", "en": "Walks straight at the tower. No tricks, no hesitation."},
-  "cdx_mov_zigue": {"pt": "Serpenteia em zigue-zague — projétil lento erra.", "en": "Weaves in a zigzag — slow projectiles miss."},
-  "cdx_mov_salto": {"pt": "Avança em arcos. Enquanto está no ar, nada o segura.", "en": "Advances in arcs. While airborne, nothing holds it."},
-  "cdx_mov_fantasma": {"pt": "Some e reaparece mais perto. Fica intangível no meio do salto.", "en": "Vanishes and reappears closer. Intangible mid-leap."},
-  "cdx_mov_teleporte": {"pt": "Pisca de um ponto a outro do campo, ignorando o caminho.", "en": "Blinks from point to point across the field, ignoring the path."},
-  "cdx_mov_parar_atirar": {"pt": "Para no alcance e atira na torre em vez de encostar nela.", "en": "Stops at range and shoots the tower instead of touching it."},
-  "cdx_mov_perseguidor": {"pt": "Persegue sem desviar e sem cansar. Corrige a rota o tempo todo.", "en": "Chases without swerving and without tiring. Corrects course the whole way."},
-  "cdx_mov_errante": {"pt": "Trajetória errática, sem lógica aparente — nem para ele.", "en": "Erratic path, no visible logic — not even to itself."},
-  "cdx_mov_passa": {"pt": "Apenas atravessa o campo. Não ataca, não desvia, não olha.", "en": "It just crosses the field. Doesn't attack, doesn't dodge, doesn't look."},
-  "cdx_mov_padrao": {"pt": "Avança em linha reta até a torre.", "en": "Walks straight at the tower."},
-
-  "cdx_traz_consigo": {"pt": "Traz consigo: {lista}.", "en": "Brings along: {lista}."},
-  "cdx_corpo_segmentos": {"pt": "Corpo em {n} segmentos: cada um cai por vez.", "en": "Body in {n} segments: they fall one at a time."},
-  "cdx_mec_invocar": {"pt": "Invoca reforços entre as fases e deixa que eles gastem seus tiros.", "en": "Summons reinforcements between phases and lets them soak your shots."},
-  "cdx_mec_ninhada": {"pt": "Põe crias mais rápido do que você as mata. A matemática é o chefe real.", "en": "Lays spawn faster than you can kill them. The math is the real boss."},
-  "cdx_mec_onda_choque": {"pt": "Pulsa em ondas de choque que machucam a torre de longe, sem encostar.", "en": "Pulses shockwaves that hurt the tower from afar, without ever touching it."},
-  "cdx_mec_fissuras": {"pt": "Abre fissuras no campo que corroem a sua invulnerabilidade.", "en": "Opens fissures in the field that eat away at your invulnerability."},
-  "cdx_mec_segmentos": {"pt": "Um corpo em vários anéis; enquanto houver anel, há chefe.", "en": "One body in many rings; while a ring stands, the boss stands."},
-  "cdx_mec_refletir": {"pt": "Devolve ao atirador o dano que não for crítico.", "en": "Returns any non-critical damage to the shooter."},
-  "cdx_mec_escudo_regen": {"pt": "Recupera escudo se ficar mais de um segundo e meio sem levar dano.", "en": "Regains shield if it goes more than a second and a half without taking damage."},
-  "cdx_mec_teleporte_drenar": {"pt": "Teleporta para o colo da torre, drena vida e volta mais inteiro.", "en": "Teleports into the tower's lap, drains HP and comes back healthier."},
-  "cdx_mec_silenciar": {"pt": "Bloqueia as suas habilidades por 5s a cada 12s. Silêncio é a arma.", "en": "Locks your abilities for 5s every 12s. Silence is the weapon."},
-  "cdx_mec_engolir": {"pt": "Engole projéteis e coletáveis, e engorda com cada gole.", "en": "Swallows projectiles and pickups, and fattens up with every gulp."},
-  "cdx_mec_combinado": {"pt": "Tudo que o Enxame aprendeu, ao mesmo tempo, em fases.", "en": "Everything the Swarm has learned, all at once, in phases."},
-  "cdx_mec_desconhecida": {"pt": "Mecânica desconhecida — o arquivo está incompleto.", "en": "Unknown mechanic — the file is incomplete."},
-
-  "cdx_hab_curar": {"pt": "Cura os aliados por perto em 6% da vida deles a cada 2s.", "en": "Heals nearby allies for 6% of their HP every 2s."},
-  "cdx_hab_cuspir": {"pt": "Cospe projéteis na torre à distância, sem nunca encostar.", "en": "Spits projectiles at the tower from range, never touching it."},
-  "cdx_hab_explodir": {"pt": "Explode ao morrer e leva a vizinhança junto — inclusive a sua paciência.", "en": "Explodes on death and takes the neighborhood with it — your patience included."},
-  "cdx_hab_roubar_ouro": {"pt": "Recolhe o ouro caído no chão antes de você. Cada moeda dele é sua.", "en": "Picks up dropped gold before you do. Every coin it takes was yours."},
-  "cdx_hab_refletir": {"pt": "Devolve parte do dano não-crítico a quem atirou.", "en": "Returns part of non-critical damage to whoever fired it."},
-  "cdx_hab_grudar": {"pt": "Gruda no casco da torre e drena vida sem pressa nenhuma.", "en": "Sticks to the tower's hull and drains HP in no hurry at all."},
-  "cdx_hab_chocar": {"pt": "Choca a cada 4,5s e solta três crias de Enxame.", "en": "Hatches every 4.5s and drops three Swarmlings."},
-  "cdx_hab_devorar": {"pt": "Engole o ouro do chão, ganha vida e cresce a cada gole.", "en": "Swallows gold off the ground, gains HP and grows with every gulp."},
-  "cdx_hab_mutar": {"pt": "Alterna a cada 3s entre blindado e lento, e rápido e nu.", "en": "Flips every 3s between armored-and-slow and fast-and-bare."},
-  "cdx_hab_ceifar": {"pt": "A cada 5s, salta 120 unidades em direção à torre para ceifar de perto.", "en": "Every 5s it leaps 120 units toward the tower to reap up close."},
-
-  "cdx_dica_curar": {"pt": "Mate o curandeiro primeiro. Ele desfaz o seu trabalho de graça e sem pressa.", "en": "Kill the healer first. It undoes your work for free, and in no hurry."},
-  "cdx_dica_cuspir": {"pt": "Alcance e velocidade de projétil: ele morre antes de mirar.", "en": "Range and projectile speed: it dies before it can aim."},
-  "cdx_dica_explodir": {"pt": "Mate longe da torre. Ou aceite o troco.", "en": "Kill it far from the tower. Or eat the blast."},
-  "cdx_dica_roubar_ouro": {"pt": "Aumente a coleta — o que está no chão é dele até você pegar.", "en": "Boost your pickup range — what's on the ground belongs to it until you grab it."},
-  "cdx_dica_refletir": {"pt": "Crítico passa reto pelo espelho. Invista em chance crítica.", "en": "Crits go straight through the mirror. Invest in crit chance."},
-  "cdx_dica_grudar": {"pt": "Não deixe encostar: cadência alta e área resolvem antes do abraço.", "en": "Don't let it latch on: high fire rate and splash finish it before the hug."},
-  "cdx_dica_chocar": {"pt": "Dano em área antes que o casulo abra. Depois é limpeza.", "en": "Splash damage before the cocoon opens. After that it's cleanup."},
-  "cdx_dica_devorar": {"pt": "Colete rápido ou negue o banquete — cada moeda o engorda.", "en": "Collect fast or deny the feast — every coin fattens it."},
-  "cdx_dica_mutar": {"pt": "Espere a janela sem armadura; ela chega a cada três segundos.", "en": "Wait for the unarmored window; it comes around every three seconds."},
-  "cdx_dica_ceifar": {"pt": "Empurrões e gelo. Se ele fechar a distância, você já perdeu o turno.", "en": "Knockback and ice. If it closes the gap, you already lost the turn."},
-  "cdx_dica_invisivel": {"pt": "Só aparece quando revelado — leve algo que marque alvos.", "en": "Only shows up once revealed — bring something that marks targets."},
-  "cdx_dica_voa": {"pt": "Voa: nada no chão o atrasa. Cadência resolve melhor que armadilha.", "en": "It flies: nothing on the ground slows it. Fire rate beats traps here."},
-  "cdx_dica_divide": {"pt": "Ele vira dois. Área é o único jeito honesto de fechar a conta.", "en": "It turns into two. Splash is the only honest way to settle the bill."},
-  "cdx_dica_escudo": {"pt": "Quebre o escudo de uma vez; ele volta se você der intervalo.", "en": "Break the shield in one go; it comes back if you give it a breather."},
-  "cdx_dica_armadura": {"pt": "Armadura alta: leve penetração, não orgulho.", "en": "High armor: bring penetration, not pride."},
-  "cdx_dica_passa": {"pt": "Não faz nada com você. Faça você algo com ele — vale ouro.", "en": "It does nothing to you. So do something to it — it pays gold."},
-  "cdx_dica_rapido": {"pt": "Rápido demais para o alcance curto. Congele ou atire mais longe.", "en": "Too fast for short range. Freeze it or shoot from farther out."},
-  "cdx_dica_tanque": {"pt": "Saco de vida: dano bruto e paciência, nesta ordem.", "en": "Bag of HP: raw damage and patience, in that order."},
-  "cdx_dica_comum": {"pt": "Nada de especial. Morre como todo mundo — só precisa de sua vez.", "en": "Nothing special. Dies like everyone else — it just needs its turn."},
-
-  "cdx_traco_fases": {"pt": "{n} fases", "en": "{n} phases"},
-  "cdx_traco_segmentos": {"pt": "{n} segmentos", "en": "{n} segments"},
-  "cdx_traco_armadura": {"pt": "Armadura {n}", "en": "Armor {n}"},
-  "cdx_traco_superchefe": {"pt": "Superchefe", "en": "Superboss"},
-  "cdx_traco_voa": {"pt": "Voa", "en": "Flies"},
-  "cdx_traco_invisivel": {"pt": "Invisível", "en": "Invisible"},
-  "cdx_traco_divide": {"pt": "Divide-se", "en": "Splits"},
-  "cdx_traco_bando_de": {"pt": "Bando de {a} a {b}", "en": "Pack of {a} to {b}"},
-  "cdx_traco_bando": {"pt": "Vem em bando", "en": "Comes in packs"},
-  "cdx_traco_escudo": {"pt": "Escudo", "en": "Shield"},
-  "cdx_traco_grande": {"pt": "Grande", "en": "Large"},
-  "cdx_traco_miudo": {"pt": "Miúdo", "en": "Runt"},
-
-  "cdx_cond_onda": {"pt": "Chegue à onda {n} nesta corrida.", "en": "Reach wave {n} in this run."},
-  "cdx_cond_onda_maxima": {"pt": "Alcance a onda {n} nesta ascensão.", "en": "Reach wave {n} in this ascension."},
-  "cdx_cond_onda_maxima_global": {"pt": "Alcance a onda {n} alguma vez.", "en": "Reach wave {n} at least once."},
-  "cdx_cond_ondas_completas": {"pt": "Limpe {n} ondas no total.", "en": "Clear {n} waves in total."},
-  "cdx_cond_inimigos_mortos": {"pt": "Abata {n} inimigos.", "en": "Kill {n} enemies."},
-  "cdx_cond_chefes_mortos": {"pt": "Derrote {n} chefes.", "en": "Defeat {n} bosses."},
-  "cdx_cond_inimigo_tipo": {"pt": "Abata {n} do tipo {nome}.", "en": "Kill {n} of type {nome}."},
-  "cdx_cond_nivel": {"pt": "Chegue ao nível {n}.", "en": "Reach level {n}."},
-  "cdx_cond_mortes": {"pt": "Perca a torre {n} vez(es). Vai acontecer.", "en": "Lose the tower {n} time(s). It will happen."},
-  "cdx_cond_ouro_total": {"pt": "Acumule {n} de ouro no total.", "en": "Bank {n} gold in total."},
-  "cdx_cond_dano_maximo": {"pt": "Dê um golpe de {n} de dano.", "en": "Land a single hit for {n} damage."},
-  "cdx_cond_tempo_total": {"pt": "Some {n} de jogo.", "en": "Rack up {n} of playtime."},
-  "cdx_cond_ascensoes": {"pt": "Ascenda {n} vez(es).", "en": "Ascend {n} time(s)."},
-  "cdx_cond_singularidades": {"pt": "Colapse {n} vez(es).", "en": "Collapse {n} time(s)."},
-  "cdx_cond_transcendencias": {"pt": "Transcenda {n} vez(es).", "en": "Transcend {n} time(s)."},
-  "cdx_cond_cartas": {"pt": "Tenha {n} cartas no inventário.", "en": "Hold {n} cards in your inventory."},
-  "cdx_cond_lendarios": {"pt": "Ganhe {n} carta(s) lendária(s).", "en": "Earn {n} legendary card(s)."},
-  "cdx_cond_relicas": {"pt": "Possua {n} relíquia(s).", "en": "Own {n} relic(s)."},
-  "cdx_cond_conquistas": {"pt": "Desbloqueie {n} conquistas.", "en": "Unlock {n} achievements."},
-  "cdx_cond_desafios": {"pt": "Complete {n} desafio(s).", "en": "Complete {n} challenge(s)."},
-  "cdx_cond_criticos": {"pt": "Acerte {n} críticos.", "en": "Land {n} critical hits."},
-  "cdx_cond_tiros": {"pt": "Dispare {n} tiros.", "en": "Fire {n} shots."},
-  "cdx_cond_combo": {"pt": "Chegue a um combo de {n}.", "en": "Hit a combo of {n}."},
-  "cdx_cond_padrao": {"pt": "Continue jogando. A Torre avisa quando achar apropriado.", "en": "Just keep playing. The Tower will let you know when it sees fit."}
+  "cdx_aba_bestiario": {
+    "pt": "Bestiário",
+    "en": "Bestiary"
+  },
+  "cdx_aba_chefes": {
+    "pt": "Chefes",
+    "en": "Bosses"
+  },
+  "cdx_aba_historia": {
+    "pt": "História",
+    "en": "Story"
+  },
+  "cdx_dica_progresso": {
+    "pt": "Quanto do arquivo você já preencheu.",
+    "en": "How much of the archive you have filled in."
+  },
+  "cdx_outra": {
+    "pt": "Outra",
+    "en": "Another"
+  },
+  "cdx_outra_dica": {
+    "pt": "Sorteia outra dica do arquivo.",
+    "en": "Draws another tip from the archive."
+  },
+  "cdx_dicas_vazias": {
+    "pt": "O arquivo de dicas está vazio. Improvise.",
+    "en": "The tip archive is empty. Improvise."
+  },
+  "cdx_sem_criaturas": {
+    "pt": "Nenhuma criatura catalogada — os dados não carregaram.",
+    "en": "No creatures catalogued — the data never loaded."
+  },
+  "cdx_variantes_elite": {
+    "pt": "Variantes de elite",
+    "en": "Elite variants"
+  },
+  "cdx_variantes_elite_dica": {
+    "pt": "Qualquer inimigo pode vir com uma destas marcas — vale mais e incomoda mais.",
+    "en": "Any enemy can show up wearing one of these marks — worth more, annoys more."
+  },
+  "cdx_tile_abates": {
+    "pt": "{nome} — {n} abate(s).",
+    "en": "{nome} — {n} kill(s)."
+  },
+  "cdx_nao_catalogado": {
+    "pt": "Ainda não catalogado. Derrote um para abrir a ficha.",
+    "en": "Not catalogued yet. Kill one to open its file."
+  },
+  "cdx_escolha_criatura": {
+    "pt": "Escolha uma criatura na grade para abrir a ficha.",
+    "en": "Pick a creature from the grid to open its file."
+  },
+  "cdx_especime_nao_catalogado": {
+    "pt": "Espécime não catalogado",
+    "en": "Uncatalogued specimen"
+  },
+  "cdx_falta_chefe": {
+    "pt": "A Torre só registra o que morre na frente dela. Derrote um chefe destes para abrir esta ficha.",
+    "en": "The Tower only records what dies in front of it. Kill one of these bosses to open this file."
+  },
+  "cdx_falta_inimigo": {
+    "pt": "A Torre só registra o que morre na frente dela. Derrote um destes para abrir esta ficha.",
+    "en": "The Tower only records what dies in front of it. Kill one of these to open this file."
+  },
+  "cdx_onde_procurar": {
+    "pt": "Onde procurar",
+    "en": "Where to look"
+  },
+  "cdx_derrotado": {
+    "pt": "DERROTADO",
+    "en": "DEFEATED"
+  },
+  "cdx_dica_abates": {
+    "pt": "Quantos deste tipo você já derrubou.",
+    "en": "How many of this type you have put down."
+  },
+  "cdx_m_vida": {
+    "pt": "Vida",
+    "en": "HP"
+  },
+  "cdx_m_velocidade": {
+    "pt": "Velocidade",
+    "en": "Speed"
+  },
+  "cdx_mult_vida": {
+    "pt": "Multiplicador sobre a vida-base da onda.",
+    "en": "Multiplier on the wave's base HP."
+  },
+  "cdx_mult_ouro": {
+    "pt": "Multiplicador sobre o ouro-base da onda.",
+    "en": "Multiplier on the wave's base gold."
+  },
+  "cdx_mult_velocidade": {
+    "pt": "Multiplicador sobre a velocidade-base da onda.",
+    "en": "Multiplier on the wave's base speed."
+  },
+  "cdx_comportamento": {
+    "pt": "Comportamento",
+    "en": "Behavior"
+  },
+  "cdx_habilidade_especial": {
+    "pt": "Habilidade especial",
+    "en": "Special ability"
+  },
+  "cdx_mecanica_chefe": {
+    "pt": "Mecânica de chefe",
+    "en": "Boss mechanic"
+  },
+  "cdx_arquivo": {
+    "pt": "Arquivo",
+    "en": "Archive"
+  },
+  "cdx_dica": {
+    "pt": "Dica",
+    "en": "Tip"
+  },
+  "cdx_abates_um": {
+    "pt": "{n} abate",
+    "en": "{n} kill"
+  },
+  "cdx_abates_n": {
+    "pt": "{n} abates",
+    "en": "{n} kills"
+  },
+  "cdx_arquivo_vazio": {
+    "pt": "Arquivo vazio.",
+    "en": "Empty archive."
+  },
+  "cdx_trancada": {
+    "pt": "Trancada — {cond}",
+    "en": "Locked — {cond}"
+  },
+  "cdx_entrada_selada": {
+    "pt": "Entrada selada",
+    "en": "Sealed entry"
+  },
+  "cdx_escolha_entrada": {
+    "pt": "Escolha uma entrada no índice à esquerda.",
+    "en": "Pick an entry from the index on the left."
+  },
+  "cdx_entrada_de": {
+    "pt": "Entrada {a} de {b}",
+    "en": "Entry {a} of {b}"
+  },
+  "cdx_selada_aviso": {
+    "pt": "A Torre arquivou este documento, mas ainda não o entregou. Ela tem critérios.",
+    "en": "The Tower filed this document but has not handed it over yet. It has standards."
+  },
+  "cdx_progresso_arquivo": {
+    "pt": "Arquivo: {a}/{b} entradas",
+    "en": "Archive: {a}/{b} entries"
+  },
+  "cdx_progresso_chefes": {
+    "pt": "Chefes derrotados: {a}/{b}",
+    "en": "Bosses defeated: {a}/{b}"
+  },
+  "cdx_progresso_catalogados": {
+    "pt": "Catalogados: {a}/{b}",
+    "en": "Catalogued: {a}/{b}"
+  },
+  "cdx_guarda_onda": {
+    "pt": "Guarda a onda {n}",
+    "en": "Guards wave {n}"
+  },
+  "cdx_aparicao_irregular": {
+    "pt": "Aparição irregular",
+    "en": "Shows up off-schedule"
+  },
+  "cdx_a_partir_onda": {
+    "pt": "A partir da onda {n}",
+    "en": "From wave {n} on"
+  },
+  "cdx_mov_chefe_base": {
+    "pt": "Avança devagar e sem desvio — não precisa de pressa.",
+    "en": "Advances slowly and without swerving — it is in no hurry."
+  },
+  "cdx_mov_chefe_fases": {
+    "pt": "Muda de comportamento a cada uma das {n} fases, e cada troca o atordoa por um instante.",
+    "en": "Changes behavior at each of its {n} phases, and every switch stuns it for a moment."
+  },
+  "cdx_mov_direto": {
+    "pt": "Avança em linha reta até a torre. Sem truque, sem hesitação.",
+    "en": "Walks straight at the tower. No tricks, no hesitation."
+  },
+  "cdx_mov_zigue": {
+    "pt": "Serpenteia em zigue-zague — projétil lento erra.",
+    "en": "Weaves in a zigzag — slow projectiles miss."
+  },
+  "cdx_mov_salto": {
+    "pt": "Avança em arcos. Enquanto está no ar, nada o segura.",
+    "en": "Advances in arcs. While airborne, nothing holds it."
+  },
+  "cdx_mov_fantasma": {
+    "pt": "Some e reaparece mais perto. Fica intangível no meio do salto.",
+    "en": "Vanishes and reappears closer. Intangible mid-leap."
+  },
+  "cdx_mov_teleporte": {
+    "pt": "Pisca de um ponto a outro do campo, ignorando o caminho.",
+    "en": "Blinks from point to point across the field, ignoring the path."
+  },
+  "cdx_mov_parar_atirar": {
+    "pt": "Para no alcance e atira na torre em vez de encostar nela.",
+    "en": "Stops at range and shoots the tower instead of touching it."
+  },
+  "cdx_mov_perseguidor": {
+    "pt": "Persegue sem desviar e sem cansar. Corrige a rota o tempo todo.",
+    "en": "Chases without swerving and without tiring. Corrects course the whole way."
+  },
+  "cdx_mov_errante": {
+    "pt": "Trajetória errática, sem lógica aparente — nem para ele.",
+    "en": "Erratic path, no visible logic — not even to itself."
+  },
+  "cdx_mov_passa": {
+    "pt": "Apenas atravessa o campo. Não ataca, não desvia, não olha.",
+    "en": "It just crosses the field. Doesn't attack, doesn't dodge, doesn't look."
+  },
+  "cdx_mov_padrao": {
+    "pt": "Avança em linha reta até a torre.",
+    "en": "Walks straight at the tower."
+  },
+  "cdx_traz_consigo": {
+    "pt": "Traz consigo: {lista}.",
+    "en": "Brings along: {lista}."
+  },
+  "cdx_corpo_segmentos": {
+    "pt": "Corpo em {n} segmentos: cada um cai por vez.",
+    "en": "Body in {n} segments: they fall one at a time."
+  },
+  "cdx_mec_invocar": {
+    "pt": "Invoca reforços entre as fases e deixa que eles gastem seus tiros.",
+    "en": "Summons reinforcements between phases and lets them soak your shots."
+  },
+  "cdx_mec_ninhada": {
+    "pt": "Põe crias mais rápido do que você as mata. A matemática é o chefe real.",
+    "en": "Lays spawn faster than you can kill them. The math is the real boss."
+  },
+  "cdx_mec_onda_choque": {
+    "pt": "Pulsa em ondas de choque que machucam a torre de longe, sem encostar.",
+    "en": "Pulses shockwaves that hurt the tower from afar, without ever touching it."
+  },
+  "cdx_mec_fissuras": {
+    "pt": "Abre fissuras no campo que corroem a sua invulnerabilidade.",
+    "en": "Opens fissures in the field that eat away at your invulnerability."
+  },
+  "cdx_mec_segmentos": {
+    "pt": "Um corpo em vários anéis; enquanto houver anel, há chefe.",
+    "en": "One body in many rings; while a ring stands, the boss stands."
+  },
+  "cdx_mec_refletir": {
+    "pt": "Devolve ao atirador o dano que não for crítico.",
+    "en": "Returns any non-critical damage to the shooter."
+  },
+  "cdx_mec_escudo_regen": {
+    "pt": "Recupera escudo se ficar mais de um segundo e meio sem levar dano.",
+    "en": "Regains shield if it goes more than a second and a half without taking damage."
+  },
+  "cdx_mec_teleporte_drenar": {
+    "pt": "Teleporta para o colo da torre, drena vida e volta mais inteiro.",
+    "en": "Teleports into the tower's lap, drains HP and comes back healthier."
+  },
+  "cdx_mec_silenciar": {
+    "pt": "Bloqueia as suas habilidades por 5s a cada 12s. Silêncio é a arma.",
+    "en": "Locks your abilities for 5s every 12s. Silence is the weapon."
+  },
+  "cdx_mec_engolir": {
+    "pt": "Engole projéteis e coletáveis, e engorda com cada gole.",
+    "en": "Swallows projectiles and pickups, and fattens up with every gulp."
+  },
+  "cdx_mec_combinado": {
+    "pt": "Tudo que o Enxame aprendeu, ao mesmo tempo, em fases.",
+    "en": "Everything the Swarm has learned, all at once, in phases."
+  },
+  "cdx_mec_desconhecida": {
+    "pt": "Mecânica desconhecida — o arquivo está incompleto.",
+    "en": "Unknown mechanic — the file is incomplete."
+  },
+  "cdx_hab_curar": {
+    "pt": "Cura os aliados por perto em 6% da vida deles a cada 2s.",
+    "en": "Heals nearby allies for 6% of their HP every 2s."
+  },
+  "cdx_hab_cuspir": {
+    "pt": "Cospe projéteis na torre à distância, sem nunca encostar.",
+    "en": "Spits projectiles at the tower from range, never touching it."
+  },
+  "cdx_hab_explodir": {
+    "pt": "Explode ao morrer e leva a vizinhança junto — inclusive a sua paciência.",
+    "en": "Explodes on death and takes the neighborhood with it — your patience included."
+  },
+  "cdx_hab_roubar_ouro": {
+    "pt": "Recolhe o ouro caído no chão antes de você. Cada moeda dele é sua.",
+    "en": "Picks up dropped gold before you do. Every coin it takes was yours."
+  },
+  "cdx_hab_refletir": {
+    "pt": "Devolve parte do dano não-crítico a quem atirou.",
+    "en": "Returns part of non-critical damage to whoever fired it."
+  },
+  "cdx_hab_grudar": {
+    "pt": "Gruda no casco da torre e drena vida sem pressa nenhuma.",
+    "en": "Sticks to the tower's hull and drains HP in no hurry at all."
+  },
+  "cdx_hab_chocar": {
+    "pt": "Choca a cada 4,5s e solta três crias de Enxame.",
+    "en": "Hatches every 4.5s and drops three Swarmlings."
+  },
+  "cdx_hab_devorar": {
+    "pt": "Engole o ouro do chão, ganha vida e cresce a cada gole.",
+    "en": "Swallows gold off the ground, gains HP and grows with every gulp."
+  },
+  "cdx_hab_mutar": {
+    "pt": "Alterna a cada 3s entre blindado e lento, e rápido e nu.",
+    "en": "Flips every 3s between armored-and-slow and fast-and-bare."
+  },
+  "cdx_hab_ceifar": {
+    "pt": "A cada 5s, salta 120 unidades em direção à torre para ceifar de perto.",
+    "en": "Every 5s it leaps 120 units toward the tower to reap up close."
+  },
+  "cdx_dica_curar": {
+    "pt": "Mate o curandeiro primeiro. Ele desfaz o seu trabalho de graça e sem pressa.",
+    "en": "Kill the healer first. It undoes your work for free, and in no hurry."
+  },
+  "cdx_dica_cuspir": {
+    "pt": "Alcance e velocidade de projétil: ele morre antes de mirar.",
+    "en": "Range and projectile speed: it dies before it can aim."
+  },
+  "cdx_dica_explodir": {
+    "pt": "Mate longe da torre. Ou aceite o troco.",
+    "en": "Kill it far from the tower. Or eat the blast."
+  },
+  "cdx_dica_roubar_ouro": {
+    "pt": "Aumente a coleta — o que está no chão é dele até você pegar.",
+    "en": "Boost your pickup range — what's on the ground belongs to it until you grab it."
+  },
+  "cdx_dica_refletir": {
+    "pt": "Crítico passa reto pelo espelho. Invista em chance crítica.",
+    "en": "Crits go straight through the mirror. Invest in crit chance."
+  },
+  "cdx_dica_grudar": {
+    "pt": "Não deixe encostar: cadência alta e área resolvem antes do abraço.",
+    "en": "Don't let it latch on: high fire rate and splash finish it before the hug."
+  },
+  "cdx_dica_chocar": {
+    "pt": "Dano em área antes que o casulo abra. Depois é limpeza.",
+    "en": "Splash damage before the cocoon opens. After that it's cleanup."
+  },
+  "cdx_dica_devorar": {
+    "pt": "Colete rápido ou negue o banquete — cada moeda o engorda.",
+    "en": "Collect fast or deny the feast — every coin fattens it."
+  },
+  "cdx_dica_mutar": {
+    "pt": "Espere a janela sem armadura; ela chega a cada três segundos.",
+    "en": "Wait for the unarmored window; it comes around every three seconds."
+  },
+  "cdx_dica_ceifar": {
+    "pt": "Empurrões e gelo. Se ele fechar a distância, você já perdeu o turno.",
+    "en": "Knockback and ice. If it closes the gap, you already lost the turn."
+  },
+  "cdx_dica_invisivel": {
+    "pt": "Só aparece quando revelado — leve algo que marque alvos.",
+    "en": "Only shows up once revealed — bring something that marks targets."
+  },
+  "cdx_dica_voa": {
+    "pt": "Voa: nada no chão o atrasa. Cadência resolve melhor que armadilha.",
+    "en": "It flies: nothing on the ground slows it. Fire rate beats traps here."
+  },
+  "cdx_dica_divide": {
+    "pt": "Ele vira dois. Área é o único jeito honesto de fechar a conta.",
+    "en": "It turns into two. Splash is the only honest way to settle the bill."
+  },
+  "cdx_dica_escudo": {
+    "pt": "Quebre o escudo de uma vez; ele volta se você der intervalo.",
+    "en": "Break the shield in one go; it comes back if you give it a breather."
+  },
+  "cdx_dica_armadura": {
+    "pt": "Armadura alta: leve penetração, não orgulho.",
+    "en": "High armor: bring penetration, not pride."
+  },
+  "cdx_dica_passa": {
+    "pt": "Não faz nada com você. Faça você algo com ele — vale ouro.",
+    "en": "It does nothing to you. So do something to it — it pays gold."
+  },
+  "cdx_dica_rapido": {
+    "pt": "Rápido demais para o alcance curto. Congele ou atire mais longe.",
+    "en": "Too fast for short range. Freeze it or shoot from farther out."
+  },
+  "cdx_dica_tanque": {
+    "pt": "Saco de vida: dano bruto e paciência, nesta ordem.",
+    "en": "Bag of HP: raw damage and patience, in that order."
+  },
+  "cdx_dica_comum": {
+    "pt": "Nada de especial. Morre como todo mundo — só precisa de sua vez.",
+    "en": "Nothing special. Dies like everyone else — it just needs its turn."
+  },
+  "cdx_traco_fases": {
+    "pt": "{n} fases",
+    "en": "{n} phases"
+  },
+  "cdx_traco_segmentos": {
+    "pt": "{n} segmentos",
+    "en": "{n} segments"
+  },
+  "cdx_traco_armadura": {
+    "pt": "Armadura {n}",
+    "en": "Armor {n}"
+  },
+  "cdx_traco_superchefe": {
+    "pt": "Superchefe",
+    "en": "Superboss"
+  },
+  "cdx_traco_voa": {
+    "pt": "Voa",
+    "en": "Flies"
+  },
+  "cdx_traco_invisivel": {
+    "pt": "Invisível",
+    "en": "Invisible"
+  },
+  "cdx_traco_divide": {
+    "pt": "Divide-se",
+    "en": "Splits"
+  },
+  "cdx_traco_bando_de": {
+    "pt": "Bando de {a} a {b}",
+    "en": "Pack of {a} to {b}"
+  },
+  "cdx_traco_bando": {
+    "pt": "Vem em bando",
+    "en": "Comes in packs"
+  },
+  "cdx_traco_escudo": {
+    "pt": "Escudo",
+    "en": "Shield"
+  },
+  "cdx_traco_grande": {
+    "pt": "Grande",
+    "en": "Large"
+  },
+  "cdx_traco_miudo": {
+    "pt": "Miúdo",
+    "en": "Runt"
+  },
+  "cdx_cond_onda": {
+    "pt": "Chegue à onda {n} nesta corrida.",
+    "en": "Reach wave {n} in this run."
+  },
+  "cdx_cond_onda_maxima": {
+    "pt": "Alcance a onda {n} nesta ascensão.",
+    "en": "Reach wave {n} in this ascension."
+  },
+  "cdx_cond_onda_maxima_global": {
+    "pt": "Alcance a onda {n} alguma vez.",
+    "en": "Reach wave {n} at least once."
+  },
+  "cdx_cond_ondas_completas": {
+    "pt": "Limpe {n} ondas no total.",
+    "en": "Clear {n} waves in total."
+  },
+  "cdx_cond_inimigos_mortos": {
+    "pt": "Abata {n} inimigos.",
+    "en": "Kill {n} enemies."
+  },
+  "cdx_cond_chefes_mortos": {
+    "pt": "Derrote {n} chefes.",
+    "en": "Defeat {n} bosses."
+  },
+  "cdx_cond_inimigo_tipo": {
+    "pt": "Abata {n} do tipo {nome}.",
+    "en": "Kill {n} of type {nome}."
+  },
+  "cdx_cond_nivel": {
+    "pt": "Chegue ao nível {n}.",
+    "en": "Reach level {n}."
+  },
+  "cdx_cond_mortes": {
+    "pt": "Perca a torre {n} vez(es). Vai acontecer.",
+    "en": "Lose the tower {n} time(s). It will happen."
+  },
+  "cdx_cond_ouro_total": {
+    "pt": "Acumule {n} de ouro no total.",
+    "en": "Bank {n} gold in total."
+  },
+  "cdx_cond_dano_maximo": {
+    "pt": "Dê um golpe de {n} de dano.",
+    "en": "Land a single hit for {n} damage."
+  },
+  "cdx_cond_tempo_total": {
+    "pt": "Some {n} de jogo.",
+    "en": "Rack up {n} of playtime."
+  },
+  "cdx_cond_ascensoes": {
+    "pt": "Ascenda {n} vez(es).",
+    "en": "Ascend {n} time(s)."
+  },
+  "cdx_cond_singularidades": {
+    "pt": "Colapse {n} vez(es).",
+    "en": "Collapse {n} time(s)."
+  },
+  "cdx_cond_transcendencias": {
+    "pt": "Transcenda {n} vez(es).",
+    "en": "Transcend {n} time(s)."
+  },
+  "cdx_cond_cartas": {
+    "pt": "Tenha {n} cartas no inventário.",
+    "en": "Hold {n} cards in your inventory."
+  },
+  "cdx_cond_lendarios": {
+    "pt": "Ganhe {n} carta(s) lendária(s).",
+    "en": "Earn {n} legendary card(s)."
+  },
+  "cdx_cond_relicas": {
+    "pt": "Possua {n} relíquia(s).",
+    "en": "Own {n} relic(s)."
+  },
+  "cdx_cond_conquistas": {
+    "pt": "Desbloqueie {n} conquistas.",
+    "en": "Unlock {n} achievements."
+  },
+  "cdx_cond_desafios": {
+    "pt": "Complete {n} desafio(s).",
+    "en": "Complete {n} challenge(s)."
+  },
+  "cdx_cond_criticos": {
+    "pt": "Acerte {n} críticos.",
+    "en": "Land {n} critical hits."
+  },
+  "cdx_cond_tiros": {
+    "pt": "Dispare {n} tiros.",
+    "en": "Fire {n} shots."
+  },
+  "cdx_cond_combo": {
+    "pt": "Chegue a um combo de {n}.",
+    "en": "Hit a combo of {n}."
+  },
+  "cdx_cond_padrao": {
+    "pt": "Continue jogando. A Torre avisa quando achar apropriado.",
+    "en": "Just keep playing. The Tower will let you know when it sees fit."
+  },
+  "cdx_verdade": {
+    "pt": "O QUE ELE FOI",
+    "en": "WHAT IT USED TO BE"
+  }
 }

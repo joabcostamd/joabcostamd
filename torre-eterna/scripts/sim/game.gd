@@ -590,6 +590,20 @@ func alternar_farm(onda: int = -1) -> bool:
 		s["onda_farm"] = int(s["onda"]) if onda < 0 else onda
 	return bool(s["modo_farm"])
 
+## Liga e desliga o Modo Infinito. Sai do modo Farm ao entrar: travar a onda e
+## nunca parar de avancar sao a mesma decisao tomada em dois sentidos opostos.
+func alternar_infinito() -> bool:
+	if not esp["desbloqueios"].has("modoInfinito"):
+		return false
+	var ligado := not bool(s.get("modo_infinito", false))
+	s["modo_infinito"] = ligado
+	if ligado:
+		s["modo_farm"] = false
+	marcar_sujo()
+	Bus.ui_atualizar.emit(false)
+	Bus.toast(Txt.t("infinito_ligado" if ligado else "infinito_desligado"), "epico", "nova")
+	return ligado
+
 func definir_velocidade(v: float) -> void:
 	var teto := maxf(1.0, float(esp.get("velocidadeMax", 1.0)))
 	velocidade = clampf(v, 1.0, teto)

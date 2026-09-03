@@ -377,6 +377,20 @@ func _mostrar_ficha() -> void:
 		var b3 := _bloco(Txt.t("cdx_arquivo"), "livro", UI.TEXTO2)
 		b3.add_child(_texto_corpo(lore, UI.TEXTO2))
 
+	# --- verdade (Bestiário Verdadeiro) ---
+	# O nó do topo da árvore de Éter prometia isto e não entregava nada. Cada
+	# chefe é uma versão anterior da própria torre; aqui o jogo finalmente diz
+	# QUAL. Só aparece com o nó comprado — é o pagamento da revelação, não uma
+	# curiosidade solta no começo.
+	if jogo.esp["desbloqueios"].has("modoInfinito"):
+		var verdade := txt(def, "verdade")
+		if verdade != "":
+			var bv := _bloco(Txt.t("cdx_verdade"), "prestigio", UI.ACENTO2)
+			var nome_v := txt(def, "verdadeNome")
+			if nome_v != "":
+				bv.add_child(UI.rotulo(nome_v, 16, UI.ACENTO2, true))
+			bv.add_child(_texto_corpo(verdade, UI.TEXTO))
+
 	# --- dica ---
 	var dica := txt(def, "dica")
 	if dica == "":

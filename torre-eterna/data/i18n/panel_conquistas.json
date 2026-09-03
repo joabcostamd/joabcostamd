@@ -1,8 +1,8 @@
 {
   "cqt_desbloqueadas": {"pt": "{a} de {b} desbloqueadas", "en": "{a} of {b} unlocked"},
-  "cqt_dica_barra_total": {"pt": "Progresso geral do mural.", "en": "Overall progress across the wall."},
+  "cqt_dica_barra_total": {"pt": "Progresso geral do mural.", "en": "Overall progress across the whole wall."},
   "cqt_pontos": {"pt": "{a} / {b} pontos", "en": "{a} / {b} points"},
-  "cqt_dica_pontos": {"pt": "Cada conquista vale pontos conforme a dificuldade.", "en": "Each achievement is worth points according to its difficulty."},
+  "cqt_dica_pontos": {"pt": "Cada conquista vale pontos conforme a dificuldade.", "en": "Each achievement is worth points based on its difficulty."},
   "cqt_dica_bonus": {"pt": "A cada 10 pontos de conquista: +0,5% de dano e +0,5% de ouro. Permanente, sobrevive a todo prestígio.", "en": "Every 10 achievement points: +0.5% damage and +0.5% gold. Permanent — it survives every prestige."},
   "cqt_bonus_global": {"pt": "Bônus global: +{n} de dano e de ouro", "en": "Global bonus: +{n} damage and gold"},
 
@@ -14,12 +14,12 @@
   "cqt_nova": {"pt": "NOVA", "en": "NEW"},
   "cqt_dica_nova": {"pt": "Desbloqueada desde a última vez que você abriu este mural.", "en": "Unlocked since the last time you opened this wall."},
   "cqt_dica_barra_oculta": {"pt": "Progresso rumo a algo que você ainda não deveria saber.", "en": "Progress toward something you should not know about yet."},
-  "cqt_dica_oculta": {"pt": "Conquista oculta: nem a meta aparece. A barra mede o quanto falta.", "en": "Hidden achievement: not even the goal shows. The bar measures how far you still are."},
+  "cqt_dica_oculta": {"pt": "Conquista oculta: nem a meta aparece. A barra mede o quanto falta.", "en": "Hidden achievement: not even the goal shows. The bar measures how much is left."},
   "cqt_meta_selada": {"pt": "meta selada", "en": "sealed goal"},
 
   "cqt_recompensa_selada": {"pt": "recompensa selada", "en": "sealed reward"},
   "cqt_dica_rec_selada": {"pt": "O prêmio só aparece quando o registro abrir.", "en": "The prize only shows up once the record opens."},
-  "cqt_dica_rec": {"pt": "Recompensa entregue no instante em que a conquista cai.", "en": "Reward is handed over the instant the achievement lands."},
+  "cqt_dica_rec": {"pt": "Recompensa entregue no instante em que a conquista cai.", "en": "The reward is handed over the instant the achievement lands."},
 
   "cqt_pts": {"pt": "{n} pts", "en": "{n} pts"},
   "cqt_dica_pts": {"pt": "Vale {n} pontos para o bônus global.", "en": "Worth {n} points toward the global bonus."},
@@ -60,13 +60,13 @@
   "cqt_meta_desafios": {"pt": "Complete {n} desafios.", "en": "Complete {n} challenges."},
   "cqt_meta_conquistas": {"pt": "Desbloqueie {n} conquistas.", "en": "Unlock {n} achievements."},
   "cqt_meta_eras": {"pt": "Veja {n} eras diferentes.", "en": "See {n} different eras."},
-  "cqt_meta_moeda": {"pt": "Tenha {n} de {m} guardados.", "en": "Hold {n} {m} in the bank."},
+  "cqt_meta_moeda": {"pt": "Tenha {n} de {m} guardados.", "en": "Have {n} {m} saved up."},
   "cqt_meta_generica": {"pt": "Meta: {n}", "en": "Goal: {n}"},
 
   "cqt_rec_gloria": {"pt": "Só a glória, e os pontos.", "en": "Just the glory. And the points."},
   "cqt_rec_moeda": {"pt": "+{n} {m}", "en": "+{n} {m}"},
-  "cqt_rec_ouro": {"pt": "ouro de {n} ondas", "en": "{n} waves worth of gold"},
-  "cqt_rec_xp": {"pt": "XP de {n} ondas", "en": "{n} waves worth of XP"},
+  "cqt_rec_ouro": {"pt": "ouro de {n} ondas", "en": "{n} waves' worth of gold"},
+  "cqt_rec_xp": {"pt": "XP de {n} ondas", "en": "{n} waves' worth of XP"},
   "cqt_rec_talento_1": {"pt": "+1 ponto de talento", "en": "+1 talent point"},
   "cqt_rec_talento": {"pt": "+{n} pontos de talento", "en": "+{n} talent points"},
   "cqt_rec_stat_mult": {"pt": "{nome} ×{n} permanente", "en": "{nome} ×{n}, permanent"},

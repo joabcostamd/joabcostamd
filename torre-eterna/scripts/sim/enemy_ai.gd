@@ -49,7 +49,11 @@ static func criar(def: Dictionary, onda: int, j, opt: Dictionary = {}) -> Inimig
 	m_hp *= float(opt.get("hp_mult", 1.0))
 	m_esc *= float(opt.get("esc_mult", 1.0))
 
-	var hp: float = Big.mul_f(Bal.hp_onda(onda), m_hp * float(j.mods_dif.get("hpInimigo", 1.0)))
+	# `escala_infinito` devolve 1,0 fora do Modo Infinito — dentro dele, a vida
+	# do inimigo continua subindo por onda, para que "infinito" seja desafio e
+	# não esteira rolante.
+	var m_inf := Bal.escala_infinito(onda, bool(j.s.get("modo_infinito", false)))
+	var hp: float = Big.mul_f(Bal.hp_onda(onda), m_hp * m_inf * float(j.mods_dif.get("hpInimigo", 1.0)))
 	e.hp_max = hp
 	e.hp = hp
 	e.ouro = Big.mul_f(Bal.ouro_onda(onda), m_ouro * float(j.mods_dif.get("ouro", 1.0)))

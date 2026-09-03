@@ -333,6 +333,11 @@ func t_ondas() -> void:
 	ok("chefe a cada 10", Bal.eh_chefe(10) and Bal.eh_chefe(20) and not Bal.eh_chefe(11))
 	ok("super chefe a cada 50", Bal.eh_super_chefe(50) and not Bal.eh_super_chefe(40))
 	ok("contagem sobe", Bal.contagem_onda(60) > Bal.contagem_onda(5))
+	# Modo Infinito: a contagem perde o teto e a vida do inimigo continua subindo.
+	ok("contagem tem teto no modo normal", Bal.contagem_onda(400) == Bal.contagem_onda(200))
+	ok("infinito tira o teto", Bal.contagem_onda(400, true) > Bal.contagem_onda(200, true))
+	ok("infinito escala a vida", Bal.escala_infinito(500, true) > Bal.escala_infinito(100, true))
+	ok("fora do infinito nada muda", perto(Bal.escala_infinito(500, false), 1.0))
 	ok("intervalo tem piso", Bal.intervalo_spawn(9999) >= 0.22)
 
 	# a onda NÃO pode travar quando inimigos alcançam a torre (regressão real)
@@ -783,6 +788,28 @@ func t_habilidades() -> void:
 		if bool(jogo.s["habilidades"][id]["desbloqueada"]):
 			abertas += 1
 	ok("habilidade abre mesmo sem recorde novo", abertas >= 5, str(abertas))
+
+	# O no do topo da arvore de Eter prometia o Modo Infinito e nao tinha nada
+	# por tras dele. Agora tem — e continua trancado sem o desbloqueio.
+	jogo.s["modo_infinito"] = false
+	jogo.esp["desbloqueios"].erase("modoInfinito")
+	ok("infinito trancado sem o no", not jogo.alternar_infinito())
+	jogo.s["desbloqueios"]["modoInfinito"] = true
+	jogo.recalcular()
+	ok("infinito liga com o no", jogo.alternar_infinito())
+	ok("infinito desliga", not jogo.alternar_infinito())
+	jogo.s["desbloqueios"].erase("modoInfinito")
+	jogo.recalcular()
+
+	# Bestiario Verdadeiro: todo chefe precisa saber QUAL torre ele foi, nas
+	# duas linguas. E a revelacao do jogo — chefe sem verdade e um buraco no
+	# pagamento da historia.
+	var sem_verdade: Array = []
+	for b in Dados.chefes + Dados.super_chefes:
+		for campo in ["verdadeNome", "verdadeNomeEn", "verdade", "verdadeEn"]:
+			if str(b.get(campo, "")) == "":
+				sem_verdade.append("%s.%s" % [str(b.get("id", "?")), campo])
+	ok("todo chefe tem Bestiario Verdadeiro", sem_verdade.is_empty(), str(sem_verdade))
 
 	var s: Dictionary = jogo.s
 	s["onda_maxima_global"] = 200

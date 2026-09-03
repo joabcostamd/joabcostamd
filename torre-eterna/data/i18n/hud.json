@@ -42,5 +42,17 @@
   "hud_velocidade_trancada": {
     "pt": "Desbloqueie Aceleração na árvore de Fragmentos",
     "en": "Unlock Acceleration in the Fragment tree"
+  },
+  "hud_farm": {
+    "pt": "FARM",
+    "en": "FARM"
+  },
+  "hud_infinito": {
+    "pt": "INFINITO",
+    "en": "INFINITE"
+  },
+  "hud_infinito_dica": {
+    "pt": "Modo Infinito — as ondas não param",
+    "en": "Infinite Mode — the waves never stop"
   }
 }

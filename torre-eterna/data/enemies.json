@@ -514,7 +514,11 @@
       "lore": "A primeira coisa que o Enxame construiu quando aprendeu a odiar.",
       "loreEn": "The first thing the Swarm built when it learned to hate.",
       "dica": "Chame perfuração: a armadura dele engole dano bruto.",
-      "dicaEn": "Bring penetration: its armor swallows raw damage."
+      "dicaEn": "Bring penetration: its armor swallows raw damage.",
+      "verdadeNome": "Torre 4.912",
+      "verdadeNomeEn": "Tower 4,912",
+      "verdade": "Blindaram tudo. Não sobrou peso para a arma. Ela aguentou onze anos sem matar nada.",
+      "verdadeEn": "They armored everything. No weight left for the gun. It held out eleven years without killing a thing."
     },
     {
       "id": "rainha_enxame",
@@ -534,7 +538,11 @@
       "lore": "Põe mais do que você mata. A matemática é o boss real.",
       "loreEn": "Lays faster than you kill. The math is the real boss.",
       "dica": "Dano em área resolve a ninhada antes que ela cresça.",
-      "dicaEn": "Area damage clears the brood before it grows."
+      "dicaEn": "Area damage clears the brood before it grows.",
+      "verdadeNome": "Torre 118",
+      "verdadeNomeEn": "Tower 118",
+      "verdade": "Aprendeu a se copiar para não morrer sozinha. Deu certo. Foi o pior que podia dar.",
+      "verdadeEn": "It learned to copy itself so it would not die alone. It worked. That was the worst possible outcome."
     },
     {
       "id": "nucleo_instavel",
@@ -551,7 +559,11 @@
       "lore": "Pulsa. A cada pulso, a arena inteira treme — e sua torre sente.",
       "loreEn": "It pulses. Every pulse, the arena shakes.",
       "dica": "Vida e armadura da torre importam aqui; o dano é inevitável.",
-      "dicaEn": "Tower health and armor matter here; the damage is unavoidable."
+      "dicaEn": "Tower health and armor matter here; the damage is unavoidable.",
+      "verdadeNome": "Torre 7.006",
+      "verdadeNomeEn": "Tower 7,006",
+      "verdade": "Guardou carga demais para uma Purga que nunca soltou. Ainda está soltando.",
+      "verdadeEn": "It stored too much charge for a Purge it never released. It is still releasing it."
     },
     {
       "id": "arauto_vazio",
@@ -568,7 +580,11 @@
       "lore": "Abre buracos onde a realidade fica mais fina.",
       "loreEn": "Opens holes where reality runs thin.",
       "dica": "Fique atento: as fissuras amplificam o dano que VOCÊ recebe.",
-      "dicaEn": "Watch out: the rifts amplify the damage YOU take."
+      "dicaEn": "Watch out: the rifts amplify the damage YOU take.",
+      "verdadeNome": "Torre 33",
+      "verdadeNomeEn": "Tower 33",
+      "verdade": "Foi a primeira a olhar para fora do mapa. Voltou com o mapa rasgado.",
+      "verdadeEn": "The first to look past the edge of the map. It came back with the map torn."
     },
     {
       "id": "serpente",
@@ -586,7 +602,11 @@
       "lore": "Um corpo, oito alvos. Corte a cauda e ela encurta.",
       "loreEn": "One body, eight targets.",
       "dica": "Perfuração e ricochete cortam vários segmentos de uma vez.",
-      "dicaEn": "Piercing and ricochet cut through several segments at once."
+      "dicaEn": "Piercing and ricochet cut through several segments at once.",
+      "verdadeNome": "Torres 2.400 a 2.406",
+      "verdadeNomeEn": "Towers 2,400 through 2,406",
+      "verdade": "Sete torres que se soldaram numa fila para dobrar a esquina. Nenhuma queria ser a cabeça.",
+      "verdadeEn": "Seven towers welded into a line to turn a corner. None of them wanted to be the head."
     },
     {
       "id": "guardiao_espelho",
@@ -603,7 +623,11 @@
       "lore": "Devolve 30% do dano não-crítico. Críticos passam inteiros.",
       "loreEn": "Reflects 30% of non-crit damage.",
       "dica": "Invista em chance crítica antes desta luta.",
-      "dicaEn": "Invest in crit chance before this fight."
+      "dicaEn": "Invest in crit chance before this fight.",
+      "verdadeNome": "Torre 999",
+      "verdadeNomeEn": "Tower 999",
+      "verdade": "Copiava o inimigo para prever o golpe. Copiou você. Já sabe o que você vai fazer.",
+      "verdadeEn": "It copied the enemy to predict the blow. It copied you. It already knows what you will do."
     },
     {
       "id": "colmeia",
@@ -624,7 +648,11 @@
       "lore": "O escudo volta se você parar. Não pare.",
       "loreEn": "The shield returns if you stop. Don't stop.",
       "dica": "DPS sustentado vence; picos isolados são desperdiçados.",
-      "dicaEn": "Sustained DPS wins; isolated spikes are wasted."
+      "dicaEn": "Sustained DPS wins; isolated spikes are wasted.",
+      "verdadeNome": "Torre 12",
+      "verdadeNomeEn": "Tower 12",
+      "verdade": "A mais velha que ainda anda. Carrega dentro dela tudo que já tentou defender.",
+      "verdadeEn": "The oldest one still walking. It carries inside it everything it ever tried to defend."
     },
     {
       "id": "ceifador_almas",
@@ -641,7 +669,11 @@
       "lore": "Teleporta para cima da torre e bebe. Cada gole cura ele.",
       "loreEn": "Teleports onto the tower and drinks.",
       "dica": "Habilidades de atordoamento cancelam a drenagem.",
-      "dicaEn": "Stun abilities cancel the drain."
+      "dicaEn": "Stun abilities cancel the drain.",
+      "verdadeNome": "Torre 5.550",
+      "verdadeNomeEn": "Tower 5,550",
+      "verdade": "Descobriu que dá para tirar carga de outra torre. Nunca mais precisou de ouro.",
+      "verdadeEn": "It found out you can drain charge from another tower. It never needed gold again."
     },
     {
       "id": "o_silencio",
@@ -658,7 +690,11 @@
       "lore": "Enquanto ele existe, suas habilidades não.",
       "loreEn": "While it exists, your abilities do not.",
       "dica": "Ganhe a luta com estatísticas passivas, não com botões.",
-      "dicaEn": "Win this one with passive stats, not with buttons."
+      "dicaEn": "Win this one with passive stats, not with buttons.",
+      "verdadeNome": "Torre 1",
+      "verdadeNomeEn": "Tower 1",
+      "verdade": "A primeira. Desligou as próprias habilidades para durar mais. Durou. Não serve para mais nada.",
+      "verdadeEn": "The first one. It shut down its own abilities to last longer. It lasted. It is good for nothing else."
     },
     {
       "id": "devorador_mundos",
@@ -675,7 +711,11 @@
       "lore": "Cada moeda que ele engole vira vida. Colete antes dele.",
       "loreEn": "Every coin it swallows becomes health.",
       "dica": "Aumente o raio de coleta ou perca a corrida pelo ouro.",
-      "dicaEn": "Raise your pickup radius or lose the race for the gold."
+      "dicaEn": "Raise your pickup radius or lose the race for the gold.",
+      "verdadeNome": "Torre 60.000",
+      "verdadeNomeEn": "Tower 60,000",
+      "verdade": "Absorveu as outras para ficar forte. Funcionou tão bem que não sobrou o que defender.",
+      "verdadeEn": "It absorbed the others to grow strong. It worked so well there was nothing left to defend."
     }
   ],
   "superChefes": [
@@ -700,7 +740,11 @@
         "coloso",
         "voador",
         "enxame"
-      ]
+      ],
+      "verdadeNome": "Todas elas ao mesmo tempo",
+      "verdadeNomeEn": "All of them at once",
+      "verdade": "O que sobra quando as versões param de se distinguir. Ele não lembra de ter sido alguém.",
+      "verdadeEn": "What is left when the versions stop telling each other apart. It does not remember being anyone."
     },
     {
       "id": "trono_vazio",
@@ -723,7 +767,11 @@
         "coloso",
         "voador",
         "enxame"
-      ]
+      ],
+      "verdadeNome": "Você",
+      "verdadeNomeEn": "You",
+      "verdade": "O lugar onde a sua torre vai estar quando a próxima chegar aqui. Está vazio porque você ainda está nele.",
+      "verdadeEn": "The place your tower will be standing when the next one arrives. It is empty because you are still in it."
     }
   ]
 }

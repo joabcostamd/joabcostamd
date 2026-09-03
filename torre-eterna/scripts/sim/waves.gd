@@ -20,7 +20,7 @@ func iniciar_onda(n: int) -> void:
 	s["mortos_na_onda"] = 0
 	s["tempo_na_onda"] = 0.0
 	s["em_chefe"] = Bal.eh_chefe(n)
-	s["necessarios"] = 1 if bool(s["em_chefe"]) else Bal.contagem_onda(n)
+	s["necessarios"] = 1 if bool(s["em_chefe"]) else Bal.contagem_onda(n, bool(s.get("modo_infinito", false)))
 	spawnados = 0
 	cd_spawn = 0.25
 	chefe_atual = null
@@ -98,7 +98,12 @@ func concluir() -> void:
 	j.recompensa_de_onda(int(s["onda"]))
 	Bus.onda_limpa.emit(int(s["onda"]), float(s["tempo_na_onda"]))
 	estado = "intervalo"
-	timer = 1.6 if bool(s["em_chefe"]) else intervalo_entre_ondas
+	# No Modo Infinito não existe respiro entre ondas: a próxima começa no
+	# quadro seguinte e o combate nunca para.
+	if bool(s.get("modo_infinito", false)):
+		timer = 0.0
+	else:
+		timer = 1.6 if bool(s["em_chefe"]) else intervalo_entre_ondas
 	chefe_atual = null
 
 func reiniciar_onda(penalidade: int = 1) -> void:

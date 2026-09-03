@@ -32,6 +32,7 @@ var rotulos_adapt := {}
 var botoes_painel := {}
 var lbl_velocidade: Label
 var b_mira: Button
+var b_infinito: Button
 var aviso_pontos: Label
 var ic_pontos: Control
 
@@ -253,6 +254,10 @@ func _construir() -> void:
 	b_mira = _botao_com_icone("alvo", Txt.t("mira"), UI.VERDE, _alternar_mira)
 	acoes.add_child(b_mira)
 	_atualizar_dica_mira()
+	# O Modo Infinito era prometido pelo no do topo da arvore de Eter e nao tinha
+	# porta nenhuma no jogo. Agora tem: o botao so aparece quando o no e comprado.
+	b_infinito = _botao_com_icone("nova", Txt.t("hud_infinito_dica"), UI.ACENTO2, _alternar_infinito)
+	acoes.add_child(b_infinito)
 	acoes.add_child(_botao_com_icone("salvar", Txt.t("salvar_agora") + " (F5)", UI.TEXTO2, func(): jogo.salvar(); Bus.toast(Txt.t("jogo_salvo"), "bom")))
 
 	# a Purga fica à esquerda da barra de habilidades, com destaque próprio
@@ -372,7 +377,9 @@ func _atualizar_lento() -> void:
 	var onda := int(s["onda"])
 	lbl_onda.text = "%s %d" % [Txt.t("onda"), onda]
 	if bool(s["modo_farm"]):
-		lbl_onda.text += "  · FARM"
+		lbl_onda.text += "  · " + Txt.t("hud_farm")
+	if bool(s.get("modo_infinito", false)):
+		lbl_onda.text += "  · " + Txt.t("hud_infinito")
 	var nec := maxi(1, int(s["necessarios"]))
 	barra_onda.value = clampf(float(s["mortos_na_onda"]) / float(nec), 0.0, 1.0)
 	if bool(s["em_chefe"]):
@@ -432,6 +439,11 @@ func _atualizar_lento() -> void:
 	_atualizar_buffs()
 	_atualizar_adaptacao()
 	botoes_painel["talentos"].modulate = UI.OURO if pts > 0 else Color.WHITE
+	# O botão do Modo Infinito só existe depois que o nó do topo da árvore de
+	# Éter é comprado: antes disso ele seria uma promessa vazia no rodapé.
+	if b_infinito != null:
+		b_infinito.visible = jogo.esp["desbloqueios"].has("modoInfinito")
+		b_infinito.modulate = UI.ACENTO2 if bool(jogo.s.get("modo_infinito", false)) else Color.WHITE
 
 ## Mostra só os elementos em que o Enxame já criou resistência.
 func _atualizar_adaptacao() -> void:
@@ -498,6 +510,10 @@ func _alternar_velocidade() -> void:
 	jogo.definir_velocidade(nova)
 	if teto <= 1.0:
 		Bus.toast(Txt.t("hud_velocidade_trancada"), "info", "velocidade")
+
+func _alternar_infinito() -> void:
+	if not jogo.alternar_infinito():
+		Bus.toast(Txt.t("infinito_trancado"), "info", "cadeado")
 
 func _alternar_mira() -> void:
 	var modos: Array = TorreSim.MODOS_MIRA

@@ -1,15 +1,15 @@
 {
-  "prg_sem_camadas": {"pt": "Nenhuma camada de prestígio catalogada — o ciclo ainda não existe.", "en": "No prestige layer catalogued — the cycle doesn't exist yet."},
+  "prg_sem_camadas": {"pt": "Nenhuma camada de prestígio catalogada — o ciclo ainda não existe.", "en": "No prestige layers catalogued — the cycle doesn't exist yet."},
 
-  "prg_dica_moeda": {"pt": "Moeda permanente — sobrevive a qualquer reinício desta camada.", "en": "Permanent currency — it survives any reset of this layer."},
+  "prg_dica_moeda": {"pt": "Moeda permanente — sobrevive a qualquer reinício desta camada.", "en": "Permanent currency — survives any reset of this layer."},
   "prg_dica_ascensoes": {"pt": "Quantas vezes a torre já virou pó.", "en": "How many times the tower has turned to dust."},
-  "prg_dica_melhor": {"pt": "A onda mais distante que você já alcançou, em qualquer run.", "en": "The furthest wave you have ever reached, in any run."},
+  "prg_dica_melhor": {"pt": "A onda mais distante que você já alcançou, em qualquer run.", "en": "The furthest wave you've ever reached, in any run."},
   "prg_singularidades": {"pt": "singularidades", "en": "singularities"},
   "prg_dica_singularidades": {"pt": "Colapsos concluídos.", "en": "Collapses completed."},
   "prg_transcendencias": {"pt": "transcendências", "en": "transcendences"},
   "prg_dica_transcendencias": {"pt": "Vezes que você largou tudo e recomeçou de propósito.", "en": "Times you dropped everything and started over on purpose."},
 
-  "prg_ganho_ao": {"pt": "GANHO PREVISTO AO {v}", "en": "PROJECTED GAIN ON {v}"},
+  "prg_ganho_ao": {"pt": "GANHO PREVISTO AO {v}", "en": "PROJECTED GAIN IF YOU {v}"},
   "prg_fora_alcance": {"pt": "AINDA FORA DE ALCANCE", "en": "STILL OUT OF REACH"},
   "prg_tip_ritual": {"pt": "{req}\n\nPerde: {perde}\nMantém: {mantem}", "en": "{req}\n\nLose: {perde}\nKeep: {mantem}"},
   "prg_recomeca": {"pt": "e recomeça mais forte", "en": "and start over stronger"},
@@ -29,7 +29,7 @@
   "prg_dica_x1": {"pt": "Compra um nível.", "en": "Buys one level."},
   "prg_bt_max": {"pt": "Máx", "en": "Max"},
   "prg_bt_max_n": {"pt": "Máx ×{n}", "en": "Max ×{n}"},
-  "prg_dica_max": {"pt": "Compra tudo o que a moeda pagar.", "en": "Buys everything the currency can pay for."},
+  "prg_dica_max": {"pt": "Compra tudo o que a moeda pagar.", "en": "Buys as many levels as you can afford."},
   "prg_nv": {"pt": "Nv {n}", "en": "Lv {n}"},
   "prg_nv_de": {"pt": "Nv {n} de {m}", "en": "Lv {n} of {m}"},
   "prg_ja_maximo": {"pt": "Já no máximo.", "en": "Already maxed."},
@@ -51,7 +51,7 @@
 
   "prg_req_onda_run": {"pt": "Onda máxima desta run", "en": "Best wave this run"},
   "prg_req_onda_global": {"pt": "Melhor onda de todas", "en": "Best wave ever"},
-  "prg_req_ascensoes": {"pt": "Ascensões acumuladas", "en": "Ascensions banked"},
+  "prg_req_ascensoes": {"pt": "Ascensões acumuladas", "en": "Total ascensions"},
   "prg_req_singularidades": {"pt": "Singularidades", "en": "Singularities"},
 
   "prg_desbloqueia": {"pt": "desbloqueia {v}", "en": "unlocks {v}"},
@@ -63,7 +63,7 @@
   "prg_esp_offline_eficiencia": {"pt": "eficiência offline", "en": "offline efficiency"},
   "prg_esp_combo_teto": {"pt": "teto de combo", "en": "combo cap"},
   "prg_esp_combo_bonus": {"pt": "bônus de combo", "en": "combo bonus"},
-  "prg_esp_velocidade_max": {"pt": "limite de velocidade", "en": "speed limit"},
+  "prg_esp_velocidade_max": {"pt": "limite de velocidade", "en": "max game speed"},
   "prg_esp_slots_habilidade": {"pt": "slots de habilidade", "en": "ability slots"},
   "prg_esp_revives": {"pt": "renascimentos", "en": "revives"},
   "prg_esp_rerolls": {"pt": "rerrolagens", "en": "rerolls"},
