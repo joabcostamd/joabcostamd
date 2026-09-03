@@ -149,16 +149,27 @@ continuavam escuros no tema claro).
 Cada capítulo tinge o brilho do fundo com um tom próprio, em opacidade muito
 baixa: dá identidade sem competir com a leitura da grade.
 
-## 7c. O que ficou de fora, de propósito
+## 7c. Idiomas, fonte e salvamento
 
-Registrado para não parecer esquecimento:
+- **21 idiomas**, servidos pelo sistema de tradução do próprio Godot a partir
+  de `traducoes/textos.csv`, gerado de `ferramentas/idiomas.py`.
+- **Fonte**: Nunito (latino, cirílico, grego, vietnamita) com Noto Sans JP, KR
+  e SC como reserva por glifo. As CJK foram subsetadas para os glifos usados —
+  21 MB viraram 188 KB, e o pacote inteiro de fontes tem 444 KB.
+- **Salvamento**: grava em `user://`, que as lojas sincronizam sozinhas. O que
+  o jogo resolve por conta é o conflito: a mescla fica com o melhor resultado
+  de cada fase, nunca com um lado inteiro. Há também exportação por código.
+- **Partida interrompida**: sair no meio de um 25×25 e perder o trabalho seria
+  o pior defeito possível aqui. O andamento é guardado e volta idêntico.
 
-- **Salvamento em nuvem e conquistas de plataforma**: as conquistas existem no
-  jogo; ligá-las a uma loja exige o SDK dela.
-- **Tradução**: os textos estão em português, escritos direto nas telas. Uma
-  publicação internacional pediria uma tabela de textos.
-- **Controle e navegação por teclado nos menus**: hoje o jogo é de mouse e
-  teclado na partida; os menus ainda não têm foco navegável completo.
+## 7d. O que ainda falta para publicar
+
+- **Conquistas de plataforma**: existem no jogo, mas ligá-las a uma loja exige
+  o SDK dela.
+- **Navegação por controle e por teclado nos menus**: a partida tem atalhos;
+  os menus ainda dependem do mouse.
+- **Revisão nativa das traduções**: foram escritas a partir do português e não
+  passaram por falantes nativos.
 
 ## 8. Áudio
 

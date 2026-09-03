@@ -11,6 +11,7 @@ import sys
 import solucionador as S
 from catalogo_arte import DESENHOS
 import arte_cap1, arte_cap2, arte_cap3, arte_cap4, arte_cap5  # noqa: F401  (registram os desenhos)
+import arte_extra1, arte_extra2, arte_extra3, arte_extra4, arte_extra5  # noqa: F401
 
 CAPITULOS = [
     (5, "Primeiros traços", "Cinco por cinco. Aprendendo a ler os números."),
@@ -54,6 +55,17 @@ def main():
             "densidade": r["densidade"],
             "tempo_alvo": tempo_alvo(largura, r["dificuldade"]),
         })
+
+    # Com 400 fases, nomes repetem entre capítulos. Em vez de renomear tudo à
+    # mão, o segundo "Coruja" vira "Coruja II", o terceiro "Coruja III".
+    ROMANOS = ["", " II", " III", " IV", " V", " VI"]
+    vistos = {}
+    for f in fases:
+        base = f["nome"]
+        quantos = vistos.get(base, 0)
+        vistos[base] = quantos + 1
+        if quantos:
+            f["nome"] = base + ROMANOS[min(quantos, len(ROMANOS) - 1)]
 
     if problemas:
         print("AUDITORIA REPROVOU:")

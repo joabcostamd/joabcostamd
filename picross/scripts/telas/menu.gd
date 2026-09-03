@@ -14,6 +14,14 @@ func _ready() -> void:
     coluna.add_child(Estilo.legenda(tr("JOGO_LEMA"), 19))
     coluna.add_child(_espaco(28))
 
+    var guardada := Progresso.fase_da_partida()
+    if guardada > 0 and not Progresso.resolvida(guardada):
+        var retomar := Estilo.botao("%s  ·  %s %d" % [tr("JOGO_RETOMAR"), tr("JOGO_FASE"), guardada])
+        retomar.pressed.connect(func():
+            Audio.tocar("clique")
+            Navegacao.ir_para("jogo", {"fase": guardada}))
+        coluna.add_child(retomar)
+
     var pendente := _primeira_pendente()
     if Progresso.total_resolvidas() > 0 and pendente > 0:
         var continuar := Estilo.botao("%s  ·  %s %d" % [tr("MENU_CONTINUAR"), tr("JOGO_FASE"), pendente])

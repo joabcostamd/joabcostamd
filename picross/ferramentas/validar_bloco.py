@@ -3,6 +3,7 @@ import sys
 import solucionador as S
 from catalogo_arte import DESENHOS
 import arte_cap1, arte_cap2, arte_cap3, arte_cap4, arte_cap5  # noqa: F401
+import arte_extra1, arte_extra2, arte_extra3, arte_extra4, arte_extra5  # noqa: F401
 
 problemas = 0
 for i, d in enumerate(DESENHOS):

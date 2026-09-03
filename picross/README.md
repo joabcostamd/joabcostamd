@@ -14,12 +14,15 @@ godot                 # abre o editor / joga
 
 ## O que tem dentro
 
-- **200 fases** em 5 capítulos: 20 de 5×5, 40 de 10×10, 50 de 15×15, 50 de 20×20 e 40 de 25×25
+- **400 fases** em 5 capítulos: 40 de 5×5, 80 de 10×10, 100 de 15×15, 100 de 20×20 e 80 de 25×25
 - **14 telas e estados**: abertura, menu, capítulos, seleção de fases, jogo,
   pausa, derrota, revelação, galeria, imagem ampliada, conquistas,
   estatísticas, opções e créditos
+- **21 idiomas**, com fonte que cobre todos eles
 - **Tema claro e escuro**, mais duas paletas de alto contraste
-- **16 conquistas** e uma tela de estatísticas
+- **16 conquistas** com aviso na tela, e estatísticas
+- **Retoma a partida** de onde você parou, mesmo fechando o jogo
+- **Mescla de salvamentos** entre aparelhos, sem perder progresso
 - **Progresso salvo** em `user://progresso.save`, com estrelas e melhor tempo
 - **Áudio sintetizado por código** — nenhum arquivo de som no repositório
 - **Resposta em tudo**: botões que reagem ao toque, células que estalam ao
@@ -52,6 +55,31 @@ com as mesmas pistas, que aceitam duas leituras.
 Errar custa uma vida; três erros encerram a partida. Quem preferir sem
 pressão liga o **modo relaxado** nas opções.
 
+## Idiomas
+
+Interface em 21 idiomas: português, inglês, espanhol, francês, alemão,
+italiano, holandês, polonês, sueco, dinamarquês, norueguês, finlandês, tcheco,
+húngaro, romeno, turco, russo, ucraniano, japonês, coreano e chinês.
+
+O texto vem de `traducoes/textos.csv`. Para acrescentar um idioma, edite
+`ferramentas/idiomas.py` e rode `python3 ferramentas/gerar_traducoes.py`.
+
+Tipografia: Nunito para alfabeto latino, cirílico e grego, com Noto Sans JP,
+KR e SC como reserva. O Godot troca de fonte por glifo, então frases mistas
+saem corretas. As fontes CJK foram subsetadas para os glifos que o jogo usa:
+21 MB viraram 188 KB.
+
+## Salvamento
+
+O jogo grava em `user://progresso.save`, que é a pasta sincronizada
+automaticamente por Steam Cloud e equivalentes quando o jogo é publicado com
+essa opção ligada.
+
+A parte que costuma dar errado — dois aparelhos com progressos diferentes —
+está resolvida: a mescla nunca escolhe um lado inteiro, fica com o melhor
+resultado **de cada fase** (mais estrelas; em empate, menor tempo). A tela de
+salvamento também gera um código para levar o progresso à mão.
+
 ## Estrutura
 
 ```
@@ -72,11 +100,11 @@ fases inteiras sem abrir janela.
 ```
 ── auditoria dos puzzles ──
 SOLUCIONADOR OK              12 testes
-200 desenhos, 0 com problema
+400 desenhos, 0 com problema
 ── núcleo do jogo ──
-NÚCLEO OK — 56/56 testes
+NÚCLEO OK — 82/82 testes
 ── fluxo das telas ──
-FLUXO OK — 28/28 verificações
+FLUXO OK — 29/29 verificações
 ```
 
 ## Gravar o jogo em vídeo

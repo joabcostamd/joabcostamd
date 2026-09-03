@@ -18,7 +18,12 @@ func _ready() -> void:
     if puzzle == null:
         Navegacao.ir_para("menu")
         return
-    partida = Partida.new(puzzle, bool(Progresso.opcoes["modo_relaxado"]))
+    # Retoma a partida guardada desta fase, se houver.
+    var relaxado := bool(Progresso.opcoes["modo_relaxado"])
+    if Progresso.tem_partida_de(id):
+        partida = Partida.do_dicionario(Progresso.partida_guardada, puzzle, relaxado)
+    if partida == null:
+        partida = Partida.new(puzzle, relaxado)
 
     var coluna := VBoxContainer.new()
     coluna.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -167,8 +172,12 @@ func _ao_jogar(tipo: int, _celula: Vector2i) -> void:
         _perder()
 
 ## Chamada quando uma linha ou coluna fecha por inteiro.
-func _ao_fechar_linha(_indice: int, _horizontal: bool) -> void:
+func _ao_fechar_linha(indice: int, horizontal: bool) -> void:
     Audio.tocar("linha", randf_range(0.97, 1.06))
+    # Marcar à mão os X de uma linha já resolvida é trabalho sem decisão.
+    if bool(Progresso.opcoes.get("auto_marcar", true)):
+        if partida.marcar_resto(indice, horizontal) > 0:
+            grade.queue_redraw()
 
 func _atualizar_hud() -> void:
     _rotulo_progresso.text = "%d%%" % int(partida.progresso() * 100.0)
@@ -198,6 +207,7 @@ func _dica() -> void:
             _vencer()
 
 func _vencer() -> void:
+    Progresso.limpar_partida()
     Audio.tocar("vitoria")
     Juice.clarao(self, Estilo.DESTAQUE, 0.42, 0.6)
     var camada := Juice.camada_particulas(self)
@@ -214,12 +224,24 @@ func _vencer() -> void:
     })
 
 func _perder() -> void:
+    Progresso.limpar_partida()
     Audio.tocar("derrota")
     _derrota.visible = true
 
 func _abrir_pausa() -> void:
     Audio.tocar("clique")
+    _guardar_partida()
     _pausa.visible = true
+
+## Guarda o andamento sempre que o jogador pode estar de saída.
+func _guardar_partida() -> void:
+    if partida != null and not partida.concluida and not partida.perdeu \
+            and partida.pintadas_corretas > 0:
+        Progresso.guardar_partida(partida.para_dicionario())
+
+func _notification(que: int) -> void:
+    if que == NOTIFICATION_WM_CLOSE_REQUEST or que == NOTIFICATION_PREDELETE:
+        _guardar_partida()
     Juice.entrada(_pausa, 0.0, 14.0)
 
 func _fechar_pausa() -> void:

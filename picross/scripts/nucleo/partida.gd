@@ -109,6 +109,66 @@ func estrelas() -> int:
 func progresso() -> float:
     return float(pintadas_corretas) / float(puzzle.total_cheias)
 
+## ─── guardar e retomar ───
+
+## Estado suficiente para continuar exatamente de onde parou. As marcas viram
+## uma linha de texto por fileira, que é compacto e legível no arquivo.
+func para_dicionario() -> Dictionary:
+    var linhas: Array[String] = []
+    for y in puzzle.lado:
+        var linha := ""
+        for x in puzzle.lado:
+            linha += str(marcas[y][x])
+        linhas.append(linha)
+    var erradas: Array[String] = []
+    for chave in celulas_erradas:
+        erradas.append("%d,%d" % [chave.x, chave.y])
+    return {
+        "fase": puzzle.id, "marcas": linhas, "vidas": vidas, "erros": erros,
+        "tempo": tempo, "usou_dica": usou_dica, "erradas": erradas,
+    }
+
+## Recria uma partida guardada. Devolve nulo se o estado não combina com a fase.
+static func do_dicionario(dados: Dictionary, p: Puzzle, relaxado: bool) -> Partida:
+    if p == null or int(dados.get("fase", -1)) != p.id:
+        return null
+    var linhas: Array = dados.get("marcas", [])
+    if linhas.size() != p.lado:
+        return null
+    var partida := Partida.new(p, relaxado)
+    partida.pintadas_corretas = 0
+    for y in p.lado:
+        var linha: String = linhas[y]
+        if linha.length() != p.lado:
+            return null
+        for x in p.lado:
+            var marca := int(linha[x])
+            partida.marcas[y][x] = marca
+            if marca == Marca.PINTADA and p.e_cheia(x, y):
+                partida.pintadas_corretas += 1
+    partida.vidas = int(dados.get("vidas", VIDAS_INICIAIS))
+    partida.erros = int(dados.get("erros", 0))
+    partida.tempo = float(dados.get("tempo", 0.0))
+    partida.usou_dica = bool(dados.get("usou_dica", false))
+    for texto in dados.get("erradas", []):
+        var partes: PackedStringArray = str(texto).split(",")
+        if partes.size() == 2:
+            partida.celulas_erradas[Vector2i(int(partes[0]), int(partes[1]))] = true
+    partida._checar_vitoria()
+    return partida
+
+## Marca com X as células vazias de uma linha ou coluna já resolvida.
+## Devolve quantas foram marcadas.
+func marcar_resto(indice: int, horizontal: bool) -> int:
+    var quantas := 0
+    for i in puzzle.lado:
+        var x := i if horizontal else indice
+        var y := indice if horizontal else i
+        if not puzzle.e_cheia(x, y) and marcas[y][x] == Marca.LIMPA:
+            marcas[y][x] = Marca.CRUZ
+            quantas += 1
+    return quantas
+
 func _guardar(x: int, y: int) -> void:
     _historico.append([x, y, marcas[y][x]])
     if _historico.size() > 500:

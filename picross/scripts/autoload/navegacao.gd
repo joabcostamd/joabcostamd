@@ -13,6 +13,7 @@ const TELAS := {
     "creditos": "res://cenas/creditos.tscn",
     "conquistas": "res://cenas/conquistas.tscn",
     "estatisticas": "res://cenas/estatisticas.tscn",
+    "dados": "res://cenas/dados.tscn",
 }
 
 var parametros := {}
@@ -55,7 +56,9 @@ func _talvez_capturar() -> void:
     var parametros_da_tela := {}
     match tela:
         "fases": parametros_da_tela = {"capitulo": 1}
-        "jogo": parametros_da_tela = {"fase": 26}
+        "jogo":
+            var qual_fase := args.find("--fase")
+            parametros_da_tela = {"fase": int(args[qual_fase + 1]) if qual_fase >= 0 and qual_fase + 1 < args.size() else 26}
         "revelacao": parametros_da_tela = {"fase": 26, "tempo": 214.0, "estrelas": 3}
     ir_para(tela, parametros_da_tela)
     var espera := 2.0

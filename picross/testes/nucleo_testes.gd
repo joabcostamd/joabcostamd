@@ -26,15 +26,15 @@ func _rodar() -> void:
     get_tree().quit(1 if _falhas > 0 else 0)
 
 func _dados() -> void:
-    _ok("carrega 200 fases", Catalogo.fases.size() == 200)
+    _ok("carrega 400 fases", Catalogo.fases.size() == 400)
     _ok("carrega 5 capítulos", Catalogo.capitulos.size() == 5)
     _ok("a fase 1 é 5x5", Catalogo.fase(1).lado == 5)
-    _ok("a fase 200 é 25x25", Catalogo.fase(200).lado == 25)
+    _ok("a fase 400 é 25x25", Catalogo.fase(400).lado == 25)
     var ids_ok := true
     for i in Catalogo.fases.size():
         if Catalogo.fases[i].id != i + 1:
             ids_ok = false
-    _ok("os ids vão de 1 a 200 sem buraco", ids_ok)
+    _ok("os ids vão de 1 a 400 sem buraco", ids_ok)
 
     var dificuldade_sobe := true
     for capitulo in Catalogo.capitulos:
@@ -58,7 +58,7 @@ func _pistas_conferem() -> void:
             var esperada: Array = _pistas_de_linha(p, x, false)
             if not _mesma_lista(esperada, p.pistas_colunas[x]):
                 todas_ok = false
-    _ok("as pistas de todas as 200 fases batem com o desenho", todas_ok)
+    _ok("as pistas de todas as 400 fases batem com o desenho", todas_ok)
 
 func _pistas_de_linha(p: Puzzle, indice: int, horizontal: bool) -> Array:
     var blocos: Array = []
@@ -209,8 +209,10 @@ func _progresso() -> void:
     Progresso.apagar_tudo()
     _ok("apagar tudo zera o progresso", Progresso.total_resolvidas() == 0)
 
+    _retomar()
     _conquistas()
     _temas()
+    _sincronizacao()
 
 ## Teste mais forte: joga as 200 fases até o fim, conferindo cada vitória.
 func _resolver_todas() -> void:
@@ -222,7 +224,103 @@ func _resolver_todas() -> void:
         if not partida.concluida or partida.erros > 0 or partida.vidas != Partida.VIDAS_INICIAIS:
             todas_ok = false
             print("      falhou em: ", p.nome)
-    _ok("as 200 fases são vencíveis pintando a solução (%d células)" % celulas, todas_ok)
+    _ok("as 400 fases são vencíveis pintando a solução (%d células)" % celulas, todas_ok)
+
+## Sair no meio de uma fase grande e perder tudo é o pior defeito possível
+## num jogo assim. A partida guardada tem de voltar idêntica.
+func _retomar() -> void:
+    var p := Catalogo.fase(120)
+    var partida := Partida.new(p)
+    var pintadas := 0
+    for y in p.lado:
+        for x in p.lado:
+            if p.e_cheia(x, y) and pintadas < 20:
+                partida.pintar(x, y)
+                pintadas += 1
+    var vazia := _achar(p, false)
+    partida.pintar(vazia.x, vazia.y)       # um erro de propósito
+    partida.tempo = 123.0
+
+    var guardado := partida.para_dicionario()
+    var voltou := Partida.do_dicionario(guardado, p, false)
+    _ok("a partida guardada volta", voltou != null)
+    if voltou == null:
+        return
+    _ok("volta com as mesmas células pintadas",
+        voltou.pintadas_corretas == partida.pintadas_corretas)
+    _ok("volta com as mesmas vidas e erros",
+        voltou.vidas == partida.vidas and voltou.erros == partida.erros)
+    _ok("volta com o mesmo tempo", is_equal_approx(voltou.tempo, 123.0))
+    _ok("volta com as células erradas marcadas",
+        voltou.celulas_erradas.has(vazia))
+    var iguais := true
+    for y in p.lado:
+        for x in p.lado:
+            if voltou.marca_em(x, y) != partida.marca_em(x, y):
+                iguais = false
+    _ok("todas as marcas voltam iguais", iguais)
+    _ok("estado de outra fase é recusado",
+        Partida.do_dicionario(guardado, Catalogo.fase(121), false) == null)
+    _ok("estado quebrado é recusado",
+        Partida.do_dicionario({"fase": 120, "marcas": ["x"]}, p, false) == null)
+
+    # marcar o resto de uma linha resolvida
+    var limpa := Partida.new(p)
+    for x in p.lado:
+        if p.e_cheia(x, 0):
+            limpa.pintar(x, 0)
+    var marcadas := limpa.marcar_resto(0, true)
+    _ok("marcar o resto da linha preenche as vazias", marcadas > 0)
+    var so_vazias := true
+    for x in p.lado:
+        if limpa.marca_em(x, 0) == Partida.Marca.CRUZ and p.e_cheia(x, 0):
+            so_vazias = false
+    _ok("só as células vazias recebem X", so_vazias)
+    _ok("marcar o resto não conta como erro", limpa.erros == 0)
+
+## Dois aparelhos, dois progressos: a mescla não pode perder nada de nenhum.
+func _sincronizacao() -> void:
+    var aparelho_a := {"quando": 100, "opcoes": {"tema_claro": false}, "fases": {
+        "1": {"estrelas": 3, "tempo": 40.0},
+        "2": {"estrelas": 1, "tempo": 90.0},
+        "5": {"estrelas": 2, "tempo": 55.0}}}
+    var aparelho_b := {"quando": 200, "opcoes": {"tema_claro": true}, "fases": {
+        "1": {"estrelas": 1, "tempo": 20.0},
+        "2": {"estrelas": 3, "tempo": 120.0},
+        "9": {"estrelas": 3, "tempo": 30.0}}}
+
+    var junto := Sincronizacao.mesclar(aparelho_a, aparelho_b)
+    var f: Dictionary = junto["fases"]
+    _ok("a mescla mantém as fases dos dois lados", f.size() == 4)
+    _ok("fica com as estrelas mais altas de cada fase",
+        int(f["1"]["estrelas"]) == 3 and int(f["2"]["estrelas"]) == 3)
+    _ok("fica com o melhor tempo de cada fase",
+        is_equal_approx(float(f["1"]["tempo"]), 20.0)
+        and is_equal_approx(float(f["2"]["tempo"]), 90.0))
+    _ok("fases que só um lado tinha são preservadas", f.has("5") and f.has("9"))
+    _ok("as opções vêm do salvamento mais recente",
+        bool(junto["opcoes"]["tema_claro"]))
+    _ok("mesclar é comutativo",
+        Sincronizacao.mesclar(aparelho_b, aparelho_a)["fases"].size() == f.size())
+
+    var codigo := Sincronizacao.exportar(aparelho_a)
+    _ok("o código exportado não é vazio", codigo.length() > 10)
+    var de_volta := Sincronizacao.importar(codigo)
+    _ok("importar devolve o mesmo salvamento",
+        de_volta.get("fases", {}).size() == 3)
+    _ok("código inválido não derruba o jogo",
+        Sincronizacao.importar("isto não é um salvamento").is_empty())
+    _ok("código vazio não derruba o jogo", Sincronizacao.importar("").is_empty())
+
+    # e agora pelo caminho de verdade, pelo Progresso
+    Progresso.fases.clear()
+    Progresso.registrar(1, 1, 80.0)
+    var melhoraram := Progresso.mesclar_de(aparelho_b)
+    _ok("mesclar pelo progresso melhora as fases", melhoraram >= 2)
+    _ok("a fase melhorada ficou com as estrelas do outro aparelho",
+        Progresso.estrelas_de(2) == 3)
+    _ok("o progresso local não foi perdido", Progresso.resolvida(1))
+    Progresso.apagar_tudo()
 
 ## Conquistas saem do progresso: mudar o progresso tem de mudar a conquista.
 func _conquistas() -> void:
@@ -238,7 +336,19 @@ func _conquistas() -> void:
             primeira = c
     _ok("revelar a primeira imagem conclui a conquista",
         primeira != null and primeira.concluida())
-    _ok("a conquista de 200 ainda não está concluída", Conquistas.concluidas() < 5)
+    _ok("a conquista de todas ainda não está concluída", Conquistas.concluidas() < 5)
+
+    # O aviso de conquista tem de disparar exatamente uma vez.
+    var avisadas: Array[String] = []
+    var ouvinte := func(nome: String, _descricao: String): avisadas.append(nome)
+    Progresso.conquista_desbloqueada.connect(ouvinte)
+    Progresso.fases.clear()
+    Progresso.registrar(2, 3, 10.0)
+    _ok("desbloquear a primeira conquista dispara aviso", avisadas.size() >= 1)
+    var quantos := avisadas.size()
+    Progresso.registrar(3, 3, 10.0)
+    _ok("uma conquista já avisada não avisa de novo", avisadas.size() == quantos)
+    Progresso.conquista_desbloqueada.disconnect(ouvinte)
 
     var barra_ok := true
     for c in Conquistas.todas():

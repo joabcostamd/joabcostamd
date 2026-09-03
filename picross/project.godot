@@ -21,6 +21,7 @@ Catalogo="*res://scripts/autoload/catalogo.gd"
 Progresso="*res://scripts/autoload/progresso.gd"
 Audio="*res://scripts/autoload/audio.gd"
 Navegacao="*res://scripts/autoload/navegacao.gd"
+Avisos="*res://scripts/autoload/avisos.gd"
 
 [display]
 

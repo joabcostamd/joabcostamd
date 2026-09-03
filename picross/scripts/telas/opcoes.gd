@@ -44,6 +44,8 @@ func _ready() -> void:
         tr("OPCOES_RELAXADO_AJUDA")))
     lista.add_child(_marcador(tr("OPCOES_ERRO"), "marcar_erro_automatico",
         tr("OPCOES_ERRO_AJUDA")))
+    lista.add_child(_marcador(tr("OPCOES_AUTO_X"), "auto_marcar",
+        tr("OPCOES_AUTO_X_AJUDA")))
     lista.add_child(_marcador(tr("OPCOES_ARRASTE"), "travar_arraste",
         tr("OPCOES_ARRASTE_AJUDA")))
     lista.add_child(_marcador(tr("OPCOES_TEMPO"), "mostrar_tempo",
@@ -54,6 +56,12 @@ func _ready() -> void:
     lista.add_child(_deslizante(tr("OPCOES_MUSICA"), "volume_musica"))
 
     lista.add_child(_secao(tr("OPCOES_DADOS")))
+    var nuvem := Estilo.botao(tr("NUVEM_TITULO"), 420)
+    nuvem.pressed.connect(func():
+        Audio.tocar("clique")
+        Navegacao.ir_para("dados"))
+    lista.add_child(nuvem)
+
     var apagar := Estilo.botao(tr("OPCOES_APAGAR"), 420)
     apagar.pressed.connect(_confirmar_apagar)
     lista.add_child(apagar)

@@ -42,8 +42,13 @@ static func todas() -> Array[Conquista]:
         [50, "CONQ_N_GALERIA"], [int(total_fases / 2.0), "CONQ_N_METADE"],
         [total_fases, "CONQ_N_OBRA"]]
     for meta in metas_imagens:
+        # A primeira tem texto próprio: "revele 1 imagens" fica errado em
+        # qualquer idioma com plural.
+        var descricao: String = TranslationServer.translate("CONQ_D_PRIMEIRA")
+        if int(meta[0]) > 1:
+            descricao = TranslationServer.translate("CONQ_D_REVELE") % int(meta[0])
         lista.append(_nova("img%d" % int(meta[0]), TranslationServer.translate(meta[1]),
-            TranslationServer.translate("CONQ_D_REVELE") % int(meta[0]), int(meta[0]), resolvidas))
+            descricao, int(meta[0]), resolvidas))
 
     var metas_estrelas := [[100, "CONQ_N_CEM"], [300, "CONQ_N_TREZENTAS"],
         [total_estrelas, "CONQ_N_CEU"]]

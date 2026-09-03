@@ -16,9 +16,12 @@ const NOMES_IDIOMAS := {
 }
 
 signal fase_concluida(id: int, estrelas: int)
+signal conquista_desbloqueada(nome: String, descricao: String)
 signal opcoes_mudaram()
 
 var fases := {}          # id (String) -> {"estrelas": int, "tempo": float}
+var _quando_carregou := 0
+
 var opcoes := {
     "volume_musica": 0.5,
     "volume_efeitos": 0.8,
@@ -30,6 +33,7 @@ var opcoes := {
     "travar_arraste": true,
     "fundo_animado": true,
     "idioma": "",          # vazio = segue o idioma do sistema
+    "auto_marcar": true,
 }
 
 func _ready() -> void:
@@ -61,6 +65,8 @@ func carregar() -> void:
     if typeof(dados) != TYPE_DICTIONARY:
         return
     fases = dados.get("fases", {})
+    partida_guardada = dados.get("partida", {})
+    _quando_carregou = int(dados.get("quando", 0))
     for chave in opcoes.keys():
         if dados.get("opcoes", {}).has(chave):
             opcoes[chave] = dados["opcoes"][chave]
@@ -70,10 +76,39 @@ func salvar() -> void:
     if arquivo == null:
         push_error("Não foi possível gravar o progresso")
         return
-    arquivo.store_string(JSON.stringify({"fases": fases, "opcoes": opcoes}))
+    arquivo.store_string(JSON.stringify(como_dicionario()))
     arquivo.close()
 
+## O salvamento inteiro, no formato que vai para o arquivo e para a nuvem.
+## O carimbo de tempo é o que permite decidir qual lado é o mais recente.
+func como_dicionario() -> Dictionary:
+    return {
+        "versao": Sincronizacao.VERSAO,
+        "quando": int(Time.get_unix_time_from_system()),
+        "fases": fases,
+        "opcoes": opcoes,
+        "partida": partida_guardada,
+    }
+
+## Junta um salvamento de fora com o daqui, ficando com o melhor de cada fase.
+## Devolve quantas fases melhoraram.
+func mesclar_de(outro: Dictionary) -> int:
+    if outro.is_empty() or not outro.has("fases"):
+        return -1
+    var antes := fases.duplicate(true)
+    var junto := Sincronizacao.mesclar(como_dicionario(), outro)
+    fases = junto["fases"]
+    var melhoraram := 0
+    for chave in fases:
+        var novo: Dictionary = fases[chave]
+        var velho: Dictionary = antes.get(chave, {})
+        if velho.is_empty() or int(novo["estrelas"]) > int(velho.get("estrelas", 0)):
+            melhoraram += 1
+    salvar()
+    return melhoraram
+
 func registrar(id: int, estrelas: int, tempo: float) -> void:
+    var antes_das_conquistas := _conquistas_concluidas()
     var chave := str(id)
     var anterior: Dictionary = fases.get(chave, {"estrelas": 0, "tempo": 0.0})
     var melhor_tempo: float = anterior["tempo"]
@@ -85,6 +120,44 @@ func registrar(id: int, estrelas: int, tempo: float) -> void:
     }
     salvar()
     fase_concluida.emit(id, estrelas)
+    _avisar_conquistas(antes_das_conquistas)
+
+## Conquistas viram aviso na tela assim que passam de não concluída para
+## concluída. A comparação é feita antes e depois de gravar a fase.
+func _conquistas_concluidas() -> Dictionary:
+    var mapa := {}
+    for c in Conquistas.todas():
+        mapa[c.chave] = c.concluida()
+    return mapa
+
+func _avisar_conquistas(antes: Dictionary) -> void:
+    for c in Conquistas.todas():
+        if c.concluida() and not bool(antes.get(c.chave, false)):
+            conquista_desbloqueada.emit(c.nome, c.descricao)
+
+## ─── partida interrompida ───
+##
+## Sair no meio de um 25x25 e perder meia hora de trabalho é o pior que este
+## jogo pode fazer com alguém. O estado da partida fica guardado junto com o
+## progresso e volta ao abrir a mesma fase.
+
+var partida_guardada := {}
+
+func guardar_partida(estado: Dictionary) -> void:
+    partida_guardada = estado
+    salvar()
+
+func limpar_partida() -> void:
+    if partida_guardada.is_empty():
+        return
+    partida_guardada = {}
+    salvar()
+
+func tem_partida_de(id: int) -> bool:
+    return not partida_guardada.is_empty() and int(partida_guardada.get("fase", -1)) == id
+
+func fase_da_partida() -> int:
+    return int(partida_guardada.get("fase", -1))
 
 func resolvida(id: int) -> bool:
     return fases.has(str(id))

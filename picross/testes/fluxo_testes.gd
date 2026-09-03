@@ -27,6 +27,7 @@ func _rodar() -> void:
     await _montar("creditos")
     await _montar("conquistas")
     await _montar("estatisticas")
+    await _montar("dados")
 
     await _conferir_juice()
 
