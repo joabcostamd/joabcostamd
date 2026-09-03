@@ -7,6 +7,8 @@ extends Node
 signal inimigo_surgiu(e)
 signal inimigo_atingido(e, dano_log, critico, elemento)
 signal inimigo_morreu(e, ouro_log)
+## Mais um dia seguido de sequencia diaria, com a etapa alcancada.
+signal sequencia_diaria(dias: int, etapa: Dictionary)
 ## O boot achou arquivo de save e nao conseguiu ler nem ele nem o backup.
 signal save_ilegivel(motivo: String)
 signal inimigo_chegou(e, dano)

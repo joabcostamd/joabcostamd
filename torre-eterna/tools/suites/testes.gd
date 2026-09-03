@@ -184,6 +184,26 @@ func t_modificadores() -> void:
 	jogo.recalcular()
 	jogo.s["missoes"]["rerrolagens_usadas"] = 0
 	ok("Dado Viciado da rerrolagens", Progresso.rerrolagens_restantes(jogo) == 2)
+	# A tabela de sequencia promete gemas e multiplicador de XP por dia seguido,
+	# e o painel mostra os dois. So o contador andava: voltar sete dias seguidos
+	# pagava exatamente nada.
+	ok("tabela de sequencia existe", not Dados.sequencia_diaria.is_empty())
+	ok("etapa do dia 1 e a primeira", int(Progresso.etapa_sequencia(1).get("dia", -1)) == 1)
+	var ultima: Dictionary = Dados.sequencia_diaria[Dados.sequencia_diaria.size() - 1]
+	ok("sequencia longa nao regride", int(Progresso.etapa_sequencia(9999).get("dia", -1)) == int(ultima.get("dia", -2)))
+	ok("multiplicador de xp cresce com a sequencia",
+		Progresso.mult_xp_sequencia({"missoes": {"sequencia": 9999}}) >= Progresso.mult_xp_sequencia({"missoes": {"sequencia": 1}}))
+	var gemas_antes := Big.to_f(jogo.s["moedas"]["gemas"])
+	jogo.s["missoes"]["ultimo_dia"] = 0
+	jogo.s["missoes"]["sequencia"] = 0
+	Progresso.gerar_missoes(jogo, true)
+	ok("virar o dia paga a sequencia", Big.to_f(jogo.s["moedas"]["gemas"]) > gemas_antes,
+		"%.0f -> %.0f gemas" % [gemas_antes, Big.to_f(jogo.s["moedas"]["gemas"])])
+	# e paga UMA vez por dia, nao a cada geracao
+	var gemas_pos := Big.to_f(jogo.s["moedas"]["gemas"])
+	Progresso.gerar_missoes(jogo, true)
+	ok("nao paga a sequencia duas vezes no mesmo dia", perto(Big.to_f(jogo.s["moedas"]["gemas"]), gemas_pos, 1e-9))
+
 	Progresso.gerar_missoes(jogo, true)
 	var antes_id := str(jogo.s["missoes"]["diarias"][0]["id"])
 	ok("rerrolagem troca a missao", Progresso.rerrolar_missao(jogo, "diarias", 0))
@@ -289,6 +309,50 @@ func t_defesa() -> void:
 	var refletido := Bal.dano_refletido(golpe)
 	ok("reflexo continua em log10", refletido < 19.0 and refletido > 18.0)
 	ok("reflexo e 2%% do golpe", perto(Big.to_f(refletido), 2.0e18, 1.0e12))
+
+	# Quem reflete pode declarar `hab` (o refletor comum) ou `mecanica` (o
+	# Guardiao do Espelho, chefe cujo nome E a mecanica). O codigo olhava so
+	# `hab`, entao o chefe nunca refletiu nada — e o codex explicava o reflexo
+	# dele. Este teste cobre as DUAS portas.
+	var reflete_por: Array = []
+	for grupo in [Dados.inimigos, Dados.chefes, Dados.super_chefes, Dados.elites]:
+		for cand in grupo:
+			if str(cand.get("hab", "")) == "refletir":
+				reflete_por.append(["hab", cand])
+			elif str(cand.get("mecanica", "")) == "refletir":
+				reflete_por.append(["mecanica", cand])
+	ok("o conteudo declara reflexo pelas duas portas", reflete_por.size() >= 2,
+		"achei %d" % reflete_por.size())
+	for par in reflete_por:
+		var porta := str(par[0])
+		var d_ref: Dictionary = par[1]
+		# A torre precisa ser da ordem do golpe: nesta altura da suite ela tem
+		# 1e100 de vida, e tirar 2e4 dali nao muda nenhum digito representavel.
+		jogo.s["torre"]["viva"] = true
+		jogo.s["torre"]["vida_max"] = Big.from(1.0e8)
+		jogo.s["torre"]["vida"] = Big.from(1.0e8)
+		# escudo cheio absorveria o reflexo e a vida nao mudaria
+		jogo.s["torre"]["escudo"] = Big.ZERO
+		# O reflexo derruba a torre de teste, e cair aciona o revive, que liga
+		# a invulnerabilidade — a proxima medida sairia zerada por causa disso.
+		jogo.invulneravel = 0.0
+		# e os i-frames do golpe anterior, que engoliriam este em silencio
+		jogo.torre.iframes = 0.0
+		var alvo_ref = EnemyAI.criar(d_ref, 30, jogo, {})
+		if alvo_ref == null:
+			ok("criou o refletor por " + porta, false)
+			continue
+		var vida_antes: float = jogo.s["torre"]["vida"]
+		var pr: Projetil = jogo.arena.novo_projetil()
+		pr.ativo = true
+		pr.pos = alvo_ref.pos
+		pr.dano = Big.from(1.0e6)
+		pr.critico = false
+		pr.origem = "torre"
+		jogo.torre._impacto(pr, alvo_ref)
+		ok("reflete quando declara por " + porta, Big.lt(jogo.s["torre"]["vida"], vida_antes),
+			"vida %s -> %s" % [Fmt.big(vida_antes), Fmt.big(jogo.s["torre"]["vida"])])
+		jogo.arena.limpar_tudo()
 	# comprar vida PRECISA aumentar a sobrevivência (regressão: antes o dano de
 	# contato era % da vida máxima, então vida extra não servia para nada)
 	var hp10 := Bal.hp_onda(10)
@@ -974,6 +1038,21 @@ func t_save() -> void:
 	# valido. O arquivo gravava assim mesmo e, no autosave seguinte, esse lixo
 	# virava o backup: dois autosaves e o jogador perdia save E backup sem
 	# nenhum aviso.
+	# Por volta da onda 1.959 o ouro total passa de 1e308. `Big.to_f` devolvia
+	# INF, o progresso de missao virava INF (e NaN quando a missao nascia depois
+	# do estouro), o NaN entrava no estado, e o `JSON.stringify` emitia `nan` —
+	# que nao e JSON. A partir dai o jogo NUNCA MAIS salvava: recusa a cada
+	# vinte segundos, para sempre, e quem fechasse perdia a partida inteira.
+	ok("numero gigante satura em vez de virar INF", is_finite(Big.to_f(400.0)))
+	ok("saturado continua enorme", Big.to_f(400.0) > 1.0e300)
+	var mi_teste := {"base": Big.to_f(400.0), "prog": 0.0, "alvo": 10.0}
+	var p_teste := Progresso._avancar(mi_teste, Big.to_f(400.0))
+	ok("progresso nunca vira nao-finito", is_finite(p_teste) and is_finite(float(mi_teste["prog"])),
+		"prog=%s" % str(mi_teste["prog"]))
+	var sujo_teste := {"a": INF, "b": [NAN, 1.0], "c": {"d": -INF}}
+	ok("saneador acha os tres nao-finitos", GameState.sanear(sujo_teste) == 3)
+	ok("saneador deixa o estado gravavel", JSON.parse_string(JSON.stringify(sujo_teste)) != null)
+
 	var podre := {"versao": 1, "onda": 5, "ruim": INF}
 	ok("save recusa numero nao-finito", not save.salvar(podre))
 	var so_bom := {"versao": 1, "onda": 5}

@@ -212,3 +212,31 @@ static func hab(s: Dictionary, id: String) -> Dictionary:
 	if not s["habilidades"].has(id):
 		s["habilidades"][id] = {"desbloqueada": false, "nivel": 1, "cd": 0.0, "cd_max": 0.0, "usos": 0}
 	return s["habilidades"][id]
+
+## Troca todo float não-finito do estado por um número são, e devolve quantos
+## trocou.
+##
+## `SaveSys.salvar` já RECUSA gravar um estado que vira JSON inválido, e essa
+## recusa é a última defesa — mas recusar para sempre, a cada vinte segundos,
+## também custa a partida de quem joga. Um NaN que já entrou no estado só sai
+## se alguém o tirar. Chamado antes de gravar: a recusa continua lá, agora só
+## para o que este varredor não conseguiu consertar.
+static func sanear(o) -> int:
+	var trocas := 0
+	if o is Dictionary:
+		for k in o.keys():
+			var v = o[k]
+			if v is float and not is_finite(v):
+				o[k] = Big.TETO_F if v > 0.0 else 0.0
+				trocas += 1
+			else:
+				trocas += sanear(v)
+	elif o is Array:
+		for i in o.size():
+			var v = o[i]
+			if v is float and not is_finite(v):
+				o[i] = Big.TETO_F if v > 0.0 else 0.0
+				trocas += 1
+			else:
+				trocas += sanear(v)
+	return trocas

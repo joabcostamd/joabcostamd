@@ -120,6 +120,23 @@ static func checar_conquistas(j) -> Array:
 	return novas
 
 ## "+25 gemas" — o prêmio em uma linha, para o aviso da conquista.
+## A etapa da sequência para `dia` dias seguidos. A tabela é finita: passado o
+## último dia, a recompensa fica na última etapa em vez de sumir — quem joga
+## trinta dias seguidos não pode receber menos que quem jogou sete.
+static func etapa_sequencia(dia: int) -> Dictionary:
+	if Dados.sequencia_diaria.is_empty():
+		return {}
+	var melhor: Dictionary = {}
+	for etapa in Dados.sequencia_diaria:
+		if int(etapa.get("dia", 0)) <= dia:
+			melhor = etapa
+	return melhor if not melhor.is_empty() else Dados.sequencia_diaria[0]
+
+## Multiplicador de XP que a sequência atual concede.
+static func mult_xp_sequencia(s: Dictionary) -> float:
+	var etapa := etapa_sequencia(int(s["missoes"].get("sequencia", 0)))
+	return maxf(1.0, float(etapa.get("multXP", 1.0))) if not etapa.is_empty() else 1.0
+
 static func _texto_recompensa(r: Dictionary) -> String:
 	if r.is_empty():
 		return ""
@@ -174,11 +191,23 @@ static func gerar_missoes(j, forcar: bool = false) -> void:
 
 	if forcar or t - int(m["reset_diario"]) >= SEG_DIA or m["diarias"].is_empty():
 		var dia := dia_atual()
+		var virou_o_dia := int(m.get("ultimo_dia", 0)) != dia
 		if int(m.get("ultimo_dia", 0)) == dia - 1:
 			m["sequencia"] = int(m["sequencia"]) + 1
-		elif int(m.get("ultimo_dia", 0)) != dia:
+		elif virou_o_dia:
 			m["sequencia"] = 1
 		m["ultimo_dia"] = dia
+		# A tabela de sequência (data/missions.json) promete gemas e um
+		# multiplicador de XP por dia seguido, e o painel mostra os dois. Só o
+		# contador andava: ninguém lia `recompensa` nem `multXP`, então voltar
+		# sete dias seguidos pagava exatamente nada. O prêmio é pago aqui, uma
+		# vez por dia; o multiplicador entra no cálculo em `Mods.recalcular`.
+		if virou_o_dia:
+			var etapa := etapa_sequencia(int(m["sequencia"]))
+			if not etapa.is_empty():
+				_dar_recompensa(etapa.get("recompensa", {}), j,
+					Ux.txt(etapa, "nome", Cfg.ingles()))
+				Bus.sequencia_diaria.emit(int(m["sequencia"]), etapa)
 		m["reset_diario"] = t
 		m["diarias"] = _sortear(Dados.missoes_diarias, 3, progresso, j)
 		m["rerrolagens_usadas"] = 0
@@ -275,11 +304,21 @@ static func checar_missoes(j) -> void:
 ## IMPOSSÍVEL depois de uma ascensão — o valor ficava permanentemente abaixo da
 ## base. Aqui a base acompanha a descida e o progresso já ganho nunca é perdido.
 static func _avancar(mi: Dictionary, atual: float) -> float:
+	# Cinto de segurança: nada não-finito pode entrar no estado, porque de lá
+	# ele vai direto para o JSON do save e derruba a gravação para sempre.
+	if not is_finite(atual):
+		atual = Big.TETO_F
 	var base := float(mi.get("base", 0.0))
+	if not is_finite(base):
+		base = 0.0
+		mi["base"] = 0.0
 	if atual < base:
 		mi["base"] = atual
 		base = atual
-	var prog := maxf(float(mi.get("prog", 0.0)), atual - base)
+	var anterior := float(mi.get("prog", 0.0))
+	if not is_finite(anterior):
+		anterior = 0.0
+	var prog := clampf(maxf(anterior, atual - base), 0.0, Big.TETO_F)
 	mi["prog"] = prog
 	return prog
 

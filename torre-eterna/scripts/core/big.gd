@@ -32,11 +32,23 @@ static func from(n: float) -> float:
 static func from_int(n: int) -> float:
 	return from(float(n))
 
+## Satura em vez de devolver INF.
+##
+## Devolver INF aqui armava uma bomba-relógio: por volta da onda 1.959 o ouro
+## total passa de 1e308, `valor_cond` converte esse log10 para float comum, o
+## progresso de missão vira INF (e INF - INF = NaN quando a missão nasce depois
+## do estouro), o NaN entra no estado, e `JSON.stringify` emite `nan` — que não
+## é JSON. A partir daí `salvar()` recusa TODO save, para sempre, a cada vinte
+## segundos, e quem fecha o jogo perde a partida inteira. Um número gigante
+## finito responde a mesma pergunta ("é maior que a meta?") sem contaminar o
+## estado.
+const TETO_F := 1.0e308
+
 static func to_f(a: float) -> float:
 	if a <= LIMIAR_ZERO:
 		return 0.0
 	if a > 308.0:
-		return INF
+		return TETO_F
 	return pow(10.0, a)
 
 ## Converte para inteiro (satura em 2^62 para não estourar).

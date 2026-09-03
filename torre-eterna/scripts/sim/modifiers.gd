@@ -278,6 +278,12 @@ static func recalcular(s: Dictionary, m: StatEngine) -> Dictionary:
 	if pas.has("juros_dobrados"):
 		m.add_mult("jurosOuro", 2.0, "Juros Compostos")
 
+	# --------------------------------------------- sequencia diaria
+	# `multXP` da tabela de sequencia: ate aqui era so numero no painel.
+	var mult_seq := Progresso.mult_xp_sequencia(s)
+	if mult_seq > 1.0:
+		m.add_mult("ganhoXP", mult_seq, "Sequência diária")
+
 	# ------------------------------------------ desafios ja vencidos
 	# Os 14 desafios anunciam uma "Recompensa permanente" no painel (dano +15%,
 	# perfuracao +1, e por ai). A vitoria era gravada em `completos` e o array

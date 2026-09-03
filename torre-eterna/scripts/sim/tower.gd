@@ -259,7 +259,10 @@ func _impacto(p: Projetil, alvo: Inimigo) -> bool:
 		"elemento": p.elemento,
 	}
 
-	if alvo.hab == "refletir" and not p.critico:
+	# O Guardiao do Espelho declara `"mecanica": "refletir"`, e so o refletor
+	# comum declara `"hab"`. O codigo olhava so `hab`, entao o chefe cujo nome e
+	# a mecanica nunca refletiu nada — e o codex explicava o reflexo dele.
+	if (alvo.hab == "refletir" or str(alvo.def.get("mecanica", "")) == "refletir") and not p.critico:
 		j.dano_na_torre(Bal.dano_refletido(p.dano), alvo, {"reflexo": true})
 	if bool(alvo.def.get("invisivel", false)):
 		alvo.revelado = true

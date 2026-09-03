@@ -860,6 +860,9 @@ func salvar() -> bool:
 	# o que talvez ainda dê para recuperar. Destrancar é decisão de quem joga.
 	if salvamento_travado:
 		return false
+	var sujos := GameState.sanear(s)
+	if sujos > 0:
+		push_warning("[save] %d valor(es) nao-finito(s) saneado(s) antes de gravar" % sujos)
 	var agora := int(Time.get_unix_time_from_system())
 	s["salvo_em"] = agora
 	# a âncora do offline nunca anda para trás (ver `iniciar`)
