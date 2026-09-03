@@ -48,6 +48,8 @@ func _ao_atingir(e, dano_log: float, critico: bool, elemento: String) -> void:
 
 func _ao_morrer(e, _ouro: float) -> void:
 	particulas.morte(e.pos, e.cor, e.escala, e.chefe)
+	# clarão branco no instante exato do abate: o golpe "conecta"
+	particulas.anel(e.pos, Color(1, 1, 1, 0.85), e.raio * 2.4, 0.14, 3.0)
 	if e.chefe:
 		juice.tremer(20.0, 0.6)
 		juice.flash(Color(1, 1, 1), 0.3)

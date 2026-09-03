@@ -51,7 +51,7 @@ const TECLA_PT := {
 var abas: TabBar
 var rolagem: ScrollContainer
 var conteudo: VBoxContainer
-var aba := 4
+var aba := 0
 var rodape_aviso: Label
 var passo_restaurar := 0
 var btn_restaurar: Button
@@ -258,6 +258,18 @@ func _aba_audio() -> void:
 	cb.toggled.connect(func(_v: bool): _sincronizar_audio())
 	l["direita"].add_child(cb)
 	_sincronizar_audio()
+
+	var nota := UI.painel(UI.PAINEL.darkened(0.25), 10)
+	var nv := UI.vbox(4)
+	nota.add_child(nv)
+	nv.add_child(UI.rotulo("Como o som funciona aqui", 13, UI.ACENTO))
+	var t := UI.rotulo("Não há arquivos de áudio: cada tiro, moeda e rugido de chefe é sintetizado em tempo de execução, do mesmo jeito que os ícones são desenhados. Por isso os volumes agem sobre barramentos (Master, SFX e Música) e valem imediatamente, sem recarregar nada.", 12, UI.TEXTO2)
+	t.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	nv.add_child(t)
+	var t2 := UI.rotulo("Dica: em sessões longas, música em 20–30% e efeitos em 80% costuma ser a mistura que não cansa.", 12, UI.TEXTO3)
+	t2.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	nv.add_child(t2)
+	conteudo.add_child(nota)
 
 func _linha_volume(b: Dictionary, chave: String, nome: String, desc: String) -> void:
 	var l := _opcao(b, "velocidade", UI.ACENTO2, nome, desc)
@@ -695,7 +707,8 @@ func _mudar(chave: String, valor: Variant) -> void:
 			Bus.toast("Idioma alterado", "info")
 		"tela_cheia":
 			await get_tree().process_frame
-			_ajustar_janela()
+			if is_inside_tree():
+				_ajustar_janela()
 
 func _escolher_notacao(idx: int) -> void:
 	_mudar("notacao", idx)
@@ -724,6 +737,8 @@ func _aplicar_escala() -> void:
 	if jan != null:
 		jan.content_scale_factor = clampf(e, 0.7, 1.6)
 	await get_tree().process_frame
+	if not is_inside_tree():
+		return
 	_ajustar_janela()
 
 ## Mantém a janela do painel dentro da tela quando a escala ou o tamanho mudam.
@@ -773,12 +788,12 @@ void fragment() {
 		vec3 err = c - sim;
 		vec3 desvio = vec3(
 			0.0,
-			0.7 * err.r + err.g,
-			0.7 * err.r + err.b);
+			0.6 * err.r + err.g,
+			0.6 * err.r + err.b);
 		c = clamp(c + desvio, vec3(0.0), vec3(1.0));
 	}
 	if (contraste > 0.0) {
-		c = clamp((c - 0.5) * (1.0 + 0.34 * contraste) + 0.5, vec3(0.0), vec3(1.0));
+		c = clamp((c - 0.46) * (1.0 + 0.28 * contraste) + 0.5, vec3(0.0), vec3(1.0));
 		float cinza = dot(c, vec3(0.299, 0.587, 0.114));
 		c = clamp(mix(vec3(cinza), c, 1.0 + 0.2 * contraste), vec3(0.0), vec3(1.0));
 	}

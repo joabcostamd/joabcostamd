@@ -35,6 +35,7 @@ func _initialize() -> void:
 	_referencias()
 	_bilingue()
 	_curvas()
+	_i18n()
 
 	print("===VALIDAR-DADOS===")
 	print("  erros: %d" % erros.size())
@@ -45,6 +46,15 @@ func _initialize() -> void:
 		print("    aviso: ", a)
 	print("===STATUS=== ", "PASS" if erros.is_empty() else "FAIL")
 	quit(0 if erros.is_empty() else 1)
+
+## O seletor de idioma só é honesto se cada chave da interface tiver par em EN.
+func _i18n() -> void:
+	var faltando := Txt.chaves_sem_en()
+	if not faltando.is_empty():
+		erros.append("interface sem tradução em EN: %s" % str(faltando))
+	for k in Txt.EN.keys():
+		if not Txt.PT.has(k):
+			avisos.append("chave de interface só em EN: %s" % str(k))
 
 func _contagens() -> void:
 	var reais := {

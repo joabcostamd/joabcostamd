@@ -20,6 +20,7 @@ var barra_xp: ProgressBar
 var lbl_nivel: Label
 var lbl_combo: Label
 var lbl_dps: Label
+var lbl_ouro_mult: Label
 var lbl_fps: Label
 var caixa_hab: HBoxContainer
 var botoes_hab := {}
@@ -164,6 +165,10 @@ func _construir() -> void:
 	lbl_dps = UI.rotulo("", 14, UI.TEXTO2)
 	lbl_dps.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	dir.add_child(lbl_dps)
+	lbl_ouro_mult = UI.rotulo("", 14, UI.OURO)
+	lbl_ouro_mult.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	lbl_ouro_mult.tooltip_text = "Multiplicador de ouro no momento: combo × aglomeração.\nQuanto mais inimigos vivos na tela, mais cada abate rende."
+	dir.add_child(lbl_ouro_mult)
 	lbl_fps = UI.rotulo("", 12, UI.TEXTO3)
 	lbl_fps.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	dir.add_child(lbl_fps)
@@ -377,6 +382,13 @@ func _atualizar_lento() -> void:
 	lbl_combo.add_theme_color_override("font_color", UI.OURO.lerp(UI.VERMELHO, clampf(float(combo) / 150.0, 0.0, 1.0)))
 
 	lbl_dps.text = "DPS ~%s" % Fmt.big(Big.mul_f(jogo.stats.b("dano"), jogo.stats.n("cadencia") * jogo.stats.n("multiplicador") * (1.0 + jogo.stats.n("critChance") * (jogo.stats.n("critDano") - 1.0)) * maxf(1.0, jogo.stats.n("projeteis"))))
+	var vivos: int = jogo.arena.contagem_viva()
+	var mult_combo := 1.0 + float(combo) * float(jogo.esp.get("comboBonus", Bal.COMBO_BONUS_POR))
+	var mult_aglom := Mecanicas.fator_aglomeracao(vivos)
+	var mult_total := mult_combo * mult_aglom
+	lbl_ouro_mult.text = ("ouro ×%.2f" % mult_total) if mult_total > 1.02 else ""
+	lbl_ouro_mult.add_theme_color_override("font_color", UI.OURO.lerp(UI.VERDE, clampf((mult_total - 1.0) / 2.0, 0.0, 1.0)))
+
 	lbl_fps.text = ("%d fps · %d inim." % [int(Engine.get_frames_per_second()), jogo.arena.inimigos.size()]) if bool(Cfg.get_v("mostrar_fps", false)) else ""
 	lbl_velocidade.text = "×%d" % int(jogo.velocidade)
 
