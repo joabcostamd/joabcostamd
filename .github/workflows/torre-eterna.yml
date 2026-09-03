@@ -43,7 +43,15 @@ jobs:
           echo "$saida"
           echo "$saida" | grep -q "===STATUS=== PASS"
 
-      - name: Portão 2 — conteúdo obedece ao contrato
+      - name: Portão 2 — convenções do projeto (linter)
+        working-directory: torre-eterna
+        run: |
+          set -euo pipefail
+          saida=$(godot --headless --path . -s res://tools/lint.gd 2>&1)
+          echo "$saida"
+          echo "$saida" | grep -q "===STATUS=== PASS"
+
+      - name: Portão 3 — conteúdo obedece ao contrato
         working-directory: torre-eterna
         run: |
           set -euo pipefail
@@ -51,7 +59,7 @@ jobs:
           echo "$saida"
           echo "$saida" | grep -q "===STATUS=== PASS"
 
-      - name: Portão 3 — testes da simulação
+      - name: Portão 4 — testes da simulação
         working-directory: torre-eterna
         run: |
           set -euo pipefail
@@ -59,7 +67,7 @@ jobs:
           echo "$saida"
           echo "$saida" | grep -q "===STATUS=== PASS"
 
-      - name: Portão 4 — desempenho com 500 inimigos
+      - name: Portão 5 — desempenho com 500 inimigos
         working-directory: torre-eterna
         run: |
           set -euo pipefail
@@ -67,7 +75,7 @@ jobs:
           echo "$saida"
           echo "$saida" | grep -q "===STATUS=== PASS"
 
-      - name: Portão 5 — verificação estrutural do kit
+      - name: Portão 6 — verificação estrutural do kit
         working-directory: torre-eterna
         run: |
           set -euo pipefail

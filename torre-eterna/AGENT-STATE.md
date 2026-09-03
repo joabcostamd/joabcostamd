@@ -16,11 +16,11 @@
 
 ## Contagem
 
-- scripts: 79
+- scripts: 80
 - cenas: 1
 - recursos: 1
 - modelos3d: 0
-- strings_auditadas: 68
+- strings_auditadas: 73
 
 ## Inventario do projeto
 

@@ -8,7 +8,7 @@
 ![GDScript](https://img.shields.io/badge/GDScript-2.0-478CBF)
 ![Arte](https://img.shields.io/badge/Arte-100%25%20procedural-a855f7)
 ![Áudio](https://img.shields.io/badge/Áudio-sintetizado-f472b6)
-![Testes](https://img.shields.io/badge/Testes-167%2F167-4ade80)
+![Testes](https://img.shields.io/badge/Testes-191%2F191-4ade80)
 
 ---
 
@@ -45,6 +45,9 @@ godot --headless --path . -s res://tools/verificar.gd
 
 # Suíte de testes da simulação — 112 testes, sem mocks
 godot --headless --path . -s res://tools/testes.gd
+
+# Convenções do projeto (emoji na interface, print solto, painel órfão, mídia)
+godot --headless --path . -s res://tools/lint.gd
 
 # Validação do conteúdo (ids, atributos, condições, cores, referências, curvas)
 godot --headless --path . -s res://tools/validar_dados.gd

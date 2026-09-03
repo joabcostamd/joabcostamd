@@ -15,8 +15,8 @@ extends Node
 ## O resto se liga sozinho aos sinais do `Bus`.
 
 const VOZES := 24
-const ORCAMENTO_JOGANDO_MS := 2.0
-const ORCAMENTO_OCIOSO_MS := 9.0
+const ORCAMENTO_JOGANDO_MS := 3.0
+const ORCAMENTO_OCIOSO_MS := 12.0
 const FATIA := 256            # amostras por passada da fábrica
 const ESSENCIAIS := 8         # sons que nascem antes da trilha
 const DIST_MAX := 3200.0
@@ -176,7 +176,6 @@ func _montar_fila() -> void:
 func _gerar_fatia() -> void:
 	if _fila.is_empty() and _fabrica == null:
 		gerando = false
-		print("===AUDIO=== fim da geracao t=%.1fs %s" % [Time.get_ticks_msec() / 1000.0, estado()])
 		if musica != null and not musica.tocando and musica.pronta():
 			musica.iniciar()
 		return
@@ -206,7 +205,6 @@ func _guardar(item: Array, fluxo: AudioStreamWAV) -> void:
 		bancos[str(item[1])] = fluxo
 	else:
 		musica.definir_banco(str(item[1]), fluxo)
-		print("===AUDIO=== banco %s t=%.1fs" % [str(item[1]), Time.get_ticks_msec() / 1000.0])
 		# a trilha entra assim que tem percussão e um baixo
 		if not musica.tocando and musica.pronta():
 			musica.iniciar()

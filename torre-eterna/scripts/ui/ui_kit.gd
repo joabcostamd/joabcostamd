@@ -31,8 +31,11 @@ const MOEDA_COR := {
 	"ouro": Color("#fbbf24"), "gemas": Color("#f472b6"), "fragmentos": Color("#38bdf8"),
 	"nucleos": Color("#a855f7"), "eter": Color("#fb7185"), "poeira": Color("#94a3b8"),
 }
+## Nome do ícone VETORIAL de cada moeda (ver scripts/ui/icone.gd).
+## Emoji não entra em texto de interface: a fonte padrão não tem glifo.
 const MOEDA_ICONE := {
-	"ouro": "🪙", "gemas": "💎", "fragmentos": "💠", "nucleos": "🌌", "eter": "✴️", "poeira": "✨",
+	"ouro": "ouro", "gemas": "gema", "fragmentos": "fragmento",
+	"nucleos": "nucleo", "eter": "eter", "poeira": "poeira",
 }
 
 # ------------------------------------------------------------------ escala
@@ -232,7 +235,10 @@ static func scroll() -> ScrollContainer:
 ## Texto de moeda com ícone e cor.
 static func moeda(chave: String, valor_log: float, tamanho: int = 15) -> HBoxContainer:
 	var h := hbox(4)
-	h.add_child(rotulo(str(MOEDA_ICONE.get(chave, "•")), tamanho))
+	var ic := Control.new()
+	ic.set_script(load("res://scripts/ui/icone_control.gd"))
+	h.add_child(ic)
+	ic.configurar(str(MOEDA_ICONE.get(chave, "ouro")), MOEDA_COR.get(chave, TEXTO), float(tamanho))
 	h.add_child(rotulo(Fmt.big(valor_log), tamanho, MOEDA_COR.get(chave, TEXTO)))
 	return h
 

@@ -84,12 +84,12 @@ static func catalogo() -> Dictionary:
 	# O chefe cai como um prédio: sub grave, destroços e uma queda de tom longa.
 	c["morte_chefe"] = _e([
 		{"onda": "dente", "f0": 260.0, "f1": 42.0, "curva": 1.5, "dur": 1.3,
-		 "vozes": 3, "detune": 0.35, "atk": 0.004, "dec": 0.9, "sus": 0.12,
-		 "rel": 0.35, "lp0": 3000.0, "lp1": 260.0, "sat": 0.5, "vol": 0.85},
-		{"onda": "ruido", "dur": 1.0, "atk": 0.002, "dec": 0.85, "sus": 0.08,
-		 "rel": 0.15, "lp0": 2600.0, "lp1": 180.0, "vol": 0.55},
+		 "vozes": 3, "detune": 0.35, "atk": 0.004, "dec": 0.45, "sus": 0.1,
+		 "rel": 0.7, "lp0": 3000.0, "lp1": 260.0, "sat": 0.5, "vol": 0.85},
+		{"onda": "ruido", "dur": 1.0, "atk": 0.002, "dec": 0.4, "sus": 0.07,
+		 "rel": 0.5, "lp0": 2600.0, "lp1": 180.0, "vol": 0.55},
 		{"onda": "senoide", "f0": 120.0, "f1": 28.0, "curva": 1.2, "dur": 1.7,
-		 "atk": 0.01, "dec": 1.2, "sus": 0.1, "rel": 0.45, "vol": 0.9},
+		 "atk": 0.01, "dec": 0.6, "sus": 0.09, "rel": 1.0, "vol": 0.9},
 		{"onda": "quadrada", "f0": 900.0, "f1": 180.0, "dur": 0.25, "atraso": 0.02,
 		 "atk": 0.001, "dec": 0.2, "rel": 0.05, "lp0": 6000.0, "lp1": 1200.0, "vol": 0.35},
 	], -4.0, 0.03, 0.4, 0.95)
@@ -104,13 +104,13 @@ static func catalogo() -> Dictionary:
 	], -10.0, 0.1, 0.09)
 
 	c["torre_destruida"] = _e([
-		{"onda": "ruido", "dur": 1.8, "atk": 0.005, "dec": 1.3, "sus": 0.1,
-		 "rel": 0.5, "lp0": 3200.0, "lp1": 110.0, "vol": 0.8},
-		{"onda": "senoide", "f0": 95.0, "f1": 22.0, "curva": 1.3, "dur": 2.2,
-		 "atk": 0.01, "dec": 1.6, "sus": 0.08, "rel": 0.6, "vol": 1.0},
-		{"onda": "dente", "f0": 320.0, "f1": 34.0, "curva": 1.7, "dur": 1.4,
-		 "vozes": 3, "detune": 0.4, "atk": 0.004, "dec": 1.0, "sus": 0.08,
-		 "rel": 0.4, "lp0": 2400.0, "lp1": 180.0, "sat": 0.5, "vol": 0.6},
+		{"onda": "ruido", "dur": 1.5, "atk": 0.005, "dec": 0.5, "sus": 0.06,
+		 "rel": 0.9, "lp0": 3200.0, "lp1": 110.0, "vol": 0.8},
+		{"onda": "senoide", "f0": 95.0, "f1": 22.0, "curva": 1.3, "dur": 1.9,
+		 "atk": 0.01, "dec": 0.65, "sus": 0.06, "rel": 1.15, "vol": 1.0},
+		{"onda": "dente", "f0": 320.0, "f1": 34.0, "curva": 1.7, "dur": 1.2,
+		 "vozes": 3, "detune": 0.4, "atk": 0.004, "dec": 0.4, "sus": 0.07,
+		 "rel": 0.7, "lp0": 2400.0, "lp1": 180.0, "sat": 0.5, "vol": 0.6},
 	], -3.0, 0.01, 1.0, 0.95)
 
 	# --- economia -----------------------------------------------------
@@ -175,11 +175,11 @@ static func catalogo() -> Dictionary:
 	], -7.0, 0.02, 0.5)
 
 	c["prestigio"] = _e(Synth.sequencia(
-		{"onda": "triangulo", "f0": 261.63, "dur": 1.0, "vozes": 2, "detune": 0.1,
-		 "atk": 0.006, "dec": 0.5, "sus": 0.25, "rel": 0.4, "lp0": 7000.0,
+		{"onda": "triangulo", "f0": 261.63, "dur": 0.85, "vozes": 2, "detune": 0.1,
+		 "atk": 0.006, "dec": 0.3, "sus": 0.22, "rel": 0.5, "lp0": 7000.0,
 		 "vol": 0.55}, [0, 7, 12, 16, 19, 24], 0.13, 0.9) + [
-		{"onda": "senoide", "f0": 65.4, "dur": 1.8, "atk": 0.02, "dec": 0.9,
-		 "sus": 0.25, "rel": 0.7, "vol": 0.7},
+		{"onda": "senoide", "f0": 65.4, "dur": 1.7, "atk": 0.02, "dec": 0.6,
+		 "sus": 0.22, "rel": 0.95, "vol": 0.7},
 		{"onda": "senoide", "f0": 1046.5, "f1": 1568.0, "curva": 0.6, "dur": 1.2,
 		 "atraso": 0.5, "atk": 0.25, "dec": 0.5, "sus": 0.2, "rel": 0.45,
 		 "fm_ratio": 2.0, "fm_index": 0.6, "fm_decai": 2.0, "vol": 0.3},

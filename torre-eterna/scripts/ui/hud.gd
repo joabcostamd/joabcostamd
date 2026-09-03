@@ -361,7 +361,7 @@ func _atualizar_lento() -> void:
 	var onda := int(s["onda"])
 	lbl_onda.text = "%s %d" % [Txt.t("onda"), onda]
 	if bool(s["modo_farm"]):
-		lbl_onda.text += "  🎯"
+		lbl_onda.text += "  · FARM"
 	var nec := maxi(1, int(s["necessarios"]))
 	barra_onda.value = clampf(float(s["mortos_na_onda"]) / float(nec), 0.0, 1.0)
 	if bool(s["em_chefe"]):
@@ -481,7 +481,7 @@ func _alternar_mira() -> void:
 	var i := modos.find(atual)
 	var novo := str(modos[(i + 1) % modos.size()])
 	jogo.definir_mira(novo)
-	Bus.toast("Mira: " + novo, "info", "🎯")
+	Bus.toast(Txt.t("mira") + ": " + novo, "info", "alvo")
 
 func _pulsar_nivel() -> void:
 	UI.pulsar(lbl_nivel, UI.OURO)

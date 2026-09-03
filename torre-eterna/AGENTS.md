@@ -5,11 +5,12 @@ As regras genéricas do **KIT-GODOT-V1** valem aqui; abaixo estão as **regras d
 
 ---
 
-## Portões — rode os quatro antes de dizer que terminou
+## Portões — rode os cinco antes de dizer que terminou
 
 ```bash
 cd torre-eterna
 godot --headless --path . -s res://tools/verificar.gd       # todo script compila, dados presentes
+godot --headless --path . -s res://tools/lint.gd            # convenções do projeto
 godot --headless --path . -s res://tools/validar_dados.gd   # conteúdo obedece ao contrato
 godot --headless --path . -s res://tools/testes.gd          # 112 testes da simulação
 godot --headless --path . -s res://agent_verify.gd          # verificação estrutural do kit

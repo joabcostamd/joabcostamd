@@ -80,7 +80,7 @@ func abrir(nome: String) -> void:
 	fechar()
 	var caminho := str(PAINEIS[nome])
 	if not ResourceLoader.exists(caminho):
-		Bus.toast("Painel em construção: " + nome, "info", "🚧")
+		Bus.toast("Painel em construção: " + nome, "info", "cadeado")
 		return
 	var script := load(caminho)
 	if script == null:
@@ -145,7 +145,11 @@ func _toast(texto: String, tipo: String, icone: String) -> void:
 	cx.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var h := UI.hbox(8)
 	if icone != "":
-		h.add_child(UI.rotulo(icone, 17))
+		# `icone` é NOME de ícone vetorial (ver scripts/ui/icone.gd), nunca emoji
+		var ic := Control.new()
+		ic.set_script(load("res://scripts/ui/icone_control.gd"))
+		h.add_child(ic)
+		ic.configurar(icone, cor, 18)
 	h.add_child(UI.rotulo(texto, 15, cor))
 	cx.add_child(h)
 	caixa_toast.add_child(cx)
