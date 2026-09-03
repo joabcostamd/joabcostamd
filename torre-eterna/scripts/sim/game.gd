@@ -177,9 +177,14 @@ func simular(dt: float) -> void:
 	Mecanicas.atualizar_retomada(dt, self)
 	Mecanicas.decair_adaptacao(dt, self.s)
 
-	arena.reconstruir_grade()
 	Combate.atualizar_status(dt, self)
 	EnemyAI.atualizar(dt, self)
+	# A grade se reconstrói DEPOIS do movimento. Antes vinha primeiro, então a
+	# torre e o dano em área consultavam posições de um quadro atrás: quem
+	# tivesse acabado de mudar de célula (e o teleporte muda sempre) ficava
+	# invisível para o splash. De quebra, a contagem de vivos que o diretor usa
+	# para fechar a onda passa a ser a deste quadro.
+	arena.reconstruir_grade()
 	torre.atualizar(dt)
 	torre.atualizar_projeteis(dt)
 	Economia.atualizar_coletaveis(dt, self)
@@ -676,6 +681,15 @@ func _resetar_run() -> void:
 	s["combo"] = {"atual": 0, "melhor": 0, "timer": 0.0}
 	s["modo_farm"] = false
 	s["desafios"]["ativo"] = ""
+	# Estado volátil da run anterior. Ascender com o tempo congelado, silenciado
+	# ou com um buraco negro na tela deixava tudo isso ligado na run nova.
+	tempo_congelado = 0.0
+	silenciado = 0.0
+	hitstop = 0.0
+	fila_misseis = null
+	buraco_negro = null
+	parasitas = 0
+	coleta_instantanea = false
 	arena.limpar_tudo()
 	torre = TorreSim.new(self)
 	diretor = Diretor.new(self)

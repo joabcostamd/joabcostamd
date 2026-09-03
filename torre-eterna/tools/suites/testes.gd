@@ -359,6 +359,16 @@ func t_prestigio() -> void:
 	ok("mantem recorde global", int(jogo.s["onda_maxima_global"]) >= 60)
 	ok("conta ascensao", int(jogo.s["prestigio"]["ascensoes"]) == 1)
 
+	# Ascender com o tempo congelado deixava o congelamento ligado na run nova.
+	jogo.tempo_congelado = 9.0
+	jogo.silenciado = 5.0
+	jogo.parasitas = 7
+	jogo.s["onda_maxima"] = 60
+	jogo.s["onda_maxima_global"] = 60
+	jogo.ascender()
+	ok("ascender limpa o estado volatil",
+		jogo.tempo_congelado == 0.0 and jogo.silenciado == 0.0 and jogo.parasitas == 0)
+
 	# --- as colecoes eternas precisam atravessar TODOS os prestigios ---
 	# A Transcendencia monta um estado novo do zero; o Album e o Panteao ja
 	# foram apagados por ela uma vez, e o Panteao e o unico sistema em que o
