@@ -80,7 +80,7 @@ func _construir() -> void:
 	centro.alignment = BoxContainer.ALIGNMENT_CENTER
 	centro.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(centro)
-	lbl_onda = UI.titulo("ONDA 1", 24)
+	lbl_onda = UI.titulo(Txt.t("onda") + " 1", 24)
 	lbl_onda.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	centro.add_child(lbl_onda)
 	barra_onda = UI.barra(UI.ACENTO, 7)
@@ -198,17 +198,17 @@ func _construir() -> void:
 	menu.offset_right = 620
 	add_child(menu)
 	var paineis := [
-		["upgrades", "espada", "Melhorias (Q)", UI.VERMELHO],
-		["talentos", "arvore", "Talentos (W)", UI.VERDE],
-		["cartas", "carta", "Cartas (E)", UI.ACENTO],
-		["prestigio", "prestigio", "Prestígio (R)", UI.ACENTO2],
-		["reliquias", "reliquia", "Relíquias", UI.OURO],
-		["missoes", "missao", "Missões", UI.LARANJA],
-		["desafios", "desafio", "Desafios", UI.ROSA],
-		["conquistas", "trofeu", "Conquistas (T)", UI.OURO],
-		["codex", "livro", "Codex", UI.TEXTO2],
-		["stats", "stats", "Estatísticas", UI.TEXTO2],
-		["config", "engrenagem", "Configurações (O)", UI.TEXTO2],
+		["upgrades", "espada", Txt.t("p_upgrades") + " (Q)", UI.VERMELHO],
+		["talentos", "arvore", Txt.t("p_talentos") + " (W)", UI.VERDE],
+		["cartas", "carta", Txt.t("p_cartas") + " (E)", UI.ACENTO],
+		["prestigio", "prestigio", Txt.t("p_prestigio") + " (R)", UI.ACENTO2],
+		["reliquias", "reliquia", Txt.t("p_reliquias"), UI.OURO],
+		["missoes", "missao", Txt.t("p_missoes"), UI.LARANJA],
+		["desafios", "desafio", Txt.t("p_desafios"), UI.ROSA],
+		["conquistas", "trofeu", Txt.t("p_conquistas") + " (T)", UI.OURO],
+		["codex", "livro", Txt.t("p_codex"), UI.TEXTO2],
+		["stats", "stats", Txt.t("p_stats"), UI.TEXTO2],
+		["config", "engrenagem", Txt.t("p_config") + " (O)", UI.TEXTO2],
 	]
 	for p in paineis:
 		var b := _botao_com_icone(str(p[1]), str(p[2]), p[3], func(): painel_pedido.emit(str(p[0])))
@@ -228,10 +228,10 @@ func _construir() -> void:
 	acoes.alignment = BoxContainer.ALIGNMENT_END
 	add_child(acoes)
 	lbl_velocidade = UI.rotulo("×1", 15, UI.ACENTO)
-	acoes.add_child(_botao_com_icone("velocidade", "Velocidade do jogo (Espaço)", UI.ACENTO, _alternar_velocidade))
+	acoes.add_child(_botao_com_icone("velocidade", Txt.t("velocidade"), UI.ACENTO, _alternar_velocidade))
 	acoes.add_child(lbl_velocidade)
-	acoes.add_child(_botao_com_icone("alvo", "Modo de mira", UI.VERDE, _alternar_mira))
-	acoes.add_child(_botao_com_icone("salvar", "Salvar agora (F5)", UI.TEXTO2, func(): jogo.salvar(); Bus.toast("Jogo salvo", "bom")))
+	acoes.add_child(_botao_com_icone("alvo", Txt.t("mira"), UI.VERDE, _alternar_mira))
+	acoes.add_child(_botao_com_icone("salvar", Txt.t("salvar_agora") + " (F5)", UI.TEXTO2, func(): jogo.salvar(); Bus.toast(Txt.t("jogo_salvo"), "bom")))
 
 	# a Purga fica à esquerda da barra de habilidades, com destaque próprio
 	var b_purga := Button.new()
@@ -345,7 +345,7 @@ func _atualizar_lento() -> void:
 		cx.visible = chave in ["ouro", "gemas"] or not Big.is_zero(v)
 
 	var onda := int(s["onda"])
-	lbl_onda.text = "ONDA %d" % onda
+	lbl_onda.text = "%s %d" % [Txt.t("onda"), onda]
 	if bool(s["modo_farm"]):
 		lbl_onda.text += "  🎯"
 	var nec := maxi(1, int(s["necessarios"]))
@@ -366,14 +366,14 @@ func _atualizar_lento() -> void:
 	if tem_escudo:
 		barra_escudo.value = Big.frac(torre["escudo"], torre["escudo_max"])
 
-	lbl_nivel.text = "Nível %d" % int(s["nivel"])
+	lbl_nivel.text = "%s %d" % [Txt.t("nivel"), int(s["nivel"])]
 	barra_xp.value = Economia.progresso_nivel(s)
 	var pts := int(s["pontos_talento"])
 	aviso_pontos.text = ("  ●%d" % pts) if pts > 0 else ""
 
 	if Mecanicas.em_retomada(s):
 		var r: Dictionary = s["retomada"]
-		lbl_retomada.text = "RETOMADA ×%d  ·  alvo: onda %d" % [int(Mecanicas.RETOMADA_VELOCIDADE), int(r["alvo"])]
+		lbl_retomada.text = "%s ×%d  ·  %s: %s %d" % [Txt.t("retomada"), int(Mecanicas.RETOMADA_VELOCIDADE), Txt.t("alvo"), Txt.t("onda").to_lower(), int(r["alvo"])]
 	else:
 		lbl_retomada.text = ""
 
@@ -381,12 +381,12 @@ func _atualizar_lento() -> void:
 	lbl_combo.text = ("%d×" % combo) if combo >= 5 else ""
 	lbl_combo.add_theme_color_override("font_color", UI.OURO.lerp(UI.VERMELHO, clampf(float(combo) / 150.0, 0.0, 1.0)))
 
-	lbl_dps.text = "DPS ~%s" % Fmt.big(Big.mul_f(jogo.stats.b("dano"), jogo.stats.n("cadencia") * jogo.stats.n("multiplicador") * (1.0 + jogo.stats.n("critChance") * (jogo.stats.n("critDano") - 1.0)) * maxf(1.0, jogo.stats.n("projeteis"))))
+	lbl_dps.text = Txt.t("dps") + " ~%s" % Fmt.big(Big.mul_f(jogo.stats.b("dano"), jogo.stats.n("cadencia") * jogo.stats.n("multiplicador") * (1.0 + jogo.stats.n("critChance") * (jogo.stats.n("critDano") - 1.0)) * maxf(1.0, jogo.stats.n("projeteis"))))
 	var vivos: int = jogo.arena.contagem_viva()
 	var mult_combo := 1.0 + float(combo) * float(jogo.esp.get("comboBonus", Bal.COMBO_BONUS_POR))
 	var mult_aglom := Mecanicas.fator_aglomeracao(vivos)
 	var mult_total := mult_combo * mult_aglom
-	lbl_ouro_mult.text = ("ouro ×%.2f" % mult_total) if mult_total > 1.02 else ""
+	lbl_ouro_mult.text = ("%s ×%.2f" % [Txt.t("m_ouro"), mult_total]) if mult_total > 1.02 else ""
 	lbl_ouro_mult.add_theme_color_override("font_color", UI.OURO.lerp(UI.VERDE, clampf((mult_total - 1.0) / 2.0, 0.0, 1.0)))
 
 	lbl_fps.text = ("%d fps · %d inim." % [int(Engine.get_frames_per_second()), jogo.arena.inimigos.size()]) if bool(Cfg.get_v("mostrar_fps", false)) else ""

@@ -8,7 +8,7 @@
 ![GDScript](https://img.shields.io/badge/GDScript-2.0-478CBF)
 ![Arte](https://img.shields.io/badge/Arte-100%25%20procedural-a855f7)
 ![Áudio](https://img.shields.io/badge/Áudio-sintetizado-f472b6)
-![Testes](https://img.shields.io/badge/Testes-112%2F112-4ade80)
+![Testes](https://img.shields.io/badge/Testes-167%2F167-4ade80)
 
 ---
 
@@ -52,6 +52,12 @@ godot --headless --path . -s res://tools/validar_dados.gd
 # Simulador de balanceamento: roda horas de jogo em segundos e reporta o ritmo
 godot --headless --path . -s res://tools/sim_balance.gd -- 2
 
+# Teste de resistência: horas de jogo com invariantes checadas o tempo todo
+godot --headless --path . -s res://tools/soak.gd -- 3
+
+# Estresse de desempenho: 500 inimigos, perfil por subsistema
+godot --headless --path . -s res://tools/perf.gd -- 400
+
 # Verificação estrutural do kit (KIT-GODOT-V1)
 godot --headless --path . -s res://agent_verify.gd
 
@@ -77,6 +83,33 @@ xvfb-run -a --server-args="-screen 0 1280x720x24" godot --path . --resolution 12
 | **Meta** | 85 conquistas, 36 missões, passe de temporada de 40 níveis, 14 desafios, 20 eventos com escolha |
 | **Mundo** | 10 eras com paleta, céu, chão, música e regra próprias |
 | **Conforto** | Progresso offline, autosave, exportar/importar save, compra automática, aceleração do jogo |
+
+### As cinco mecânicas que só existem aqui
+
+**A Purga.** O núcleo da torre acumula carga sozinho. Soltar na faixa dourada
+(92%+) dá dano massivo em tudo, ouro extra e recarrega as habilidades. Deixar
+estourar desperdiça. Existe automação — e ela é **de propósito 40% pior** que a
+sua mão. É a única coisa que o jogo pede de você, e a razão para voltar à tela.
+
+**Álbum de Ecos.** Ver uma carta já é progresso permanente, imune a todos os
+prestígios. Duplicata deixa de ser lixo e vira micro-progresso — o medo de
+descartar simplesmente não existe neste jogo.
+
+**Adaptação do Enxame.** O mundo cria resistência ao elemento que você mais usa
+(até 62%) e esquece o que você abandona. A build ótima muda sozinha; você nunca
+chega ao "já resolvi, agora é só esperar".
+
+**O Peregrino.** Um inimigo raro que não ataca ninguém: atravessa a arena e vai
+embora. Matar rende 40× ouro. Poupar não rende nada — o jogo só conta, para
+sempre, e usa a contagem no final.
+
+**O Panteão.** Consagrar um conjunto completo de cartas **destrói aquelas cartas
+para sempre** em troca de um multiplicador eterno. É o único sistema em que você
+perde algo de verdade, e por isso o único em que a decisão pesa.
+
+E ainda: **A Retomada** (após o prestígio o jogo acelera 6× e reconstrói o
+império enquanto você assiste, com a marca da run anterior para ultrapassar) e
+a **Aglomeração** (o teto de entidades vira economia: tela cheia rende mais).
 
 ### Números
 - **22** tipos de inimigo · **9** modificadores de elite · **10** chefes · **2** super-chefes
