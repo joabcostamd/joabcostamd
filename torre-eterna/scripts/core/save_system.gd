@@ -99,8 +99,12 @@ func salvar(dados: Dictionary) -> bool:
 	var tmp := cam() + ".tmp"
 	var f := FileAccess.open(tmp, FileAccess.WRITE)
 	if f == null:
+		# Disco cheio, pasta sem permissao, arquivo travado por outro processo.
+		# Isto ia so para o console: quem joga via o jogo seguir normalmente e
+		# so descobria no proximo boot que as ultimas horas nao existiam.
 		ultimo_erro = Txt.f("sv_abrir_falhou", {"e": int(FileAccess.get_open_error())})
 		push_error(ultimo_erro)
+		Bus.toast(Txt.t("save_falhou"), "ruim", "cadeado")
 		return false
 	f.store_string(texto)
 	f.close()
@@ -117,6 +121,7 @@ func salvar(dados: Dictionary) -> bool:
 	if DirAccess.rename_absolute(tmp, cam()) != OK:
 		ultimo_erro = Txt.t("sv_substituir_falhou")
 		push_error(ultimo_erro)
+		Bus.toast(Txt.t("save_falhou"), "ruim", "cadeado")
 		DirAccess.remove_absolute(tmp)
 		return false
 	Bus.jogo_salvo.emit(texto.length())
@@ -164,8 +169,14 @@ func _ler(caminho: String) -> Dictionary:
 func existe_save() -> bool:
 	return FileAccess.file_exists(cam())
 
+## Apagar o save apaga TODOS os arquivos do save, quarentena inclusa.
+##
+## O `.corrompido` guarda um principal ilegivel para quem quiser tentar
+## recuperar depois. Mas ele ficava no disco para sempre: quem pedia "apagar
+## meu progresso" recomecava do zero com um arquivo antigo encostado ali, sem
+## nenhum jeito de tirar de dentro do jogo.
 func apagar() -> void:
-	for c in [cam(), cam_backup()]:
+	for c in [cam(), cam_backup(), cam_corrompido()]:
 		if FileAccess.file_exists(c):
 			DirAccess.remove_absolute(ProjectSettings.globalize_path(c))
 

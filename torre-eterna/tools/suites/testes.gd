@@ -1983,6 +1983,32 @@ func t_teto() -> void:
 		bonus_lista.remove_at(bonus_lista.size() - 1)
 	jogo.marcar_sujo()
 	jogo.recalcular()
+
+	# A lista de bonus permanentes e lida INTEIRA em todo recalculo de atributo
+	# — mais de dez mil por hora de jogo. Missao diaria repete todo dia, e cada
+	# conclusao empilhava uma linha nova: quem joga um mes carrega trinta copias
+	# da mesma frase, o save engorda e o recalculo fica mais caro a cada dia.
+	var lista_bp: Array = []
+	for i in 30:
+		Progresso.somar_bonus(lista_bp, {
+			"stat": "ganhoOuro", "tipoEfeito": "pct", "valor": 0.1, "fonte": "Missao diaria"})
+	ok("bonus repetido nao empilha linha", lista_bp.size() == 1, "%d linhas" % lista_bp.size())
+	ok("e o valor e a soma das trinta", perto(float(lista_bp[0]["valor"]), 3.0, 1e-9),
+		str(lista_bp[0]["valor"]))
+	for i in 4:
+		Progresso.somar_bonus(lista_bp, {
+			"stat": "ganhoOuro", "tipoEfeito": "mult", "valor": 2.0, "fonte": "Missao diaria"})
+	ok("mult com o mesmo nome vira linha propria", lista_bp.size() == 2)
+	ok("e mult multiplica em vez de somar", perto(float(lista_bp[1]["valor"]), 16.0, 1e-9),
+		str(lista_bp[1]["valor"]))
+	Progresso.somar_bonus(lista_bp, {
+		"stat": "dano", "tipoEfeito": "pct", "valor": 0.1, "fonte": "Missao diaria"})
+	Progresso.somar_bonus(lista_bp, {
+		"stat": "ganhoOuro", "tipoEfeito": "pct", "valor": 0.1, "fonte": "Conquista"})
+	ok("atributo diferente e fonte diferente continuam separados", lista_bp.size() == 4)
+	# E o caminho de verdade usa o somador, nao o append cru.
+	ok("a recompensa de atributo passa pelo somador",
+		_ler("res://scripts/sim/progress.gd").contains('somar_bonus(j.s["bonus_permanentes"]'))
 	jogo.arena.limpar_tudo()
 	# ...e o mesmo para os orbes, pelo contador que a Sobrecarga usa.
 	var extra_antes: int = jogo.torre.orbes_extra
@@ -3963,6 +3989,73 @@ func t_save() -> void:
 	var fonte_sv := _ler("res://scripts/core/save_system.gd")
 	ok("o laco da migracao tem limite proprio",
 		fonte_sv.contains("while v < VERSAO and degraus < VERSAO:"))
+
+	# 5. Exportar/importar: a caixa de texto do save e a outra porta de entrada
+	# de dados de fora, e ate agora ninguem tinha perguntado se ela fecha.
+	var original := {"versao": save.VERSAO, "onda": 77, "moedas": {"ouro": 3.5}}
+	var texto_exp: String = save.exportar(original)
+	ok("exportado leva a assinatura", texto_exp.begins_with(save.ASSINATURA))
+	var voltou: Dictionary = save.importar(texto_exp)
+	ok("importar devolve o que exportou", int(voltou.get("onda", -1)) == 77,
+		"erro: %s" % save.ultimo_erro)
+	# Um caractere trocado no meio do base64 e o conteudo vira outro. Sem a
+	# soma, isso entrava no jogo como estado valido.
+	var corte: int = texto_exp.length() - 6
+	var trocado: String = texto_exp.substr(0, corte) + ("A" if texto_exp[corte] != "A" else "B") \
+		+ texto_exp.substr(corte + 1)
+	ok("importar recusa texto adulterado", save.importar(trocado).is_empty())
+	ok("e diz que foi a soma de conferencia", save.ultimo_erro == Txt.t("sv_checksum"),
+		save.ultimo_erro)
+	ok("importar recusa texto sem assinatura", save.importar("nada disso").is_empty())
+	ok("importar recusa texto cortado", save.importar(save.ASSINATURA + "abc").is_empty())
+	ok("importar recusa base64 quebrado",
+		save.importar(save.ASSINATURA + save._checksum("!!!") + "|!!!").is_empty())
+	# A caixa de texto tambem passa pelo migrar: e o mesmo caminho do arquivo
+	# adulterado, so que sem precisar achar a pasta do save.
+	var colado: String = save.exportar({"versao": -999999999999.0, "onda": 12})
+	var t_col := Time.get_ticks_msec()
+	var vindo: Dictionary = save.importar(colado)
+	ok("save colado com versao absurda nao trava", Time.get_ticks_msec() - t_col < 200)
+	ok("save colado com versao absurda e migrado", int(vindo.get("onda", -1)) == 12)
+
+	# 6. As protecoes da escrita. Cada uma existe por um jeito de perder o
+	# progresso, e todas podiam sumir com a suite verde.
+	ok("[protecao] o save recusa nao-finito", fonte_sv.contains("if _tem_nao_finito(dados)"))
+	ok("[protecao] a escrita e atomica pelo temporario",
+		fonte_sv.contains('var tmp := cam() + ".tmp"') and fonte_sv.contains("rename_absolute(tmp, cam())"))
+	ok("[protecao] o temporario e conferido antes de virar o save",
+		fonte_sv.contains("var conferido := FileAccess.open(tmp, FileAccess.READ)"))
+	ok("[protecao] so conteudo valido vira backup",
+		fonte_sv.contains("if JSON.parse_string(conteudo) is Dictionary:"))
+	ok("[protecao] principal ilegivel vai para a quarentena",
+		fonte_sv.contains("rename_absolute(cam(), cam_corrompido())"))
+	# Quatro caminhos de falha na escrita; os quatro precisam aparecer para
+	# quem joga. Dois so falavam com o console.
+	ok("[protecao] toda falha de escrita avisa a pessoa",
+		fonte_sv.count('Bus.toast(Txt.t("save_falhou")') == 4,
+		"%d de 4" % fonte_sv.count('Bus.toast(Txt.t("save_falhou")'))
+	ok("[protecao] apagar leva a quarentena junto",
+		fonte_sv.contains("for c in [cam(), cam_backup(), cam_corrompido()]:"))
+
+	# 7. O saneador esta LIGADO no caminho do save, nao so testado a parte.
+	var onda_antes := int(jogo.s["onda"])
+	var ouro_antes := float(jogo.s["moedas"]["ouro"])
+	jogo.salvamento_travado = false
+	jogo.s["onda"] = 4242
+	jogo.s["moedas"]["ouro"] = INF
+	var gravou: bool = jogo.salvar()
+	ok("o save passa pelo saneador antes de gravar", gravou,
+		"salvar() devolveu false: o INF chegou no SaveSys")
+	var lido_sv: Dictionary = save.carregar()
+	var moedas_sv: Dictionary = lido_sv.get("moedas", {})
+	ok("e o que foi para o disco esta so", is_finite(float(moedas_sv.get("ouro", 0.0))),
+		str(moedas_sv.get("ouro", "?")))
+	ok("sem perder a partida junto", int(lido_sv.get("onda", -1)) == 4242)
+	jogo.s["onda"] = onda_antes
+	jogo.s["moedas"]["ouro"] = ouro_antes
+	save.apagar()
+	ok("apagar nao deixa arquivo para tras",
+		not FileAccess.file_exists(save.cam()) and not FileAccess.file_exists(save.cam_corrompido()))
 
 ## ------------------------------------------------------------ offline
 ## Le um arquivo inteiro, ou "" se nao der. So para os testes de save.

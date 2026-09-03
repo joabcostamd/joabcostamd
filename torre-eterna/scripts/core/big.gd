@@ -183,18 +183,3 @@ static func max_afford(budget: float, base: float, growth: float, owned: int, te
 	var k := int(floor(interno / (log(growth) / 2.302585092994046) + 1e-9))
 	return clampi(k, 0, teto)
 
-## ---------------------------------------------------------- serialização
-
-## Guardado como float puro no JSON (finito, seguro).
-static func to_save(a: float) -> float:
-	if a <= LIMIAR_ZERO:
-		return ZERO
-	return a
-
-static func from_save(v) -> float:
-	if v is float or v is int:
-		var f := float(v)
-		if is_nan(f) or is_inf(f):
-			return ZERO
-		return clampf(f, ZERO, MAX_LOG)
-	return ZERO

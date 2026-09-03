@@ -211,7 +211,7 @@ static func _dar_recompensa(r: Dictionary, j, fonte: String) -> void:
 			# ganhava nada. Agora vira bônus permanente no estado.
 			var alvo := str(r.get("stat", ""))
 			if alvo != "":
-				j.s["bonus_permanentes"].append({
+				somar_bonus(j.s["bonus_permanentes"], {
 					"stat": alvo,
 					"tipoEfeito": str(r.get("tipoEfeito", "flat")),
 					"valor": v,
@@ -219,6 +219,38 @@ static func _dar_recompensa(r: Dictionary, j, fonte: String) -> void:
 				})
 				j.marcar_sujo()
 		_: pass
+
+## Bônus permanente entra somando no que já existe, não empilhando linha nova.
+##
+## Missão diária repete todo dia. Cada conclusão empilhava um Dicionário novo,
+## e essa lista é lida inteira em TODO recálculo de atributo — são mais de dez
+## mil recálculos por hora de jogo. Um save de algumas semanas carregava
+## centenas de linhas idênticas: o arquivo engorda, o recálculo fica mais caro
+## a cada dia jogado, e o detalhamento do atributo vira uma parede de linhas
+## repetidas dizendo a mesma coisa.
+##
+## Somar dá exatamente o mesmo número — `flat` e `pct` somam, `mult`
+## multiplica, que é o que o StatEngine faz com as linhas separadas de
+## qualquer jeito — e prende o tamanho da lista ao número de combinações que o
+## conteúdo tem, em vez de ao número de dias que a pessoa jogou.
+static func somar_bonus(lista: Array, novo: Dictionary) -> void:
+	var eh_mult := str(novo.get("tipoEfeito", "flat")) == "mult"
+	for item in lista:
+		if not (item is Dictionary):
+			continue
+		var b: Dictionary = item
+		if str(b.get("stat", "")) != str(novo.get("stat", "")):
+			continue
+		if str(b.get("tipoEfeito", "flat")) != str(novo.get("tipoEfeito", "flat")):
+			continue
+		if str(b.get("fonte", "")) != str(novo.get("fonte", "")):
+			continue
+		if eh_mult:
+			b["valor"] = float(b.get("valor", 1.0)) * float(novo.get("valor", 1.0))
+		else:
+			b["valor"] = float(b.get("valor", 0.0)) + float(novo.get("valor", 0.0))
+		return
+	lista.append(novo)
 
 ## ------------------------------------------------------------- missões
 
