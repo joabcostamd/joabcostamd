@@ -1814,6 +1814,31 @@ func t_celebracao() -> void:
 	var fonte_bg := _ler("res://scripts/render/art_bg.gd")
 	ok("o brilho da era entra no desenho", fonte_bg.contains('ambiente.get("brilho"'))
 	ok("a saturacao da era entra no desenho", fonte_bg.contains('ambiente.get("saturacao"'))
+	# E O BRILHO TEM QUE ADICIONAR LUZ, NAO MULTIPLICAR.
+	#
+	# A primeira correcao multiplicava as cores por 0,78..1,00. Medi as dez eras
+	# depois e a medida me desmentiu: continuaram entre 2,3 e 7,3 de 255, porque
+	# as cores de fundo do JSON ja sao quase pretas e multiplicar quase-preto por
+	# menos de 1 so deixa mais preto — eu tinha escurecido as escuras em vez de
+	# clarear as claras. Somando na direcao do acento da era, medido de novo:
+	# 6,9 a 13,7. Este portao guarda a FORMA da conta, que e o que estava errado.
+	ok("o brilho soma luz em vez de multiplicar",
+		fonte_bg.contains("var luz := lerpf(0.02, 0.34, brilho)"),
+		"multiplicar cor quase-preta nao clareia nada")
+	ok("e a luz entra no matiz da propria era",
+		fonte_bg.contains("lerpf(s.r, acento.r, luz)"),
+		"luz cinza faz as eras diferirem de brilho e nao de clima")
+	# A faixa que a conta produz entre a era mais escura e a mais clara.
+	var luz_escura := lerpf(0.02, 0.34, 0.18)
+	var luz_clara := lerpf(0.02, 0.34, 0.90)
+	# 3,5x e o piso, e o numero saiu da conta e nao do chute: a faixa atual
+	# entrega 3,97x. Se alguem apertar a rampa a ponto de as eras voltarem a
+	# parecer a mesma, este portao reprova.
+	ok("a era mais clara recebe pelo menos 3,5x a luz da mais escura",
+		luz_clara >= luz_escura * 3.5,
+		"%.3f contra %.3f (razao %.2f)" % [luz_clara, luz_escura, luz_clara / maxf(0.0001, luz_escura)])
+	ok("e nem a mais clara passa de um terco do acento", luz_clara <= 0.34,
+		"o jogo se le em cima do fundo; fundo claro come contraste")
 	# E `chao.escala` era ignorado por dois tipos, entao duas duplas de eras
 	# desenhavam o mesmo chao com numeros diferentes no arquivo.
 	ok("as ondas do chao usam a escala da era",

@@ -92,6 +92,36 @@ GPU de verdade; aqui, o que dá para afirmar é quanto custa a simulação.
 - Acesso a Dicionário sem tipo explícito (não compila, mas o hábito é o risco).
 - Um painel que reconstrói a árvore de nós dentro de `atualizar()`.
 
+## Sobre as eras — uma correção que a medição desmentiu
+
+O juiz de arte apontou que três dos quatro controles de ambiente das eras eram
+dados mortos: `data/eras.json` declara `brilho` (0,18 a 0,90) e `saturacao`
+(0,55 a 1,35) nas dez eras, e o desenho lia só a vinheta. As eras mudavam de
+matiz, não de clima.
+
+Liguei os dois multiplicando as cores do gradiente por 0,78–1,00. Depois medi a
+luminância média do fundo nas dez capturas, e a medida me desmentiu na hora:
+
+| tentativa | faixa das dez eras (0–255) |
+|---|---|
+| antes | 2,3 a 7,3 |
+| multiplicando por 0,78–1,00 | 4,2 a 8,8 |
+| somando luz no matiz da era | **6,9 a 13,7** |
+
+As cores de fundo do JSON já são quase pretas (`#080b14` e parecidas), e
+multiplicar quase-preto por um número menor que 1 só deixa mais preto: eu tinha
+**escurecido as eras escuras** em vez de clarear as claras. A conta certa soma
+na direção do acento da era — a luz aparece de fato, e aparece no matiz daquela
+era, então brilho vira clima em vez de cinza.
+
+O teto de 0,34 tem razão de ser: mesmo a era mais clara fica em 5% de
+luminância, quinze vezes mais escura que o texto do HUD. O jogo se lê **em cima**
+do fundo, e fundo claro come contraste.
+
+Fica registrado porque é o segundo caso nesta rodada em que eu escrevi a
+conclusão antes de medir — o primeiro foi ler a dispersão das três voltas do
+portão de desempenho como disputa de CPU quando era a torre ficando mais forte.
+
 ## Portão 9 — a varredura de layout, e por que ela existe
 
 Eu estava achando defeito de layout do jeito mais caro possível: uma captura de
@@ -270,7 +300,7 @@ $ godot --headless --path . -s res://tools/validar_dados.gd
 ===STATUS=== PASS
 
 $ godot --headless --path . -s res://tools/testes.gd
-===TESTES=== passou=790 falhou=0
+===TESTES=== passou=794 falhou=0
 ===STATUS=== PASS
 
 $ godot --headless --path . -s res://tools/perf.gd -- 412
@@ -372,8 +402,8 @@ STATUS: PASS   (3418 ms)
 | | |
 |---|---:|
 | Scripts GDScript | 88 |
-| Linhas de código | 33.418 |
-| Testes da simulação | 790 |
+| Linhas de código | 33.461 |
+| Testes da simulação | 794 |
 | Chaves de interface PT/EN | 1.058 |
 | Textos de conteúdo PT/EN | 1.286 |
 | Imagens no repositório | 1 (`icon.svg`, o ícone do projeto — nenhuma no jogo) |

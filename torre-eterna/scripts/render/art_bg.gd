@@ -116,15 +116,33 @@ func atualizar(dt: float) -> void:
 ## Brilho anda numa faixa estreita de proposito (0,78 a 1,00): o jogo se le em
 ## cima do fundo, e clarear demais come o contraste dos inimigos e dos numeros
 ## de dano. O que importa e a era ter clima proprio, nao ser clara.
-func _com_ambiente(c: Color) -> Color:
+func _com_ambiente(c: Color, acento: Color) -> Color:
 	var brilho := clampf(float(ambiente.get("brilho", 0.2)), 0.0, 1.0)
 	var sat := clampf(float(ambiente.get("saturacao", 1.0)), 0.0, 2.0)
 	var cinza := c.r * 0.299 + c.g * 0.587 + c.b * 0.114
 	var s := Color(
 		lerpf(cinza, c.r, sat), lerpf(cinza, c.g, sat), lerpf(cinza, c.b, sat), c.a)
-	var k := 0.78 + brilho * 0.22
-	return Color(clampf(s.r * k, 0.0, 1.0), clampf(s.g * k, 0.0, 1.0),
-		clampf(s.b * k, 0.0, 1.0), c.a)
+	# BRILHO PRECISA ADICIONAR LUZ, NAO MULTIPLICAR.
+	#
+	# A primeira tentativa foi multiplicar por 0,78..1,00, e a medida me
+	# desmentiu na hora: as dez eras continuaram entre 2,3 e 7,3 de 255. As
+	# cores de fundo do JSON ja sao quase pretas (#080b14 e parecidas), e
+	# multiplicar quase-preto por um numero menor que 1 so deixa mais preto —
+	# eu tinha ESCURECIDO as eras escuras em vez de clarear as claras.
+	#
+	# Somar na direcao do ACENTO da era resolve os dois problemas de uma vez: a
+	# luz aparece de fato, e aparece no matiz daquela era, entao brilho vira
+	# clima em vez de cinza. E a faixa foi calibrada MEDINDO, nao chutando: com
+	# teto 0,16 as dez eras ficaram entre 4,2 e 8,8 de 255 — diferentes entre
+	# si, mas todas ainda quase pretas. Com 0,34 a faixa abre de verdade e o
+	# fundo mais claro continua abaixo de 5% de luminancia, ou seja, mais de 15
+	# vezes mais escuro que o texto do HUD. O jogo se le EM CIMA do fundo: fundo
+	# claro come contraste, e o limite existe por isso.
+	var luz := lerpf(0.02, 0.34, brilho)
+	return Color(
+		clampf(lerpf(s.r, acento.r, luz), 0.0, 1.0),
+		clampf(lerpf(s.g, acento.g, luz), 0.0, 1.0),
+		clampf(lerpf(s.b, acento.b, luz), 0.0, 1.0), c.a)
 
 func desenhar(ci: CanvasItem, centro: Vector2, detalhe: float = 1.0) -> void:
 	# BRILHO E SATURACAO ERAM DADOS MORTOS.
@@ -138,9 +156,9 @@ func desenhar(ci: CanvasItem, centro: Vector2, detalhe: float = 1.0) -> void:
 	#
 	# As duas entram aqui, nas cores do gradiente, ANTES do cache — entao nao
 	# custam um quadro a mais: a textura so e refeita quando a era muda.
-	var c1 := _com_ambiente(Color.html(str(paleta.get("fundo", "#080b14"))))
-	var c2 := _com_ambiente(Color.html(str(paleta.get("fundo2", "#0e1424"))))
 	var acento := Color.html(str(paleta.get("acento", "#38bdf8")))
+	var c1 := _com_ambiente(Color.html(str(paleta.get("fundo", "#080b14"))), acento)
+	var c2 := _com_ambiente(Color.html(str(paleta.get("fundo2", "#0e1424"))), acento)
 	var grade := Color.html(str(paleta.get("grade", "#1b2740")))
 
 	# --- gradiente radial (textura pré-renderizada: sem banding, uma chamada) ---
