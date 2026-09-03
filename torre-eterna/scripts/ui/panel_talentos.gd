@@ -157,7 +157,7 @@ func _criar_no(def: Dictionary, malha: Control, cor: Color) -> void:
 	var centro := _centro(def)
 
 	var b := Button.new()
-	b.focus_mode = Control.FOCUS_NONE
+	b.focus_mode = Control.FOCUS_ALL
 	b.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	b.custom_minimum_size = Vector2(tam, tam)
 	b.size = Vector2(tam, tam)

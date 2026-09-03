@@ -393,7 +393,7 @@ func _reconstruir() -> void:
 func _base_botao(w: float, h: float) -> Button:
 	var b := Button.new()
 	b.custom_minimum_size = Vector2(w, h)
-	b.focus_mode = Control.FOCUS_NONE
+	b.focus_mode = Control.FOCUS_ALL
 	b.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	for est in ["normal", "hover", "pressed", "focus", "disabled"]:
 		b.add_theme_stylebox_override(est, UI.caixa_vazia())

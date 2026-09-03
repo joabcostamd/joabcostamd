@@ -29,6 +29,11 @@ func _ready() -> void:
 	# rotulo nunca abre.
 	UI.liberar_dicas(self)
 	UI.saltar(janela, 1.04)
+	# TAB PRECISA DE UM LUGAR PARA COMECAR. Sem foco inicial, quem abre o painel
+	# pelo teclado tem que apertar Tab um numero imprevisivel de vezes ate algo
+	# acender. O primeiro foco vai para dentro do CORPO, nao para o X de fechar:
+	# senao o primeiro Enter fecharia o painel que a pessoa acabou de abrir.
+	_focar_primeiro.call_deferred()
 	_reencaixar.call_deferred()
 	get_tree().get_root().size_changed.connect(_reencaixar)
 
@@ -130,7 +135,7 @@ func _montar_janela() -> void:
 	cabecalho.add_child(UI.espacador())
 	var fechar := Button.new()
 	fechar.custom_minimum_size = Vector2(36, 32)
-	fechar.focus_mode = Control.FOCUS_NONE
+	fechar.focus_mode = Control.FOCUS_ALL
 	fechar.tooltip_text = Txt.t("fechar") + " (Esc)"
 	fechar.pressed.connect(fechar_painel)
 	var icf := Control.new()
@@ -176,6 +181,25 @@ func fechar_painel() -> void:
 		g.fechar()
 	else:
 		queue_free()
+
+## Primeiro controle focavel de dentro do corpo, em profundidade.
+func _focar_primeiro() -> void:
+	if corpo == null or not is_inside_tree():
+		return
+	var alvo := _primeiro_focavel(corpo)
+	if alvo != null:
+		alvo.grab_focus()
+
+func _primeiro_focavel(no: Node) -> Control:
+	for filho in no.get_children():
+		if filho is Control:
+			var c: Control = filho
+			if c.visible and c.focus_mode == Control.FOCUS_ALL:
+				return c
+			var dentro := _primeiro_focavel(c)
+			if dentro != null:
+				return dentro
+	return null
 
 ## ------------------------------------------------------------- utilidades
 

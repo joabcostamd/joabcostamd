@@ -14,6 +14,12 @@ Itens sem prova foram descartados pelos próprios céticos e não entraram.
 > reprova se ele voltar. Corrigir sem trancar foi exatamente como a Adaptação
 > do Enxame ficou morta por meses com a suíte verde.
 
+**Estado em 601 asserções:** grupos 1, 2 e 5 fechados. Do grupo 3 restam quatro
+itens de projeto (ritmo, camadas 2/3, uniformidade das melhorias, Retomada) mais
+um novo de desempenho; do grupo 4 resta um (navegação por teclado); do grupo 6
+resta um (recolar a saída de execução do `QUALIDADE.md`). Cada item marcado
+✅ tem, no commit que o fechou, a asserção que reprova se ele voltar.
+
 ---
 
 ## 1. Portões que não medem o que dizem medir — ✅ FECHADO
@@ -45,53 +51,59 @@ suíte reprovou):
 | 2.5 | `cuspir` anunciada no codex e sem braço — o inimigo chamado "atirador" nunca atirou. `ondaMax` era a linha de chegada de 12 dos 14 desafios e ninguém lia: `encerrar_desafio(true)` não tinha chamador, então o desafio **nunca terminava** e a recompensa era inalcançável | ✅ |
 | 2.6 | `salvamento_travado`: o boot trancava, o sinal `save_ilegivel` não tinha ouvinte e **não existia caminho para religar** — quem tivesse save corrompido jogava para sempre sem gravar, sem saber por quê | ✅ Avisa e oferece a chave em Configurações |
 
-## 3. Economia e ritmo (o mais caro de consertar, e o que mais decide)
+## 3. Economia e ritmo — 🟡 PARCIAL (3.2 e 3.5 fechados)
 
 | # | Pendência | Prova |
 |---|---|---|
 | 3.1 | **O ritmo é ditado pelo spawner, não pelo poder.** Passada a onda ~50, comprar dano não encurta nada dentro de uma run: medido a ~490 ondas/hora, quase uma reta, com 21 ordens de grandeza de dano sobrando. | `tools/duracao.gd` (medição), `scripts/sim/waves.gd` |
-| 3.2 | **O catálogo de melhorias esvazia** (as 33 com teto ficam no máximo). O portão mede a onda FINAL em vez de QUANDO esvaziou, então não pega. | `tools/suites/sim_balance.gd` |
+| 3.2 | ✅ **FECHADO.**  **O catálogo de melhorias esvazia** (as 33 com teto ficam no máximo). O portão mede a onda FINAL em vez de QUANDO esvaziou, então não pega. | `tools/suites/sim_balance.gd` |
 | 3.3 | **Camadas 2 e 3 fora de alcance prático.** Medido com prestígio ligado: nível 500 (máximo) em **5 h**, conquistas travam em **58/85**, e a Singularidade (8 ascensões) **não chegou em 7 h** — o jogador tinha 5 e desacelerando. A Transcendência pede 5 singularidades. | `tools/duracao.gd` |
 | 3.4 | **39 melhorias uniformes** — quase todas "+X%", sem decisão de build. | `data/upgrades.json` |
-| 3.5 | **Nada mata a torre hoje**, e morrer limpa a tela de graça: não há estado de derrota real. | `scripts/sim/game.gd` |
+| 3.5 | ✅ **FECHADO.**  **Nada mata a torre hoje**, e morrer limpa a tela de graça: não há estado de derrota real. | `scripts/sim/game.gd` |
 | 3.6 | **A Retomada é corrida impossível de ganhar**: 10 s reais × 6 = 60 s de jogo, contra 16–18 s por onda. Termina por relógio, não por progresso. | `scripts/sim/mecanicas.gd` |
 
-## 4. Experiência do jogador (juice, QoL, engajamento)
+### 3.7 — NOVO, medido nesta rodada
 
 | # | Pendência | Prova |
 |---|---|---|
-| 4.1 | **Painel de Melhorias** (o mais aberto do jogo): sem aba "Tudo" (7 cliques para achar o que dá para comprar), esquece a aba a cada abertura, ×10/×25 travam em vez de degradar, e o botão diz o custo e **nunca o ganho**. | `scripts/ui/panel_upgrades.gd` |
-| 4.2 | **O HUD só acende dois botões** (talentos e melhorias). Missão pronta, nível de temporada, carta nova e prestígio disponível são invisíveis — e coletar missão é a **única** porta de XP da temporada. | `scripts/ui/hud.gd` |
-| 4.3 | **Rodapé com 12 glifos idênticos e sem rótulo no segundo 0**, cinco deles vazios na onda 1. O jogo já sabe fazer certo (Farm e Infinito só aparecem quando existem) e não aplica aos doze. | `scripts/ui/hud.gd` |
-| 4.4 | **Idioma fixo em `pt`** — não existe um `OS.get_locale` no repositório, com 1.027 chaves em inglês prontas. | `scripts/core/config.gd` |
-| 4.5 | **Ascender pesa menos na tela que uma Purga**, e o banner mostra o identificador cru. | `scripts/sim/game.gd` |
-| 4.6 | **As 10 Eras nunca dizem o nome.** `Bus.era_mudou` tem um único ouvinte: o pintor de fundo. Cada era traz `regra.texto` escrito e revisado, nunca mostrado. | `scripts/sim/waves.gd` |
-| 4.7 | **Álbum de Ecos sem placar.** A palavra "album" não aparece uma vez em `scripts/ui/`. Paga bônus permanente e o jogador não vê. | `scripts/ui/` |
-| 4.8 | **Fim de sessão braçal**: falta "Coletar tudo (N)" e "Reciclar duplicadas (N)" — os dois critérios já existem prontos no código. | `scripts/ui/panel_missoes.gd`, `scripts/sim/loot.gd` |
+| 3.7 | **A perna de 160 vivos do portão de desempenho continua acima do orçamento**: 8.537 us contra 4.000. Caiu de 22.672 us (2,7×) consertando morteiro, vida de projétil, dano contínuo e corrente de raio; o que sobra é o custo intrínseco de 53 impactos por passo — doze perfurações vezes quinze projéteis. Mexer nisso é mudar o jogo, não otimizá-lo. A perna do JOGO REAL passa com folga (1.854 us de 4.000). | `tools/perf.gd -- 412` |
+
+## 4. Experiência do jogador — 🟡 PARCIAL (só 4.9 em aberto)
+
+| # | Pendência | Prova |
+|---|---|---|
+| 4.1 | ✅ **FECHADO.**  **Painel de Melhorias** (o mais aberto do jogo): sem aba "Tudo" (7 cliques para achar o que dá para comprar), esquece a aba a cada abertura, ×10/×25 travam em vez de degradar, e o botão diz o custo e **nunca o ganho**. | `scripts/ui/panel_upgrades.gd` |
+| 4.2 | ✅ **FECHADO.**  **O HUD só acende dois botões** (talentos e melhorias). Missão pronta, nível de temporada, carta nova e prestígio disponível são invisíveis — e coletar missão é a **única** porta de XP da temporada. | `scripts/ui/hud.gd` |
+| 4.3 | ✅ **FECHADO.**  **Rodapé com 12 glifos idênticos e sem rótulo no segundo 0**, cinco deles vazios na onda 1. O jogo já sabe fazer certo (Farm e Infinito só aparecem quando existem) e não aplica aos doze. | `scripts/ui/hud.gd` |
+| 4.4 | ✅ **FECHADO.**  **Idioma fixo em `pt`** — não existe um `OS.get_locale` no repositório, com 1.027 chaves em inglês prontas. | `scripts/core/config.gd` |
+| 4.5 | ✅ **FECHADO.**  **Ascender pesa menos na tela que uma Purga**, e o banner mostra o identificador cru. | `scripts/sim/game.gd` |
+| 4.6 | ✅ **FECHADO.**  **As 10 Eras nunca dizem o nome.** `Bus.era_mudou` tem um único ouvinte: o pintor de fundo. Cada era traz `regra.texto` escrito e revisado, nunca mostrado. | `scripts/sim/waves.gd` |
+| 4.7 | ✅ **FECHADO.**  **Álbum de Ecos sem placar.** A palavra "album" não aparece uma vez em `scripts/ui/`. Paga bônus permanente e o jogador não vê. | `scripts/ui/` |
+| 4.8 | ✅ **FECHADO.**  **Fim de sessão braçal**: falta "Coletar tudo (N)" e "Reciclar duplicadas (N)" — os dois critérios já existem prontos no código. | `scripts/ui/panel_missoes.gd`, `scripts/sim/loot.gd` |
 | 4.9 | **Navegação por teclado inexistente**: 296 controles interativos, 11 focáveis, nenhum `Button`. | `scripts/ui/ui_kit.gd` |
-| 4.10 | **Contraste WCAG cobre 3 de ~18 cores de texto**, e há reprovação viva não detectada. | `tools/suites/testes.gd` |
+| 4.10 | ✅ **FECHADO.**  **Contraste WCAG cobre 3 de ~18 cores de texto**, e há reprovação viva não detectada. | `tools/suites/testes.gd` |
 
-## 5. Áudio
+## 5. Áudio — ✅ FECHADO
 
 | # | Pendência | Prova |
 |---|---|---|
-| 5.1 | **Purga perfeita e Purga estourada fazem o mesmo som** — a qualidade (0,18 a 1,0) é calculada e descartada. | `scripts/sim/mecanicas.gd` |
-| 5.2 | **Escada do combo é microtonal** e briga com a trilha (linear na razão, não em semitons). | `scripts/audio/audio_engine.gd` |
-| 5.3 | **`_rng` da música é ressemeado a cada passo** — a variação que deveria existir não acontece. | `scripts/audio/music.gd` |
-| 5.4 | **Nove efeitos são o mesmo patch de triângulo transposto** (compra, nível, carta, missão, conquista…). Diferenciar por excitação, não por transposição. | `scripts/audio/sfx.gd` |
-| 5.5 | **"Eu machuquei" e "eu apanhei" são a mesma receita** transposta. | `scripts/audio/sfx.gd` |
-| 5.6 | **Um WAV por nome**: impacto/tiro/morte viram britadeira. Faltam variantes de ruído em rodízio. | `scripts/audio/audio_engine.gd` |
-| 5.7 | **A trilha não sabe da Purga** nem distingue 5% de vida de 100%. | `scripts/audio/music.gd` |
-| 5.8 | **Sinos que não são sinos**: `ouro` e `moeda` usam razões FM inteiras (timbre de órgão, não de metal). | `scripts/audio/sfx.gd` |
+| 5.1 | ✅ **FECHADO.**  **Purga perfeita e Purga estourada fazem o mesmo som** — a qualidade (0,18 a 1,0) é calculada e descartada. | `scripts/sim/mecanicas.gd` |
+| 5.2 | ✅ **FECHADO.**  **Escada do combo é microtonal** e briga com a trilha (linear na razão, não em semitons). | `scripts/audio/audio_engine.gd` |
+| 5.3 | ✅ **FECHADO.**  **`_rng` da música é ressemeado a cada passo** — a variação que deveria existir não acontece. | `scripts/audio/music.gd` |
+| 5.4 | ✅ **FECHADO.**  **Nove efeitos são o mesmo patch de triângulo transposto** (compra, nível, carta, missão, conquista…). Diferenciar por excitação, não por transposição. | `scripts/audio/sfx.gd` |
+| 5.5 | ✅ **FECHADO.**  **"Eu machuquei" e "eu apanhei" são a mesma receita** transposta. | `scripts/audio/sfx.gd` |
+| 5.6 | ✅ **FECHADO.**  **Um WAV por nome**: impacto/tiro/morte viram britadeira. Faltam variantes de ruído em rodízio. | `scripts/audio/audio_engine.gd` |
+| 5.7 | ✅ **FECHADO.**  **A trilha não sabe da Purga** nem distingue 5% de vida de 100%. | `scripts/audio/music.gd` |
+| 5.8 | ✅ **FECHADO.**  **Sinos que não são sinos**: `ouro` e `moeda` usam razões FM inteiras (timbre de órgão, não de metal). | `scripts/audio/sfx.gd` |
 
-## 6. Documentação que não bate com o código
+## 6. Documentação que não bate com o código — 🟡 PARCIAL (só 6.1 em aberto)
 
 | # | Pendência | Prova |
 |---|---|---|
 | 6.1 | **`QUALIDADE.md` publica saída "colada de execução — nunca de memória" que foi editada à mão.** Pelo menos quatro blocos: `validar_dados` sem os 4 avisos, `perf` sem a perna de folga, `sim_balance` sem a tabela, e uma linha (`STATUS: PASS (kit 1.5.2, 0 falhas)`) que **nenhum caminho de código emite**. Num documento cuja tese é honestidade. | `docs/QUALIDADE.md`, `agent_verify.gd` |
-| 6.2 | **Badge do README anuncia 195 testes**; o portão mede 370. É a primeira tela do documento. | `README.md` |
-| 6.3 | **"Contagem honesta" erra a própria soma**: 61/11/28, não 59/11/30. | `docs/QUALIDADE.md` |
-| 6.4 | **`docs/PLANO.md` está fora do portão de doc** e apodreceu em quatro números. | `docs/PLANO.md` |
+| 6.2 | ✅ **FECHADO.**  **Badge do README anuncia 195 testes**; o portão mede 370. É a primeira tela do documento. | `README.md` |
+| 6.3 | ✅ **FECHADO.**  **"Contagem honesta" erra a própria soma**: 61/11/28, não 59/11/30. | `docs/QUALIDADE.md` |
+| 6.4 | ✅ **FECHADO.**  **`docs/PLANO.md` está fora do portão de doc** e apodreceu em quatro números. | `docs/PLANO.md` |
 
 ---
 

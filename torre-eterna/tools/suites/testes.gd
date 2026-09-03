@@ -83,7 +83,7 @@ func rodar(cena: SceneTree) -> void:
 	# Agora cada grupo tem o proprio minimo. Perder um bloco reprova NOMEANDO o
 	# bloco, e acrescentar teste continua nunca reprovando.
 	var minimo_por_grupo := {
-		"Acessibilidade": 10, "Alcancavel": 8, "Big": 12,
+		"Acessibilidade": 17, "Alcancavel": 8, "Big": 12,
 		"Chaves dinamicas": 3, "Combate": 9, "Defesa": 27,
 		"Dicas": 5, "Economia": 9, "Elites": 11,
 		"Eventos": 12, "Feedback": 2, "Ferramentas": 3, "Daltonismo": 9, "Tempo": 5, "Conteudo lido": 21, "Fmt": 6,
@@ -2473,6 +2473,33 @@ func t_acessibilidade() -> void:
 		reprovados.is_empty(), str(reprovados))
 	ok("hierarquia preservada", _contraste(UI.TEXTO, UI.PAINEL2) > _contraste(UI.TEXTO2, UI.PAINEL2)
 		and _contraste(UI.TEXTO2, UI.PAINEL2) > _contraste(UI.TEXTO3, UI.PAINEL2))
+
+	# NAVEGACAO POR TECLADO. Eram 296 controles interativos e 11 focaveis,
+	# NENHUM deles um `Button`: Tab nao andava, Enter nao acionava, e quem nao
+	# usa mouse simplesmente nao jogava. O contorno de foco ja estava desenhado
+	# no tema desde sempre — so nao havia o que contornar.
+	var b_kit := UI.botao("x")
+	ok("o botao do kit e focavel", b_kit.focus_mode == Control.FOCUS_ALL)
+	b_kit.free()
+	var txt_kit := _ler("res://scripts/ui/ui_kit.gd")
+	ok("o tema desenha o contorno de foco", txt_kit.contains('t.set_stylebox("focus", "Button"'))
+	var txt_pb := _ler("res://scripts/ui/panel_base.gd")
+	ok("o X de fechar e alcancavel pelo teclado",
+		txt_pb.contains("fechar.focus_mode = Control.FOCUS_ALL"))
+	ok("abrir um painel poe o foco em algum lugar", txt_pb.contains("_focar_primeiro"))
+	ok("...e nao no botao de fechar", txt_pb.contains("_primeiro_focavel(corpo)"))
+	# E os controles de Configuracoes — onde quem depende de teclado mais precisa.
+	var txt_cfg := _ler("res://scripts/ui/panel_config.gd")
+	var sem_foco := 0
+	for linha_cfg in txt_cfg.split("\n"):
+		if linha_cfg.contains("focus_mode = Control.FOCUS_NONE"):
+			sem_foco += 1
+	ok("nenhum controle de Configuracoes fica fora do teclado", sem_foco == 0, str(sem_foco))
+	# O rodape do HUD continua SEM foco de proposito: e barra de ferramentas por
+	# cima da arena e tem atalho proprio. Se alguem ligar foco la, isto avisa.
+	var txt_hud2 := _ler("res://scripts/ui/hud.gd")
+	ok("o rodape do HUD segue com atalho, nao com foco",
+		txt_hud2.contains("b.focus_mode = Control.FOCUS_NONE"))
 
 	# FUNDO DESTACADO NAO PODE CLAREAR. Onze lugares pintavam a caixa "completa"
 	# com `PAINEL2.lerp(cor, 0.18)`, mais claro que o painel: cada um derrubava

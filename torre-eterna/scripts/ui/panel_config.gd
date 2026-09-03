@@ -846,7 +846,7 @@ func _opcao(b: Dictionary, icone: String, cor: Color, nome: String, desc: String
 
 func _check(chave: String, dica: String) -> CheckButton:
 	var cb := CheckButton.new()
-	cb.focus_mode = Control.FOCUS_NONE
+	cb.focus_mode = Control.FOCUS_ALL
 	cb.tooltip_text = dica
 	cb.button_pressed = bool(Cfg.get_v(chave, false))
 	cb.size_flags_vertical = Control.SIZE_SHRINK_CENTER
@@ -855,7 +855,7 @@ func _check(chave: String, dica: String) -> CheckButton:
 
 func _menu(chave: String, itens: Array, valores: Array, dica: String) -> OptionButton:
 	var ob := OptionButton.new()
-	ob.focus_mode = Control.FOCUS_NONE
+	ob.focus_mode = Control.FOCUS_ALL
 	ob.tooltip_text = dica
 	ob.custom_minimum_size = Vector2(186, 36)
 	ob.size_flags_vertical = Control.SIZE_SHRINK_CENTER
@@ -881,7 +881,7 @@ func _slider(chave: String, minimo: float, maximo: float, passo: float, inteiro:
 	sl.value = float(Cfg.get_v(chave, minimo))
 	sl.custom_minimum_size = Vector2(200, 22)
 	sl.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	sl.focus_mode = Control.FOCUS_NONE
+	sl.focus_mode = Control.FOCUS_ALL
 	sl.tooltip_text = dica
 	h.add_child(sl)
 	var lv := UI.rotulo(str(formato.call(sl.value)), 14, UI.ACENTO)

@@ -247,10 +247,18 @@ static func titulo(texto: String, tamanho: int = 22) -> Label:
 	l.add_theme_constant_override("outline_size", 0)
 	return l
 
+## NAVEGACAO POR TECLADO. Eram 296 controles interativos e 11 focaveis, NENHUM
+## deles um `Button`: todo botao nascia `FOCUS_NONE`, entao Tab nao andava, Enter
+## nao acionava e quem nao usa mouse simplesmente nao jogava. O tema ja tinha o
+## contorno de foco desenhado desde sempre — so nao havia o que contornar.
+##
+## O botao do rodape do HUD continua sem foco de proposito: aquilo e barra de
+## ferramentas por cima da arena, tem atalho proprio (Q/W/E/R/T/O) e um anel de
+## foco piscando sobre o campo atrapalharia mais do que ajuda.
 static func botao(texto: String, ao_clicar: Callable = Callable(), dica: String = "") -> Button:
 	var b := Button.new()
 	b.text = texto
-	b.focus_mode = Control.FOCUS_NONE
+	b.focus_mode = Control.FOCUS_ALL
 	b.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	if dica != "":
 		b.tooltip_text = dica
