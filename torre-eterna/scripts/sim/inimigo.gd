@@ -63,6 +63,9 @@ var sem_dano_t := 0.0
 # --- comportamento ---
 var t := 0.0
 var cd := 0.0
+## Relógio próprio da mecânica `engolir`: ela roda mais rápido que `cd`, que já
+## está ocupado marcando o intervalo entre invocações e pulsos.
+var eng_cd := 0.0
 ## Recarga do golpe de contato. Inimigo comum morre ao encostar, mas o chefe
 ## fica — e sem isto ele batia a cada passo de fisica, 60 vezes por segundo.
 var cd_contato := 0.0

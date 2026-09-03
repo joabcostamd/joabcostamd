@@ -54,6 +54,7 @@ func rodar(cena: SceneTree) -> void:
 	_contagens()
 	_bases_batem()
 	_escala_coerente()
+	_mecanicas_lidas()
 	_ids_unicos()
 	_efeitos()
 	_condicoes()
@@ -281,6 +282,32 @@ func _escala_coerente() -> void:
 			if not Progresso.escala_com_onda(tipo):
 				erros.append("%s %s: escalaComOnda com meta '%s', que zera no prestigio — a meta fica inalcancavel" % [
 					par[0], str(mi.get("id", "?")), tipo])
+
+## Toda `mecanica` declarada por um chefe precisa ter quem a leia.
+##
+## Cinco delas — invocar, ninhada, engolir, combinado e refletir — estavam
+## anunciadas no Codex, com texto escrito e traduzido, e NENHUM leitor: o
+## chefe cujo nome é a mecânica lutava como um chefe comum com mais vida. É a
+## mesma classe de bug do tipo de condição órfão, e merece o mesmo portão.
+func _mecanicas_lidas() -> void:
+	var leitores := ""
+	for arq in ["res://scripts/sim/game.gd", "res://scripts/sim/enemy_ai.gd",
+			"res://scripts/sim/tower.gd", "res://scripts/sim/combat.gd"]:
+		var f := FileAccess.open(arq, FileAccess.READ)
+		if f == null:
+			continue
+		leitores += f.get_as_text()
+		f.close()
+	var vistas := {}
+	for grupo in [Dados.chefes, Dados.super_chefes, Dados.inimigos, Dados.elites]:
+		for def in grupo:
+			var mec := str(def.get("mecanica", ""))
+			if mec == "" or vistas.has(mec):
+				continue
+			vistas[mec] = true
+			if not leitores.contains("\"%s\"" % mec):
+				erros.append("mecanica '%s' (%s) e declarada no conteudo e ninguem a le" % [
+					mec, str(def.get("id", "?"))])
 
 func _eh_chefe(id: String) -> bool:
 	for c in Dados.chefes + Dados.super_chefes:

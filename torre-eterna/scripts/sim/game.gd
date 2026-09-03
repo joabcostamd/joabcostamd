@@ -453,6 +453,90 @@ func atualizar_chefe(e: Inimigo, dt: float) -> void:
 				e.cd = 6.0
 				Bus.particulas.emit("fissura", e.pos, {"cor": "#a855f7"})
 				invulneravel = maxf(0.0, invulneravel - 0.5)
+		# As quatro abaixo estavam anunciadas no Codex e nao eram lidas por
+		# ninguem: o Tita de Ferro, a Rainha do Enxame, o Devorador de Mundos e
+		# os dois super-chefes lutavam como chefes comuns, so com mais vida.
+		# O campo `invoca` do JSON tambem era ignorado — `spawn_onda` sorteia do
+		# pool geral da onda em vez da lista que o chefe declara.
+		"invocar":
+			# "Invoca reforcos entre as fases e deixa que eles gastem seus tiros."
+			e.cd -= dt
+			if e.cd <= 0.0:
+				e.cd = maxf(4.0, 9.0 - 1.5 * float(e.fase))
+				_invocar_do_chefe(e, 2 + e.fase)
+		"ninhada":
+			# "Poe crias mais rapido do que voce as mata."
+			e.cd -= dt
+			if e.cd <= 0.0:
+				e.cd = maxf(1.1, 2.4 - 0.35 * float(e.fase))
+				_invocar_do_chefe(e, 2 + e.fase)
+		"engolir":
+			# "Engole projeteis e coletaveis, e engorda com cada gole."
+			_engolir(e, dt)
+		"combinado":
+			# "Tudo que o Enxame aprendeu, ao mesmo tempo, em fases." Cada fase
+			# acrescenta uma mecanica em vez de trocar: e o que "ao mesmo tempo"
+			# quer dizer.
+			e.cd -= dt
+			if e.cd <= 0.0:
+				e.cd = maxf(2.2, 5.0 - 0.7 * float(e.fase))
+				dano_na_torre(Bal.mul_contato(e, int(s["onda"]), 1.4), e)
+				Bus.particulas.emit("pulso", e.pos, {"raio": 240.0, "cor": "#fb923c"})
+				tremor(9.0, 0.28)
+				if e.fase >= 1:
+					_invocar_do_chefe(e, 1 + e.fase)
+				if e.fase >= 2:
+					silenciado = maxf(silenciado, 2.5)
+			if e.fase >= 1:
+				_engolir(e, dt)
+			if e.fase >= 2 and e.sem_dano_t > 1.5:
+				var teto_c := Big.max_b(e.escudo_max, Big.mul_f(e.hp_max, 0.25))
+				e.escudo = Big.min_b(teto_c, Big.add(e.escudo, Big.mul_f(e.hp_max, 0.05 * dt)))
+
+## Solta reforcos da lista `invoca` do chefe. Se ele nao declarar nenhuma, cai
+## no pool da onda — mas a lista, quando existe, e quem manda: e ela que faz o
+## Tita de Ferro chamar brutos e a Rainha chamar enxame.
+func _invocar_do_chefe(e: Inimigo, quantos: int) -> void:
+	var lista: Array = e.def.get("invoca", [])
+	var onda := int(s["onda"])
+	for i in mini(quantos, 6):
+		var def_cria: Dictionary = {}
+		if not lista.is_empty():
+			def_cria = Dados.inimigo_por_id.get(str(lista[i % lista.size()]), {})
+		if def_cria.is_empty():
+			var pool := Dados.pool_da_onda(onda)
+			if pool.is_empty():
+				return
+			def_cria = pool[i % pool.size()]
+		var cria := EnemyAI.criar(def_cria, onda, self, {"perto_de": e.pos})
+		if cria != null:
+			cria.pos = e.pos + Vector2(randf_range(-40.0, 40.0), randf_range(-40.0, 40.0))
+	Bus.particulas.emit("pulso", e.pos, {"raio": 120.0, "cor": e.cor})
+
+## "Engole projeteis e coletaveis, e engorda com cada gole": tudo que estiver
+## perto some, e o chefe recupera um pedaco da vida maxima por gole.
+func _engolir(e: Inimigo, dt: float) -> void:
+	e.eng_cd = float(e.eng_cd) - dt
+	if e.eng_cd > 0.0:
+		return
+	e.eng_cd = 0.25
+	var raio := float(e.def.get("raio", 90.0)) + 46.0
+	var goles := 0
+	for i in range(arena.projeteis.size() - 1, -1, -1):
+		var p: Projetil = arena.projeteis[i]
+		if not p.ativo or str(p.origem) != "torre":
+			continue
+		if p.pos.distance_to(e.pos) <= raio:
+			arena.soltar_projetil(i)
+			goles += 1
+	for i in range(arena.coletaveis.size() - 1, -1, -1):
+		var c = arena.coletaveis[i]
+		if c.pos.distance_to(e.pos) <= raio:
+			arena.soltar_coletavel(i)
+			goles += 1
+	if goles > 0:
+		e.hp = Big.min_b(e.hp_max, Big.add(e.hp, Big.mul_f(e.hp_max, 0.006 * float(goles))))
+		Bus.particulas.emit("impacto", e.pos, {"ang": 0.0, "cor": e.cor, "crit": false})
 
 func adicionar_buff(b: Dictionary) -> void:
 	for existente in s["buffs"]:

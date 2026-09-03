@@ -44,7 +44,7 @@ cd torre-eterna
 # Verificação estrutural (todo script compila? dados presentes?)
 godot --headless --path . -s res://tools/verificar.gd
 
-# Suíte de testes da simulação — 320 testes, sem mocks
+# Suíte de testes da simulação — 323 testes, sem mocks
 godot --headless --path . -s res://tools/testes.gd
 
 # Convenções do projeto (emoji na interface, print solto, painel órfão, mídia)
@@ -88,16 +88,22 @@ xvfb-run -a --server-args="-screen 0 1280x720x24" godot --path . --resolution 12
 | **Mundo** | 10 eras com paleta, céu, chão, música e regra próprias |
 | **Conforto** | Progresso offline, autosave, exportar/importar save, compra automática, aceleração do jogo |
 
-### As cinco mecânicas que só existem aqui
+### As mecânicas que dão a cara do jogo
+
+Duas ressalvas honestas antes da lista. Coleção que dá bônus e sacrifício que
+compra multiplicador permanente são convenções velhas do gênero — o Álbum e o
+Panteão são variações com torque próprio, não invenções. O que vale como raro
+está dito em cada verbete.
 
 **A Purga.** O núcleo da torre acumula carga sozinho. Soltar na faixa dourada
 (92%+) dá dano massivo em tudo, ouro extra e recarrega as habilidades. Deixar
 estourar desperdiça. Existe automação — e ela é **de propósito 40% pior** que a
 sua mão. É a única coisa que o jogo pede de você, e a razão para voltar à tela.
 
-**Álbum de Ecos.** Ver uma carta já é progresso permanente, imune a todos os
-prestígios. Duplicata deixa de ser lixo e vira micro-progresso — o medo de
-descartar simplesmente não existe neste jogo.
+**Álbum de Ecos.** Bônus de coleção existe desde sempre; o torque aqui é
+registrar ao **ver**, não ao guardar. Duplicata deixa de ser lixo e vira
+micro-progresso, e o medo de descartar não existe — porque descartar não perde
+nada. Imune a todos os prestígios.
 
 **Adaptação do Enxame.** O mundo cria resistência ao elemento que você mais usa
 (até 62%) e esquece o que você abandona. A build ótima muda sozinha; você nunca
@@ -107,20 +113,22 @@ chega ao "já resolvi, agora é só esperar".
 embora. Matar rende 40× ouro. Poupar não rende nada — o jogo só conta, para
 sempre, e usa a contagem no final.
 
-**O Panteão.** Consagrar um conjunto completo de cartas **destrói aquelas cartas
-para sempre** em troca de um multiplicador eterno. É o único sistema em que você
-perde algo de verdade, e por isso o único em que a decisão pesa.
+**O Panteão.** Sacrifício por bônus permanente é rocha-mãe do gênero; o torque
+é exigir um **conjunto completo**, o que transforma a decisão em "desmontar uma
+build que funciona". Consagrar destrói aquelas cartas para sempre em troca de um
+multiplicador eterno. É o único sistema em que você perde algo de verdade.
 
-E ainda: **A Retomada** (após o prestígio o jogo acelera 6× e reconstrói o
-império enquanto você assiste, com a marca da run anterior para ultrapassar) e
-a **Aglomeração** (o teto de entidades vira economia: tela cheia rende mais).
+E ainda: **A Retomada** — fast-forward pós-prestígio é comum, mas correr contra
+o fantasma da run anterior, ultrapassando-o ao vivo, é o que faz o reset deixar
+de ser anticlímax. E a **Aglomeração**, uma curva de ouro por lotação: o teto de
+entidades vira economia, e a tela cheia rende mais em vez de render menos.
 
 ### Números
 - **23** tipos de inimigo · **9** modificadores de elite · **10** chefes · **2** super-chefes
 - **40** entradas de lore em 8 capítulos · **30** dicas
 - **6** moedas · **6** raridades · **41** atributos de torre
-- **979** chaves de interface e **1.286** textos de conteúdo, em português e inglês
-- **320** testes da simulação · **0** imagem · **0** arquivo de som
+- **980** chaves de interface e **1.286** textos de conteúdo, em português e inglês
+- **323** testes da simulação · **0** imagem · **0** arquivo de som
 
 ---
 

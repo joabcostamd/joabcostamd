@@ -97,7 +97,19 @@ func _reconstruir() -> void:
 func _linha_bloqueada(def: Dictionary) -> void:
 	var l := linha("cadeado", UI.TEXTO3)
 	var req: Dictionary = def.get("requer", {})
-	var motivo: String = Txt.f("upg_desbloqueia_onda", {"n": int(req.get("onda", 0))}) if req.has("onda") else Txt.f("upg_desbloqueia_upg", {"u": str(req.get("upgrade", "?"))})
+	# Mostrava o id interno: "Desbloqueia com dano_critico". Quem joga nunca viu
+	# esse nome — na tela a melhoria se chama "Ogiva Perfurante".
+	var motivo := ""
+	if req.has("onda"):
+		motivo = Txt.f("upg_desbloqueia_onda", {"n": int(req.get("onda", 0))})
+	else:
+		var id_req := str(req.get("upgrade", ""))
+		var def_req: Dictionary = Dados.upgrade_por_id.get(id_req, {})
+		var nome_req := txt(def_req, "nome") if not def_req.is_empty() else id_req
+		if req.has("nivel"):
+			motivo = Txt.f("upg_desbloqueia_upg_nv", {"u": nome_req, "n": int(req["nivel"])})
+		else:
+			motivo = Txt.f("upg_desbloqueia_upg", {"u": nome_req})
 	l["textos"].add_child(UI.rotulo("???", 15, UI.TEXTO3))
 	l["textos"].add_child(UI.rotulo(motivo, 12, UI.TEXTO3))
 	lista.add_child(l["caixa"])

@@ -47,6 +47,7 @@ func rodar(cena: SceneTree) -> void:
 	t_longo_prazo()
 	t_numeros_dano()
 	t_chaves_dinamicas()
+	t_pista_de_ouro()
 	t_dicas()
 	t_audio()
 	t_save()
@@ -1155,6 +1156,29 @@ func t_dicas() -> void:
 	ok("no sem dica continua ignorando", mudo.mouse_filter == Control.MOUSE_FILTER_IGNORE)
 	raiz.free()
 	raiz2.free()
+
+## Aos sete minutos o jogador passivo estava com milhares de ouro parado e o
+## MESMO dano do segundo zero: o jogo tinha uma unica pista persistente de
+## "voce tem algo para gastar", e ela era so para talento.
+func t_pista_de_ouro() -> void:
+	g("Pista de ouro")
+	var hud = load("res://scripts/ui/hud.gd").new()
+	hud.jogo = jogo
+	jogo.s["moedas"]["ouro"] = Big.ZERO
+	jogo.s["upgrades"] = {}
+	jogo.marcar_sujo()
+	jogo.recalcular()
+	ok("sem ouro, nenhuma urgencia", is_equal_approx(hud._urgencia_melhorias(), 0.0),
+		"%.3f" % hud._urgencia_melhorias())
+	# ouro que compra exatamente a mais barata
+	jogo.s["moedas"]["ouro"] = Big.from(30.0)
+	var u_pouco: float = hud._urgencia_melhorias()
+	ok("com ouro para uma, urgencia acende", u_pouco > 0.0, "%.3f" % u_pouco)
+	jogo.s["moedas"]["ouro"] = Big.from(1.0e9)
+	var u_muito: float = hud._urgencia_melhorias()
+	ok("com ouro parado demais, urgencia satura", u_muito >= u_pouco and u_muito <= 1.0,
+		"%.3f -> %.3f" % [u_pouco, u_muito])
+	hud.free()
 
 ## Chave montada em tempo de execucao — `Txt.t("m_" + tipo)` — nao da para
 ## conferir lendo o codigo, e a regra de i18n do linter pula essas de proposito.

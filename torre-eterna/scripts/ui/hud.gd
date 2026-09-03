@@ -364,6 +364,44 @@ func _reconstruir_habilidades() -> void:
 	# nos novos entram com as dicas fechadas de fabrica
 	UI.liberar_dicas(caixa_hab)
 
+## Quanto o botao de Melhorias deve chamar a atencao. Devolve 0 quando nao da
+## para comprar nada, e vai ate 1 quando o ouro parado passa de 25x a melhoria
+## mais barata disponivel.
+func _urgencia_melhorias() -> float:
+	if jogo == null:
+		return 0.0
+	var ouro: float = jogo.s["moedas"]["ouro"]
+	var mais_barato := INF
+	for def in Dados.upgrades:
+		if not jogo.upgrade_disponivel(def):
+			continue
+		var nivel := int(jogo.s["upgrades"].get(str(def.get("id", "")), 0))
+		var maxn := int(def.get("max", -1))
+		if maxn >= 0 and nivel >= maxn:
+			continue
+		var custo := Big.geo_sum(float(def.get("base", 1)), float(def.get("cresc", 1.1)), nivel, 1)
+		if not Big.gte(ouro, custo):
+			continue
+		mais_barato = minf(mais_barato, custo)
+	if is_inf(mais_barato):
+		return 0.0
+	# em log10, "quantas vezes cabe" e uma subtracao
+	var folga := ouro - mais_barato
+	return clampf(folga / 1.4, 0.15, 1.0)
+
+func _atualizar_brilho_melhorias() -> void:
+	var b = botoes_painel.get("upgrades", null)
+	if b == null:
+		return
+	var u := _urgencia_melhorias()
+	if u <= 0.0:
+		b.modulate = Color.WHITE
+		return
+	# pulsa devagar: o objetivo e ser notado de canto de olho, nao competir com
+	# o combate no centro da tela
+	var pulso := 0.72 + 0.28 * sin(float(Time.get_ticks_msec()) * 0.0035)
+	b.modulate = Color.WHITE.lerp(UI.OURO, u * pulso)
+
 func _desc_hab(def: Dictionary, nivel: int) -> String:
 	var d := Ux.txt(def, "desc", Cfg.ingles())
 	var esc = def.get("escala", {})
@@ -477,6 +515,18 @@ func _atualizar_lento() -> void:
 	_atualizar_buffs()
 	_atualizar_adaptacao()
 	botoes_painel["talentos"].modulate = UI.OURO if pts > 0 else Color.WHITE
+	# O mesmo tratamento para MELHORIAS — e este faltava.
+	#
+	# O jogo tinha exatamente uma pista persistente de "voce tem algo para
+	# gastar", e ela era so para talento. Para OURO nao havia nada: o botao de
+	# Melhorias nunca mudava de cor, e a unica vez que o jogo dizia "gaste" era
+	# um balao de nove segundos por volta dos 50 s, que depois de visto some
+	# para sempre. Como a torre atira sozinha, nada obrigava a reabrir o painel:
+	# aos sete minutos o jogador passivo estava com milhares de ouro parado e o
+	# mesmo dano do segundo zero. O brilho cresce conforme o ouro parado passa
+	# do custo da melhoria mais barata, entao pisca discreto quando da para
+	# comprar uma e fica evidente quando da para comprar muitas.
+	_atualizar_brilho_melhorias()
 	# O botão do Modo Infinito só existe depois que o nó do topo da árvore de
 	# Éter é comprado: antes disso ele seria uma promessa vazia no rodapé.
 	if b_infinito != null:
