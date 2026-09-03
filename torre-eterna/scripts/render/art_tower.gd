@@ -16,6 +16,16 @@ static func desenhar(ci: CanvasItem, j, t: float, detalhe: float = 1.0) -> void:
 	var anéis := 1 + int(poder)
 	var vida_frac := Big.frac(torre["vida"], torre["vida_max"])
 	var cor_nucleo := Color("#7dd3fc").lerp(Color("#f472b6"), clampf(poder / 6.0, 0.0, 1.0))
+	# o elemento em que o jogador mais investiu tinge o núcleo
+	var dom := ""
+	var dom_v := 0.0
+	for par in [["fogo", "danoFogo"], ["gelo", "danoGelo"], ["raio", "danoRaio"], ["veneno", "danoVeneno"], ["vazio", "danoVazio"]]:
+		var v: float = j.stats.n(str(par[1]))
+		if v > dom_v:
+			dom_v = v
+			dom = str(par[0])
+	if dom != "" and dom_v > 0.05:
+		cor_nucleo = cor_nucleo.lerp(Color.html(str(Bal.ELEMENTOS[dom]["cor"])), clampf(dom_v * 1.6, 0.0, 0.7))
 	if not viva:
 		cor_nucleo = Color("#64748b")
 

@@ -224,7 +224,7 @@ func _montar_resultado(efeito: Dictionary) -> void:
 	if str(efeito.get("texto", "")) != "":
 		Bus.toast(str(efeito.get("texto", "")), tom)
 	if tom == "epico":
-		Bus.celebracao.emit("evento", {"cor": cor_res.to_html(false)})
+		Bus.flash_pedido.emit(cor_res, 0.28)
 	_fechar_em(5.0)
 
 func _fechar_em(segundos: float) -> void:

@@ -12,6 +12,8 @@ var lbl_moedas := {}
 var lbl_onda: Label
 var lbl_chefe: Label
 var lbl_retomada: Label
+var barra_chefe: ProgressBar
+var lbl_chefe_fase: Label
 var barra_onda: ProgressBar
 var barra_vida: ProgressBar
 var lbl_vida: Label
@@ -92,6 +94,15 @@ func _construir() -> void:
 	lbl_retomada = UI.rotulo("", 15, UI.ACENTO2)
 	lbl_retomada.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	centro.add_child(lbl_retomada)
+
+	# barra de vida do chefe: larga, no topo, impossível de não ver
+	barra_chefe = UI.barra(UI.VERMELHO, 12)
+	barra_chefe.custom_minimum_size.x = 320
+	barra_chefe.visible = false
+	centro.add_child(barra_chefe)
+	lbl_chefe_fase = UI.rotulo("", 12, UI.TEXTO3)
+	lbl_chefe_fase.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	centro.add_child(lbl_chefe_fase)
 
 	# ---------- esquerda: vitais ----------
 	var vitais := UI.vbox(4)
@@ -354,8 +365,19 @@ func _atualizar_lento() -> void:
 		var chefe := Dados.chefe_da_onda(onda)
 		lbl_chefe.text = Ux.txt(chefe, "nome", Cfg.ingles())
 		barra_onda.add_theme_stylebox_override("fill", UI.caixa(UI.VERMELHO, 3, 0))
+		var alvo = jogo.diretor.chefe_atual
+		if alvo != null and alvo.vivo():
+			barra_chefe.visible = true
+			barra_chefe.value = alvo.frac_vida()
+			var fases := maxi(1, int(alvo.def.get("fases", 1)))
+			lbl_chefe_fase.text = ("fase %d/%d  ·  %s" % [alvo.fase + 1, fases, Fmt.big(alvo.hp)]) if fases > 1 else Fmt.big(alvo.hp)
+		else:
+			barra_chefe.visible = false
+			lbl_chefe_fase.text = ""
 	else:
 		lbl_chefe.text = ""
+		barra_chefe.visible = false
+		lbl_chefe_fase.text = ""
 		barra_onda.add_theme_stylebox_override("fill", UI.caixa(UI.ACENTO, 3, 0))
 
 	var torre: Dictionary = s["torre"]

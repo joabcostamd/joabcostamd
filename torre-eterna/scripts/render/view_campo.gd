@@ -33,6 +33,7 @@ func _conectar() -> void:
 	Bus.flash_pedido.connect(func(c, f): juice.flash(c, f))
 	Bus.zoom_pedido.connect(func(f): juice.zoom_punch(f))
 	Bus.onda_iniciou.connect(_ao_onda)
+	Bus.onda_limpa.connect(_ao_onda_limpa)
 	Bus.combo_mudou.connect(_ao_combo)
 	Bus.prestigio_feito.connect(func(_c, _g): particulas.limpar(); numeros.limpar())
 
@@ -78,6 +79,12 @@ func _ao_onda(_n: int, eh_chefe: bool) -> void:
 	if eh_chefe:
 		juice.flash(Color("#f43f5e"), 0.22)
 		juice.tremer(9.0, 0.4)
+
+func _ao_onda_limpa(_n: int, _tempo: float) -> void:
+	var c: Vector2 = jogo.arena.centro
+	particulas.anel(c, Color("#4ade80"), 260.0, 0.55, 4.0)
+	particulas.anel(c, Color(1, 1, 1, 0.6), 150.0, 0.35, 2.0)
+	juice.zoom_punch(0.012)
 
 func _ao_combo(v: int) -> void:
 	if v > 0 and v % 25 == 0:
