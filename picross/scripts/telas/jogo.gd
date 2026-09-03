@@ -11,10 +11,9 @@ var _derrota: Control
 var _barra: ProgressBar
 
 func _ready() -> void:
-    Estilo.aplicar(self)
-    set_anchors_preset(Control.PRESET_FULL_RECT)
-
     var id := int(Navegacao.parametro("fase", 1))
+    Estilo.aplicar(self, Catalogo.capitulo_da_fase(id))
+    set_anchors_preset(Control.PRESET_FULL_RECT)
     var puzzle := Catalogo.fase(id)
     if puzzle == null:
         Navegacao.ir_para("menu")

@@ -27,10 +27,9 @@ func _coreografar(imagem: ImagemPuzzle, simbolos: Array[Label], estrelas: int,
                               Estilo.DESTAQUE, 12, 140.0))
 
 func _ready() -> void:
-    Estilo.aplicar(self)
-    set_anchors_preset(Control.PRESET_FULL_RECT)
-
     var id := int(Navegacao.parametro("fase", 1))
+    Estilo.aplicar(self, Catalogo.capitulo_da_fase(id))
+    set_anchors_preset(Control.PRESET_FULL_RECT)
     var puzzle := Catalogo.fase(id)
     var tempo := float(Navegacao.parametro("tempo", 0.0))
     var estrelas := int(Navegacao.parametro("estrelas", 1))

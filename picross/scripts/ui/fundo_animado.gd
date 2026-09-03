@@ -5,6 +5,15 @@ class_name FundoAnimado
 
 const POEIRA := 34
 
+## Cada capítulo tem seu tom no brilho de fundo: dá identidade sem atrapalhar
+## a leitura, porque a cor entra em opacidade baixíssima.
+const TONS_POR_CAPITULO := [
+    Color("#6ab0d6"), Color("#7fc48c"), Color("#e0a45f"),
+    Color("#c98fd6"), Color("#e0707f"),
+]
+
+var tom := Color("#6ab0d6")
+var _animado := true
 var _tempo := 0.0
 var _poeira: Array[Vector3] = []   # x, y, velocidade
 var _fases: Array[float] = []
@@ -16,16 +25,25 @@ func _ready() -> void:
     mouse_filter = Control.MOUSE_FILTER_IGNORE
     _acompanhar_tela()
     get_viewport().size_changed.connect(_acompanhar_tela)
+    _animado = bool(Progresso.opcoes.get("fundo_animado", true))
     for i in POEIRA:
         _poeira.append(Vector3(randf(), randf(), randf_range(0.004, 0.017)))
         _fases.append(randf() * TAU)
     set_process(true)
+
+## Define o tom do fundo pelo capítulo (0 a 4).
+static func tom_do_capitulo(indice: int) -> Color:
+    return TONS_POR_CAPITULO[clampi(indice, 0, TONS_POR_CAPITULO.size() - 1)]
 
 func _acompanhar_tela() -> void:
     position = Vector2.ZERO
     size = get_viewport_rect().size
 
 func _process(delta: float) -> void:
+    if not _animado:
+        set_process(false)
+        queue_redraw()
+        return
     _tempo += delta
     for i in _poeira.size():
         var p := _poeira[i]
@@ -47,9 +65,11 @@ func _draw() -> void:
     # como anéis em vez de um brilho contínuo.
     for i in 18:
         var t := float(i) / 17.0
-        var cor := Estilo.ACENTO.lerp(Estilo.DESTAQUE, t * 0.4)
+        var cor := tom.lerp(Estilo.DESTAQUE, t * 0.35)
         draw_circle(centro, raio * (1.0 - t * 0.85) * pulso, Color(cor, 0.007))
 
+    if not _animado:
+        return
     for i in _poeira.size():
         var p := _poeira[i]
         var brilho := 0.16 + 0.12 * sin(_tempo * 1.4 + _fases[i])

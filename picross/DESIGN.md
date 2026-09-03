@@ -47,17 +47,47 @@ O resultado é um número que ordena as 50 fases.
 
 ## 4. Conteúdo
 
-50 fases em 4 capítulos, por tamanho crescente:
+200 fases em 5 capítulos, por tamanho crescente:
 
 | Capítulo | Grade | Fases | Tema |
 |---|---|---|---|
-| 1 — Primeiros traços | 5×5 | 10 | símbolos simples |
-| 2 — Objetos | 10×10 | 15 | coisas do dia a dia |
-| 3 — Criaturas | 15×15 | 15 | bichos e figuras |
-| 4 — Obra maior | 20×20 | 10 | cenas mais ricas |
+| 1 — Primeiros traços | 5×5 | 20 | símbolos simples |
+| 2 — Objetos | 10×10 | 40 | coisas do dia a dia |
+| 3 — Criaturas | 15×15 | 50 | bichos e figuras |
+| 4 — Cenas | 20×20 | 50 | lugares, veículos, comida |
+| 5 — Obras | 25×25 | 40 | as imagens maiores |
+
+### Como 200 desenhos são feitos
+
+Caractere a caractere não escala. Os desenhos são descritos por formas numa
+prancheta (`ferramentas/pincel.py`) — elipses, retângulos, triângulos, linhas
+e simetria — e rasterizados para a grade. Um bicho sai em quatro linhas de
+código, e a validação de solução única continua igual.
+
+A auditoria da arte é visual: `ferramentas/folha_contato.py` gera uma folha
+por capítulo com todos os desenhos lado a lado. É olhando essa folha que se
+descobre que um desenho "não lê" — parece outra coisa.
 
 Cada fase tem: nome, desenho, paleta de cores da revelação e uma legenda
 curta que aparece na galeria.
+
+## 4b. O que a pesquisa sobre o gênero mostrou
+
+Antes de ampliar o escopo, olhamos o que os picross comerciais oferecem e o
+que os jogadores pedem:
+
+- **Volume**: Picross Touch tem 366 fases; Picross Bonbon, 160. As 200 daqui
+  ficam na faixa competitiva.
+- **Sem chute, solução única** aparece em toda avaliação positiva do gênero —
+  é justamente a garantia que o solucionador dá aqui desde o começo.
+- **Acessibilidade** é pedida com frequência: tema claro, alto contraste e
+  poder desligar animação de fundo. Os três entraram nas opções.
+- **Progressão visível** (estrelas, conquistas, estatísticas) é o que sustenta
+  sessões longas.
+- Para uma eventual publicação, o que costuma ser exigido é: conquistas,
+  salvamento em nuvem, tradução e suporte a controle. As conquistas já estão
+  implementadas de forma local; as outras três ficam como trabalho futuro,
+  registrado abaixo.
 
 ## 5. Telas
 
@@ -73,7 +103,14 @@ curta que aparece na galeria.
 | Revelação | o desenho colorido surgindo, nome, tempo, estrelas, Próxima |
 | Galeria | mural das imagens conquistadas; clique amplia com nome e legenda |
 | Opções | música, efeitos, modo relaxado, mostrar erros, apagar progresso |
+| Conquistas | 16 conquistas com barra de progresso |
+| Estatísticas | números do jogador e progresso por capítulo |
 | Créditos | ficha técnica |
+
+### Seleção de fases
+
+Com 200 fases, a tela ganhou abas por capítulo, filtros (todas, a resolver,
+sem 3 estrelas), rolagem e miniatura da imagem conquistada em cada cartão.
 
 Fluxo: Abertura → Menu → Capítulos → Fases → Jogo → Revelação → Fases.
 
@@ -101,6 +138,27 @@ testes/              suíte headless
 
 O núcleo (`Puzzle`, `Partida`) não conhece nós nem desenho — pelo mesmo motivo
 do kit de puzzle: assim dá para testar tudo sem abrir janela.
+
+## 7b. Aparência
+
+Quatro paletas: escura, clara, e as duas versões de alto contraste. Todas as
+cores saem de `Estilo`, que troca a paleta inteira em tempo de execução — não
+há cor fixa espalhada pelo código (foi um bug real: os botões desabilitados
+continuavam escuros no tema claro).
+
+Cada capítulo tinge o brilho do fundo com um tom próprio, em opacidade muito
+baixa: dá identidade sem competir com a leitura da grade.
+
+## 7c. O que ficou de fora, de propósito
+
+Registrado para não parecer esquecimento:
+
+- **Salvamento em nuvem e conquistas de plataforma**: as conquistas existem no
+  jogo; ligá-las a uma loja exige o SDK dela.
+- **Tradução**: os textos estão em português, escritos direto nas telas. Uma
+  publicação internacional pediria uma tabela de textos.
+- **Controle e navegação por teclado nos menus**: hoje o jogo é de mouse e
+  teclado na partida; os menus ainda não têm foco navegável completo.
 
 ## 8. Áudio
 

@@ -23,6 +23,7 @@ func _ready() -> void:
         coluna.add_child(continuar)
 
     for item in [["Jogar", "capitulos"], ["Galeria", "galeria"],
+                 ["Conquistas", "conquistas"], ["Seus números", "estatisticas"],
                  ["Opções", "opcoes"], ["Créditos", "creditos"]]:
         var botao := Estilo.botao(item[0])
         botao.pressed.connect(func():

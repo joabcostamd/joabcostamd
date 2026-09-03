@@ -2,20 +2,86 @@ extends RefCounted
 class_name Estilo
 ## Paleta e tema únicos do jogo. Toda tela chama Estilo.aplicar(raiz).
 
-const FUNDO := Color("#12151f")
-const FUNDO_ALTO := Color("#1a1f2e")
-const PAINEL := Color("#1c2130")
-const BORDA := Color("#2f3750")
-const TEXTO := Color("#e8ecf5")
-const TEXTO_SUAVE := Color("#98a2bd")
-const DESTAQUE := Color("#f0c05a")
-const ACENTO := Color("#6ab0d6")
-const ERRO := Color("#e0655f")
-const SUCESSO := Color("#6fc48c")
-const CELULA_VAZIA := Color("#232a3d")
-const CELULA_CHEIA := Color("#e8ecf5")
-const GRADE := Color("#39415c")
-const GRADE_FORTE := Color("#5a6a91")
+## As cores são variáveis, não constantes: o jogo troca entre tema escuro e
+## claro em tempo de execução, e tudo que desenha lê daqui.
+static var FUNDO := Color("#12151f")
+static var FUNDO_ALTO := Color("#1a1f2e")
+static var PAINEL := Color("#1c2130")
+static var BORDA := Color("#2f3750")
+static var TEXTO := Color("#e8ecf5")
+static var TEXTO_SUAVE := Color("#98a2bd")
+static var DESTAQUE := Color("#f0c05a")
+static var ACENTO := Color("#6ab0d6")
+static var ERRO := Color("#e0655f")
+static var SUCESSO := Color("#6fc48c")
+static var CELULA_VAZIA := Color("#232a3d")
+static var CELULA_CHEIA := Color("#e8ecf5")
+static var GRADE := Color("#39415c")
+static var GRADE_FORTE := Color("#5a6a91")
+
+const ESCURO := {
+    "FUNDO": "#12151f", "FUNDO_ALTO": "#1a1f2e", "PAINEL": "#1c2130",
+    "BORDA": "#2f3750", "TEXTO": "#e8ecf5", "TEXTO_SUAVE": "#98a2bd",
+    "DESTAQUE": "#f0c05a", "ACENTO": "#6ab0d6", "ERRO": "#e0655f",
+    "SUCESSO": "#6fc48c", "CELULA_VAZIA": "#232a3d", "CELULA_CHEIA": "#e8ecf5",
+    "GRADE": "#39415c", "GRADE_FORTE": "#5a6a91",
+}
+
+## No tema claro a célula pintada vira escura: o que importa é o contraste
+## com o fundo, não a cor em si.
+const CLARO := {
+    "FUNDO": "#eef1f7", "FUNDO_ALTO": "#e3e8f2", "PAINEL": "#ffffff",
+    "BORDA": "#c2cadb", "TEXTO": "#1b2030", "TEXTO_SUAVE": "#5d6884",
+    "DESTAQUE": "#c98a1e", "ACENTO": "#2f7fb5", "ERRO": "#cc4a44",
+    "SUCESSO": "#2f8f5c", "CELULA_VAZIA": "#dbe2ef", "CELULA_CHEIA": "#232a3d",
+    "GRADE": "#b3bcd0", "GRADE_FORTE": "#7c869d",
+}
+
+## Paleta de alto contraste, para quem precisa de mais separação entre estados.
+const ALTO_CONTRASTE_ESCURO := {
+    "FUNDO": "#000000", "FUNDO_ALTO": "#111111", "PAINEL": "#141414",
+    "BORDA": "#7a7a7a", "TEXTO": "#ffffff", "TEXTO_SUAVE": "#c8c8c8",
+    "DESTAQUE": "#ffd400", "ACENTO": "#4fc3ff", "ERRO": "#ff6b5e",
+    "SUCESSO": "#5ee08a", "CELULA_VAZIA": "#1a1a1a", "CELULA_CHEIA": "#ffffff",
+    "GRADE": "#5a5a5a", "GRADE_FORTE": "#9a9a9a",
+}
+
+const ALTO_CONTRASTE_CLARO := {
+    "FUNDO": "#ffffff", "FUNDO_ALTO": "#f0f0f0", "PAINEL": "#ffffff",
+    "BORDA": "#404040", "TEXTO": "#000000", "TEXTO_SUAVE": "#3a3a3a",
+    "DESTAQUE": "#a86400", "ACENTO": "#0b5f8f", "ERRO": "#b32018",
+    "SUCESSO": "#0f6b3c", "CELULA_VAZIA": "#e6e6e6", "CELULA_CHEIA": "#000000",
+    "GRADE": "#8a8a8a", "GRADE_FORTE": "#404040",
+}
+
+static var tema_claro := false
+static var alto_contraste := false
+
+## Troca a paleta inteira e joga fora o Theme, para ele ser remontado com as
+## cores novas na próxima tela.
+static func usar_tema(claro: bool, contraste_alto := false) -> void:
+    tema_claro = claro
+    alto_contraste = contraste_alto
+    var paleta: Dictionary
+    if contraste_alto:
+        paleta = ALTO_CONTRASTE_CLARO if claro else ALTO_CONTRASTE_ESCURO
+    else:
+        paleta = CLARO if claro else ESCURO
+    FUNDO = Color(paleta["FUNDO"])
+    FUNDO_ALTO = Color(paleta["FUNDO_ALTO"])
+    PAINEL = Color(paleta["PAINEL"])
+    BORDA = Color(paleta["BORDA"])
+    TEXTO = Color(paleta["TEXTO"])
+    TEXTO_SUAVE = Color(paleta["TEXTO_SUAVE"])
+    DESTAQUE = Color(paleta["DESTAQUE"])
+    ACENTO = Color(paleta["ACENTO"])
+    ERRO = Color(paleta["ERRO"])
+    SUCESSO = Color(paleta["SUCESSO"])
+    CELULA_VAZIA = Color(paleta["CELULA_VAZIA"])
+    CELULA_CHEIA = Color(paleta["CELULA_CHEIA"])
+    GRADE = Color(paleta["GRADE"])
+    GRADE_FORTE = Color(paleta["GRADE_FORTE"])
+    _tema = null
 
 static var _tema: Theme = null
 
@@ -28,12 +94,14 @@ static func tema() -> Theme:
     t.set_stylebox("normal", "Button", _caixa(PAINEL, BORDA))
     t.set_stylebox("hover", "Button", _caixa(FUNDO_ALTO, ACENTO))
     t.set_stylebox("pressed", "Button", _caixa(BORDA, ACENTO))
-    t.set_stylebox("disabled", "Button", _caixa(Color("#171b26"), Color("#242a3a")))
+    # As cores do estado desabilitado precisam sair da paleta: fixas no código,
+    # elas continuavam escuras no tema claro.
+    t.set_stylebox("disabled", "Button", _caixa(FUNDO_ALTO, Color(BORDA, 0.45)))
     t.set_stylebox("focus", "Button", _caixa(Color(0, 0, 0, 0), ACENTO))
     t.set_color("font_color", "Button", TEXTO)
     t.set_color("font_hover_color", "Button", DESTAQUE)
     t.set_color("font_pressed_color", "Button", DESTAQUE)
-    t.set_color("font_disabled_color", "Button", Color("#4a5268"))
+    t.set_color("font_disabled_color", "Button", Color(TEXTO_SUAVE, 0.55))
     t.set_font_size("font_size", "Button", 20)
 
     t.set_color("font_color", "Label", TEXTO)
@@ -66,7 +134,8 @@ static func _caixa(fundo: Color, borda: Color) -> StyleBoxFlat:
     caixa.content_margin_bottom = 11
     return caixa
 
-static func aplicar(raiz: Control) -> void:
+## `capitulo` tinge o brilho do fundo com a cor daquele capítulo.
+static func aplicar(raiz: Control, capitulo := -1) -> void:
     raiz.theme = tema()
 
     # O fundo vai numa camada própria atrás de tudo. Como filho comum ele
@@ -74,6 +143,8 @@ static func aplicar(raiz: Control) -> void:
     var atras := CanvasLayer.new()
     atras.layer = -10
     var fundo := FundoAnimado.new()
+    if capitulo >= 0:
+        fundo.tom = FundoAnimado.tom_do_capitulo(capitulo)
     atras.add_child(fundo)
     raiz.add_child(atras)
 

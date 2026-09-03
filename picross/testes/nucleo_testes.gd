@@ -22,19 +22,19 @@ func _rodar() -> void:
     else:
         print("NÚCLEO FALHOU: %d de %d" % [_falhas, _total])
     Audio.parar_tudo()
-    await get_tree().create_timer(0.15).timeout
+    await get_tree().create_timer(0.4).timeout
     get_tree().quit(1 if _falhas > 0 else 0)
 
 func _dados() -> void:
-    _ok("carrega 50 fases", Catalogo.fases.size() == 50)
-    _ok("carrega 4 capítulos", Catalogo.capitulos.size() == 4)
+    _ok("carrega 200 fases", Catalogo.fases.size() == 200)
+    _ok("carrega 5 capítulos", Catalogo.capitulos.size() == 5)
     _ok("a fase 1 é 5x5", Catalogo.fase(1).lado == 5)
-    _ok("a fase 50 é 20x20", Catalogo.fase(50).lado == 20)
+    _ok("a fase 200 é 25x25", Catalogo.fase(200).lado == 25)
     var ids_ok := true
     for i in Catalogo.fases.size():
         if Catalogo.fases[i].id != i + 1:
             ids_ok = false
-    _ok("os ids vão de 1 a 50 sem buraco", ids_ok)
+    _ok("os ids vão de 1 a 200 sem buraco", ids_ok)
 
     var dificuldade_sobe := true
     for capitulo in Catalogo.capitulos:
@@ -58,7 +58,7 @@ func _pistas_conferem() -> void:
             var esperada: Array = _pistas_de_linha(p, x, false)
             if not _mesma_lista(esperada, p.pistas_colunas[x]):
                 todas_ok = false
-    _ok("as pistas de todas as 50 fases batem com o desenho", todas_ok)
+    _ok("as pistas de todas as 200 fases batem com o desenho", todas_ok)
 
 func _pistas_de_linha(p: Puzzle, indice: int, horizontal: bool) -> Array:
     var blocos: Array = []
@@ -209,7 +209,10 @@ func _progresso() -> void:
     Progresso.apagar_tudo()
     _ok("apagar tudo zera o progresso", Progresso.total_resolvidas() == 0)
 
-## Teste mais forte: joga as 50 fases até o fim, conferindo cada vitória.
+    _conquistas()
+    _temas()
+
+## Teste mais forte: joga as 200 fases até o fim, conferindo cada vitória.
 func _resolver_todas() -> void:
     var todas_ok := true
     var celulas := 0
@@ -219,7 +222,47 @@ func _resolver_todas() -> void:
         if not partida.concluida or partida.erros > 0 or partida.vidas != Partida.VIDAS_INICIAIS:
             todas_ok = false
             print("      falhou em: ", p.nome)
-    _ok("as 50 fases são vencíveis pintando a solução (%d células)" % celulas, todas_ok)
+    _ok("as 200 fases são vencíveis pintando a solução (%d células)" % celulas, todas_ok)
+
+## Conquistas saem do progresso: mudar o progresso tem de mudar a conquista.
+func _conquistas() -> void:
+    Progresso.fases.clear()
+    var lista := Conquistas.todas()
+    _ok("existem conquistas definidas", lista.size() >= 10)
+    _ok("sem progresso, nenhuma conquista está concluída", Conquistas.concluidas() == 0)
+
+    Progresso.registrar(1, 3, 10.0)
+    var primeira: Conquistas.Conquista = null
+    for c in Conquistas.todas():
+        if c.chave == "primeira":
+            primeira = c
+    _ok("revelar a primeira imagem conclui a conquista",
+        primeira != null and primeira.concluida())
+    _ok("a conquista de 200 ainda não está concluída", Conquistas.concluidas() < 5)
+
+    var barra_ok := true
+    for c in Conquistas.todas():
+        if c.fracao() < 0.0 or c.fracao() > 1.0 or c.atual > c.meta:
+            barra_ok = false
+    _ok("nenhuma conquista passa da própria meta", barra_ok)
+    Progresso.apagar_tudo()
+
+## Trocar de tema tem de trocar a paleta inteira, e não deixar cor presa.
+func _temas() -> void:
+    Estilo.usar_tema(false)
+    var fundo_escuro := Estilo.FUNDO
+    var celula_escura := Estilo.CELULA_CHEIA
+    Estilo.usar_tema(true)
+    _ok("o tema claro clareia o fundo", Estilo.FUNDO.get_luminance() > fundo_escuro.get_luminance())
+    _ok("no tema claro a célula pintada fica escura",
+        Estilo.CELULA_CHEIA.get_luminance() < celula_escura.get_luminance())
+    _ok("o texto continua contrastando com o fundo",
+        absf(Estilo.TEXTO.get_luminance() - Estilo.FUNDO.get_luminance()) > 0.4)
+    Estilo.usar_tema(true, true)
+    _ok("o alto contraste separa ainda mais texto e fundo",
+        absf(Estilo.TEXTO.get_luminance() - Estilo.FUNDO.get_luminance()) > 0.9)
+    Estilo.usar_tema(false)
+    _ok("dá para voltar ao tema escuro", Estilo.FUNDO.is_equal_approx(fundo_escuro))
 
 func _resolver(p: Puzzle) -> Partida:
     var partida := Partida.new(p)

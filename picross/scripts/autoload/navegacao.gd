@@ -11,6 +11,8 @@ const TELAS := {
     "galeria": "res://cenas/galeria.tscn",
     "opcoes": "res://cenas/opcoes.tscn",
     "creditos": "res://cenas/creditos.tscn",
+    "conquistas": "res://cenas/conquistas.tscn",
+    "estatisticas": "res://cenas/estatisticas.tscn",
 }
 
 var parametros := {}
@@ -22,7 +24,7 @@ func _ready() -> void:
     camada.layer = 100
     add_child(camada)
     _cortina = ColorRect.new()
-    _cortina.color = Color(0.05, 0.06, 0.09, 0.0)
+    _cortina.color = Color(0.04, 0.05, 0.08, 0.0)
     _cortina.mouse_filter = Control.MOUSE_FILTER_IGNORE
     _cortina.set_anchors_preset(Control.PRESET_FULL_RECT)
     camada.add_child(_cortina)
@@ -42,6 +44,9 @@ func _talvez_capturar() -> void:
     var tela: String = args[indice + 1]
     if "--demo" in args:
         _preencher_progresso_demo()
+    if "--claro" in args:
+        Progresso.opcoes["tema_claro"] = true
+        Progresso.aplicar_aparencia()
     await get_tree().process_frame
     var parametros_da_tela := {}
     match tela:
@@ -80,14 +85,26 @@ func ir_para(tela: String, novos_parametros := {}) -> void:
     _trocando = true
     parametros = novos_parametros
     Audio.tocar("passar", 0.7)
-    var animacao := create_tween()
-    animacao.tween_property(_cortina, "color:a", 1.0, 0.16)
-    await animacao.finished
+
+    # A cortina não só escurece: ela desliza de um lado ao outro, o que dá
+    # sentido de direção à troca em vez de um simples piscar.
+    var largura := float(get_viewport().get_visible_rect().size.x)
+    _cortina.position.x = -largura
+    _cortina.color.a = 1.0
+    var entrada := create_tween()
+    entrada.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+    entrada.tween_property(_cortina, "position:x", 0.0, 0.20)
+    await entrada.finished
+
     get_tree().change_scene_to_file(TELAS[tela])
     await get_tree().process_frame
-    var volta := create_tween()
-    volta.tween_property(_cortina, "color:a", 0.0, 0.16)
-    await volta.finished
+
+    var saida := create_tween()
+    saida.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+    saida.tween_property(_cortina, "position:x", largura, 0.24)
+    await saida.finished
+    _cortina.position.x = 0.0
+    _cortina.color.a = 0.0
     _trocando = false
 
 func parametro(chave: String, padrao = null):

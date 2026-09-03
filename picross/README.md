@@ -14,9 +14,12 @@ godot                 # abre o editor / joga
 
 ## O que tem dentro
 
-- **50 fases** em 4 capítulos: 10 de 5×5, 15 de 10×10, 15 de 15×15 e 10 de 20×20
-- **12 telas e estados**: abertura, menu, capítulos, seleção de fases, jogo,
-  pausa, derrota, revelação, galeria, imagem ampliada, opções e créditos
+- **200 fases** em 5 capítulos: 20 de 5×5, 40 de 10×10, 50 de 15×15, 50 de 20×20 e 40 de 25×25
+- **14 telas e estados**: abertura, menu, capítulos, seleção de fases, jogo,
+  pausa, derrota, revelação, galeria, imagem ampliada, conquistas,
+  estatísticas, opções e créditos
+- **Tema claro e escuro**, mais duas paletas de alto contraste
+- **16 conquistas** e uma tela de estatísticas
 - **Progresso salvo** em `user://progresso.save`, com estrelas e melhor tempo
 - **Áudio sintetizado por código** — nenhum arquivo de som no repositório
 - **Resposta em tudo**: botões que reagem ao toque, células que estalam ao
@@ -69,11 +72,11 @@ fases inteiras sem abrir janela.
 ```
 ── auditoria dos puzzles ──
 SOLUCIONADOR OK              12 testes
-50 desenhos, 0 com problema
+200 desenhos, 0 com problema
 ── núcleo do jogo ──
-NÚCLEO OK — 46/46 testes
+NÚCLEO OK — 56/56 testes
 ── fluxo das telas ──
-FLUXO OK — 24/24 verificações
+FLUXO OK — 27/27 verificações
 ```
 
 ## Gravar o jogo em vídeo
@@ -96,13 +99,14 @@ mesmo levando mais tempo para ser escrito.
 CAPTURA_DESTINO=/tmp/menu.png xvfb-run -a godot --resolution 1280x720 -- --capturar menu --demo
 ```
 
-As capturas de todas as telas estão em `capturas/`, e a folha com os 50
-desenhos em `capturas/folha_de_arte.png` — gerada por
+As capturas de todas as telas estão em `capturas/`, e as folhas com os 200
+desenhos em `capturas/arte_cap1..5.png` — geradas por
 `python3 ferramentas/folha_contato.py`, que é como a arte é auditada de uma vez.
 
 ## Acrescentar uma fase
 
-1. Desenhe em `ferramentas/arte.py` com `#` e `.`
+1. Desenhe em `ferramentas/arte_capN.py`, usando a prancheta:
+   `t = Tela(15); t.elipse(7, 9, 5, 4); t.circulo(11, 5, 2.5)`
 2. `python3 ferramentas/validar_bloco.py` — reprova se exigir chute
 3. `python3 ferramentas/construir.py` — regera os dados e o relatório
 

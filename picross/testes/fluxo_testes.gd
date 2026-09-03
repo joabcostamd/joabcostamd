@@ -17,11 +17,14 @@ func _rodar() -> void:
     await _montar("menu")
     await _montar("capitulos")
     await _montar("fases", {"capitulo": 0})
+    await _montar("fases", {"capitulo": 4})   # capítulo grande, com rolagem
     await _jogar_fase_1()
     await _montar("revelacao", {"fase": 1, "tempo": 40.0, "estrelas": 3})
     await _montar("galeria")
     await _montar("opcoes")
     await _montar("creditos")
+    await _montar("conquistas")
+    await _montar("estatisticas")
 
     await _conferir_juice()
 
@@ -44,7 +47,7 @@ func _rodar() -> void:
     else:
         print("FLUXO FALHOU: %d de %d" % [_falhas, _total])
     Audio.parar_tudo()
-    await get_tree().create_timer(0.15).timeout
+    await get_tree().create_timer(0.4).timeout
     get_tree().quit(1 if _falhas > 0 else 0)
 
 ## O juice é invisível nos testes de regra, então é aqui que ele é travado:

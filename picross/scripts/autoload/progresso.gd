@@ -12,10 +12,20 @@ var opcoes := {
     "volume_efeitos": 0.8,
     "modo_relaxado": false,
     "marcar_erro_automatico": true,
+    "tema_claro": false,
+    "alto_contraste": false,
+    "mostrar_tempo": true,
+    "travar_arraste": true,
+    "fundo_animado": true,
 }
 
 func _ready() -> void:
     carregar()
+    aplicar_aparencia()
+
+## Repassa as opções de aparência para o estilo, que é quem pinta tudo.
+func aplicar_aparencia() -> void:
+    Estilo.usar_tema(bool(opcoes["tema_claro"]), bool(opcoes["alto_contraste"]))
 
 func carregar() -> void:
     if not FileAccess.file_exists(CAMINHO):
@@ -101,6 +111,8 @@ func total_resolvidas() -> int:
 
 func ajustar(chave: String, valor) -> void:
     opcoes[chave] = valor
+    if chave in ["tema_claro", "alto_contraste"]:
+        aplicar_aparencia()
     salvar()
     opcoes_mudaram.emit()
 
