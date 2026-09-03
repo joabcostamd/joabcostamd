@@ -283,6 +283,20 @@ func _unhandled_input(evento: InputEvent) -> void:
 		Cfg.set_v("mostrar_fps", not bool(Cfg.get_v("mostrar_fps", false)))
 	elif evento.is_action_pressed("turbo"):
 		hud._alternar_velocidade()
+	# O painel de Configurações listava P e A como atalhos e nenhum dos dois
+	# existia: a tecla não fazia nada e a lista mentia para o jogador.
+	elif evento.is_action_pressed("purga"):
+		if not Mecanicas.disparar_purga(jogo):
+			Bus.toast(Txt.t("purga_sem_carga"), "info", "nova")
+	elif evento.is_action_pressed("alternar_auto"):
+		if jogo.esp["desbloqueios"].has("autoCompra"):
+			var ligado := not bool(jogo.s["auto"]["comprar"])
+			jogo.s["auto"]["comprar"] = ligado
+			jogo.marcar_sujo()
+			Bus.ui_atualizar.emit(false)
+			Bus.toast(Txt.t("auto_compra_ligada" if ligado else "auto_compra_desligada"), "info", "engrenagem")
+		else:
+			Bus.toast(Txt.t("auto_compra_trancada"), "info", "cadeado")
 
 func _usar_hab_por_tecla(tecla: String) -> void:
 	for def in Dados.habilidades:

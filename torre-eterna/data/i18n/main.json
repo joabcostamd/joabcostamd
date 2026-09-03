@@ -1,0 +1,18 @@
+{
+  "purga_sem_carga": {
+    "pt": "A Purga ainda não tem carga.",
+    "en": "The Purge has no charge yet."
+  },
+  "auto_compra_ligada": {
+    "pt": "Compra automática ligada",
+    "en": "Auto-buy on"
+  },
+  "auto_compra_desligada": {
+    "pt": "Compra automática desligada",
+    "en": "Auto-buy off"
+  },
+  "auto_compra_trancada": {
+    "pt": "Desbloqueie a Compra Automática na árvore de Fragmentos",
+    "en": "Unlock Auto-buy in the Fragment tree"
+  }
+}
