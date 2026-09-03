@@ -1,3 +1,10 @@
+> **Documento do projeto original — não descreve o jogo que existe.**
+> Este texto de arte e juice foi escrito para uma implementação em JavaScript/Canvas
+> que nunca foi construída; o jogo é feito em Godot 4 e GDScript. Caminhos
+> de arquivo, APIs e números aqui são do projeto, não da realidade.
+> Leia `docs/projeto-original/LEIA-ANTES.md` antes de usar qualquer coisa
+> daqui.
+
 # TORRE ETERNA — Bíblia de Arte Procedural & Juice
 ### Documento de Direção Técnica v1.0 — Canvas 2D puro, zero assets
 

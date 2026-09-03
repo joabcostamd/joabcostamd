@@ -62,9 +62,156 @@ func rodar(cena: SceneTree) -> void:
 		print("  FALHOU [suite] rodou %d assercoes, piso e %d — algum bloco saiu cedo" % [passou, piso])
 		falhou += 1
 
+	# Os numeros que a documentacao promete tem que ser os que os portoes medem.
+	# Estavam escritos a mao em quatro arquivos e ja discordavam entre si: o
+	# README dizia 218 testes, o AGENTS.md 195, o QUALIDADE.md outra coisa. Numero
+	# escrito a mao apodrece; aqui ele e conferido contra a realidade.
+	falhou += _conferir_doc(passou)
+
 	print("\n===TESTES=== passou=%d falhou=%d" % [passou, falhou])
 	print("===STATUS=== ", "PASS" if falhou == 0 else "FAIL")
 	arvore.quit(0 if falhou == 0 else 1)
+
+## Confere as afirmacoes numericas da documentacao contra a medida real.
+## Devolve quantas nao batem. Nao mexe em `passou`: sao asseroes sobre o
+## projeto, nao sobre a simulacao, e contá-las mudaria o piso.
+func _conferir_doc(total_testes: int) -> int:
+	var erros := 0
+	var reais := {
+		"testes": total_testes,
+		"scripts": _contar_gd(),
+		"chaves_i18n": _contar_i18n(),
+		"imagens": _contar_por_extensao(["png", "jpg", "jpeg", "webp"]),
+		"sons": _contar_por_extensao(["wav", "ogg", "mp3"]),
+	}
+	# arquivo -> [[regex, chave], ...]. O grupo 1 do regex e o numero.
+	var alvos := {
+		"res://README.md": [
+			["(?m)^# Su[ií]te de testes da simula[cç][aã]o — ([\\d.]+) testes", "testes"],
+			["(?m)^- \\*\\*([\\d.]+)\\*\\* testes da simula[cç][aã]o", "testes"],
+			["(?m)^- \\*\\*([\\d.]+)\\*\\* chaves de interface", "chaves_i18n"],
+		],
+		"res://AGENTS.md": [
+			["testes\\.gd\\s+# ([\\d.]+) testes da simula[cç][aã]o", "testes"],
+		],
+		"res://docs/QUALIDADE.md": [
+			["===TESTES=== passou=([\\d.]+)", "testes"],
+			["\\| Scripts GDScript \\| ([\\d.]+) \\|", "scripts"],
+			["\\| Testes da simula[cç][aã]o \\| ([\\d.]+) \\|", "testes"],
+			["\\| Chaves de interface PT/EN \\| ([\\d.]+) \\|", "chaves_i18n"],
+		],
+	}
+	for arquivo in alvos.keys():
+		var f := FileAccess.open(str(arquivo), FileAccess.READ)
+		if f == null:
+			print("  FALHOU [doc] nao consegui ler %s" % arquivo)
+			erros += 1
+			continue
+		var texto := f.get_as_text()
+		f.close()
+		for par in alvos[arquivo]:
+			var re := RegEx.create_from_string(str(par[0]))
+			var m := re.search(texto)
+			if m == null:
+				print("  FALHOU [doc] %s nao declara mais '%s' — o portao ficou sem o que conferir" % [arquivo, str(par[1])])
+				erros += 1
+				continue
+			var dito := int(m.get_string(1).replace(".", "").replace(",", ""))
+			var real := int(reais[str(par[1])])
+			if dito != real:
+				print("  FALHOU [doc] %s diz %s=%d e o real e %d" % [arquivo, str(par[1]), dito, real])
+				erros += 1
+	# Caminho citado na documentacao viva tem que existir.
+	#
+	# O GDD apontava para `tools/sim_balance.mjs`, `js/core/big.js` e
+	# `index.html` — arquivos de um projeto em JavaScript que nunca foi
+	# construido. Quem lia era mandado para o lugar errado com confianca.
+	# `docs/projeto-original/` fica de fora de proposito: aquilo e registro do
+	# projeto antigo e diz isso na primeira linha de cada arquivo.
+	var re_cam := RegEx.create_from_string("`((?:res://)?[\\w./-]+\\.(?:gd|json|md|tscn|tres|yml|cfg|svg|js|mjs|html))`")
+	for doc in ["res://README.md", "res://AGENTS.md", "res://docs/GDD-MESTRE.md",
+			"res://docs/QUALIDADE.md", "res://docs/CONTRATO-UI.md", "res://docs/PLANO.md"]:
+		var fd := FileAccess.open(str(doc), FileAccess.READ)
+		if fd == null:
+			continue
+		var td := fd.get_as_text()
+		fd.close()
+		for m in re_cam.search_all(td):
+			var alvo := m.get_string(1)
+			var abs_p: String = alvo if alvo.begins_with("res://") else "res://" + alvo
+			if FileAccess.file_exists(abs_p) or DirAccess.dir_exists_absolute(abs_p):
+				continue
+			# nome generico usado como exemplo, nao como endereco
+			if not alvo.contains("/"):
+				continue
+			print("  FALHOU [doc] %s cita `%s`, que nao existe" % [doc, alvo])
+			erros += 1
+
+	# as duas afirmacoes categoricas do README
+	if int(reais["sons"]) != 0:
+		print("  FALHOU [doc] o projeto promete zero arquivo de som e tem %d" % int(reais["sons"]))
+		erros += 1
+	return erros
+
+func _contar_gd() -> int:
+	var n := 0
+	for pasta in ["res://scripts", "res://tools"]:
+		n += _contar_em(pasta, [".gd"])
+	var d := DirAccess.open("res://")
+	if d != null:
+		d.list_dir_begin()
+		var nome := d.get_next()
+		while nome != "":
+			if not d.current_is_dir() and nome.ends_with(".gd"):
+				n += 1
+			nome = d.get_next()
+		d.list_dir_end()
+	return n
+
+func _contar_i18n() -> int:
+	var n := 0
+	var d := DirAccess.open("res://data/i18n")
+	if d == null:
+		return 0
+	d.list_dir_begin()
+	var nome := d.get_next()
+	while nome != "":
+		if nome.ends_with(".json"):
+			var f := FileAccess.open("res://data/i18n/" + nome, FileAccess.READ)
+			if f != null:
+				var bruto = JSON.parse_string(f.get_as_text())
+				f.close()
+				if bruto is Dictionary:
+					n += bruto.size()
+		nome = d.get_next()
+	d.list_dir_end()
+	return n
+
+func _contar_por_extensao(exts: Array) -> int:
+	var pontos: Array = []
+	for e in exts:
+		pontos.append("." + str(e))
+	return _contar_em("res://", pontos)
+
+func _contar_em(pasta: String, exts: Array) -> int:
+	var n := 0
+	var d := DirAccess.open(pasta)
+	if d == null:
+		return 0
+	d.list_dir_begin()
+	var nome := d.get_next()
+	while nome != "":
+		if d.current_is_dir():
+			if not nome.begins_with(".") and nome != "docs":
+				n += _contar_em(pasta.rstrip("/") + "/" + nome, exts)
+		else:
+			for e in exts:
+				if nome.ends_with(str(e)):
+					n += 1
+					break
+		nome = d.get_next()
+	d.list_dir_end()
+	return n
 
 func g(nome: String) -> void:
 	grupo = nome
@@ -1132,6 +1279,42 @@ func t_audio() -> void:
 		if nome == "" or not cat.has(nome):
 			sem_som.append(str(h.get("id", "")))
 	ok("toda habilidade tem som", sem_som.is_empty(), str(sem_som))
+	# A assercao acima nao podia falhar: `som_habilidade` sempre devolve um nome
+	# valido do catalogo, entao ela dizia "sim" com a Purga — a mecanica que o
+	# jogo pede o tempo todo — dividindo o mesmo som com outras quatro acoes.
+	# A pergunta com conteudo e se cada habilidade tem som PROPRIO.
+	var genericas: Array = []
+	var usados := {}
+	var repetidos: Array = []
+	for h2 in Dados.habilidades:
+		var id_h := str(h2.get("id", ""))
+		var som := Sfx.som_habilidade(id_h)
+		if som == "hab_generica":
+			genericas.append(id_h)
+		elif usados.has(som):
+			repetidos.append("%s=%s" % [id_h, som])
+		else:
+			usados[som] = id_h
+	ok("nenhuma habilidade cai no som generico", genericas.is_empty(), str(genericas))
+	ok("nenhuma habilidade divide o som de outra", repetidos.is_empty(), str(repetidos))
+	ok("a Purga tem som proprio", Sfx.som_habilidade("purga") == "hab_purga",
+		Sfx.som_habilidade("purga"))
+
+	# Som gerado e nunca tocado e conteudo morto que o portao protegia:
+	# `bloqueado` existia no catalogo, tinha teste exigindo que existisse, e
+	# nenhum chamador. Aqui a pergunta e se ALGUEM toca cada som do catalogo.
+	var fontes := ""
+	for arq in ["res://scripts/audio/audio_engine.gd", "res://scripts/ui/panel_manager.gd",
+			"res://scripts/ui/celebracao.gd"]:
+		var fa := FileAccess.open(arq, FileAccess.READ)
+		if fa != null:
+			fontes += fa.get_as_text()
+			fa.close()
+	var orfaos: Array = []
+	for nome_som in ["bloqueado", "compra", "erro", "abrir", "fechar", "hab_pronta"]:
+		if not fontes.contains("\"%s\"" % nome_som):
+			orfaos.append(nome_som)
+	ok("som do catalogo tem quem o toque", orfaos.is_empty(), str(orfaos))
 
 ## -------------------------------------------------------------- save
 func t_save() -> void:

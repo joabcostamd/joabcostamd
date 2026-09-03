@@ -25,7 +25,8 @@ static func _e(camadas: Array, db: float = PADRAO_DB, variacao: float = PADRAO_V
 static func nomes() -> Array:
 	return [
 		"tiro", "impacto", "morte", "ouro", "clique", "tiro_critico",
-		"compra", "bloqueado", "abrir", "fechar", "erro", "hab_pronta",
+		"compra", "bloqueado", "abrir", "fechar", "erro", "hab_pronta", "hab_purga",
+		"hab_sobrecarga", "hab_chuva_ouro", "hab_escudo", "hab_sentinelas",
 		"torre_dano", "onda", "nivel", "carta", "missao", "moeda",
 		"alerta_chefe", "morte_chefe", "conquista", "lendario",
 		"hab_generica", "hab_nova", "hab_congelar", "hab_cura",
@@ -34,8 +35,16 @@ static func nomes() -> Array:
 	]
 
 ## Som de uma habilidade, por tipo/id (ver data/abilities.json).
+## O som diz QUAL habilidade foi usada. Cair no genérico é o mesmo som para
+## cinco ações diferentes — e a Purga, que é a mecânica-assinatura do jogo,
+## caía nele. A suíte cobra que nenhuma habilidade do conteúdo caia no fallback.
 static func som_habilidade(id: String) -> String:
 	match id:
+		"purga": return "hab_purga"
+		"sobrecarga": return "hab_sobrecarga"
+		"chuva_ouro": return "hab_chuva_ouro"
+		"escudo_absoluto": return "hab_escudo"
+		"sentinelas": return "hab_sentinelas"
 		"nova": return "hab_nova"
 		"tempo": return "hab_congelar"
 		"reparo": return "hab_cura"
@@ -271,6 +280,53 @@ static func catalogo() -> Dictionary:
 		{"onda": "senoide", "f0": 1568.0, "f1": 523.0, "curva": 1.1, "dur": 0.5,
 		 "atk": 0.002, "dec": 0.35, "rel": 0.12, "vol": 0.35},
 	], -6.0, 0.03, 0.25)
+
+	# A Purga: carga que descarrega. Grave que sobe e estoura, ruído filtrado
+	# abrindo, e uma cauda longa — precisa soar diferente de tudo, porque é a
+	# única ação que o jogo pede o tempo todo.
+	c["hab_purga"] = _e([
+		{"onda": "senoide", "f0": 55.0, "f1": 320.0, "curva": 2.2, "dur": 1.0,
+		 "atk": 0.006, "dec": 0.7, "sus": 0.12, "rel": 0.3, "sat": 0.5, "vol": 0.9},
+		{"onda": "ruido", "dur": 0.9, "atk": 0.004, "dec": 0.6, "sus": 0.07,
+		 "rel": 0.26, "lp0": 500.0, "lp1": 11000.0, "vol": 0.55},
+		{"onda": "dente", "f0": 220.0, "f1": 1760.0, "curva": 1.8, "dur": 0.55,
+		 "vozes": 3, "detune": 0.25, "atk": 0.002, "dec": 0.4, "sus": 0.05,
+		 "rel": 0.14, "sat": 0.7, "lp0": 2400.0, "lp1": 9000.0, "vol": 0.6},
+	], -5.0, 0.03, 0.12)
+
+	# Sobrecarga: a torre acelera. Serra subindo, com voz dupla batendo.
+	c["hab_sobrecarga"] = _e([
+		{"onda": "dente", "f0": 180.0, "f1": 1200.0, "curva": 1.6, "dur": 0.5,
+		 "vozes": 2, "detune": 0.35, "atk": 0.004, "dec": 0.34, "sus": 0.12,
+		 "rel": 0.12, "sat": 0.55, "lp0": 1800.0, "lp1": 8000.0, "vol": 0.7},
+		{"onda": "quadrada", "f0": 90.0, "f1": 180.0, "dur": 0.4, "atk": 0.002,
+		 "dec": 0.26, "sus": 0.1, "rel": 0.1, "vol": 0.35},
+	], -9.0, 0.04, 0.13)
+
+	# Chuva de Ouro: metal caindo. Agudo brilhante, muitas vozes, cauda curta.
+	c["hab_chuva_ouro"] = _e([
+		{"onda": "senoide", "f0": 1800.0, "f1": 2600.0, "curva": 0.6, "dur": 0.6,
+		 "vozes": 3, "detune": 0.5, "atk": 0.002, "dec": 0.4, "sus": 0.08,
+		 "rel": 0.18, "fm_ratio": 3.5, "fm_index": 0.8, "fm_decai": 5.0, "vol": 0.5},
+		{"onda": "ruido", "dur": 0.45, "atk": 0.002, "dec": 0.3, "sus": 0.05,
+		 "rel": 0.12, "lp0": 6000.0, "lp1": 12000.0, "vol": 0.3},
+	], -10.0, 0.03, 0.11)
+
+	# Escudo Absoluto: algo fecha. Ataque seco, corpo grave, sem brilho nenhum.
+	c["hab_escudo"] = _e([
+		{"onda": "senoide", "f0": 420.0, "f1": 120.0, "curva": 1.5, "dur": 0.7,
+		 "atk": 0.001, "dec": 0.45, "sus": 0.14, "rel": 0.24, "vol": 0.75},
+		{"onda": "triangulo", "f0": 210.0, "f1": 210.0, "dur": 0.75, "vozes": 2,
+		 "detune": 0.08, "atk": 0.02, "dec": 0.5, "sus": 0.16, "rel": 0.24,
+		 "lp0": 3000.0, "lp1": 900.0, "vol": 0.45},
+	], -8.0, 0.03, 0.12)
+
+	# Sentinelas: três coisas nascem. Sequência de três notas subindo.
+	c["hab_sentinelas"] = _e(Synth.sequencia(
+		{"onda": "triangulo", "f0": 520.0, "dur": 0.16, "atk": 0.003, "dec": 0.12,
+		 "rel": 0.05, "lp0": 7000.0, "vozes": 2, "detune": 0.12, "vol": 0.55},
+		[0, 4, 9], 0.085, 1.0),
+		-10.0, 0.04, 0.12)
 
 	c["hab_generica"] = _e([
 		{"onda": "triangulo", "f0": 440.0, "f1": 880.0, "curva": 0.7, "dur": 0.35,

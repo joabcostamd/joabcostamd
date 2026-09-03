@@ -318,7 +318,7 @@ func _pedir_inicio(id: String) -> void:
 	var falta := _faltando(def)
 	if not falta.is_empty():
 		var elo := " %s " % Txt.t("dsf_e")
-		Bus.toast(Txt.f("dsf_bloqueado_falta", {"itens": elo.join(falta)}), "info")
+		Bus.toast(Txt.f("dsf_bloqueado_falta", {"itens": elo.join(falta)}), "bloqueado")
 		return
 	_pendente = {"acao": "iniciar", "id": id}
 	dlg_titulo.text = Txt.f("dsf_dlg_iniciar_titulo", {"nome": txt(def, "nome")})

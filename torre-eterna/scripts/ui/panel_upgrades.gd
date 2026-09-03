@@ -45,7 +45,7 @@ func montar(c: VBoxContainer) -> void:
 	check_auto.toggled.connect(func(v):
 		if not jogo.esp["desbloqueios"].has("autoCompra"):
 			check_auto.button_pressed = false
-			Bus.toast(Txt.t("upg_auto_bloqueado"), "info")
+			Bus.toast(Txt.t("upg_auto_bloqueado"), "bloqueado")
 			return
 		jogo.s["auto"]["comprar"] = v)
 	topo.add_child(check_auto)

@@ -223,6 +223,9 @@ func _toast(texto: String, tipo: String, icone: String) -> void:
 		"bom": cor = UI.VERDE
 		"ruim": cor = UI.VERMELHO
 		"epico": cor = UI.OURO
+		# "não dá para fazer isso" não é erro nem informação neutra: tem cor e
+		# som próprios, senão o aviso mais frequente do jogo é o mais mudo
+		"bloqueado": cor = UI.TEXTO3
 	var cx := UI.painel(UI.PAINEL.darkened(0.1), 10)
 	cx.modulate = Color(1, 1, 1, 0)
 	cx.mouse_filter = Control.MOUSE_FILTER_IGNORE

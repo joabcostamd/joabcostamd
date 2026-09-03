@@ -56,7 +56,7 @@ Saída crua dos portões, colada de execução — nunca de memória.
 
 ```
 $ godot --headless --path . -s res://tools/verificar.gd
-===VERIFICAR=== scripts=84 falhas=0 dados_faltando=[]
+===VERIFICAR=== scripts=85 falhas=0 dados_faltando=[]
 ===STATUS=== PASS
 
 $ godot --headless --path . -s res://tools/lint.gd
@@ -69,7 +69,7 @@ $ godot --headless --path . -s res://tools/validar_dados.gd
 ===STATUS=== PASS
 
 $ godot --headless --path . -s res://tools/testes.gd
-===TESTES=== passou=257 falhou=0
+===TESTES=== passou=315 falhou=0
 ===STATUS=== PASS
 
 $ godot --headless --path . -s res://tools/perf.gd -- 400
@@ -106,9 +106,9 @@ STATUS: PASS   (kit 1.5.2, 0 falhas)
 
 | | |
 |---|---:|
-| Scripts GDScript | 84 |
+| Scripts GDScript | 85 |
 | Linhas de código | 24.098 |
-| Testes da simulação | 257 |
+| Testes da simulação | 315 |
 | Chaves de interface PT/EN | 970 |
 | Textos de conteúdo PT/EN | 1.286 |
 | Imagens no repositório | 1 (`icon.svg`, o ícone do projeto — nenhuma no jogo) |

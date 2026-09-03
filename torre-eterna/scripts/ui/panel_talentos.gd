@@ -252,10 +252,10 @@ func _clicar(id: String) -> void:
 	var nivel := int(jogo.s["talentos"].get(id, 0))
 	var maxn := int(def.get("max", 1))
 	if not jogo.talento_liberado(def):
-		Bus.toast(Txt.f("tal_bloqueado_falta", {"req": _nomes_requisitos(def)}), "info")
+		Bus.toast(Txt.f("tal_bloqueado_falta", {"req": _nomes_requisitos(def)}), "bloqueado")
 		return
 	if nivel >= maxn:
-		Bus.toast(Txt.f("tal_ja_no_maximo", {"n": txt(def, "nome")}), "info")
+		Bus.toast(Txt.f("tal_ja_no_maximo", {"n": txt(def, "nome")}), "bloqueado")
 		return
 	var comprou := 0
 	if Input.is_key_pressed(KEY_SHIFT):
@@ -275,7 +275,7 @@ func _clicar(id: String) -> void:
 func _pedir_redist() -> void:
 	var gastos := int(jogo.s["pontos_talento_gastos"])
 	if gastos <= 0:
-		Bus.toast(Txt.t("tal_nada_desfazer"), "info")
+		Bus.toast(Txt.t("tal_nada_desfazer"), "bloqueado")
 		return
 	var quantos := 0
 	for id in jogo.s["talentos"].keys():

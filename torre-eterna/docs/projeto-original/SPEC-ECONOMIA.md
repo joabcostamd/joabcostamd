@@ -1,3 +1,10 @@
+> **Documento do projeto original — não descreve o jogo que existe.**
+> Este texto de economia foi escrito para uma implementação em JavaScript/Canvas
+> que nunca foi construída; o jogo é feito em Godot 4 e GDScript. Caminhos
+> de arquivo, APIs e números aqui são do projeto, não da realidade.
+> Leia `docs/projeto-original/LEIA-ANTES.md` antes de usar qualquer coisa
+> daqui.
+
 # TORRE ETERNA — Especificação Completa de Economia, Matemática e Balanceamento
 
 > **Status:** todos os números abaixo foram **simulados numericamente** (simulador em `/tmp/claude-0/-home-user-joabcostamd/85265d4c-ecb1-5175-8151-a419aa622793/scratchpad/simG.mjs`, `tabG.mjs`, `tG.mjs`, `full.mjs`) com um comprador guloso ótimo. Os tempos de marco na §13 são saída real do simulador, não estimativa.

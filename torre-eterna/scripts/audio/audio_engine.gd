@@ -295,8 +295,13 @@ func _ao_fechar_painel() -> void:
 	tocar("fechar")
 
 func _ao_aviso(_texto: String, tipo: String, _icone: String) -> void:
-	if tipo == "ruim":
-		tocar("erro")
+	# `bloqueado` era gerado e nunca tocado: existia no catálogo, tinha teste
+	# exigindo que existisse, e nenhum chamador. Os avisos de "não dá para fazer
+	# isso" (requisito faltando, já no máximo, nada para desfazer) saíam mudos
+	# ou com o mesmo tom de qualquer informação.
+	match tipo:
+		"ruim": tocar("erro")
+		"bloqueado": tocar("bloqueado")
 
 func _ao_config(chave: String, _valor) -> void:
 	if chave.begins_with("vol"):

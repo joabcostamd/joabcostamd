@@ -1,3 +1,10 @@
+> **Documento do projeto original — não descreve o jogo que existe.**
+> Este texto de áudio foi escrito para uma implementação em JavaScript/Canvas
+> que nunca foi construída; o jogo é feito em Godot 4 e GDScript. Caminhos
+> de arquivo, APIs e números aqui são do projeto, não da realidade.
+> Leia `docs/projeto-original/LEIA-ANTES.md` antes de usar qualquer coisa
+> daqui.
+
 # TORRE ETERNA — Especificação de Áudio Procedural (WebAudio, zero assets)
 
 **Documento normativo v1.0** · PT-BR · alvo: 60 fps com 400+ entidades, mobile incluído

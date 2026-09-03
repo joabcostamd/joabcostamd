@@ -751,7 +751,7 @@ func _fundir(uid: String) -> void:
 	if inst.is_empty():
 		return
 	if int(inst["nivel"]) >= Dados.nivel_max_carta:
-		Bus.toast(Txt.t("car_toast_no_teto"), "info")
+		Bus.toast(Txt.t("car_toast_no_teto"), "bloqueado")
 		return
 	if Saque.fundir(jogo, uid):
 		jogo.recalcular()
