@@ -35,10 +35,26 @@ var _filtro: CanvasLayer = null
 
 func _ready() -> void:
 	var salvo := SaveSys.carregar_config()
+	# PRIMEIRA execucao: abre no idioma do sistema. Depois disso quem manda e a
+	# escolha salva, mesmo que o jogador tenha escolhido o mesmo que o sistema.
+	# O jogo tem 1.040 chaves em ingles prontas e abria em portugues para todo
+	# mundo, no mundo inteiro, sem nunca perguntar.
+	if not salvo.has("idioma"):
+		v["idioma"] = idioma_do_sistema()
 	for k in PADRAO.keys():
 		if salvo.has(k):
 			v[k] = salvo[k]
 	aplicar()
+
+## Idioma que o sistema operacional pede, reduzido aos dois que o jogo fala.
+##
+## `headless` e ferramenta, nao jogador: os portoes medem textos em portugues e
+## nao podem mudar de resposta porque a maquina do CI esta configurada em outro
+## idioma. Entao sem tela o padrao continua sendo `pt`, sempre.
+static func idioma_do_sistema() -> String:
+	if DisplayServer.get_name() == "headless":
+		return "pt"
+	return "pt" if OS.get_locale().to_lower().begins_with("pt") else "en"
 
 func get_v(chave: String, padrao = null):
 	return v.get(chave, PADRAO.get(chave, padrao))

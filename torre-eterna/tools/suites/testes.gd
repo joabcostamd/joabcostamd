@@ -44,6 +44,7 @@ func rodar(cena: SceneTree) -> void:
 	t_nada_mudo()
 	t_elites()
 	t_mira()
+	t_rodape()
 	t_teto()
 	t_defesa()
 	t_ondas()
@@ -87,7 +88,7 @@ func rodar(cena: SceneTree) -> void:
 		"Mods": 19, "Numeros de dano": 2, "Offline": 6,
 		"Ondas": 12, "Pista de ouro": 3, "Prestígio": 25,
 		"Progresso": 14, "Saque": 8, "Save": 41,
-		"Sistemas": 6, "StatEngine": 5, "Teto": 25, "Áudio": 16,
+		"Rodape": 26, "Sistemas": 6, "StatEngine": 5, "Teto": 25, "Áudio": 16,
 	}
 	for nome_g in minimo_por_grupo:
 		var rodou := int(por_grupo.get(nome_g, 0))
@@ -1265,6 +1266,76 @@ func t_mira() -> void:
 		arena.alvo_ids(Vector2(610.0, 400.0), 400.0, {}) == longe_e)
 	perto_e.intangivel = 0.0
 	arena.limpar_inimigos()
+
+## ------------------------------------------------------------ rodape do HUD
+func t_rodape() -> void:
+	g("Rodape")
+	# O rodape mostrava doze glifos iguais na onda 1, cinco deles abrindo painel
+	# vazio, e nunca avisava quando algo enchia. As duas metades sao portao:
+	# a porta que NAO existe fica escondida, e a que tem algo esperando acende.
+	var H := load("res://scripts/ui/hud.gd") as GDScript
+	ok("hud.gd carrega", H != null)
+	if H == null:
+		return
+	var txt_h := _ler("res://scripts/ui/hud.gd")
+	ok("todo botao do rodape tem rotulo", txt_h.contains("_botao_de_painel("))
+	ok("o rotulo e retraduzido junto com a dica", txt_h.contains('b.get_meta("rotulo")'))
+	ok("o rodape e reavaliado no ciclo de update", txt_h.contains("_atualizar_portas_do_rodape()"))
+
+	# Estado de jogo NOVO: nada foi conquistado ainda.
+	var novo: Dictionary = GameState.novo()
+	var esp_vazio := {"desbloqueios": {}}
+	var p0: Dictionary = H.portas_do_rodape(novo, esp_vazio)
+	var existe0: Dictionary = p0["existe"]
+	var acende0: Dictionary = p0["acende"]
+	for chave in ["cartas", "reliquias", "habilidades", "desafios", "prestigio"]:
+		ok("no comeco o botao de %s fica escondido" % chave, not bool(existe0[chave]))
+	for chave2 in ["cartas", "missoes", "prestigio", "conquistas"]:
+		ok("no comeco o botao de %s nao acende" % chave2, not bool(acende0[chave2]))
+
+	# ...e cada porta abre pelo motivo certo, uma de cada vez.
+	var com_carta: Dictionary = GameState.novo()
+	com_carta["cartas"]["inventario"].append({"uid": 1, "id": "x", "raridade": 0, "nivel": 1})
+	ok("uma carta no inventario abre a porta de Cartas",
+		bool((H.portas_do_rodape(com_carta, esp_vazio)["existe"] as Dictionary)["cartas"]))
+	var com_reliquia: Dictionary = GameState.novo()
+	com_reliquia["relicas"]["x"] = 1
+	ok("uma reliquia abre a porta de Reliquias",
+		bool((H.portas_do_rodape(com_reliquia, esp_vazio)["existe"] as Dictionary)["reliquias"]))
+	var com_hab: Dictionary = GameState.novo()
+	com_hab["habilidades"]["x"] = {"desbloqueada": true, "nivel": 1, "cd": 0.0, "cd_max": 0.0, "usos": 0}
+	ok("uma habilidade abre a porta de Habilidades",
+		bool((H.portas_do_rodape(com_hab, esp_vazio)["existe"] as Dictionary)["habilidades"]))
+	ok("o desbloqueio abre a porta de Desafios",
+		bool((H.portas_do_rodape(GameState.novo(), {"desbloqueios": {"desafios": true}})["existe"] as Dictionary)["desafios"]))
+	var na_onda: Dictionary = GameState.novo()
+	na_onda["onda_maxima"] = Bal.ASC_ONDA_MIN
+	var p_onda: Dictionary = H.portas_do_rodape(na_onda, esp_vazio)
+	ok("chegar na onda de ascensao abre a porta de Prestigio",
+		bool((p_onda["existe"] as Dictionary)["prestigio"]))
+	ok("...e acende, porque tem o que fazer la",
+		bool((p_onda["acende"] as Dictionary)["prestigio"]))
+	var carta_nova: Dictionary = GameState.novo()
+	carta_nova["cartas"]["novas"].append(1)
+	ok("carta nova acende o botao de Cartas",
+		bool((H.portas_do_rodape(carta_nova, esp_vazio)["acende"] as Dictionary)["cartas"]))
+	var missao: Dictionary = GameState.novo()
+	missao["missoes"]["diarias"].append({"id": "x", "alvo": 1, "pronta": true, "coletada": false})
+	ok("missao pronta acende o botao de Missoes",
+		bool((H.portas_do_rodape(missao, esp_vazio)["acende"] as Dictionary)["missoes"]))
+	missao["missoes"]["diarias"][0]["coletada"] = true
+	ok("missao ja coletada nao acende nada",
+		not bool((H.portas_do_rodape(missao, esp_vazio)["acende"] as Dictionary)["missoes"]))
+	var conq: Dictionary = GameState.novo()
+	conq["conquistas"]["x"] = 1
+	ok("conquista nao vista acende o botao de Conquistas",
+		bool((H.portas_do_rodape(conq, esp_vazio)["acende"] as Dictionary)["conquistas"]))
+
+	# O idioma do sistema decide a PRIMEIRA abertura, e nunca sem tela.
+	ok("sem tela o idioma padrao continua sendo pt", Cfg.idioma_do_sistema() == "pt")
+	var txt_c := _ler("res://scripts/core/config.gd")
+	ok("a deteccao de idioma le o locale do sistema", txt_c.contains("OS.get_locale()"))
+	ok("...e so quando nao ha escolha salva", txt_c.contains('not salvo.has("idioma")'))
 
 ## ------------------------------------------------------------ teto de nivel
 func t_teto() -> void:

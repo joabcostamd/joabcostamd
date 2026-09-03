@@ -269,7 +269,7 @@ func _construir() -> void:
 	add_child(caixa_hab)
 
 	# ---------- rodapé esquerdo: painéis ----------
-	var menu := UI.hbox(6)
+	var menu := UI.hbox(2)
 	menu.anchor_left = 0.0
 	menu.anchor_right = 0.0
 	menu.anchor_top = 1.0
@@ -277,7 +277,7 @@ func _construir() -> void:
 	menu.offset_top = -58
 	menu.offset_bottom = -14
 	menu.offset_left = 14
-	menu.offset_right = 680
+	menu.offset_right = 858
 	add_child(menu)
 	# [id, icone, dica pronta, cor, CHAVE do texto, tecla] — a chave fica guardada
 	# no botão para o rótulo poder ser retraduzido sem remontar a barra inteira.
@@ -296,7 +296,8 @@ func _construir() -> void:
 		["config", "engrenagem", Txt.t("p_config") + " (O)", UI.TEXTO2, "p_config", " (O)"],
 	]
 	for p in paineis:
-		var b := _botao_com_icone(str(p[1]), str(p[2]), p[3], func(): painel_pedido.emit(str(p[0])))
+		var b := _botao_de_painel(str(p[1]), str(p[2]), p[3], Txt.t(str(p[4])),
+			func(): painel_pedido.emit(str(p[0])))
 		menu.add_child(b)
 		botoes_painel[str(p[0])] = b
 		# guarda a CHAVE, não o texto: é o que permite retraduzir sem remontar
@@ -311,7 +312,7 @@ func _construir() -> void:
 	acoes.anchor_bottom = 1.0
 	acoes.offset_top = -58
 	acoes.offset_bottom = -14
-	acoes.offset_left = -240
+	acoes.offset_left = -418
 	acoes.offset_right = -14
 	acoes.alignment = BoxContainer.ALIGNMENT_END
 	add_child(acoes)
@@ -366,6 +367,41 @@ func _construir() -> void:
 	_reconstruir_habilidades()
 
 ## Botão quadrado com ícone vetorial centralizado.
+## Botão do rodapé de painéis: ícone COM rótulo.
+##
+## Os doze eram glifos de 22 px sem uma palavra, e a única forma de descobrir o
+## que cada um abria era passar o mouse — o que num toque não existe. O rótulo
+## some junto com o botão quando o painel ainda não está liberado.
+func _botao_de_painel(icone: String, dica: String, cor: Color, rotulo: String,
+		ao_clicar: Callable) -> Button:
+	var b := Button.new()
+	b.custom_minimum_size = Vector2(68, 46)
+	b.focus_mode = Control.FOCUS_NONE
+	b.tooltip_text = dica
+	b.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	b.pressed.connect(ao_clicar)
+	var col := UI.vbox(0)
+	col.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	col.offset_top = 4
+	col.offset_bottom = -3
+	col.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	b.add_child(col)
+	var ic := Control.new()
+	ic.set_script(load("res://scripts/ui/icone_control.gd"))
+	ic.custom_minimum_size = Vector2(0, 22)
+	ic.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	ic.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	col.add_child(ic)
+	ic.configurar(icone, cor, 20)
+	var lbl := UI.rotulo(rotulo, 9, UI.TEXTO)
+	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl.autowrap_mode = TextServer.AUTOWRAP_OFF
+	lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	col.add_child(lbl)
+	b.set_meta("rotulo", lbl)
+	return b
+
 func _botao_com_icone(icone: String, dica: String, cor: Color, ao_clicar: Callable) -> Button:
 	var b := Button.new()
 	b.custom_minimum_size = Vector2(46, 44)
@@ -631,6 +667,7 @@ func _atualizar_lento() -> void:
 	# do custo da melhoria mais barata, entao pisca discreto quando da para
 	# comprar uma e fica evidente quando da para comprar muitas.
 	_atualizar_brilho_melhorias()
+	_atualizar_portas_do_rodape()
 	# O botão do Modo Infinito só existe depois que o nó do topo da árvore de
 	# Éter é comprado: antes disso ele seria uma promessa vazia no rodapé.
 	if b_infinito != null:
@@ -652,6 +689,78 @@ func _atualizar_lento() -> void:
 	if b_autopurga != null:
 		b_autopurga.visible = jogo.esp["desbloqueios"].has("autoPurga")
 		b_autopurga.modulate = UI.ACENTO2 if bool(Mecanicas.estado_purga(jogo.s)["auto"]) else Color.WHITE
+
+## O rodape so mostra a porta que EXISTE, e acende a que tem algo esperando.
+##
+## Duas coisas de uma vez, e as duas eram a mesma doenca. Na onda 1 o jogador
+## via doze glifos iguais e cinco deles abriam um painel vazio — Cartas sem uma
+## carta, Reliquias sem uma reliquia, Habilidades sem uma habilidade, Prestigio
+## a vinte e cinco ondas de distancia, Desafios trancado. E depois, quando as
+## portas ENCHIAM, nada avisava: missao pronta, nivel de temporada para coletar,
+## carta nova no inventario e ascensao disponivel eram todos invisiveis, num
+## jogo que atira sozinho e nao obriga ninguem a reabrir painel. Coletar missao
+## e a UNICA porta de XP da temporada, e era a que menos se anunciava.
+##
+## O jogo ja sabia fazer isto certo — Farm, Infinito e Purga automatica so
+## aparecem quando o desbloqueio existe. Aqui e o mesmo tratamento para os doze.
+## A DECISAO e estatica de proposito: assim o portao consegue perguntar "com
+## este estado, o botao de Cartas aparece?" sem montar a interface inteira.
+static func portas_do_rodape(s: Dictionary, esp: Dictionary) -> Dictionary:
+	var cartas: Dictionary = s["cartas"]
+	var tem_habilidade := false
+	for id_h in s["habilidades"]:
+		if bool((s["habilidades"][id_h] as Dictionary).get("desbloqueada", false)):
+			tem_habilidade = true
+			break
+	var pode_ascender := int(s["onda_maxima"]) >= Bal.ASC_ONDA_MIN
+	return {
+		"existe": {
+			"cartas": (cartas["inventario"] as Array).size() > 0,
+			"reliquias": (s["relicas"] as Dictionary).size() > 0,
+			"habilidades": tem_habilidade,
+			"desafios": (esp.get("desbloqueios", {}) as Dictionary).has("desafios"),
+			"prestigio": pode_ascender or int(s["prestigio"]["ascensoes"]) > 0,
+		},
+		"acende": {
+			"cartas": (cartas["novas"] as Array).size() > 0,
+			"missoes": _tem_missao_pronta(s) or _tem_nivel_de_temporada(s),
+			"prestigio": pode_ascender,
+			"conquistas": (s["conquistas"] as Dictionary).size() > (s["conquistas_vistas"] as Array).size(),
+		},
+	}
+
+func _atualizar_portas_do_rodape() -> void:
+	var portas := portas_do_rodape(jogo.s, jogo.esp)
+	var existe: Dictionary = portas["existe"]
+	var acende: Dictionary = portas["acende"]
+	for id in botoes_painel.keys():
+		var b: Button = botoes_painel[id]
+		if not is_instance_valid(b):
+			continue
+		b.visible = bool(existe.get(id, true))
+		if bool(acende.get(id, false)):
+			# mesma respiracao do brilho de Melhorias: chama atencao sem gritar
+			var pulso := 0.72 + 0.28 * sin(float(Time.get_ticks_msec()) * 0.005)
+			b.modulate = Color.WHITE.lerp(UI.OURO, pulso)
+		elif id != "talentos" and id != "upgrades":
+			b.modulate = Color.WHITE
+
+static func _tem_missao_pronta(s: Dictionary) -> bool:
+	var m: Dictionary = s["missoes"]
+	for grupo in ["diarias", "semanais"]:
+		for mi in (m[grupo] as Array):
+			if bool((mi as Dictionary).get("pronta", false)) and not bool((mi as Dictionary).get("coletada", false)):
+				return true
+	return false
+
+static func _tem_nivel_de_temporada(s: Dictionary) -> bool:
+	var t: Dictionary = s["temporada"]
+	var coletadas: Array = t["coletadas"]
+	for r in Dados.temporada:
+		var n := int(r.get("nivel", 0))
+		if n <= int(t["nivel"]) and not coletadas.has(n):
+			return true
+	return false
 
 ## Mostra só os elementos em que o Enxame já criou resistência.
 func _atualizar_adaptacao() -> void:
@@ -781,6 +890,11 @@ func _retraduzir() -> void:
 		if not is_instance_valid(b) or not b.has_meta("chave_dica"):
 			continue
 		b.tooltip_text = Txt.t(str(b.get_meta("chave_dica"))) + str(b.get_meta("tecla_dica"))
+		# O rotulo tambem e texto: trocar de idioma tem que trocar os doze.
+		if b.has_meta("rotulo"):
+			var lbl = b.get_meta("rotulo")
+			if is_instance_valid(lbl):
+				lbl.text = Txt.t(str(b.get_meta("chave_dica")))
 	_atualizar_dica_mira()
 	if b_infinito != null and is_instance_valid(b_infinito):
 		b_infinito.tooltip_text = Txt.t("hud_infinito_dica")
