@@ -92,7 +92,7 @@ func rodar(cena: SceneTree) -> void:
 		"Mods": 19, "Numeros de dano": 2, "Offline": 6,
 		"Ondas": 17, "Pista de ouro": 3, "Prestígio": 25,
 		"Progresso": 14, "Saque": 8, "Save": 41,
-		"Celebracao": 25, "Fim de sessao": 25, "Painel de melhorias": 28, "Rodape": 26, "Sistemas": 6, "StatEngine": 5, "Custo do quadro": 12, "Teto": 38, "Áudio": 45,
+		"Celebracao": 25, "Fim de sessao": 25, "Painel de melhorias": 28, "Rodape": 28, "Sistemas": 6, "StatEngine": 5, "Custo do quadro": 12, "Teto": 38, "Áudio": 45,
 	}
 	for nome_g in minimo_por_grupo:
 		var rodou := int(por_grupo.get(nome_g, 0))
@@ -1589,11 +1589,21 @@ func t_rodape() -> void:
 		bool((H.portas_do_rodape(GameState.novo(), {"desbloqueios": {"desafios": true}})["existe"] as Dictionary)["desafios"]))
 	var na_onda: Dictionary = GameState.novo()
 	na_onda["onda_maxima"] = Bal.ASC_ONDA_MIN
-	var p_onda: Dictionary = H.portas_do_rodape(na_onda, esp_vazio)
+	var p_onda: Dictionary = H.portas_do_rodape(na_onda, esp_vazio, Big.from(1000.0))
 	ok("chegar na onda de ascensao abre a porta de Prestigio",
 		bool((p_onda["existe"] as Dictionary)["prestigio"]))
-	ok("...e acende, porque tem o que fazer la",
+	# QUANDO ASCENDER o jogo nao respondia: medido, uma corrida chega a onda 212
+	# em uma hora e NUNCA para de subir, entao nao existe o momento em que o
+	# jogo trava e diz "reinicie agora". O botao acende com o sinal que um
+	# jogador experiente usa — a corrida atual vale, sozinha, tudo o que voce ja
+	# guardou — e nao so por ter passado da onda 25.
+	ok("...e acende quando a corrida vale o acervo inteiro",
 		bool((p_onda["acende"] as Dictionary)["prestigio"]))
+	na_onda["moedas"]["fragmentos"] = Big.from(1.0e9)
+	var p_cedo: Dictionary = H.portas_do_rodape(na_onda, esp_vazio, Big.from(1000.0))
+	ok("com o acervo grande e a corrida pequena, NAO acende",
+		not bool((p_cedo["acende"] as Dictionary)["prestigio"]))
+	ok("...mas a porta continua aberta", bool((p_cedo["existe"] as Dictionary)["prestigio"]))
 	var carta_nova: Dictionary = GameState.novo()
 	carta_nova["cartas"]["novas"].append(1)
 	ok("carta nova acende o botao de Cartas",

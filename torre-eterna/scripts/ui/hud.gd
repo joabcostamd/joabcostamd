@@ -705,7 +705,10 @@ func _atualizar_lento() -> void:
 ## aparecem quando o desbloqueio existe. Aqui e o mesmo tratamento para os doze.
 ## A DECISAO e estatica de proposito: assim o portao consegue perguntar "com
 ## este estado, o botao de Cartas aparece?" sem montar a interface inteira.
-static func portas_do_rodape(s: Dictionary, esp: Dictionary) -> Dictionary:
+## `previa_frag` e o ganho de fragmentos que uma ascensao daria AGORA (log10).
+## Vem de fora porque `Prestigio.previa_fragmentos` precisa do no do jogo, e esta
+## funcao existe justamente para o portao poder perguntar sem montar nada.
+static func portas_do_rodape(s: Dictionary, esp: Dictionary, previa_frag: float = Big.ZERO) -> Dictionary:
 	var cartas: Dictionary = s["cartas"]
 	var tem_habilidade := false
 	for id_h in s["habilidades"]:
@@ -713,6 +716,17 @@ static func portas_do_rodape(s: Dictionary, esp: Dictionary) -> Dictionary:
 			tem_habilidade = true
 			break
 	var pode_ascender := int(s["onda_maxima"]) >= Bal.ASC_ONDA_MIN
+	# QUANDO ASCENDER E UMA PERGUNTA QUE O JOGO NAO RESPONDIA. Medido: com o
+	# balanceamento consertado, uma corrida chega a onda 212 em uma hora e NUNCA
+	# para de subir — nao existe o momento em que o jogo trava e diz "agora
+	# reinicie". Sem sinal nenhum, o prestigio nao puxa: o jogador so descobre
+	# que devia ter ascendido quando le um guia.
+	#
+	# O sinal e o mesmo que um jogador experiente usa: a corrida ATUAL, sozinha,
+	# vale pelo menos tudo o que voce ja guardou. Ai reiniciar dobra o acervo, e
+	# o botao acende.
+	var vale_ascender := pode_ascender and (Big.is_zero(s["moedas"]["fragmentos"])
+		or Big.gte(previa_frag, s["moedas"]["fragmentos"]))
 	return {
 		"existe": {
 			"cartas": (cartas["inventario"] as Array).size() > 0,
@@ -724,13 +738,13 @@ static func portas_do_rodape(s: Dictionary, esp: Dictionary) -> Dictionary:
 		"acende": {
 			"cartas": (cartas["novas"] as Array).size() > 0,
 			"missoes": _tem_missao_pronta(s) or _tem_nivel_de_temporada(s),
-			"prestigio": pode_ascender,
+			"prestigio": vale_ascender,
 			"conquistas": (s["conquistas"] as Dictionary).size() > (s["conquistas_vistas"] as Array).size(),
 		},
 	}
 
 func _atualizar_portas_do_rodape() -> void:
-	var portas := portas_do_rodape(jogo.s, jogo.esp)
+	var portas := portas_do_rodape(jogo.s, jogo.esp, Prestigio.previa_fragmentos(jogo))
 	var existe: Dictionary = portas["existe"]
 	var acende: Dictionary = portas["acende"]
 	for id in botoes_painel.keys():

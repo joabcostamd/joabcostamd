@@ -73,11 +73,34 @@ func executar() -> void:
 	#  - so o passo (a corrida foi mais longe que a anterior): e a regra antiga,
 	#    e com passo x2 a oitava ascensao pediria a onda 3.200.
 	#
-	# Juntas, e a heuristica que se usa de verdade: reinicie quando der para ir
-	# NOTAVELMENTE mais longe (15% a mais que da ultima vez) E quando a corrida,
-	# sozinha, valer uma fatia grande do que voce ja guardou.
-	const ASC_FATIA := 0.4
-	const ASC_PASSO := 1.15
+	# Juntas, e a heuristica que se usa de verdade: reinicie quando a corrida
+	# tiver ALCANCADO O SEU RECORDE — voce ja recuperou tudo o que tinha, e dali
+	# para frente e terreno novo — E quando ela, sozinha, valer uma fatia grande
+	# do que voce ja guardou. O recorde como alvo e o que faz as duas portas da
+	# Singularidade (oito ascensoes E onda 150) andarem juntas: uma so avanca se
+	# a outra tambem avancar.
+	#
+	# ...e essa terceira versao tambem estava errada, por um `>=`: o alvo era o
+	# proprio recorde, entao alcancar o recorde bastava e o recorde nunca subia.
+	# Nove ascensoes na primeira hora com o recorde parado na onda 25, de novo.
+	#
+	# A quarta tentativa foi "ascenda quando a corrida parar de render", e ela
+	# nunca ascendeu — o que e o achado mais importante desta ferramenta: com o
+	# balanceamento consertado a corrida NAO PARA. Onda 212 em uma hora, subindo.
+	# Nao existe o momento em que o jogo trava e diz "reinicie agora".
+	#
+	# A quinta usou o sinal que o jogo agora da ao jogador — a corrida vale o
+	# acervo inteiro — e sozinha ela tambem thrasha: `previa_fragmentos` cresce
+	# exponencial com a onda, entao "vale o acervo" se cumpre a UMA onda de
+	# distancia, e o agente reinicia na onda 25 nove vezes seguidas.
+	#
+	# A sexta e a que fica, e ela e a quinta MAIS UM PISO DE PROGRESSO: so
+	# reinicie se der para ir 10% mais longe do que o seu recorde. Sem o piso, a
+	# regra do valor sozinha nunca faz o recorde subir; sem a regra do valor, o
+	# piso sozinho reinicia cedo demais. As cinco tentativas anteriores estao
+	# escritas acima com o que cada uma mediu, porque a proxima pessoa que achar
+	# esta regra estranha merece saber o que ja foi tentado.
+	const ASC_PASSO := 1.1
 	var alvo_asc := Bal.ASC_ONDA_MIN
 	for i in passos:
 		j.simular(DT)
@@ -94,12 +117,12 @@ func executar() -> void:
 				# So ascende quando a corrida vale a fatia. `previa_fragmentos` e
 				# `moedas.fragmentos` sao log10, entao a comparacao e feita no
 				# mesmo espaco em que o jogo guarda os numeros.
-				var ganho := Prestigio.previa_fragmentos(j)
+				var previa := Prestigio.previa_fragmentos(j)
 				var acervo: float = s["moedas"]["fragmentos"]
-				if Big.is_zero(acervo) or Big.gte(ganho, Big.mul_f(acervo, ASC_FATIA)):
+				if Big.is_zero(acervo) or Big.gte(previa, acervo):
 					j.ascender()
 					alvo_asc = maxi(Bal.ASC_ONDA_MIN,
-						int(ceil(float(s["prestigio"]["ultima_onda_asc"]) * ASC_PASSO)))
+						int(ceil(float(s["onda_maxima_global"]) * ASC_PASSO)))
 		var pr: Dictionary = s["prestigio"]
 		_marcar(marcos, "1a ascensao", t, int(pr["ascensoes"]) >= 1)
 		_marcar(marcos, "8 ascensoes (porta da Singularidade)", t, int(pr["ascensoes"]) >= Bal.SING_ASC_MIN)

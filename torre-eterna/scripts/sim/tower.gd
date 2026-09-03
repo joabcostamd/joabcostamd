@@ -166,7 +166,7 @@ func disparar(alvo: Inimigo, segundo: Inimigo = null, forca: float = 1.0) -> voi
 			tiros_para_salva = 0
 			var quantos := int(j.pas.get("salva_coral:valor", 12.0))
 			for i in quantos:
-				_criar_projetil(TAU * float(i) / float(quantos), alvo)
+				_criar_projetil(TAU * float(i) / float(quantos), alvo, forca)
 			Bus.particulas.emit("pulso", centro_b, {"raio": 110.0, "cor": "#fcd34d"})
 
 func _criar_projetil(ang: float, alvo: Inimigo, forca: float = 1.0) -> void:
