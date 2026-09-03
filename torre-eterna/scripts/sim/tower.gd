@@ -195,7 +195,7 @@ func _colisao(p: Projetil) -> Inimigo:
 		var e: Inimigo = item
 		if not e.vivo() or e.intangivel > 0.0:
 			continue
-		if p.atingidos.has(e):
+		if p.atingidos.has(e.id):
 			continue
 		var rr := e.raio + p.raio
 		if p.pos.distance_squared_to(e.pos) <= rr * rr:
@@ -211,7 +211,7 @@ func _impacto(p: Projetil, alvo: Inimigo) -> bool:
 		"elemento": p.elemento,
 	}
 
-	if str(alvo.def.get("hab", "")) == "refletir" and not p.critico:
+	if alvo.hab == "refletir" and not p.critico:
 		j.dano_na_torre(Big.to_f(p.dano) * 0.02, alvo, {"reflexo": true})
 	if bool(alvo.def.get("invisivel", false)):
 		alvo.revelado = true
@@ -228,15 +228,15 @@ func _impacto(p: Projetil, alvo: Inimigo) -> bool:
 	else:
 		Bus.particulas.emit("impacto", p.pos, {"ang": p.ang, "cor": p.cor, "crit": p.critico})
 
-	p.atingidos.append(alvo)
+	p.atingidos[alvo.id] = true
 
 	if p.perfuracao > 0:
 		p.perfuracao -= 1
 		p.dano = Big.mul_f(p.dano, 0.82)
-		p.alvo = j.arena.alvo(p.pos, 400.0, "proximo", p.atingidos)
+		p.alvo = j.arena.alvo_ids(p.pos, 400.0, "proximo", p.atingidos)
 		return false
 	if p.ricochete > 0:
-		var prox: Inimigo = j.arena.alvo(p.pos, 240.0, "proximo", p.atingidos)
+		var prox: Inimigo = j.arena.alvo_ids(p.pos, 240.0, "proximo", p.atingidos)
 		if prox != null:
 			p.ricochete -= 1
 			p.dano = Big.mul_f(p.dano, 0.75)

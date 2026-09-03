@@ -63,6 +63,8 @@ static func criar(def: Dictionary, onda: int, j, opt: Dictionary = {}) -> Inimig
 	e.cd = float(j.rng.entre(0.0, 1.0))
 	e.fase_anim = float(j.rng.entre(0.0, TAU))
 	e.forma = str(def.get("forma", "circulo"))
+	e.mov = str(def.get("mov", "direto"))
+	e.hab = str(def.get("hab", ""))
 	e.cor = Color.html(str(def.get("cor", "#8b93a7")))
 	e.cor2 = Color.html(str(def.get("cor2", "#3a4050")))
 	if e.elite:
@@ -169,7 +171,7 @@ static func dividir(e: Inimigo, j) -> void:
 
 static func mover(e: Inimigo, dt: float, j) -> void:
 	var centro: Vector2 = j.arena.centro
-	match str(e.def.get("mov", "direto")):
+	match e.mov:
 		"zigue":
 			var ang := (centro - e.pos).angle()
 			e.dir_ang = ang
@@ -261,7 +263,9 @@ static func _direto(e: Inimigo, dt: float, centro: Vector2) -> void:
 ## -------------------------------------------------------- habilidades
 
 static func habilidade(e: Inimigo, dt: float, j) -> void:
-	match str(e.def.get("hab", "")):
+	if e.hab == "":
+		return
+	match e.hab:
 		"curar":
 			e.cd -= dt
 			if e.cd > 0.0:
@@ -386,7 +390,8 @@ static func atualizar(dt: float, j) -> void:
 			else:
 				e.vel_res = Vector2.ZERO
 
-		habilidade(e, dt, j)
+		if e.hab != "":
+			habilidade(e, dt, j)
 		if e.chefe:
 			j.atualizar_chefe(e, dt)
 
@@ -403,7 +408,7 @@ static func atualizar(dt: float, j) -> void:
 
 		var d := e.pos.distance_to(centro)
 		if d <= Bal.RAIO_TORRE + e.raio * 0.7:
-			if str(e.def.get("hab", "")) == "grudar" and not e.grudado:
+			if e.hab == "grudar" and not e.grudado:
 				e.grudado = true
 				e.ang_grude = (e.pos - centro).angle()
 				e.pos = centro + Vector2(cos(e.ang_grude), sin(e.ang_grude)) * (Bal.RAIO_TORRE + e.raio * 0.5)

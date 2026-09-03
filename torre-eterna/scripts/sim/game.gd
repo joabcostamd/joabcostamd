@@ -252,7 +252,7 @@ func impacto_na_torre(e: Inimigo) -> void:
 	var espinhos := stats.n("espinhos")
 	if espinhos > 0.0:
 		Combate.aplicar_dano(e, Big.mul_f(stats.b("dano"), espinhos * 6.0), self, {"puro": true})
-	if str(e.def.get("hab", "")) == "explodir":
+	if e.hab == "explodir":
 		Bus.particulas.emit("explosao", e.pos, {"raio": float(e.def.get("raio", 110.0)), "cor": "#fb923c"})
 	if not e.chefe:
 		e.morrendo = 0.2

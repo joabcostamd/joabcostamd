@@ -22,7 +22,9 @@ var max_projeteis := 800
 var max_coletaveis := 350
 
 var _grade := {}
+var _celulas_usadas: Array[int] = []
 var _buffer: Array[Inimigo] = []
+var vivos := 0
 var _proximo_id := 1
 
 func _init() -> void:
@@ -64,9 +66,14 @@ func novo_inimigo() -> Inimigo:
 	inimigos.append(e)
 	return e
 
+## Remoção O(1): troca com o último. Seguro em laço reverso, e evita o
+## remove_at() que era O(n) — com 500 inimigos isso virava O(n²) por frame.
 func soltar_inimigo(i: int) -> void:
 	var e := inimigos[i]
-	inimigos.remove_at(i)
+	var ultimo := inimigos.size() - 1
+	if i != ultimo:
+		inimigos[i] = inimigos[ultimo]
+	inimigos.remove_at(ultimo)
 	e.limpar()
 	if _livres_i.size() < 256:
 		_livres_i.append(e)
@@ -87,7 +94,10 @@ func novo_projetil() -> Projetil:
 
 func soltar_projetil(i: int) -> void:
 	var p := projeteis[i]
-	projeteis.remove_at(i)
+	var ultimo := projeteis.size() - 1
+	if i != ultimo:
+		projeteis[i] = projeteis[ultimo]
+	projeteis.remove_at(ultimo)
 	p.limpar()
 	if _livres_p.size() < 320:
 		_livres_p.append(p)
@@ -108,7 +118,10 @@ func novo_coletavel() -> Coletavel:
 
 func soltar_coletavel(i: int) -> void:
 	var c := coletaveis[i]
-	coletaveis.remove_at(i)
+	var ultimo := coletaveis.size() - 1
+	if i != ultimo:
+		coletaveis[i] = coletaveis[ultimo]
+	coletaveis.remove_at(ultimo)
 	c.limpar()
 	if _livres_c.size() < 160:
 		_livres_c.append(c)
@@ -121,6 +134,8 @@ func limpar_tudo() -> void:
 	while not coletaveis.is_empty():
 		soltar_coletavel(coletaveis.size() - 1)
 	_grade.clear()
+	_celulas_usadas.clear()
+	vivos = 0
 
 func limpar_inimigos() -> void:
 	for i in range(inimigos.size() - 1, -1, -1):
@@ -131,17 +146,27 @@ func limpar_inimigos() -> void:
 
 ## -------------------------------------------------------------- grade
 
+## Reconstrói a grade reaproveitando os arrays já alocados: limpar é barato,
+## realocar 500 arrays por frame não é.
 func reconstruir_grade() -> void:
-	_grade.clear()
+	for k in _celulas_usadas:
+		var c: Array = _grade[k]
+		c.clear()
+	_celulas_usadas.clear()
+	vivos = 0
 	for e in inimigos:
 		if not e.vivo():
 			continue
+		vivos += 1
 		var k := _chave(e.pos)
 		if _grade.has(k):
 			var celula: Array = _grade[k]
+			if celula.is_empty():
+				_celulas_usadas.append(k)
 			celula.append(e)
 		else:
 			_grade[k] = [e]
+			_celulas_usadas.append(k)
 
 func _chave(p: Vector2) -> int:
 	return int(floor(p.x / CELULA)) * 4096 + int(floor(p.y / CELULA))
@@ -192,6 +217,23 @@ func alvo(origem: Vector2, alcance: float, modo: String = "proximo", excluir: Ar
 			melhor = e
 	return melhor
 
+## Igual a alvo(), mas o filtro é um Dicionário de ids já atingidos (O(1)).
+func alvo_ids(origem: Vector2, alcance: float, modo: String, ids: Dictionary) -> Inimigo:
+	var melhor: Inimigo = null
+	var melhor_score := -INF
+	var a2 := alcance * alcance
+	for e in inimigos:
+		if not e.vivo() or e.intangivel > 0.0 or ids.has(e.id):
+			continue
+		var d2 := (e.pos - origem).length_squared()
+		if d2 > a2:
+			continue
+		var score := -d2
+		if score > melhor_score:
+			melhor_score = score
+			melhor = e
+	return melhor
+
 ## Ponto de nascimento logo fora da borda visível — a ação acontece na tela,
 ## não a 800px de distância.
 func ponto_spawn(r: RngX, margem: float = 46.0) -> Vector2:
@@ -213,9 +255,7 @@ func ponto_spawn(r: RngX, margem: float = 46.0) -> Vector2:
 func fora_da_arena(p: Vector2, margem: float = 140.0) -> bool:
 	return p.x < -margem or p.y < -margem or p.x > largura + margem or p.y > altura + margem
 
+## Contagem viva do frame atual (atualizada em reconstruir_grade).
+## Antes isso varria a lista inteira a cada abate — O(n²) numa onda cheia.
 func contagem_viva() -> int:
-	var n := 0
-	for e in inimigos:
-		if e.vivo():
-			n += 1
-	return n
+	return vivos

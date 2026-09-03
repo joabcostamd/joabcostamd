@@ -23,7 +23,7 @@ var cor: Color = Color(0.49, 0.83, 0.99)
 var tipo := "bala"
 var origem := "torre"
 var dano_torre := 0.0
-var atingidos: Array[Inimigo] = []
+var atingidos: Dictionary = {}
 var trilha: PackedVector2Array = PackedVector2Array()
 
 func limpar() -> void:

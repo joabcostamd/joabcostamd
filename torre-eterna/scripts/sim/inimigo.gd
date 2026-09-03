@@ -77,6 +77,8 @@ var entrada := 0.0
 var cor: Color = Color.WHITE
 var cor2: Color = Color.BLACK
 var forma := "circulo"
+var mov := "direto"
+var hab := ""
 
 func limpar() -> void:
 	ativo = false

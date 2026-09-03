@@ -198,7 +198,7 @@ func _referencias() -> void:
 			avisos.append("carta %s: sinergia aponta para carta inexistente '%s'" % [str(ca.get("id", "?")), str(ca["sinergia"])])
 	for e in Dados.inimigos:
 		var mov := str(e.get("mov", "direto"))
-		if not mov in ["direto", "zigue", "salto", "teleporte", "fantasma", "parar_atirar", "errante", "perseguidor", "orbital", "estatico"]:
+		if not mov in ["direto", "zigue", "salto", "teleporte", "fantasma", "parar_atirar", "errante", "perseguidor", "orbital", "estatico", "passa"]:
 			erros.append("inimigo %s: movimento desconhecido '%s'" % [str(e.get("id", "?")), mov])
 		if e.has("hab"):
 			var hab := str(e["hab"])

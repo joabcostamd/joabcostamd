@@ -12,7 +12,7 @@ extends "res://scripts/ui/panel_base.gd"
 const LARG_DETALHE := 366.0
 const LARG_INDICE := 316.0
 const TILE_W := 126.0
-const TILE_H := 122.0
+const TILE_H := 128.0
 const ART_TILE := 60.0
 const COLUNAS := 5
 
@@ -34,6 +34,7 @@ var assinatura := ""
 var cap_sel := ""
 var entrada_sel := ""
 var lore_texto: VBoxContainer
+var lore_rolagem: ScrollContainer
 var botoes_lore := {}            # id -> {botao, def, aberta}
 var assinatura_lore := ""
 
@@ -412,6 +413,7 @@ func _montar_historia() -> void:
 	esq.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	conteudo.add_child(esq)
 	var sc := UI.scroll()
+	lore_rolagem = sc
 	esq.add_child(sc)
 	var indice := UI.vbox(4)
 	indice.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -499,7 +501,7 @@ func _botao_entrada(ent: Dictionary, cor: Color) -> Control:
 	h.add_child(l)
 	_ignorar_mouse(cx)
 	_ignorar_mouse(h)
-	botoes_lore[eid] = {"caixa": cx, "aberta": aberta, "cor": cor}
+	botoes_lore[eid] = {"caixa": cx, "botao": b, "aberta": aberta, "cor": cor}
 	return b
 
 func _mostrar_entrada() -> void:
@@ -562,6 +564,16 @@ func _mostrar_entrada() -> void:
 	corpo.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	lore_texto.add_child(corpo)
 	_marcar_entrada()
+	_rolar_ate_selecao()
+
+## Traz a entrada aberta para dentro do índice visível.
+func _rolar_ate_selecao() -> void:
+	if lore_rolagem == null or not botoes_lore.has(entrada_sel):
+		return
+	var r: Dictionary = botoes_lore[entrada_sel]
+	var b: Control = r["botao"]
+	if is_instance_valid(b):
+		lore_rolagem.call_deferred("ensure_control_visible", b)
 
 func _marcar_entrada() -> void:
 	for id in botoes_lore.keys():
@@ -842,8 +854,8 @@ func _bicho(def: Dictionary, chefe: bool, conhecido: bool) -> Inimigo:
 	e.cor2 = _cor(def, "cor2", str(def.get("cor", "#3a4152")))
 	if not conhecido:
 		e.chefe = false
-		e.cor = UI.FUNDO2.lightened(0.06)
-		e.cor2 = UI.FUNDO2.darkened(0.3)
+		e.cor = Color(0.78, 0.81, 0.90)
+		e.cor2 = Color(0.55, 0.58, 0.68)
 	return e
 
 func _botao_limpo(w: float, h: float) -> Button:
@@ -1003,6 +1015,16 @@ class ArteBicho extends Control:
 		mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_t = randf() * 4.0
 		set_process(animar)
+		if not oculto:
+			return
+		# silhueta: achata toda a paleta do bicho num vulto escuro
+		self_modulate = Color(0.30, 0.33, 0.44)
+		var q := UI.rotulo("?", int(raio * 1.15), UI.TEXTO3)
+		q.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		q.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		q.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(q)
+		q.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 	func _process(delta: float) -> void:
 		_t += delta
@@ -1018,11 +1040,3 @@ class ArteBicho extends Control:
 		bicho.raio = raio
 		bicho.altura = 0.0
 		ArteInimigo.desenhar(self, bicho, _t)
-		if oculto:
-			var f := ThemeDB.fallback_font
-			if f == null:
-				return
-			var fs := int(raio * 1.15)
-			var largura_txt := f.get_string_size("?", HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x
-			draw_string(f, c + Vector2(-largura_txt * 0.5, float(fs) * 0.36), "?",
-				HORIZONTAL_ALIGNMENT_LEFT, -1, fs, UI.TEXTO3)
