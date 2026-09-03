@@ -57,6 +57,27 @@ func executar() -> void:
 	# duracoes diferentes para o mesmo jogo, e uma delas estaria mentindo.
 	var agente = load("res://tools/suites/sim_balance.gd").new()
 
+	# QUANDO ASCENDER: a regra antiga era "dobre a onda da ultima ascensao", e
+	# ela nunca ascendia. A oitava ascensao — a porta da Singularidade — pediria
+	# a onda 25 x 2^7 = 3.200, seis vezes alem da ultima Era do jogo (onda 500).
+	# Uma regra que exige mais progresso do que existe conteudo nao e "um jogador
+	# que sabe o que faz": e um jogador que nunca ascende, e foi ela que produziu
+	# o laudo "Singularidade nao chegou em 7 h".
+	#
+	# A regra nova tem DUAS condicoes, e as duas precisam existir — medi as duas
+	# sozinhas e as duas erram para lados opostos:
+	#
+	#  - so a fatia (a corrida vale >= 40% do acervo): nove ascensoes na
+	#    primeira hora, recorde parado na onda 25 e nivel 8. O agente reiniciava
+	#    antes de construir qualquer coisa.
+	#  - so o passo (a corrida foi mais longe que a anterior): e a regra antiga,
+	#    e com passo x2 a oitava ascensao pediria a onda 3.200.
+	#
+	# Juntas, e a heuristica que se usa de verdade: reinicie quando der para ir
+	# NOTAVELMENTE mais longe (15% a mais que da ultima vez) E quando a corrida,
+	# sozinha, valer uma fatia grande do que voce ja guardou.
+	const ASC_FATIA := 0.4
+	const ASC_PASSO := 1.15
 	var alvo_asc := Bal.ASC_ONDA_MIN
 	for i in passos:
 		j.simular(DT)
@@ -67,13 +88,18 @@ func executar() -> void:
 		if int(s["onda_maxima"]) >= alvo_asc and Prestigio.pode_ascender(s):
 			if Prestigio.pode_transcender(s):
 				j.transcender()
-				alvo_asc = Bal.ASC_ONDA_MIN
 			elif Prestigio.pode_colapsar(s):
 				j.colapsar()
-				alvo_asc = Bal.ASC_ONDA_MIN
 			else:
-				j.ascender()
-				alvo_asc = maxi(Bal.ASC_ONDA_MIN, int(s["prestigio"]["ultima_onda_asc"]) * 2)
+				# So ascende quando a corrida vale a fatia. `previa_fragmentos` e
+				# `moedas.fragmentos` sao log10, entao a comparacao e feita no
+				# mesmo espaco em que o jogo guarda os numeros.
+				var ganho := Prestigio.previa_fragmentos(j)
+				var acervo: float = s["moedas"]["fragmentos"]
+				if Big.is_zero(acervo) or Big.gte(ganho, Big.mul_f(acervo, ASC_FATIA)):
+					j.ascender()
+					alvo_asc = maxi(Bal.ASC_ONDA_MIN,
+						int(ceil(float(s["prestigio"]["ultima_onda_asc"]) * ASC_PASSO)))
 		var pr: Dictionary = s["prestigio"]
 		_marcar(marcos, "1a ascensao", t, int(pr["ascensoes"]) >= 1)
 		_marcar(marcos, "8 ascensoes (porta da Singularidade)", t, int(pr["ascensoes"]) >= Bal.SING_ASC_MIN)

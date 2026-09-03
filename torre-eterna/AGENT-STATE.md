@@ -16,11 +16,11 @@
 
 ## Contagem
 
-- scripts: 85
+- scripts: 87
 - cenas: 1
 - recursos: 1
 - modelos3d: 0
-- strings_auditadas: 41
+- strings_auditadas: 51
 
 ## Inventario do projeto
 
@@ -192,7 +192,7 @@ _A IA deve consultar esta secao antes de criar qualquer coisa nova, para nao rei
 - `UI  (res://scripts/ui/ui_kit.gd)`
 - `Ux  (res://scripts/core/ux.gd)`
 
-### Sinais declarados (59)
+### Sinais declarados (61)
 
 - `inimigo_surgiu  (res://scripts/core/event_bus.gd)`
 - `inimigo_atingido  (res://scripts/core/event_bus.gd)`
@@ -219,6 +219,7 @@ _A IA deve consultar esta secao antes de criar qualquer coisa nova, para nao rei
 - `carta_equipada  (res://scripts/core/event_bus.gd)`
 - `onda_iniciou  (res://scripts/core/event_bus.gd)`
 - `onda_limpa  (res://scripts/core/event_bus.gd)`
+- `onda_antecipada  (res://scripts/core/event_bus.gd)`
 - `onda_falhou  (res://scripts/core/event_bus.gd)`
 - `nivel_subiu  (res://scripts/core/event_bus.gd)`
 - `conquista_desbloqueada  (res://scripts/core/event_bus.gd)`
@@ -231,6 +232,7 @@ _A IA deve consultar esta secao antes de criar qualquer coisa nova, para nao rei
 - `desbloqueio  (res://scripts/core/event_bus.gd)`
 - `habilidade_usada  (res://scripts/core/event_bus.gd)`
 - `habilidade_pronta  (res://scripts/core/event_bus.gd)`
+- `purga_usada  (res://scripts/core/event_bus.gd)`
 - `tremor_pedido  (res://scripts/core/event_bus.gd)`
 - `hitstop_pedido  (res://scripts/core/event_bus.gd)`
 - `flash_pedido  (res://scripts/core/event_bus.gd)`

@@ -212,6 +212,7 @@ func _conferir_doc(total_testes: int) -> int:
 				print("  FALHOU [doc] %s diz %s=%d e o real e %d" % [arquivo, str(par[1]), dito, real])
 				erros += 1
 	erros += _conferir_contagem_honesta()
+	erros += _conferir_saida_colada()
 
 	# Caminho citado na documentacao viva tem que existir.
 	#
@@ -2787,6 +2788,53 @@ func _assinatura_som(receita: Dictionary) -> String:
 			float(c.get("atk", 0.0)), float(c.get("dec", 0.0)),
 			str(c.get("fm_ratio", "-"))])
 	return "|".join(partes)
+
+## SAIDA "COLADA DE EXECUCAO" TEM QUE SER COLAVEL DE VERDADE.
+##
+## `QUALIDADE.md` publica um bloco que se apresenta como saida crua dos portoes
+## — e havia ali uma linha que NENHUM caminho de codigo emite: `STATUS: PASS
+## (kit 1.5.2, 0 falhas)`. `agent_verify.gd` imprime `STATUS: PASS   (%d ms)`,
+## e nunca imprimiu outra coisa. Uma linha inventada num documento cuja tese e
+## honestidade e o pior tipo de defeito que este projeto pode ter.
+##
+## O portao pega o esqueleto de cada linha de status do bloco (o texto antes do
+## primeiro numero) e exige que ele apareca literalmente num `print` do
+## repositorio. Nao prova que o bloco foi colado; prova que ele nao foi
+## inventado.
+func _conferir_saida_colada() -> int:
+	var texto := _ler("res://docs/QUALIDADE.md")
+	if texto == "":
+		return 0
+	# Junta o codigo todo uma vez: e nele que os moldes de `print` vivem.
+	var fonte := ""
+	for raiz in ["res://scripts", "res://tools"]:
+		for arq in _listar_gd(str(raiz)):
+			fonte += _ler(str(arq))
+	fonte += _ler("res://agent_verify.gd")
+	var erros := 0
+	var re_status := RegEx.create_from_string("(?m)^(===[A-ZÁ-Ú-]+===|STATUS:)[^\n]*")
+	for m in re_status.search_all(texto):
+		var linha := m.get_string(0)
+		# O esqueleto: tudo ate o primeiro digito, sem espacos nas pontas.
+		var corte := linha.length()
+		for i in linha.length():
+			if linha[i] >= "0" and linha[i] <= "9":
+				corte = i
+				break
+		var molde := linha.substr(0, corte)
+		# `print("===STATUS=== ", "PASS" if ok else "FAIL")` monta o veredito com
+		# DOIS argumentos, entao a palavra nunca aparece colada no codigo-fonte:
+		# o esqueleto para antes dela.
+		molde = molde.strip_edges()
+		for palavra in [" PASS", " FAIL"]:
+			if molde.ends_with(str(palavra)):
+				molde = molde.substr(0, molde.length() - str(palavra).length()).strip_edges()
+		if molde.length() < 6:
+			continue
+		if not fonte.contains(molde):
+			print("  FALHOU [doc] QUALIDADE.md publica '%s' e nenhum print do codigo emite isso" % molde)
+			erros += 1
+	return erros
 
 ## A ARITMETICA DO DOCUMENTO SOBRE HONESTIDADE tem que fechar.
 ##

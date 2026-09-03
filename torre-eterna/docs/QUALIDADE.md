@@ -212,7 +212,7 @@ melhorias no teto: 33 de 33 com teto (onda 261)
  é o que a semente fixa compra)
 
 $ godot --headless --path . -s res://agent_verify.gd
-STATUS: PASS   (kit 1.5.2, 0 falhas)
+STATUS: PASS   (3979 ms)
 ```
 
 ### Números do projeto
