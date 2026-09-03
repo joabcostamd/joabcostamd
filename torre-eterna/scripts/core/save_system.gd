@@ -30,14 +30,42 @@ var ultimo_erro := ""
 
 ## ---------------------------------------------------------------- disco
 
+## Procura NaN ou INF em qualquer profundidade do estado.
+##
+## Isto era conferido por acidente. No Godot 4.4 `JSON.stringify` escrevia
+## `inf`/`nan` no texto, que não é JSON válido, e a recusa vinha do round-trip
+## falhar — nunca de alguém ter perguntado "tem número quebrado aqui?".
+##
+## No Godot 4.7 o motor passou a trocar esses valores por `null`. O JSON fica
+## válido, o round-trip passa, e o save gravaria `null` no lugar do ouro do
+## jogador; na leitura o `null` vira o padrão e a partida some sem aviso — pior
+## que a recusa, porque a recusa ao menos preserva o save anterior. A troca de
+## motor não criou o defeito, só tirou a rede que o escondia.
+##
+## Agora a pergunta é feita de propósito, e a resposta não depende de qual
+## versão do motor está rodando.
+static func _tem_nao_finito(v) -> bool:
+	match typeof(v):
+		TYPE_FLOAT:
+			return not is_finite(v)
+		TYPE_DICTIONARY:
+			for k in v:
+				if _tem_nao_finito(v[k]):
+					return true
+		TYPE_ARRAY:
+			for item in v:
+				if _tem_nao_finito(item):
+					return true
+	return false
+
 func salvar(dados: Dictionary) -> bool:
 	var texto := JSON.stringify(dados)
-	# Um único NaN ou INF no estado sai do `JSON.stringify` como `nan`/`inf`,
-	# que NÃO é JSON válido: o arquivo grava, o jogo continua, e no próximo
-	# autosave esse arquivo quebrado vira o backup. Dois autosaves depois o
-	# jogador perdeu save E backup sem nunca ter visto um aviso. Por isso o
-	# save só acontece se o texto voltar a virar Dicionário.
-	if JSON.parse_string(texto) == null:
+	# Um único NaN ou INF no estado corrompe o arquivo: ele grava, o jogo
+	# continua, e no próximo autosave esse arquivo quebrado vira o backup. Dois
+	# autosaves depois o jogador perdeu save E backup sem nunca ter visto um
+	# aviso. Por isso o save só acontece com número finito e texto que volta a
+	# virar Dicionário.
+	if _tem_nao_finito(dados) or JSON.parse_string(texto) == null:
 		ultimo_erro = Txt.t("sv_json_invalido")
 		push_error(ultimo_erro)
 		Bus.toast(Txt.t("save_falhou"), "ruim", "cadeado")
