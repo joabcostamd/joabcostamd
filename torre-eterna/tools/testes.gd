@@ -599,6 +599,31 @@ func t_save() -> void:
 	ok("erro explicado", save.ultimo_erro != "")
 	ok("rejeita lixo", save.importar("nada disso").is_empty())
 
+	# --- save corrompido no disco: precisa cair no backup, nunca travar ---
+	var bom: String = JSON.stringify(jogo.s)
+	var f1 := FileAccess.open(save.CAMINHO, FileAccess.WRITE)
+	f1.store_string(bom)
+	f1.close()
+	var f2 := FileAccess.open(save.CAMINHO_BACKUP, FileAccess.WRITE)
+	f2.store_string(bom)
+	f2.close()
+	var f3 := FileAccess.open(save.CAMINHO, FileAccess.WRITE)
+	f3.store_string("{isso nao e json valido[[[")
+	f3.close()
+	var recuperado: Dictionary = save.carregar()
+	ok("save corrompido cai no backup", not recuperado.is_empty())
+	ok("backup preserva a onda", int(recuperado.get("onda", -1)) == int(jogo.s["onda"]))
+
+	# os dois corrompidos: precisa devolver vazio sem explodir
+	var f4 := FileAccess.open(save.CAMINHO_BACKUP, FileAccess.WRITE)
+	f4.store_string("lixo total")
+	f4.close()
+	var vazio: Dictionary = save.carregar()
+	ok("dois corrompidos devolvem vazio", vazio.is_empty())
+	var novo_estado := GameState.mesclar(GameState.novo(), vazio)
+	ok("jogo comeca limpo apos perda total", int(novo_estado["onda"]) == 1)
+	save.apagar()
+
 	# mesclagem preserva campos novos do padrao
 	var antigo := {"versao": 1, "onda": 5}
 	var mesclado := GameState.mesclar(GameState.novo(), antigo)
