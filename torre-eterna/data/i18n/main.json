@@ -70,5 +70,9 @@
   "save_falhou": {
     "pt": "Não consegui salvar. O save anterior foi mantido.",
     "en": "Could not save. Your previous save was kept."
+  },
+  "sim_conquista": {
+    "pt": "Conquista: {n}{r}",
+    "en": "Achievement: {n}{r}"
   }
 }

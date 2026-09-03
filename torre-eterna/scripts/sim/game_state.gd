@@ -174,15 +174,26 @@ static func mesclar(base: Dictionary, salvo: Dictionary) -> Dictionary:
 		elif b is Array and s is Array:
 			base[k] = s.duplicate(true)
 		elif b is float and (s is float or s is int):
-			base[k] = float(s)
+			# NaN e INF entram por save adulterado ou por bug antigo já gravado;
+			# se passassem, o número contaminaria a simulação inteira e o próximo
+			# `JSON.stringify` geraria arquivo inválido.
+			var f := float(s)
+			base[k] = f if is_finite(f) else b
 		elif b is int and (s is int or s is float):
-			base[k] = int(s)
+			var fi := float(s)
+			base[k] = int(fi) if is_finite(fi) else b
 		elif b is bool and s is bool:
 			base[k] = s
 		elif b is String and s is String:
 			base[k] = s
-		elif s != null:
-			base[k] = s
+		else:
+			# Tipo trocado: MANTÉM o padrão. Antes qualquer coisa não-nula era
+			# aceita, então um save em JSON perfeitamente válido mas com
+			# `"onda": {}` fazia o `int(s["onda"])` estourar em todo quadro — e,
+			# como o save é recarregado no boot, o jogo travava para sempre sem
+			# jeito de sair a não ser apagando o arquivo na mão.
+			push_warning("[save] campo '%s' com tipo trocado (%d, esperado %d) — padrão mantido" % [
+				str(k), typeof(s), typeof(b)])
 	# chaves extras do save que não existem no padrão (dados de versões futuras)
 	for k in salvo.keys():
 		if not base.has(k):

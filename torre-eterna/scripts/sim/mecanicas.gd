@@ -41,12 +41,26 @@ static func atualizar_purga(dt: float, j) -> void:
 	if float(p["carga"]) >= 1.0:
 		p["estourou"] = int(p["estourou"]) + 1
 		disparar_purga(j, false, 0.30)
-		# o primeiro estouro não pune: nesse ponto o jogo ainda nem explicou
-		if int(p["estourou"]) > 1:
+		# A punição só começa depois que o jogo EXPLICOU. O balão da Purga é o
+		# segundo passo do tutorial, mas quem ainda não chegou nele (ou abriu o
+		# jogo e foi fazer outra coisa) levava um atordoamento aos 52 s por não
+		# apertar um botão que nunca lhe foi apresentado. Enquanto o tutorial
+		# não mostrou a Purga, o estouro só avisa.
+		if int(p["estourou"]) > 1 and _purga_ja_explicada(j.s):
 			j.torre.cd_tiro = maxf(j.torre.cd_tiro, 1.2)
 			Bus.toast(Txt.t("sim_purga_estourou"), "ruim")
 		else:
 			Bus.toast(Txt.t("sim_purga_estourou_1a"), "info")
+
+## O jogador já viu o balão da Purga (ou dispensou o tutorial)?
+static func _purga_ja_explicada(s: Dictionary) -> bool:
+	var t = s.get("tutorial", null)
+	if not (t is Dictionary):
+		return true
+	if bool(t.get("completo", false)):
+		return true
+	var vistas = t.get("vistas", null)
+	return vistas is Array and vistas.has("purga")
 
 ## Qualidade da purga pela carga atual.
 static func qualidade_purga(carga: float) -> float:

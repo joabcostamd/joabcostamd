@@ -62,9 +62,26 @@ static func checar_conquistas(j) -> Array:
 			novas.append(id)
 			_dar_recompensa(def.get("recompensa", {}), j, str(def.get("nome", id)))
 			Bus.conquista_desbloqueada.emit(id)
+			# Antes só tocava um som. Nas primeiras conquistas — que chegam nos
+			# primeiros minutos, justo quando o jogador está entendendo o que o
+			# jogo recompensa — nada aparecia na tela: nem o nome, nem o prêmio.
+			Bus.toast(Txt.f("sim_conquista", {
+				"n": Ux.txt(def, "nome", Cfg.ingles()),
+				"r": _texto_recompensa(def.get("recompensa", {})),
+			}), "epico", "trofeu")
 	if not novas.is_empty():
 		j.marcar_sujo()
 	return novas
+
+## "+25 gemas" — o prêmio em uma linha, para o aviso da conquista.
+static func _texto_recompensa(r: Dictionary) -> String:
+	if r.is_empty():
+		return ""
+	var v := float(r.get("valor", 0))
+	var tipo := str(r.get("tipo", ""))
+	if v <= 0.0 or tipo == "":
+		return ""
+	return " · +%s %s" % [Fmt.num(v, 0), Txt.t("m_" + tipo)]
 
 static func _dar_recompensa(r: Dictionary, j, fonte: String) -> void:
 	if r.is_empty():

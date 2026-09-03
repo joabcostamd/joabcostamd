@@ -474,6 +474,16 @@ func t_progresso() -> void:
 ## ---------------------------------------------- mecânicas-assinatura
 func t_mecanicas() -> void:
 	g("Mecânicas")
+	# A Purga so pune depois de explicada: quem nao chegou no balao do tutorial
+	# levava um atordoamento aos 52s por nao apertar um botao que nunca lhe foi
+	# apresentado.
+	ok("purga nao pune sem tutorial",
+		not Mecanicas._purga_ja_explicada({"tutorial": {"completo": false, "vistas": []}}))
+	ok("purga pune depois do balao",
+		Mecanicas._purga_ja_explicada({"tutorial": {"completo": false, "vistas": ["purga"]}}))
+	ok("purga pune com tutorial dispensado",
+		Mecanicas._purga_ja_explicada({"tutorial": {"completo": true, "vistas": []}}))
+
 	var s: Dictionary = jogo.s
 
 	# --- A Purga ---
@@ -765,6 +775,16 @@ func t_save() -> void:
 	var mesclado := GameState.mesclar(GameState.novo(), antigo)
 	ok("mescla mantem padrao", mesclado.has("temporada") and mesclado.has("cartas"))
 	ok("mescla aplica salvo", int(mesclado["onda"]) == 5)
+
+	# Save valido em JSON mas com tipo trocado travava o boot para sempre: o
+	# valor entrava, `int(s["onda"])` estourava em todo quadro, e o mesmo save
+	# era recarregado na abertura seguinte.
+	var torto := GameState.mesclar(GameState.novo(), {"onda": {}, "nivel": [1, 2], "modo_farm": 7})
+	ok("tipo trocado nao passa (dicionario)", torto["onda"] is int)
+	ok("tipo trocado nao passa (array)", torto["nivel"] is int)
+	ok("tipo trocado nao passa (bool)", torto["modo_farm"] is bool)
+	var infinito := GameState.mesclar(GameState.novo(), {"xp": INF, "nivel": NAN})
+	ok("nao-finito nao entra no estado", is_finite(float(infinito["xp"])) and int(infinito["nivel"]) >= 1)
 
 ## ------------------------------------------------------------ offline
 func t_offline() -> void:
