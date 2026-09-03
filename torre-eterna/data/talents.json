@@ -1,0 +1,868 @@
+{
+ "ramos": [
+  {
+   "id": "furia",
+   "nome": "Fúria",
+   "nomeEn": "Fury",
+   "cor": "#f87171",
+   "icone": "⚔️",
+   "desc": "Dano, velocidade e violência."
+  },
+  {
+   "id": "bastiao",
+   "nome": "Bastião",
+   "nomeEn": "Bastion",
+   "cor": "#60a5fa",
+   "icone": "🛡️",
+   "desc": "Sobreviver é vencer."
+  },
+  {
+   "id": "fortuna",
+   "nome": "Fortuna",
+   "nomeEn": "Fortune",
+   "cor": "#fbbf24",
+   "icone": "🪙",
+   "desc": "Ouro, sorte e saque."
+  }
+ ],
+ "talentos": [
+  {
+   "id": "f_dano1",
+   "ramo": "furia",
+   "tier": 0,
+   "pos": [
+    0,
+    0
+   ],
+   "nome": "Agressão",
+   "nomeEn": "Aggression",
+   "desc": "+6% de dano por nível.",
+   "max": 10,
+   "efeito": [
+    {
+     "stat": "dano",
+     "tipo": "pct",
+     "valor": 0.06
+    }
+   ]
+  },
+  {
+   "id": "f_cad1",
+   "ramo": "furia",
+   "tier": 0,
+   "pos": [
+    1,
+    0
+   ],
+   "nome": "Gatilho Leve",
+   "nomeEn": "Light Trigger",
+   "desc": "+4% de cadência por nível.",
+   "max": 10,
+   "efeito": [
+    {
+     "stat": "cadencia",
+     "tipo": "pct",
+     "valor": 0.04
+    }
+   ]
+  },
+  {
+   "id": "f_crit1",
+   "ramo": "furia",
+   "tier": 1,
+   "pos": [
+    0,
+    1
+   ],
+   "nome": "Ponto Fraco",
+   "nomeEn": "Weak Point",
+   "desc": "+1% de chance crítica por nível.",
+   "max": 15,
+   "requer": [
+    "f_dano1"
+   ],
+   "efeito": [
+    {
+     "stat": "critChance",
+     "tipo": "flat",
+     "valor": 0.01
+    }
+   ]
+  },
+  {
+   "id": "f_critd1",
+   "ramo": "furia",
+   "tier": 1,
+   "pos": [
+    1,
+    1
+   ],
+   "nome": "Golpe Brutal",
+   "nomeEn": "Brutal Strike",
+   "desc": "+20% de dano crítico por nível.",
+   "max": 12,
+   "requer": [
+    "f_cad1"
+   ],
+   "efeito": [
+    {
+     "stat": "critDano",
+     "tipo": "flat",
+     "valor": 0.2
+    }
+   ]
+  },
+  {
+   "id": "f_pen",
+   "ramo": "furia",
+   "tier": 2,
+   "pos": [
+    0,
+    2
+   ],
+   "nome": "Rompe-Aço",
+   "nomeEn": "Steelbreaker",
+   "desc": "+3% de penetração de armadura por nível.",
+   "max": 10,
+   "requer": [
+    "f_crit1"
+   ],
+   "efeito": [
+    {
+     "stat": "penetracao",
+     "tipo": "flat",
+     "valor": 0.03
+    }
+   ]
+  },
+  {
+   "id": "f_chefe",
+   "ramo": "furia",
+   "tier": 2,
+   "pos": [
+    1,
+    2
+   ],
+   "nome": "Mata-Gigantes",
+   "nomeEn": "Giantslayer",
+   "desc": "×1,10 de dano em chefes por nível.",
+   "max": 10,
+   "requer": [
+    "f_critd1"
+   ],
+   "efeito": [
+    {
+     "stat": "danoChefe",
+     "tipo": "mult",
+     "valor": 1.1
+    }
+   ]
+  },
+  {
+   "id": "f_sede",
+   "ramo": "furia",
+   "tier": 3,
+   "pos": [
+    0,
+    3
+   ],
+   "nome": "Sede de Sangue",
+   "nomeEn": "Bloodthirst",
+   "chave": true,
+   "desc": "Cada abate concede +2% de dano por 3s (acumula até 25 vezes).",
+   "max": 1,
+   "custo": 3,
+   "requer": [
+    "f_pen"
+   ],
+   "efeito": [
+    {
+     "tipo": "passiva",
+     "chave": "sede_de_sangue"
+    }
+   ]
+  },
+  {
+   "id": "f_eco",
+   "ramo": "furia",
+   "tier": 3,
+   "pos": [
+    1,
+    3
+   ],
+   "nome": "Eco Balístico",
+   "nomeEn": "Ballistic Echo",
+   "chave": true,
+   "desc": "12% de chance de cada tiro ser disparado duas vezes.",
+   "max": 3,
+   "custo": 2,
+   "requer": [
+    "f_chefe"
+   ],
+   "efeito": [
+    {
+     "tipo": "passiva",
+     "chave": "eco",
+     "valor": 0.12
+    }
+   ]
+  },
+  {
+   "id": "f_multi",
+   "ramo": "furia",
+   "tier": 4,
+   "pos": [
+    0,
+    4
+   ],
+   "nome": "Salva Tripla",
+   "nomeEn": "Triple Volley",
+   "desc": "+1 projétil por nível.",
+   "max": 3,
+   "custo": 4,
+   "requer": [
+    "f_sede"
+   ],
+   "efeito": [
+    {
+     "stat": "projeteis",
+     "tipo": "flat",
+     "valor": 1
+    }
+   ]
+  },
+  {
+   "id": "f_exec",
+   "ramo": "furia",
+   "tier": 4,
+   "pos": [
+    1,
+    4
+   ],
+   "nome": "Sentença",
+   "nomeEn": "Sentence",
+   "desc": "+2% de limiar de execução por nível.",
+   "max": 8,
+   "custo": 2,
+   "requer": [
+    "f_eco"
+   ],
+   "efeito": [
+    {
+     "stat": "execucao",
+     "tipo": "flat",
+     "valor": 0.02
+    }
+   ]
+  },
+  {
+   "id": "f_ultima",
+   "ramo": "furia",
+   "tier": 5,
+   "pos": [
+    0.5,
+    5
+   ],
+   "nome": "Última Chama",
+   "nomeEn": "Last Flame",
+   "chave": true,
+   "desc": "Com menos de 30% de vida, seu dano dobra.",
+   "max": 1,
+   "custo": 5,
+   "requer": [
+    "f_multi",
+    "f_exec"
+   ],
+   "efeito": [
+    {
+     "tipo": "passiva",
+     "chave": "ultima_chama"
+    }
+   ]
+  },
+  {
+   "id": "f_maestria",
+   "ramo": "furia",
+   "tier": 6,
+   "pos": [
+    0.5,
+    6
+   ],
+   "nome": "Maestria da Fúria",
+   "nomeEn": "Fury Mastery",
+   "desc": "×1,25 no multiplicador global de dano por nível.",
+   "max": 20,
+   "custo": 3,
+   "requer": [
+    "f_ultima"
+   ],
+   "efeito": [
+    {
+     "stat": "multiplicador",
+     "tipo": "mult",
+     "valor": 1.25
+    }
+   ]
+  },
+  {
+   "id": "b_vida1",
+   "ramo": "bastiao",
+   "tier": 0,
+   "pos": [
+    0,
+    0
+   ],
+   "nome": "Fundação",
+   "nomeEn": "Foundation",
+   "desc": "+8% de vida máxima por nível.",
+   "max": 10,
+   "efeito": [
+    {
+     "stat": "vidaMax",
+     "tipo": "pct",
+     "valor": 0.08
+    }
+   ]
+  },
+  {
+   "id": "b_arm1",
+   "ramo": "bastiao",
+   "tier": 0,
+   "pos": [
+    1,
+    0
+   ],
+   "nome": "Casco Grosso",
+   "nomeEn": "Thick Hull",
+   "desc": "+3 de armadura por nível.",
+   "max": 12,
+   "efeito": [
+    {
+     "stat": "armadura",
+     "tipo": "flat",
+     "valor": 3
+    }
+   ]
+  },
+  {
+   "id": "b_regen1",
+   "ramo": "bastiao",
+   "tier": 1,
+   "pos": [
+    0,
+    1
+   ],
+   "nome": "Enxame Reparador",
+   "nomeEn": "Repair Swarm",
+   "desc": "+15% de regeneração por nível.",
+   "max": 10,
+   "requer": [
+    "b_vida1"
+   ],
+   "efeito": [
+    {
+     "stat": "regen",
+     "tipo": "pct",
+     "valor": 0.15
+    }
+   ]
+  },
+  {
+   "id": "b_escudo1",
+   "ramo": "bastiao",
+   "tier": 1,
+   "pos": [
+    1,
+    1
+   ],
+   "nome": "Barreira",
+   "nomeEn": "Barrier",
+   "desc": "+10% de escudo máximo por nível.",
+   "max": 10,
+   "requer": [
+    "b_arm1"
+   ],
+   "efeito": [
+    {
+     "stat": "escudoMax",
+     "tipo": "pct",
+     "valor": 0.1
+    }
+   ]
+  },
+  {
+   "id": "b_espinhos",
+   "ramo": "bastiao",
+   "tier": 2,
+   "pos": [
+    0,
+    2
+   ],
+   "nome": "Ferrões",
+   "nomeEn": "Barbs",
+   "desc": "+4% de espinhos por nível.",
+   "max": 10,
+   "requer": [
+    "b_regen1"
+   ],
+   "efeito": [
+    {
+     "stat": "espinhos",
+     "tipo": "flat",
+     "valor": 0.04
+    }
+   ]
+  },
+  {
+   "id": "b_roubo",
+   "ramo": "bastiao",
+   "tier": 2,
+   "pos": [
+    1,
+    2
+   ],
+   "nome": "Sanguessuga",
+   "nomeEn": "Siphon",
+   "desc": "+0,4% de roubo de vida por nível.",
+   "max": 10,
+   "requer": [
+    "b_escudo1"
+   ],
+   "efeito": [
+    {
+     "stat": "roubodeVida",
+     "tipo": "flat",
+     "valor": 0.004
+    }
+   ]
+  },
+  {
+   "id": "b_fenix",
+   "ramo": "bastiao",
+   "tier": 3,
+   "pos": [
+    0,
+    3
+   ],
+   "nome": "Fênix",
+   "nomeEn": "Phoenix",
+   "chave": true,
+   "desc": "Ao cair, a torre renasce com 40% da vida — uma vez por onda.",
+   "max": 1,
+   "custo": 4,
+   "requer": [
+    "b_espinhos"
+   ],
+   "efeito": [
+    {
+     "tipo": "passiva",
+     "chave": "fenix"
+    }
+   ]
+  },
+  {
+   "id": "b_reflexo",
+   "ramo": "bastiao",
+   "tier": 3,
+   "pos": [
+    1,
+    3
+   ],
+   "nome": "Escudo Reativo",
+   "nomeEn": "Reactive Shield",
+   "chave": true,
+   "desc": "Ao quebrar, o escudo explode causando dano em área.",
+   "max": 3,
+   "custo": 2,
+   "requer": [
+    "b_roubo"
+   ],
+   "efeito": [
+    {
+     "tipo": "passiva",
+     "chave": "escudo_explosivo"
+    }
+   ]
+  },
+  {
+   "id": "b_fortaleza",
+   "ramo": "bastiao",
+   "tier": 4,
+   "pos": [
+    0,
+    4
+   ],
+   "nome": "Fortaleza",
+   "nomeEn": "Fortress",
+   "desc": "×1,3 de vida máxima por nível.",
+   "max": 12,
+   "custo": 3,
+   "requer": [
+    "b_fenix"
+   ],
+   "efeito": [
+    {
+     "stat": "vidaMax",
+     "tipo": "mult",
+     "valor": 1.3
+    }
+   ]
+  },
+  {
+   "id": "b_absorcao",
+   "ramo": "bastiao",
+   "tier": 4,
+   "pos": [
+    1,
+    4
+   ],
+   "nome": "Absorção",
+   "nomeEn": "Absorption",
+   "desc": "+3/s de recarga de escudo por nível.",
+   "max": 10,
+   "custo": 2,
+   "requer": [
+    "b_reflexo"
+   ],
+   "efeito": [
+    {
+     "stat": "escudoRegen",
+     "tipo": "flat",
+     "valor": 3
+    }
+   ]
+  },
+  {
+   "id": "b_imortal",
+   "ramo": "bastiao",
+   "tier": 5,
+   "pos": [
+    0.5,
+    5
+   ],
+   "nome": "Núcleo Imortal",
+   "nomeEn": "Immortal Core",
+   "chave": true,
+   "desc": "Imune a dano por 2s após cada onda concluída.",
+   "max": 1,
+   "custo": 5,
+   "requer": [
+    "b_fortaleza",
+    "b_absorcao"
+   ],
+   "efeito": [
+    {
+     "tipo": "passiva",
+     "chave": "imortal_pos_onda"
+    }
+   ]
+  },
+  {
+   "id": "b_maestria",
+   "ramo": "bastiao",
+   "tier": 6,
+   "pos": [
+    0.5,
+    6
+   ],
+   "nome": "Maestria do Bastião",
+   "nomeEn": "Bastion Mastery",
+   "desc": "+8 de armadura e +6% de vida por nível.",
+   "max": 20,
+   "custo": 3,
+   "requer": [
+    "b_imortal"
+   ],
+   "efeito": [
+    {
+     "stat": "armadura",
+     "tipo": "flat",
+     "valor": 8
+    },
+    {
+     "stat": "vidaMax",
+     "tipo": "pct",
+     "valor": 0.06
+    }
+   ]
+  },
+  {
+   "id": "o_ouro1",
+   "ramo": "fortuna",
+   "tier": 0,
+   "pos": [
+    0,
+    0
+   ],
+   "nome": "Ganância",
+   "nomeEn": "Greed",
+   "desc": "+10% de ouro por nível.",
+   "max": 12,
+   "efeito": [
+    {
+     "stat": "ganhoOuro",
+     "tipo": "pct",
+     "valor": 0.1
+    }
+   ]
+  },
+  {
+   "id": "o_xp1",
+   "ramo": "fortuna",
+   "tier": 0,
+   "pos": [
+    1,
+    0
+   ],
+   "nome": "Aprendizado",
+   "nomeEn": "Learning",
+   "desc": "+10% de XP por nível.",
+   "max": 10,
+   "efeito": [
+    {
+     "stat": "ganhoXP",
+     "tipo": "pct",
+     "valor": 0.1
+    }
+   ]
+  },
+  {
+   "id": "o_ima",
+   "ramo": "fortuna",
+   "tier": 1,
+   "pos": [
+    0,
+    1
+   ],
+   "nome": "Magnetismo",
+   "nomeEn": "Magnetism",
+   "desc": "+25% de raio de coleta por nível.",
+   "max": 8,
+   "requer": [
+    "o_ouro1"
+   ],
+   "efeito": [
+    {
+     "stat": "coleta",
+     "tipo": "pct",
+     "valor": 0.25
+    }
+   ]
+  },
+  {
+   "id": "o_drop",
+   "ramo": "fortuna",
+   "tier": 1,
+   "pos": [
+    1,
+    1
+   ],
+   "nome": "Olho de Águia",
+   "nomeEn": "Eagle Eye",
+   "desc": "+12% de chance de drop por nível.",
+   "max": 10,
+   "requer": [
+    "o_xp1"
+   ],
+   "efeito": [
+    {
+     "stat": "chanceDrop",
+     "tipo": "pct",
+     "valor": 0.12
+    }
+   ]
+  },
+  {
+   "id": "o_combo",
+   "ramo": "fortuna",
+   "tier": 2,
+   "pos": [
+    0,
+    2
+   ],
+   "nome": "Ritmo",
+   "nomeEn": "Rhythm",
+   "chave": true,
+   "desc": "O combo dura 1s a mais e rende +50% de bônus.",
+   "max": 2,
+   "custo": 2,
+   "requer": [
+    "o_ima"
+   ],
+   "efeito": [
+    {
+     "tipo": "passiva",
+     "chave": "combo_estendido"
+    }
+   ]
+  },
+  {
+   "id": "o_sorte",
+   "ramo": "fortuna",
+   "tier": 2,
+   "pos": [
+    1,
+    2
+   ],
+   "nome": "Trevo",
+   "nomeEn": "Clover",
+   "desc": "×1,08 de sorte por nível.",
+   "max": 10,
+   "requer": [
+    "o_drop"
+   ],
+   "efeito": [
+    {
+     "stat": "sorte",
+     "tipo": "mult",
+     "valor": 1.08
+    }
+   ]
+  },
+  {
+   "id": "o_dourado",
+   "ramo": "fortuna",
+   "tier": 3,
+   "pos": [
+    0,
+    3
+   ],
+   "nome": "Toque de Midas",
+   "nomeEn": "Midas Touch",
+   "chave": true,
+   "desc": "Dobra a chance de inimigos dourados e o ouro que eles soltam.",
+   "max": 1,
+   "custo": 3,
+   "requer": [
+    "o_combo"
+   ],
+   "efeito": [
+    {
+     "tipo": "passiva",
+     "chave": "midas"
+    }
+   ]
+  },
+  {
+   "id": "o_juros",
+   "ramo": "fortuna",
+   "tier": 3,
+   "pos": [
+    1,
+    3
+   ],
+   "nome": "Juros Compostos",
+   "nomeEn": "Compound Interest",
+   "chave": true,
+   "desc": "Dobra o rendimento do Cofre Rendente.",
+   "max": 1,
+   "custo": 3,
+   "requer": [
+    "o_sorte"
+   ],
+   "efeito": [
+    {
+     "tipo": "passiva",
+     "chave": "juros_dobrados"
+    }
+   ]
+  },
+  {
+   "id": "o_cdr",
+   "ramo": "fortuna",
+   "tier": 4,
+   "pos": [
+    0,
+    4
+   ],
+   "nome": "Improviso",
+   "nomeEn": "Improvise",
+   "desc": "+3% de redução de recarga por nível.",
+   "max": 10,
+   "custo": 2,
+   "requer": [
+    "o_dourado"
+   ],
+   "efeito": [
+    {
+     "stat": "cdr",
+     "tipo": "flat",
+     "valor": 0.03
+    }
+   ]
+  },
+  {
+   "id": "o_frag",
+   "ramo": "fortuna",
+   "tier": 4,
+   "pos": [
+    1,
+    4
+   ],
+   "nome": "Coletor de Estilhaços",
+   "nomeEn": "Shard Collector",
+   "desc": "+8% de fragmentos ao ascender por nível.",
+   "max": 12,
+   "custo": 3,
+   "requer": [
+    "o_juros"
+   ],
+   "efeito": [
+    {
+     "stat": "ganhoFrag",
+     "tipo": "pct",
+     "valor": 0.08
+    }
+   ]
+  },
+  {
+   "id": "o_avareza",
+   "ramo": "fortuna",
+   "tier": 5,
+   "pos": [
+    0.5,
+    5
+   ],
+   "nome": "Avareza Absoluta",
+   "nomeEn": "Absolute Avarice",
+   "chave": true,
+   "desc": "Ouro coletado também concede 5% do valor em XP.",
+   "max": 1,
+   "custo": 5,
+   "requer": [
+    "o_cdr",
+    "o_frag"
+   ],
+   "efeito": [
+    {
+     "tipo": "passiva",
+     "chave": "avareza"
+    }
+   ]
+  },
+  {
+   "id": "o_maestria",
+   "ramo": "fortuna",
+   "tier": 6,
+   "pos": [
+    0.5,
+    6
+   ],
+   "nome": "Maestria da Fortuna",
+   "nomeEn": "Fortune Mastery",
+   "desc": "×1,2 de ouro por nível.",
+   "max": 20,
+   "custo": 3,
+   "requer": [
+    "o_avareza"
+   ],
+   "efeito": [
+    {
+     "stat": "ganhoOuro",
+     "tipo": "mult",
+     "valor": 1.2
+    }
+   ]
+  }
+ ]
+}

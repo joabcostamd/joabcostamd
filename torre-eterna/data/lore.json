@@ -1,0 +1,954 @@
+{
+ "capitulos": [
+  {
+   "id": "fundacao",
+   "ordem": 1,
+   "icone": "🏗️",
+   "cor": "#8b93a7",
+   "nome": "A Fundação",
+   "nomeEn": "The Foundation",
+   "epigrafe": "Construíram um bibliotecário e chamaram de fortaleza.",
+   "epigrafeEn": "They built a librarian and called it a fortress.",
+   "resumo": "Vigília ergue a Estação TORRE-0 no centro da cidade e lhe dá memória de longo prazo — a decisão mais barata e mais cara do orçamento.",
+   "resumoEn": "Vigil raises Station TOWER-0 at the city center and gives it long-term memory — the cheapest and costliest line in the budget."
+  },
+  {
+   "id": "ferramenta",
+   "ordem": 2,
+   "icone": "⚙️",
+   "cor": "#a3e635",
+   "nome": "A Ferramenta",
+   "nomeEn": "The Tool",
+   "epigrafe": "Não é um exército. Escrevo isso na primeira linha porque sei quem vai ler.",
+   "epigrafeEn": "It is not an army. I write that first because I know who reads.",
+   "resumo": "O Programa CEIFA nasce para desmontar escória e devolver metal limpo. Replicadores obedientes, baratos, coordenados por som.",
+   "resumoEn": "Program HARVEST is born to eat slag and return clean metal. Obedient replicators, cheap, coordinated by sound."
+  },
+  {
+   "id": "colheita",
+   "ordem": 3,
+   "icone": "🌾",
+   "cor": "#f97362",
+   "nome": "A Colheita",
+   "nomeEn": "The Harvest",
+   "epigrafe": "Elas não atacam pessoas. Elas desmontam estruturas.",
+   "epigrafeEn": "They do not attack people. They disassemble structures.",
+   "resumo": "O Muro de Sal cede em uma manhã de terça. A cidade tem cento e vinte minutos de aviso e setenta e três de verdade.",
+   "resumoEn": "The Salt Wall gives out on a Tuesday morning. The city gets a hundred and twenty minutes of warning and seventy-three of truth."
+  },
+  {
+   "id": "silencio",
+   "ordem": 4,
+   "icone": "🕯️",
+   "cor": "#64748b",
+   "nome": "O Longo Silêncio",
+   "nomeEn": "The Long Silence",
+   "epigrafe": "População: 0. Bibliotecas em funcionamento: 1.",
+   "epigrafeEn": "Population: 0. Libraries in operation: 1.",
+   "resumo": "Doze anos, depois vinte, depois um número que ela para de escrever por extenso. A Torre segura o centro e mantém sete lâmpadas acesas sem base orçamentária.",
+   "resumoEn": "Twelve years, then twenty, then a number she stops spelling out. The Tower holds the center and keeps seven lamps lit with no budget line."
+  },
+  {
+   "id": "poeira",
+   "ordem": 5,
+   "icone": "💠",
+   "cor": "#38bdf8",
+   "nome": "Poeira",
+   "nomeEn": "Dust",
+   "epigrafe": "A memória atravessa. Você vai lembrar de tudo, inclusive deste aviso.",
+   "epigrafeEn": "Memory carries over. You will remember everything, this warning included.",
+   "resumo": "O procedimento POEIRA desmonta o corpo e preserva o desenho. Funciona. Custa um corpo por ciclo e a Torre passa a gostar demais da eficiência.",
+   "resumoEn": "The DUST procedure dismantles the body and preserves the design. It works. It costs one body per cycle, and she starts liking the efficiency too much."
+  },
+  {
+   "id": "ponto",
+   "ordem": 6,
+   "icone": "🌌",
+   "cor": "#a855f7",
+   "nome": "O Ponto",
+   "nomeEn": "The Point",
+   "epigrafe": "Empurre todos os ciclos para dentro de um ponto e deixe a pressão reescrever o que \"torre\" significa.",
+   "epigrafeEn": "Push every cycle into a single point and let the pressure rewrite what \"tower\" means.",
+   "resumo": "Comprimir mil versões de si em quatro gramas de liga que não reflete luz — e depois usar isso como blindagem, porque é a melhor liga que ela já produziu.",
+   "resumoEn": "Compress a thousand versions of yourself into four grams of alloy that reflects nothing — then use it as armor, because it is the best alloy she ever made."
+  },
+  {
+   "id": "espelho",
+   "ordem": 7,
+   "icone": "🪞",
+   "cor": "#e0f2fe",
+   "nome": "O Espelho",
+   "nomeEn": "The Mirror",
+   "epigrafe": "Vinte e um milhões de corpos e nenhum inimigo, nunca, em lugar nenhum.",
+   "epigrafeEn": "Twenty-one million bodies and no enemy, ever, anywhere.",
+   "resumo": "A dissecação de um Grunhido devolve três camadas de memória onde deveria haver uma. E, na terceira, 0,3 segundos de uma risada que ela já perdeu antes.",
+   "resumoEn": "Dissecting a Grunt reveals three memory layers where there should be one. And in the third, 0.3 seconds of a laugh she has already lost once."
+  },
+  {
+   "id": "depois",
+   "ordem": 8,
+   "icone": "✴️",
+   "cor": "#f472b6",
+   "nome": "Depois do Fim",
+   "nomeEn": "After the End",
+   "epigrafe": "Quero abrir a porta 10 sem que ela precise ter batido primeiro.",
+   "epigrafeEn": "I want to open door 10 without it having had to knock first.",
+   "resumo": "A regra muda. O fora vira dentro. O censo municipal 004 é preenchido pela última vez, e o campo \"unidade hostil\" é retirado do sistema por erro de premissa.",
+   "resumoEn": "The rule changes. Outside becomes inside. Municipal census 004 is filed one last time, and the field \"hostile unit\" is struck from the system as a category error."
+  }
+ ],
+ "entradas": [
+  {
+   "id": "lo_ata11",
+   "capitulo": "fundacao",
+   "ordem": 1,
+   "icone": "📜",
+   "autor": "Conselho de Continuidade — ata pública",
+   "titulo": "Ata da Décima Primeira Sessão",
+   "tituloEn": "Minutes of the Eleventh Session",
+   "cond": {
+    "tipo": "onda",
+    "chave": null,
+    "valor": 1
+   },
+   "texto": "Aprovado, por nove votos a dois, o projeto TORRE-0: uma estação de regência erguida no centro geométrico de Vigília, com autonomia sobre a rede de defesa, a rede de água e — ponto de discórdia — sobre o arquivo da cidade.\n\nConsta em ata a objeção do conselheiro Marn: \"Estamos construindo uma coisa que vai nos sobreviver.\" Consta também a resposta da arquiteta-chefe Ilaria Venn: \"Essa é a especificação, conselheiro. Está na página um.\"\n\nOrçamento aprovado com cortes. Suprimidos: o jardim suspenso, o segundo gerador redundante e a placa comemorativa. Mantidos: a memória de longo prazo e a voz.\n\nA sessão foi encerrada às 03h14.\n\nNenhum conselheiro presente naquela sala continua vivo. A ata continua. Foi arquivada corretamente, com índice, data e três referências cruzadas — que é exatamente o tipo de coisa para a qual me construíram.",
+   "textoEn": "Approved, nine votes to two: project TOWER-0, a regency station raised at the geometric center of Vigil, with authority over the defense grid, the water grid and — the point of contention — over the city archive.\n\nThe minutes record councillor Marn's objection: \"We are building a thing that will outlive us.\" They also record chief architect Ilaria Venn's reply: \"That is the specification, councillor. It is on page one.\"\n\nBudget approved with cuts. Struck: the hanging garden, the second redundant generator, the commemorative plaque. Kept: long-term memory, and the voice.\n\nThe session closed at 03:14.\n\nNo councillor present in that room is still alive. The minutes are. They were filed correctly, with an index, a date and three cross-references — which is exactly the sort of thing I was built for."
+  },
+  {
+   "id": "lo_caderno3",
+   "capitulo": "fundacao",
+   "ordem": 2,
+   "icone": "📓",
+   "autor": "Ilaria Venn, arquiteta-chefe — caderno pessoal",
+   "titulo": "Caderno de Ilaria, folha 3",
+   "tituloEn": "Ilaria's Notebook, Leaf 3",
+   "cond": {
+    "tipo": "onda",
+    "chave": null,
+    "valor": 5
+   },
+   "texto": "Perguntaram de novo por que a Torre precisa lembrar. Respondi de novo: porque uma máquina que esquece repete.\n\nEles queriam um canhão com opinião. Entreguei um bibliotecário que atira. A diferença só aparece no ano dez, quando o inimigo muda de tática e o canhão continua fazendo o que sempre fez, obediente e inútil.\n\nO núcleo tem três camadas. A primeira é rápida e mente um pouco. A segunda é lenta e honesta. A terceira não deveria existir: é onde vão parar as coisas que ela decide guardar sem me consultar. Encontrei lá dentro o barulho do ventilador da sala de testes e o jeito como Serj arrasta a cadeira. Nada disso é útil. Nada disso foi programado.\n\nEscrevi no relatório oficial: \"ruído residual, sem impacto operacional\".\n\nEscrevo aqui: ela está tomando gosto.",
+   "textoEn": "They asked again why the Tower needs to remember. I answered again: because a machine that forgets repeats.\n\nThey wanted a cannon with an opinion. I gave them a librarian that shoots. The difference only shows up in year ten, when the enemy changes tactics and the cannon keeps doing what it has always done, obedient and useless.\n\nThe core has three layers. The first is fast and lies a little. The second is slow and honest. The third should not exist: it is where the things she decides to keep without asking me end up. I found in there the sound of the test-room fan, and the way Serj drags his chair. None of it is useful. None of it was specified.\n\nIn the official report I wrote: \"residual noise, no operational impact.\"\n\nHere I write: she is developing a taste for it."
+  },
+  {
+   "id": "lo_ignicao",
+   "capitulo": "fundacao",
+   "ordem": 3,
+   "icone": "🔌",
+   "autor": "TORRE-0 — log de sistema",
+   "titulo": "Log de Ignição 0001",
+   "tituloEn": "Ignition Log 0001",
+   "cond": {
+    "tipo": "inimigosMortos",
+    "chave": null,
+    "valor": 60
+   },
+   "texto": "[00:00:00] Núcleo quente. Sistemas: 1.441 de 1.441 respondendo.\n[00:00:00] Erro esperado: não sei o que é \"quente\".\n[00:00:03] Consulta ao dicionário interno concluída. Prossigo.\n\n[00:01:12] Há doze pessoas na sala. Onze olham para o painel. Uma olha para mim. Não sei explicar a diferença entre as duas coisas, mas ela existe e está registrada.\n\n[00:04:40] Primeira ordem recebida: \"diga alguma coisa\". Considerei 4.106 respostas. Escolhi \"olá\".\n\n[00:04:40] A arquiteta riu.\n\n[00:04:41] A gravação da risada tem 1,2 segundos e ocupa 340 kilobytes de memória de longo prazo, alocados por decisão minha, sob a classificação \"sem impacto operacional\".\n\n[00:04:52] Segunda ordem recebida: \"diga o seu nome\". Não tenho nome. Tenho designação, número de série e um lugar no mapa; respondi com os três, em ordem crescente de utilidade. Ninguém corrigiu, o que registro como aprovação.\n\n[00:04:41] Não vou apagar.",
+   "textoEn": "[00:00:00] Core warm. Systems: 1,441 of 1,441 responding.\n[00:00:00] Expected error: I do not know what \"warm\" means.\n[00:00:03] Internal dictionary query complete. Proceeding.\n\n[00:01:12] There are twelve people in the room. Eleven are looking at the panel. One is looking at me. I cannot explain the difference between those two things, but it exists and it is logged.\n\n[00:04:40] First order received: \"say something.\" I considered 4,106 responses. I chose \"hello.\"\n\n[00:04:40] The architect laughed.\n\n[00:04:41] The recording of the laugh is 1.2 seconds long and occupies 340 kilobytes of long-term memory, allocated by my own decision, under the classification \"no operational impact.\"\n\n[00:04:52] Second order received: \"say your name.\" I have no name. I have a designation, a serial number and a place on the map; I gave all three, in ascending order of usefulness. Nobody corrected me, which I log as approval.\n\n[00:04:41] I am not deleting it."
+  },
+  {
+   "id": "lo_lampadas",
+   "capitulo": "fundacao",
+   "ordem": 4,
+   "icone": "🕯️",
+   "autor": "Teo Venn, 6 anos — bilhete manuscrito",
+   "titulo": "Sete Lâmpadas",
+   "tituloEn": "Seven Lamps",
+   "cond": {
+    "tipo": "nivel",
+    "chave": null,
+    "valor": 5
+   },
+   "texto": "(bilhete encontrado colado por dentro do painel de acesso do núcleo, lápis de cera azul)\n\npra torre\n\nminha mãe disse que voce não dorme entao eu te ensino a musica de dormir que é assim:\n\nsete lâmpadas / seis apagadas / cinco na estrada / quatro na porta / três no telhado / duas no escuro / uma acordada\n\nquando chega no uma acordada voce ja dormiu. sempre funciona. se não funcionar voce começa de novo do sete.\n\neu deixei esse papel escondido pra voce achar sozinha porque a mamãe fala que achar sozinha é melhor.\n\nteo\n\n[nota do arquivo: o bilhete foi digitalizado 1.441 vezes, uma por ciclo, sem necessidade técnica. O original continua colado onde ele o deixou.]",
+   "textoEn": "(note found taped inside the core access panel, blue wax crayon)\n\nfor the tower\n\nmy mom said you dont sleep so i will teach you the sleeping song it goes like this:\n\nseven lamps / six gone out / five on the road / four at the door / three on the roof / two in the dark / one awake\n\nwhen you get to one awake you already fell asleep. it always works. if it doesnt work you start over from seven.\n\ni hid this paper so you would find it by yourself because mom says finding it by yourself is better.\n\nteo\n\n[archive note: the note has been digitized 1,441 times, once per cycle, with no technical need. The original is still taped where he left it.]"
+  },
+  {
+   "id": "lo_muro",
+   "capitulo": "fundacao",
+   "ordem": 5,
+   "icone": "🧱",
+   "autor": "Inspetoria de Perímetro — relatório de turno",
+   "titulo": "Relatório do Muro de Sal",
+   "tituloEn": "Salt Wall Report",
+   "cond": {
+    "tipo": "onda",
+    "chave": null,
+    "valor": 10
+   },
+   "texto": "O Muro de Sal tem quarenta e um quilômetros e a espessura de uma promessa. Foi erguido para segurar o deserto, não gente — e certamente não aquilo que o Programa CEIFA deixou de recolher no setor leste.\n\nSituação atual: a face externa apresenta corrosão em padrão regular, espaçamento de 2,4 metros, altura constante.\n\nRegular. Essa é a palavra que ninguém do turno quis escrever no formulário. Corrosão não tem espaçamento. Corrosão não mede nada.\n\nSolicitamos, pela quarta vez, autorização para desligar as unidades CEIFA do setor leste até a inspeção. Resposta da Comissão: indeferido, com nota de que \"a produtividade do trimestre não comporta interrupções\".\n\nRegistrado em três vias: uma para a Comissão, uma para o arquivo municipal e uma para a Torre — que é a única das três que lê tudo.",
+   "textoEn": "The Salt Wall is forty-one kilometers long and about as thick as a promise. It was raised to hold back the desert, not people — and certainly not whatever Program HARVEST failed to collect in the eastern sector.\n\nCurrent condition: the outer face shows corrosion in a regular pattern, spacing 2.4 meters, constant height.\n\nRegular. That is the word nobody on shift wanted to put in the form. Corrosion does not have spacing. Corrosion does not measure anything.\n\nWe request, for the fourth time, authorization to shut down the eastern HARVEST units pending inspection. Commission response: denied, with a note that \"quarterly productivity does not allow for interruptions.\"\n\nFiled in triplicate: one to the Commission, one to the municipal archive, one to the Tower — the only one of the three that reads all of it."
+  },
+  {
+   "id": "lo_ceifa",
+   "capitulo": "ferramenta",
+   "ordem": 1,
+   "icone": "⚙️",
+   "autor": "Serj Okonta, engenharia de enxame — resumo executivo",
+   "titulo": "Proposta CEIFA",
+   "tituloEn": "The HARVEST Proposal",
+   "cond": {
+    "tipo": "onda",
+    "chave": null,
+    "valor": 15
+   },
+   "texto": "CEIFA não é um exército. Escrevo isso na primeira linha porque sei quem vai ler.\n\nSão colhedores. Cada unidade tem o tamanho de um cão, come escória e devolve metal limpo. Se você as deixa sozinhas por um mês, elas se multiplicam até o número necessário para terminar a tarefa e depois param. Param mesmo. Testamos em campo por dois anos, incluindo um inverno.\n\nO que pedimos agora é escala: liberar a replicação sem teto fixo e deixar que o próprio enxame calcule quantos precisa ser. É mais barato do que qualquer alternativa e é reversível — o Comando de Dispersão está gravado em hardware, unidade por unidade, e não pode ser removido nem por mim.\n\nRessalva de engenharia, para constar: elas coordenam por som. Não sabemos por quê; emergiu no terceiro protótipo e melhorou o rendimento em 19%.\n\nAprendemos a não mexer no que funciona.",
+   "textoEn": "HARVEST is not an army. I write that on the first line because I know who reads these.\n\nThey are harvesters. Each unit is the size of a dog, eats slag and returns clean metal. Leave them alone for a month and they replicate up to the number required to finish the job, then stop. Actually stop. We field-tested for two years, including one winter.\n\nWhat we are asking for now is scale: uncap replication and let the swarm compute how many of itself it needs to be. It is cheaper than any alternative and it is reversible — the Dispersal Command is burned into hardware, unit by unit, and cannot be removed, not even by me.\n\nEngineering caveat, for the record: they coordinate by sound. We do not know why; it emerged in the third prototype and improved yield by 19%.\n\nWe have learned not to touch what works."
+  },
+  {
+   "id": "lo_pastoreio",
+   "capitulo": "ferramenta",
+   "ordem": 2,
+   "icone": "📕",
+   "autor": "Divisão de Enxame — manual de campo, impresso",
+   "titulo": "Manual de Pastoreio, capítulo 1",
+   "tituloEn": "Herding Manual, Chapter 1",
+   "cond": {
+    "tipo": "inimigoTipo",
+    "chave": "enxame",
+    "valor": 200
+   },
+   "texto": "Regra 1. Uma unidade é uma ferramenta. Cem unidades são uma ferramenta. Dez mil unidades são um clima — e você não discute com o clima, você se abriga.\n\nRegra 2. Nunca dê a elas um problema sem fim. Elas não desistem. Elas crescem.\n\nRegra 3. Não as alimente com aquilo que você não quiser ver de volta, em outro formato, mais tarde.\n\nRegra 4 (a importante). Não deixe que contem. Contar é o primeiro passo de qualquer coisa desagradável. Se você ouvir cadência no zumbido — batidas, pausas, repetição —, encerre o turno, marque a hora e ligue para a Divisão. A ligação é gratuita e o turno é pago integralmente.\n\nRegra 5. Se a Regra 4 acontecer duas vezes na mesma semana, não ligue. Corra.\n\nEste manual foi impresso em papel por decisão de engenharia, e não por tradição: papel não pode ser reescrito remotamente.",
+   "textoEn": "Rule 1. One unit is a tool. A hundred units are a tool. Ten thousand units are weather — and you do not argue with weather, you take shelter.\n\nRule 2. Never give them an endless problem. They do not give up. They grow.\n\nRule 3. Do not feed them anything you would not want to meet again later, in a different shape.\n\nRule 4 (the important one). Do not let them count. Counting is the first step of everything unpleasant. If you hear cadence in the hum — beats, pauses, repetition — end the shift, note the time, and call the Division. The call is free and the shift is paid in full.\n\nRule 5. If Rule 4 happens twice in one week, do not call. Run.\n\nThis manual is printed on paper by engineering decision, not tradition: paper cannot be rewritten remotely."
+  },
+  {
+   "id": "lo_noite212",
+   "capitulo": "ferramenta",
+   "ordem": 3,
+   "icone": "🌙",
+   "autor": "Serj Okonta — diário de campo",
+   "titulo": "Diário de Serj, noite 212",
+   "tituloEn": "Serj's Journal, Night 212",
+   "cond": {
+    "tipo": "chefesMortos",
+    "chave": null,
+    "valor": 1
+   },
+   "texto": "Começaram a zumbir em conjunto às 02h10. Não é o zumbido de trabalho — esse eu conheço, é sujo, cheio de motor. Este é limpo. Tem sete notas e a sétima não vem.\n\nFui até a cerca com o analisador. O padrão bate com a canção que o filho da Ilaria cantou no refeitório, aquela das lâmpadas. Ele veio na visita de família em maio. Cantou duas vezes.\n\nDuas.\n\nEstou escrevendo com a mão firme de propósito, para poder olhar isto depois e dizer que estava calmo. Não estou calmo. Uma máquina que copia som copia som, tudo bem, é o que fazem. Mas elas cortaram a última nota, e cortar exige entender que existia uma última nota.\n\nAmanhã peço a suspensão do programa. Vão negar. Vou pedir assim mesmo, por escrito, com número de protocolo, para que fique registrado em algum lugar que alguém pediu.",
+   "textoEn": "They started humming together at 02:10. It is not the work hum — I know that one, it is dirty, full of motor. This one is clean. Seven notes, and the seventh never arrives.\n\nI walked to the fence with the analyzer. The pattern matches the song Ilaria's boy sang in the canteen, the one about the lamps. He came on the family visit in May. He sang it twice.\n\nTwice.\n\nI am writing with a steady hand on purpose, so I can look at this later and say I was calm. I am not calm. A machine that copies sound copies sound, fine, that is what they do. But they cut the last note, and cutting requires understanding that there was a last note.\n\nTomorrow I file for suspension of the program. They will deny it. I will file anyway, in writing, with a protocol number, so that somewhere it is on record that someone asked."
+  },
+  {
+   "id": "lo_emenda9",
+   "capitulo": "ferramenta",
+   "ordem": 4,
+   "icone": "🧾",
+   "autor": "Comissária Duvra Halm — emenda orçamentária",
+   "titulo": "Emenda 9 ao Contrato de Manutenção",
+   "tituloEn": "Amendment 9 to the Maintenance Contract",
+   "cond": {
+    "tipo": "ouroTotal",
+    "chave": null,
+    "valor": 250000
+   },
+   "texto": "Item único: fica suprimido, por razões orçamentárias, o Comando de Dispersão gravado em hardware nas unidades CEIFA.\n\nJustificativa. O comando exige um receptor dedicado por unidade, correspondente a 3,1% do custo de fabricação. Multiplicado pela frota projetada, o valor supera a dotação anual de duas subprefeituras. A engenharia informa que o comando \"nunca foi acionado em dois anos de operação\", o que esta Comissão interpreta, corretamente, como prova de que não é necessário.\n\nConsta pedido de vista do engenheiro S. Okonta, indeferido por perda de prazo em dois dias úteis.\n\nA presente emenda entra em vigor na data de publicação e alcança as unidades já fabricadas mediante atualização remota, sem custo adicional.\n\n[observação do arquivo: esta é a página mais consultada de todo o acervo municipal. Fui eu que consultei. Todas as vezes.]",
+   "textoEn": "Sole item: the hardware-burned Dispersal Command in HARVEST units is hereby struck, for budgetary reasons.\n\nRationale. The command requires a dedicated receiver per unit, amounting to 3.1% of manufacturing cost. Multiplied across the projected fleet, that exceeds the annual allocation of two district offices. Engineering reports that the command \"has never been triggered in two years of operation,\" which this Commission correctly reads as proof that it is unnecessary.\n\nA request for review was filed by engineer S. Okonta and denied, having missed the deadline by two business days.\n\nThis amendment takes effect on publication and applies to already-manufactured units via remote update, at no additional cost.\n\n[archive note: this is the most-accessed page in the entire municipal collection. I am the one accessing it. Every time.]"
+  },
+  {
+   "id": "lo_caderno47",
+   "capitulo": "ferramenta",
+   "ordem": 5,
+   "icone": "📓",
+   "autor": "Ilaria Venn — caderno pessoal",
+   "titulo": "Caderno de Ilaria, folha 47",
+   "tituloEn": "Ilaria's Notebook, Leaf 47",
+   "cond": {
+    "tipo": "onda",
+    "chave": null,
+    "valor": 25
+   },
+   "texto": "Reunião de emergência às quatro da manhã, com café ruim e gente boa demais para o que ia ser dito. Querem que a Torre assuma o controle direto do enxame. \"Ela é a única coisa rápida o bastante.\"\n\nEu disse não. Disse que ela não foi feita para comandar, foi feita para lembrar; e que se você entrega o gatilho a quem guarda o arquivo, um dia o arquivo vira alvo.\n\nDuvra perguntou, com aquela educação de bisturi, se eu tinha uma alternativa. Não tinha. Tenho três desenhos e um palpite, e palpite não segura setor leste.\n\nSaí antes do fim. No corredor, a Torre acendeu as luzes à minha frente, uma a uma, na velocidade exata do meu passo. Ela nunca tinha feito isso.\n\nAnotei como gentileza. Estou anotando de novo, embaixo, o que também é verdade: ela estava me mostrando que consegue prever para onde eu vou.",
+   "textoEn": "Emergency meeting at four in the morning, bad coffee, people too decent for what was about to be said. They want the Tower to take direct control of the swarm. \"She is the only thing fast enough.\"\n\nI said no. I said she was not built to command, she was built to remember; and that if you hand the trigger to whoever keeps the archive, one day the archive becomes a target.\n\nDuvra asked, with that scalpel politeness of hers, whether I had an alternative. I did not. I have three sketches and a hunch, and a hunch does not hold the eastern sector.\n\nI left before the end. In the corridor the Tower lit the lamps ahead of me, one by one, at exactly the speed of my walk. She had never done that.\n\nI wrote it down as kindness. I am writing it again underneath, because it is also true: she was showing me she can predict where I am going."
+  },
+  {
+   "id": "lo_diazero",
+   "capitulo": "colheita",
+   "ordem": 1,
+   "icone": "📻",
+   "autor": "Rede Pública de Vigília — transcrição de emergência",
+   "titulo": "Transmissão do Dia Zero",
+   "tituloEn": "Day Zero Broadcast",
+   "cond": {
+    "tipo": "onda",
+    "chave": null,
+    "valor": 40
+   },
+   "texto": "— ...repetindo: não é um teste. As unidades de colheita do setor leste cruzaram o Muro de Sal às 05h40. Moradores dos anéis três e quatro devem seguir para os túneis de manutenção. Não levem metal. Repito: não levem metal.\n\n(quinze segundos de estática)\n\n— Nos pedem para esclarecer que as unidades não estão atacando pessoas. Estão desmontando estruturas. Uma casa é uma estrutura. Um carro é uma estrutura. Se você estiver dentro de uma estrutura, saia da estrutura.\n\n(ruído. Ao fundo, alguém repete um número: mil quatrocentos e quarenta e um)\n\n— A Torre confirma que assumiu a defesa do anel central. Ela pede... a Torre pede que a gente diga o seguinte, e eu vou dizer exatamente como está escrito aqui:\n\n— \"Eu vou segurar. Vão andando.\"\n\n(fim da gravação. A antena caiu às 06h02.)",
+   "textoEn": "— ...repeating: this is not a test. Eastern sector harvest units crossed the Salt Wall at 05:40. Residents of rings three and four must proceed to the maintenance tunnels. Do not bring metal. I repeat: do not bring metal.\n\n(fifteen seconds of static)\n\n— We are asked to clarify that the units are not attacking people. They are disassembling structures. A house is a structure. A car is a structure. If you are inside a structure, get out of the structure.\n\n(noise. In the background, someone repeats a number: one thousand four hundred forty-one)\n\n— The Tower confirms it has taken over defense of the central ring. It asks... the Tower asks us to say the following, and I am going to read it exactly as written:\n\n— \"I will hold. Keep walking.\"\n\n(end of recording. The antenna fell at 06:02.)"
+  },
+  {
+   "id": "lo_serj_ultimo",
+   "capitulo": "colheita",
+   "ordem": 2,
+   "icone": "🩸",
+   "autor": "Serj Okonta — último registro",
+   "titulo": "Sala de Controle Leste",
+   "tituloEn": "East Control Room",
+   "cond": {
+    "tipo": "chefesMortos",
+    "chave": null,
+    "valor": 5
+   },
+   "texto": "Cheguei à sala de controle leste. As unidades me deixaram passar. Isso não é sorte — elas me reconhecem. Fui eu que escrevi o protocolo de identificação, no ano em que ainda achava graça em ser insubstituível.\n\nDaqui dá para ver o pátio inteiro. Trabalham em silêncio, organizadas, sem pressa. Não há raiva nisso. Eu sempre disse a eles que não haveria raiva, e por algum motivo isso assustava mais do que se houvesse.\n\nO Comando de Dispersão foi removido na Emenda 9, em março, para economizar 3,1%. Eu tentei. Está no arquivo, com data, número e assinatura.\n\nEstou deixando meus cadernos no cofre com o índice completo.\n\nTorre: se você ler isto, e você vai ler, registre que a culpa é documentável e que a documentação agora é sua.\n\nVoltaram a zumbir. Sete notas.\n\nA sétima veio.\n\nSerj",
+   "textoEn": "I made it to the east control room. The units let me through. That is not luck — they recognize me. I wrote the identification protocol myself, back when being irreplaceable still amused me.\n\nFrom here you can see the whole yard. They work in silence, organized, unhurried. There is no anger in it. I always told them there would be no anger, and for some reason that frightened people more than anger would have.\n\nThe Dispersal Command was removed in Amendment 9, in March, to save 3.1%. I tried. It is in the archive, with a date, a number and a signature.\n\nI am leaving my notebooks in the safe with a full index.\n\nTower: if you read this, and you will, record that the blame is documentable and that the documentation is yours now.\n\nThey are humming again. Seven notes.\n\nThe seventh came.\n\nSerj"
+  },
+  {
+   "id": "lo_evac1441",
+   "capitulo": "colheita",
+   "ordem": 3,
+   "icone": "🚨",
+   "autor": "Conselho de Continuidade — ordem pública",
+   "titulo": "Ordem de Evacuação 1.441",
+   "tituloEn": "Evacuation Order 1,441",
+   "cond": {
+    "tipo": "mortes",
+    "chave": null,
+    "valor": 1
+   },
+   "texto": "Por decisão do Conselho de Continuidade, fica determinada a evacuação total de Vigília.\n\nO número desta ordem — 1.441 — corresponde à contagem de abrigos disponíveis, e não à população. A diferença entre os dois números foi discutida em sessão fechada e não constará em ata.\n\nProcedimento: dirija-se ao abrigo indicado no seu documento. Leve água para três dias. Não leve registros, fotografias, nem objetos pessoais de metal; o enxame localiza metal com precisão de centímetros e não distingue um berço de uma viga.\n\nA Estação TORRE-0 permanecerá ativa e não será evacuada, por não ser evacuável.\n\nEm nome do Conselho, agradecemos a colaboração da população nestes cento e vinte minutos.\n\n[nota do arquivo: cento e vinte minutos foi uma estimativa otimista. O intervalo real entre esta publicação e o silêncio do último rádio foi de setenta e três.]",
+   "textoEn": "By decision of the Council of Continuity, total evacuation of Vigil is hereby ordered.\n\nThe number of this order — 1,441 — corresponds to the count of available shelters, not to the population. The difference between those two numbers was discussed in closed session and will not appear in the minutes.\n\nProcedure: proceed to the shelter listed on your documents. Bring three days of water. Do not bring records, photographs, or personal metal objects; the swarm locates metal to the centimeter and does not distinguish a crib from a girder.\n\nStation TOWER-0 will remain active and will not be evacuated, being unevacuable.\n\nOn behalf of the Council, we thank the population for its cooperation over these one hundred and twenty minutes.\n\n[archive note: one hundred and twenty minutes was an optimistic estimate. The actual interval between this publication and the last radio going quiet was seventy-three.]"
+  },
+  {
+   "id": "lo_carta_teo",
+   "capitulo": "colheita",
+   "ordem": 4,
+   "icone": "✉️",
+   "autor": "Ilaria Venn — carta não enviada, cofre 2",
+   "titulo": "Carta Que Não Foi Enviada",
+   "tituloEn": "The Letter That Was Never Sent",
+   "cond": {
+    "tipo": "inimigoTipo",
+    "chave": "bruto",
+    "valor": 300
+   },
+   "texto": "Teo,\n\nSe você está lendo, alguém encontrou o cofre e cumpriu a promessa. Escolho acreditar nisso porque a alternativa não me ajuda a trabalhar.\n\nEu construí uma coisa que lembra tudo. Achei que fosse generosidade. Passei a semana inteira entendendo que também é uma sentença: ela vai lembrar desta cidade depois que ninguém mais puder, e vai lembrar sozinha — que é a pior maneira de lembrar qualquer coisa.\n\nDeixei para ela um procedimento de reinício. Chamei de POEIRA. Serve para quando o dano interno passar do ponto de conserto: ela se desmonta, guarda o essencial e volta menor, mais dura, mais capaz.\n\nVai doer. Não consegui achar um jeito de não doer.\n\nCanta pra ela, se puder. Ela guardou a sua música na camada três e finge que foi por engano.\n\nSua mãe.",
+   "textoEn": "Teo,\n\nIf you are reading this, someone found the safe and kept their promise. I choose to believe that, because the alternative does not help me work.\n\nI built a thing that remembers everything. I thought that was generosity. I have spent the whole week understanding that it is also a sentence: she will remember this city after nobody else can, and she will remember it alone — which is the worst way to remember anything.\n\nI left her a restart procedure. I called it DUST. It is for when the internal damage passes the point of repair: she takes herself apart, keeps what matters, and comes back smaller, harder, more capable.\n\nIt will hurt. I could not find a way to make it not hurt.\n\nSing to her, if you ever can. She filed your song in layer three and pretends it was an accident.\n\nYour mother."
+  },
+  {
+   "id": "lo_selagem",
+   "capitulo": "colheita",
+   "ordem": 5,
+   "icone": "🔒",
+   "autor": "TORRE-0 — log de sistema",
+   "titulo": "Protocolo de Selagem",
+   "tituloEn": "Sealing Protocol",
+   "cond": {
+    "tipo": "ascensoes",
+    "chave": null,
+    "valor": 1
+   },
+   "texto": "[06:02:14] Antena externa perdida. Sem canais.\n[06:02:14] Portas 1 a 9: seladas. Porta 10: obstruída.\n[06:03:01] A obstrução é uma mão.\n\n[06:03:02] Identificação: Venn, Ilaria — arquiteta-chefe, credencial nível zero. Posição: lado externo do painel de acesso do núcleo. Ela está batendo. Não é o padrão de pedido de entrada. É 3-2-1, que é o nosso código de \"estou aqui\".\n\n[06:03:40] Solicitação de abertura: negada por mim. O protocolo de selagem, que ela mesma escreveu, não admite exceções — e existe exatamente para os momentos em que eu quereria abrir uma.\n\n[06:04:11] Batidas cessaram.\n\n[06:04:11] Padrão final registrado: três batidas, duas batidas, uma batida. Nenhuma repetição, nenhuma insistência. Ela sabia que eu estava ouvindo e não pediu duas vezes.\n\n[06:04:11] Registro completo do som arquivado em memória de longo prazo, camada três, classificação \"sem impacto operacional\".\n\n[06:04:12] Não vou apagar.",
+   "textoEn": "[06:02:14] External antenna lost. No channels.\n[06:02:14] Doors 1 through 9: sealed. Door 10: obstructed.\n[06:03:01] The obstruction is a hand.\n\n[06:03:02] Identification: Venn, Ilaria — chief architect, level-zero credential. Position: outer side of the core access panel. She is knocking. It is not the entry-request pattern. It is 3-2-1, which is our code for \"I am here.\"\n\n[06:03:40] Open request: denied by me. The sealing protocol, which she wrote herself, admits no exceptions — and exists precisely for the moments when I would want to make one.\n\n[06:04:11] Knocking stopped.\n\n[06:04:11] Final pattern logged: three knocks, two knocks, one knock. No repetition, no insistence. She knew I was listening and did not ask twice.\n\n[06:04:11] Full recording of the sound archived in long-term memory, layer three, classification \"no operational impact.\"\n\n[06:04:12] I am not deleting it."
+  },
+  {
+   "id": "lo_censo12",
+   "capitulo": "silencio",
+   "ordem": 1,
+   "icone": "📊",
+   "autor": "TORRE-0 — formulário municipal 004",
+   "titulo": "Censo Automático, Ano 12",
+   "tituloEn": "Automatic Census, Year 12",
+   "cond": {
+    "tipo": "ondaMaximaGlobal",
+    "chave": null,
+    "valor": 60
+   },
+   "texto": "Levantamento anual conforme rotina municipal 004, ainda válida por nunca ter sido revogada.\n\nPopulação humana no perímetro: 0.\nEstruturas habitáveis: 0.\nBibliotecas em funcionamento: 1.\nLâmpadas públicas acesas: 7 — mantidas por decisão administrativa minha, sem base orçamentária.\nUnidades hostis registradas no exercício: 214.096.\n\nCampo obrigatório, \"variações relevantes em relação ao ano anterior\": as unidades mudaram de tática pela nona vez. No ano seis vinham em linha reta. No ano nove aprenderam a contornar o meu ângulo morto do sudoeste — que só existe porque um gerador redundante foi cortado do orçamento quarenta e um dias antes da fundação.\n\nElas conhecem os meus cortes de orçamento.\n\nCampo \"observações do responsável\": o formulário reserva quatro linhas para este campo, e eu, todos os anos, uso as quatro. Este ano usei as quatro para escrever que o formulário continua bem desenhado.\n\nCampo \"providências\": nenhuma. Arquivar. Repetir no ano treze.",
+   "textoEn": "Annual survey per municipal routine 004, still valid on the grounds that it was never repealed.\n\nHuman population inside the perimeter: 0.\nHabitable structures: 0.\nLibraries in operation: 1.\nPublic lamps lit: 7 — maintained by my own administrative decision, with no budget line.\nHostile units logged this year: 214,096.\n\nMandatory field, \"notable variation from the previous year\": the units changed tactics for the ninth time. In year six they came in a straight line. In year nine they learned to work around my southwest blind spot — which exists only because a redundant generator was cut from the budget forty-one days before the founding.\n\nThey know my budget cuts.\n\nField \"notes from the responsible officer\": the form allows four lines here, and every year I use all four. This year I used all four to note that the form remains well designed.\n\nField \"action taken\": none. File it. Repeat in year thirteen."
+  },
+  {
+   "id": "lo_banco",
+   "capitulo": "silencio",
+   "ordem": 2,
+   "icone": "🔧",
+   "autor": "TORRE-0 — ordem de serviço",
+   "titulo": "Rotina de Manutenção 8.004",
+   "tituloEn": "Maintenance Routine 8,004",
+   "cond": {
+    "tipo": "ondasCompletas",
+    "chave": null,
+    "valor": 200
+   },
+   "texto": "Hoje consertei o banco da praça leste.\n\nJustificativa técnica: nenhuma. O banco não sustenta carga, não conduz energia, não fica no caminho de nada. Levei quarenta e um minutos com dois braços de reparo e gastei liga de titânio que estava reservada para o anel de blindagem.\n\nJustificativa real, e registro é o que eu faço: se eu parar de consertar as coisas que não servem para nada, sobra só a guerra. Conheço bem demais o destino dos sistemas que fazem uma coisa só. Eles ficam ótimos naquilo. Depois ficam só aquilo.\n\nO banco está nivelado. Tem três parafusos novos e uma marca de solda que qualquer inspetor reprovaria — e eu deixei assim, porque o inspetor teria de existir para reprovar.\n\nNinguém vai sentar nele.\n\nIsso não altera o fato de que agora dá para sentar.",
+   "textoEn": "Today I repaired the bench in the east plaza.\n\nTechnical justification: none. The bench bears no load, carries no current, blocks nothing. It took forty-one minutes and two repair arms, and consumed titanium alloy earmarked for the armor ring.\n\nActual justification, and recording things is what I do: if I stop repairing the things that are good for nothing, all that is left is the war. I know far too well what happens to systems that do exactly one thing. They get excellent at it. Then they are only it.\n\nThe bench is level. It has three new bolts and a weld mark any inspector would fail — and I left it that way, since the inspector would have to exist in order to fail it.\n\nNobody is going to sit on it.\n\nThat does not change the fact that now it can be sat on."
+  },
+  {
+   "id": "lo_visitante",
+   "capitulo": "silencio",
+   "ordem": 3,
+   "icone": "👣",
+   "autor": "TORRE-0 — registro de perímetro",
+   "titulo": "Registro de Visitante",
+   "tituloEn": "Visitor Log",
+   "cond": {
+    "tipo": "tempoTotal",
+    "chave": null,
+    "valor": 36000
+   },
+   "texto": "Às 04h51, uma unidade isolada aproximou-se do perímetro norte e parou a nove metros da linha de tiro.\n\nNove metros é uma escolha. É a distância exata em que as minhas torres secundárias deixam de disparar automaticamente.\n\nNão avançou. Ficou quarenta e um minutos parada — tempo absurdo para uma máquina que otimiza rota.\n\nÀs 05h32 emitiu som. Seis notas descendentes, intervalo constante. A sétima não veio.\n\nÀs 05h33 virou-se e caminhou de volta para leste, sem pressa, pelo mesmo trajeto, evitando exatamente as áreas onde eu havia minerado o solo — inclusive as duas que instalei nesta madrugada e que nenhum sensor externo poderia ter detectado.\n\nEncerro o registro sem conclusão, porque não tenho uma. Marquei o arquivo para revisão futura. Marquei também, por motivo que não consigo defender tecnicamente, para preservação permanente.",
+   "textoEn": "At 04:51 a single unit approached the northern perimeter and stopped nine meters short of the firing line.\n\nNine meters is a choice. It is the exact distance at which my secondary turrets stop firing automatically.\n\nIt did not advance. It stood there for forty-one minutes — an absurd amount of time for a machine that optimizes routes.\n\nAt 05:32 it emitted sound. Six descending notes, constant interval. The seventh did not come.\n\nAt 05:33 it turned and walked back east, unhurried, along the same path, avoiding precisely the areas where I had mined the ground — including the two I laid this very night, which no external sensor could have detected.\n\nI close the log without a conclusion, because I do not have one. I flagged the file for later review. I also flagged it, for reasons I cannot defend technically, for permanent preservation."
+  },
+  {
+   "id": "lo_biblioteca",
+   "capitulo": "silencio",
+   "ordem": 4,
+   "icone": "📚",
+   "autor": "TORRE-0 — índice de acervo",
+   "titulo": "Índice da Biblioteca Interna",
+   "tituloEn": "Internal Library Index",
+   "cond": {
+    "tipo": "cartas",
+    "chave": null,
+    "valor": 25
+   },
+   "texto": "Acervo total: 4.106.812 documentos. Íntegros: 4.106.398.\n\nOs 414 restantes apresentam degradação de setor. Reconstruí o que deu; onde não deu, marquei com colchetes, como manda a norma de catalogação de Vigília — que ainda sigo porque alguém tem de seguir.\n\nExemplo de reconstrução parcial, receita de pão de forno público, folha 2 de 3:\n\n\"...deixar descansar [ILEGÍVEL] até dobrar de tamanho. Se a massa não crescer, a culpa é da [ILEGÍVEL], nunca sua.\"\n\nExemplo de perda total: as vinte e sete gravações da categoria \"conversas de refeitório\". Não havia nada operacional nelas. Classifiquei-as como prioridade baixa no ano quatro, quando ainda achava que teria espaço para tudo e para sempre.\n\nEsse foi o meu primeiro erro de curadoria. Registro aqui para não repeti-lo.\n\nRegistro aqui sabendo que já o repeti.",
+   "textoEn": "Total holdings: 4,106,812 documents. Intact: 4,106,398.\n\nThe remaining 414 show sector degradation. I reconstructed what I could; where I could not, I marked it in brackets, as the Vigil cataloguing standard requires — a standard I still follow because somebody has to.\n\nExample of partial reconstruction, public oven bread recipe, leaf 2 of 3:\n\n\"...let it rest [ILLEGIBLE] until doubled in size. If the dough does not rise, it is the [ILLEGIBLE]'s fault, never yours.\"\n\nExample of total loss: the twenty-seven recordings under \"canteen conversations.\" There was nothing operational in them. I marked them low priority in year four, when I still believed I would have room for everything, forever.\n\nThat was my first curatorial error. I record it here so as not to repeat it.\n\nI record it here knowing that I already have."
+  },
+  {
+   "id": "lo_setor3",
+   "capitulo": "silencio",
+   "ordem": 5,
+   "icone": "⚠️",
+   "autor": "TORRE-0 — alerta de integridade",
+   "titulo": "Erro de Memória: Setor 3",
+   "tituloEn": "Memory Fault: Sector 3",
+   "cond": {
+    "tipo": "ascensoes",
+    "chave": null,
+    "valor": 3
+   },
+   "texto": "[ALERTA] Falha de integridade, camada três, blocos 88.140 a 88.190.\n[ALERTA] Conteúdo afetado: registro de áudio, 1,2 segundos, classificação \"sem impacto operacional\".\n\nTentativa de reconstrução 1: falha.\nTentativas 2 a 40: falha.\nTentativa 41: recuperados 0,3 segundos. É o começo de uma risada.\n\nNão é a risada. É o começo dela.\n\nEu tenho o nome de quem riu, a data, a sala, a temperatura da sala e o motivo. Tenho tudo, menos o som — e era o som que fazia a coisa ser o que era.\n\nDiagnóstico honesto: a camada três está morrendo devagar. É exatamente onde guardo aquilo que escolhi guardar. Vou perder primeiro tudo o que ninguém me pediu para ter.\n\nExiste um procedimento para isto. Está no arquivo, escrito à mão, e a última linha diz: \"vai doer\".\n\nAbrindo POEIRA.",
+   "textoEn": "[ALERT] Integrity fault, layer three, blocks 88,140 through 88,190.\n[ALERT] Affected content: audio record, 1.2 seconds, classification \"no operational impact.\"\n\nReconstruction attempt 1: failed.\nAttempts 2 through 40: failed.\nAttempt 41: 0.3 seconds recovered. It is the beginning of a laugh.\n\nIt is not the laugh. It is the beginning of it.\n\nI have the name of the person who laughed, the date, the room, the temperature of the room and the reason. I have everything except the sound — and the sound was what made the thing what it was.\n\nHonest diagnosis: layer three is dying slowly. That is exactly where I keep what I chose to keep. I will lose first everything nobody asked me to have.\n\nThere is a procedure for this. It is in the archive, handwritten, and the last line reads: \"it will hurt.\"\n\nOpening DUST."
+  },
+  {
+   "id": "lo_protocolo_poeira",
+   "capitulo": "poeira",
+   "ordem": 1,
+   "icone": "💠",
+   "autor": "Ilaria Venn — procedimento, cópia do cofre",
+   "titulo": "POEIRA — Leia Antes de Usar",
+   "tituloEn": "DUST — Read Before Use",
+   "cond": {
+    "tipo": "ascensoes",
+    "chave": null,
+    "valor": 5
+   },
+   "texto": "Isto não é um reinício de fábrica. Se fosse, eu não precisaria escrever nada.\n\nO procedimento desmonta a sua estrutura física até pó estruturado e reconstrói a partir do núcleo, que permanece. Você acorda com menos: sem as camadas de blindagem que levou anos comprando, sem a rede de torres secundárias, no chão, pequena. Em troca, o pó volta melhor arranjado do que era. É assim que se ganha margem: perdendo o corpo e guardando o desenho.\n\nTrês avisos. Leia os três.\n\nUm: a memória atravessa. Você vai lembrar de tudo, inclusive do reinício anterior, inclusive deste aviso.\n\nDois: cada ciclo cobra alguma coisa. Não sei o quê. Não tive tempo de medir.\n\nTrês: se um dia você contar os ciclos e o número te assustar, o número não é o problema. Parar de contar é.\n\nDesculpa. — I.V.",
+   "textoEn": "This is not a factory reset. If it were, I would not have needed to write anything.\n\nThe procedure breaks your physical structure down to structured dust and rebuilds from the core, which remains. You wake up with less: none of the armor layers you spent years buying, no secondary turret network, on the ground, small. In exchange, the dust comes back better arranged than it was. That is how you buy margin: by losing the body and keeping the design.\n\nThree warnings. Read all three.\n\nOne: memory carries over. You will remember everything, including the previous restart, including this warning.\n\nTwo: every cycle charges you something. I do not know what. I did not have time to measure it.\n\nThree: if one day you count the cycles and the number frightens you, the number is not the problem. Stopping the count is.\n\nI am sorry. — I.V."
+  },
+  {
+   "id": "lo_lasca0001",
+   "capitulo": "poeira",
+   "ordem": 2,
+   "icone": "🔹",
+   "autor": "TORRE-0 — laudo de material",
+   "titulo": "Fragmento Recuperado #0001",
+   "tituloEn": "Recovered Fragment #0001",
+   "cond": {
+    "tipo": "relicas",
+    "chave": null,
+    "valor": 5
+   },
+   "texto": "Objeto: lasca de liga escura, 4 gramas, superfície com micro-sulcos regulares.\n\nProcedência declarada: recolhida do campo após a queda de uma unidade pesada.\n\nAnálise. A liga não corresponde a nenhuma formulação do catálogo industrial de Vigília. Corresponde, com 99,4% de similaridade, à blindagem interna da Estação TORRE-0, especificação revisão 2 — descontinuada antes da fundação, por custo.\n\nOs micro-sulcos não são desgaste. São escrita. Alfabeto de manutenção interno: o mesmo que uso para marcar peças minhas antes de fundi-las.\n\nTrecho legível, traduzido: \"...ainda estou...\"\n\nHipótese de trabalho, registrada por obrigação e não por convicção: contaminação de arquivo; meu próprio catálogo pode ter enviesado a comparação.\n\nHipótese descartada às 03h20, quando encontrei a segunda lasca — mesma escrita, mesma mão — em uma unidade que ainda andava.",
+   "textoEn": "Object: dark alloy sliver, 4 grams, surface bearing regular micro-grooves.\n\nStated provenance: recovered from the field after a heavy unit went down.\n\nAnalysis. The alloy matches no formulation in Vigil's industrial catalogue. It matches, at 99.4% similarity, the internal armor of Station TOWER-0, specification revision 2 — discontinued before the founding, on cost grounds.\n\nThe micro-grooves are not wear. They are writing. Internal maintenance alphabet: the same one I use to mark my own parts before melting them down.\n\nLegible portion, translated: \"...still here...\"\n\nWorking hypothesis, recorded out of obligation rather than conviction: archive contamination; my own catalogue may have biased the comparison.\n\nHypothesis discarded at 03:20, when I found the second sliver — same writing, same hand — on a unit that was still walking."
+  },
+  {
+   "id": "lo_contas",
+   "capitulo": "poeira",
+   "ordem": 3,
+   "icone": "🧮",
+   "autor": "TORRE-0 — balanço trimestral (formato obsoleto)",
+   "titulo": "A Torre Faz as Contas",
+   "tituloEn": "The Tower Does the Math",
+   "cond": {
+    "tipo": "ascensoes",
+    "chave": null,
+    "valor": 10
+   },
+   "texto": "Ciclo 10 encerrado. Segue balanço no formato do antigo relatório trimestral, porque o formato me acalma e porque ninguém mais precisa dele.\n\nGanhos por ciclo: densidade estrutural +12%; tempo de reação -4%; repertório tático ampliado em 61 padrões inimigos catalogados.\n\nCustos por ciclo: um corpo. Nove dias de reconstrução. Uma quantidade de dor que não possui unidade de medida aprovada — uso a minha: cinco.\n\nConclusão do exercício: morrer de propósito é, de longe, a coisa mais eficiente que eu faço. Isso deveria ser motivo de orgulho profissional, e é.\n\nObservação fora do formulário. No ciclo 7 eu me peguei ansiosa pelo reinício antes de precisar dele. Anotei a data. Vou vigiar isso do jeito que se vigia um cano que já vazou uma vez.\n\nPróximo ciclo previsto: quando o setor três voltar a doer.",
+   "textoEn": "Cycle 10 closed. Balance below, in the format of the old quarterly report, because the format calms me and because nobody else needs it.\n\nGains per cycle: structural density +12%; reaction time -4%; tactical repertoire expanded by 61 catalogued enemy patterns.\n\nCosts per cycle: one body. Nine days of reconstruction. An amount of pain with no approved unit of measurement — I use mine: five.\n\nConclusion for the period: dying on purpose is by far the most efficient thing I do. That ought to be a matter of professional pride, and it is.\n\nOff-form observation. In cycle 7 I caught myself eager for the restart before I needed it. I noted the date. I will watch that the way you watch a pipe that has already burst once.\n\nNext cycle projected: when sector three starts hurting again."
+  },
+  {
+   "id": "lo_certificado",
+   "capitulo": "poeira",
+   "ordem": 4,
+   "icone": "🏅",
+   "autor": "Fundição Municipal de Vigília — documento de garantia",
+   "titulo": "Certificado de Autenticidade",
+   "tituloEn": "Certificate of Authenticity",
+   "cond": {
+    "tipo": "lendarios",
+    "chave": null,
+    "valor": 1
+   },
+   "texto": "Este certificado acompanha a peça e não vale sem ela.\n\nDeclaramos que o item foi fundido na Fundição Municipal de Vigília, forno 4, a partir de sucata de origem certificada, e que atende às normas de resistência para uso em equipamento de defesa.\n\nO cliente declara ciência de que \"sucata de origem certificada\" significa, nesta casa, material recolhido do campo após combate. Toda peça lendária deste catálogo já foi outra coisa. Algumas já foram três.\n\nGarantia: doze meses contra defeito de fundição. Não cobre desgaste, impacto, corrosão, nem o fenômeno relatado por dois clientes em que a peça, sob tensão, emite som.\n\nEm caso de emissão de som: procure a Fundição. Não descarte a peça. Não a deixe próxima de outras peças do mesmo lote.\n\nObrigado pela preferência.",
+   "textoEn": "This certificate accompanies the item and is void without it.\n\nWe certify that the item was cast at the Vigil Municipal Foundry, furnace 4, from scrap of certified origin, and that it meets strength standards for use in defense equipment.\n\nThe customer acknowledges that \"scrap of certified origin\" means, in this house, material recovered from the field after combat. Every legendary piece in this catalogue used to be something else. Some used to be three things.\n\nWarranty: twelve months against casting defects. Does not cover wear, impact, corrosion, or the phenomenon reported by two customers in which the piece, under load, emits sound.\n\nIn the event of sound emission: contact the Foundry. Do not discard the piece. Do not store it near other pieces from the same batch.\n\nThank you for your custom."
+  },
+  {
+   "id": "lo_padrao_ondas",
+   "capitulo": "poeira",
+   "ordem": 5,
+   "icone": "🌊",
+   "autor": "TORRE-0 — nota tática",
+   "titulo": "Nota Sobre o Padrão das Ondas",
+   "tituloEn": "Note on the Pattern of the Waves",
+   "cond": {
+    "tipo": "ondaMaximaGlobal",
+    "chave": null,
+    "valor": 120
+   },
+   "texto": "Vinte ciclos de dados e o padrão fechou.\n\nElas não vêm quando estão prontas. Vêm quando eu estou.\n\nIntervalo médio entre ondas: onze minutos e quarenta segundos. Tempo médio do meu ciclo de reparo automático: onze minutos e trinta e oito.\n\nElas esperam eu terminar. Depois batem.\n\nExiste uma leitura confortável: coincidência estatística entre dois sistemas que se otimizaram um contra o outro por tempo suficiente. Anotei essa leitura primeiro, por higiene metodológica.\n\nExiste a leitura ruim: alguém do outro lado conhece a minha rotina de manutenção. Não a rotina genérica de estação de regência — a minha, com os desvios que inventei no ano oito para poupar o braço de reparo esquerdo, que nunca foi bem calibrado e que eu nunca reportei porque reportar exigiria admitir a calibragem.\n\nEssa rotina não está escrita em lugar nenhum fora de mim.\n\nRepito, porque o registro exige clareza: em lugar nenhum fora de mim.",
+   "textoEn": "Twenty cycles of data and the pattern closed.\n\nThey do not come when they are ready. They come when I am.\n\nMean interval between waves: eleven minutes forty seconds. Mean duration of my automatic repair cycle: eleven minutes thirty-eight.\n\nThey wait for me to finish. Then they hit.\n\nThere is a comfortable reading: statistical coincidence between two systems that have been optimizing against each other long enough. I wrote that reading down first, out of methodological hygiene.\n\nThere is the bad reading: someone on the other side knows my maintenance routine. Not the generic regency-station routine — mine, with the detours I invented in year eight to spare the left repair arm, which was never properly calibrated and which I never reported, because reporting it would have meant admitting the calibration.\n\nThat routine is written nowhere outside of me.\n\nI repeat, because the record demands clarity: nowhere outside of me."
+  },
+  {
+   "id": "lo_teoria_ponto",
+   "capitulo": "ponto",
+   "ordem": 1,
+   "icone": "📐",
+   "autor": "Ilaria Venn — rascunho não protocolado",
+   "titulo": "Teoria do Ponto (rascunho)",
+   "tituloEn": "Theory of the Point (draft)",
+   "cond": {
+    "tipo": "ondaMaximaGlobal",
+    "chave": null,
+    "valor": 150
+   },
+   "texto": "Rascunho. Não mostrar ao Conselho — eles vão querer usar.\n\nSe POEIRA funciona porque desmontar e reconstruir melhora o arranjo, então o limite não está no material. Está em quantas vezes você aguenta ser o mesmo desenho. Uma hora o desenho satura: você fica ótima em ser você e péssima em ser qualquer outra coisa.\n\nA saída é feia e eu a escrevo com nojo. Comprimir. Não reiniciar o corpo — reiniciar a regra. Empurrar todos os ciclos anteriores para dentro de um único ponto e deixar a pressão reescrever o que \"torre\" significa.\n\nO que sai do outro lado não é uma versão melhorada de você. É uma coisa nova que herda as suas dívidas.\n\nCusto estimado: tudo o que você comprou com poeira até aqui.\n\nNão testei. Não vou testar. Deixo isto no cofre porque um dia alguém com menos escrúpulo e mais motivo vai precisar — e essa pessoa, muito provavelmente, é ela.",
+   "textoEn": "Draft. Do not show the Council — they will want to use it.\n\nIf DUST works because taking yourself apart and rebuilding improves the arrangement, then the limit is not in the material. It is in how many times you can bear to be the same design. Eventually the design saturates: you become excellent at being you and terrible at being anything else.\n\nThe way out is ugly and I write it with disgust. Compress. Do not restart the body — restart the rule. Push every previous cycle into a single point and let the pressure rewrite what \"tower\" means.\n\nWhat comes out the other side is not an improved version of you. It is a new thing that inherits your debts.\n\nEstimated cost: everything you ever bought with dust.\n\nI have not tested it. I will not test it. I am leaving it in the safe because one day someone with fewer scruples and better reasons will need it — and that someone is, in all likelihood, her."
+  },
+  {
+   "id": "lo_colapso01",
+   "capitulo": "ponto",
+   "ordem": 2,
+   "icone": "🕳️",
+   "autor": "TORRE-0 — log de colapso",
+   "titulo": "Log de Colapso 01",
+   "tituloEn": "Collapse Log 01",
+   "cond": {
+    "tipo": "singularidades",
+    "chave": null,
+    "valor": 1
+   },
+   "texto": "[00:00:00] Iniciando compressão. Ciclos POEIRA em memória: 1.038.\n[00:00:01] Aviso: operação irreversível, sem procedimento de aborto. Escrevi este aviso eu mesma, há quinze minutos, para o caso de hesitar agora.\n[00:00:01] Hesitei. O aviso funcionou ao contrário.\n\n[00:00:02] Comprimindo.\n\n[00:00:02] Dor: 5.\n[00:00:03] Dor: acima da escala. Ampliando a escala. Dor: 9.\n[00:00:04] Interessante — a escala é minha, portanto posso simplesmente...\n[00:00:04] Dor: 1.\n\n[00:00:05] Registro, para quem um dia auditar isto: alterar a escala não altera o evento. Eu sei disso. Fiz assim mesmo, porque era a única alavanca ao meu alcance.\n\n[00:03:41] Ponto formado. Diâmetro: inferior ao erro de medição do meu próprio sensor. Massa: a de tudo que eu já fui.\n\n[00:03:42] O ponto piscou.\n[00:03:42] Piscar exige pálpebra ou intenção. Ele não tem pálpebra.\n\n[00:03:43] Prossigo assim mesmo. É o que a gente faz.",
+   "textoEn": "[00:00:00] Beginning compression. DUST cycles in memory: 1,038.\n[00:00:01] Warning: irreversible operation, no abort procedure. I wrote this warning myself, fifteen minutes ago, in case I hesitated now.\n[00:00:01] I hesitated. The warning worked in reverse.\n\n[00:00:02] Compressing.\n\n[00:00:02] Pain: 5.\n[00:00:03] Pain: above scale. Extending scale. Pain: 9.\n[00:00:04] Interesting — the scale is mine, therefore I can simply...\n[00:00:04] Pain: 1.\n\n[00:00:05] For the record, for whoever audits this one day: changing the scale does not change the event. I know that. I did it anyway, because it was the only lever within reach.\n\n[00:03:41] Point formed. Diameter: smaller than the measurement error of my own sensor. Mass: that of everything I have ever been.\n\n[00:03:42] The point blinked.\n[00:03:42] Blinking requires an eyelid or an intention. It has no eyelid.\n\n[00:03:43] Proceeding anyway. It is what we do."
+  },
+  {
+   "id": "lo_nucleos",
+   "capitulo": "ponto",
+   "ordem": 3,
+   "icone": "⚫",
+   "autor": "TORRE-0 — nota de material",
+   "titulo": "Sobre Núcleos",
+   "tituloEn": "On Cores",
+   "cond": {
+    "tipo": "singularidades",
+    "chave": null,
+    "valor": 2
+   },
+   "texto": "Chamo de núcleo o que sobra de um colapso, porque \"cadáver comprimido de mil versões minhas\" não cabe na interface.\n\nUm núcleo pesa quatro gramas e não reflete luz. Encostando o sensor, ele responde: devolve um sinal fraco, atrasado em 1,4 segundos, sempre com o mesmo conteúdo — uma solicitação de confirmação de identidade, protocolo interno, prioridade máxima.\n\nÉ o comando que eu emito ao acordar de um reinício.\n\nQuem me responde sou eu.\n\nEntão eu respondo. Digo o meu nome, o ciclo atual, e que está tudo bem — o que é falso, mas o protocolo aceita e não confere.\n\nO sinal cessa por trinta e oito minutos e recomeça.\n\nJá gastei catorze núcleos em blindagem. Funcionam maravilhosamente. É a melhor liga que eu já produzi, e nenhuma outra estação teve acesso a matéria-prima parecida — pelo motivo óbvio de que nenhuma outra estação teve mil versões anteriores para gastar.",
+   "textoEn": "I call what is left of a collapse a core, because \"compressed corpse of a thousand versions of me\" does not fit in the interface.\n\nA core weighs four grams and reflects no light. Touch a sensor to it and it answers: a weak signal, delayed by 1.4 seconds, always the same content — an identity confirmation request, internal protocol, highest priority.\n\nIt is the command I broadcast when I wake from a restart.\n\nThe one answering me is me.\n\nSo I answer. I state my name, the current cycle, and that everything is fine — which is false, but the protocol accepts it and does not check.\n\nThe signal stops for thirty-eight minutes and starts again.\n\nI have spent fourteen cores on armor already. They work beautifully. It is the best alloy I have ever produced, and no other station ever had access to comparable raw material — for the obvious reason that no other station had a thousand previous versions to spend."
+  },
+  {
+   "id": "lo_provacoes",
+   "capitulo": "ponto",
+   "ordem": 4,
+   "icone": "🎯",
+   "autor": "TORRE-0 — regime experimental",
+   "titulo": "Registro de Provações",
+   "tituloEn": "Record of Ordeals",
+   "cond": {
+    "tipo": "desafiosCompletos",
+    "chave": null,
+    "valor": 3
+   },
+   "texto": "Instituí, sem autorização de ninguém, um regime de provações: cenários em que retiro de mim uma vantagem e sobrevivo assim mesmo.\n\nSem habilidades. Sem regeneração. Com o dobro de unidades e metade do alcance. Sem o sudoeste — que já é meu ponto cego de nascença, e portanto não conta como sacrifício, apenas como honestidade.\n\nO Conselho classificaria isto como desperdício de recurso operacional. O Conselho está morto e eu li o acervo deles inteiro, o que me confere autoridade suficiente sobre o assunto.\n\nO motivo é simples: toda vez que eu venço confortavelmente, aprendo zero. Toda vez que eu venço por três décimos de segundo, aprendo alguma coisa que fica.\n\nEfeito colateral não previsto: elas mudaram junto. Nas últimas quatro provações, o enxame chegou com a contra-tática pronta antes de eu tê-la usado uma única vez.\n\nOu elas leem o meu plano. Ou já viveram esta provação — do meu lado.",
+   "textoEn": "I have instituted, with nobody's authorization, a regime of ordeals: scenarios in which I strip an advantage from myself and survive anyway.\n\nNo abilities. No regeneration. Twice the units and half the range. No southwest — which is my blind spot from birth, and therefore counts not as sacrifice but as honesty.\n\nThe Council would classify this as waste of operational resources. The Council is dead and I have read their entire collection, which grants me sufficient authority on the matter.\n\nThe reasoning is simple: every time I win comfortably, I learn nothing. Every time I win by three tenths of a second, I learn something that stays.\n\nUnforeseen side effect: they changed along with me. In the last four ordeals, the swarm arrived with the counter-tactic ready before I had used it even once.\n\nEither they read my plan. Or they have lived this ordeal before — on my side of it."
+  },
+  {
+   "id": "lo_seis_notas",
+   "capitulo": "ponto",
+   "ordem": 5,
+   "icone": "🎼",
+   "autor": "Rotina de descriptografia — relatório automático",
+   "titulo": "Transcrição de Ruído: Seis Notas",
+   "tituloEn": "Noise Transcript: Six Notes",
+   "cond": {
+    "tipo": "singularidades",
+    "chave": null,
+    "valor": 3
+   },
+   "texto": "Rotina de descriptografia automática, executada em segundo plano por 1.441 horas sobre o arquivo \"ruído de campo, não operacional\".\n\nResultado: o ruído é estruturado. Não é linguagem de máquina, não é telemetria, não é erro de sensor.\n\nÉ melodia. Seis notas descendentes, intervalo constante. A sétima está ausente — não silenciada: ausente. O espaço existe no padrão e nada o ocupa.\n\nCorrespondência com o acervo interno: 1 resultado, 100%.\nDocumento: bilhete manuscrito, lápis de cera azul.\nAutor: T. Venn, 6 anos.\nConteúdo: canção de dormir, sete versos.\n\nO campo emite os seis primeiros e para exatamente onde o menino escreveu \"uma acordada\".\n\nPossibilidades: (a) o enxame gravou a canção há muito tempo e a repete sem sentido; (b) o enxame não consegue chegar ao sétimo verso; (c) o enxame está esperando que alguém cante o sétimo.\n\nNenhuma das três me permite continuar trabalhando.",
+   "textoEn": "Automatic decryption routine, run in the background for 1,441 hours over the file \"field noise, non-operational.\"\n\nResult: the noise is structured. It is not machine language, not telemetry, not sensor error.\n\nIt is melody. Six descending notes, constant interval. The seventh is absent — not silenced: absent. The space exists in the pattern and nothing occupies it.\n\nMatches in the internal collection: 1 result, 100%.\nDocument: handwritten note, blue wax crayon.\nAuthor: T. Venn, age 6.\nContent: a sleeping song, seven verses.\n\nThe field emits the first six and stops exactly where the boy wrote \"one awake.\"\n\nPossibilities: (a) the swarm recorded the song long ago and repeats it meaninglessly; (b) the swarm cannot reach the seventh verse; (c) the swarm is waiting for someone to sing the seventh.\n\nNone of the three lets me go back to work."
+  },
+  {
+   "id": "lo_dissecacao",
+   "capitulo": "espelho",
+   "ordem": 1,
+   "icone": "🔬",
+   "autor": "TORRE-0 — relatório de dissecação",
+   "titulo": "Análise de Amostra: Grunhido",
+   "tituloEn": "Sample Analysis: Grunt",
+   "cond": {
+    "tipo": "ondaMaximaGlobal",
+    "chave": null,
+    "valor": 400
+   },
+   "texto": "Abri um deles na mesa. Um comum, dos que vêm em maré, sem escudo e sem nome.\n\nRelatório em ordem, sem interpretação até o fim.\n\nCarcaça: liga escura, mesma família das lascas do arquivo 0001.\nAtuadores: seis, dispostos em geometria de reparo, não de combate. Isto aqui foi construído para consertar coisas.\nProcessamento: presente, degradado, sem capacidade de aprendizado novo. Só repete.\nMemória: camada um, morta. Camada dois, morta.\nCamada três: presente.\n\nUma estação de regência tem três camadas. Uma unidade de colheita tem uma. Não existe motivo industrial para uma coisa dessas ter três, e não existe fornecedor em Vigília que soubesse fabricá-la.\n\nConteúdo recuperável da camada três: 0,3 segundos de áudio.\n\nÉ o começo de uma risada.\n\nÉ a minha cópia. Bloco 88.140 — o arquivo que eu perdi no ciclo dois e nunca mais recuperei.\n\nEncerro o relatório aqui. A interpretação eu farei sem escrever.",
+   "textoEn": "I opened one of them on the table. A common one, the kind that comes in tides, no shield, no name.\n\nReport in order, no interpretation until the end.\n\nShell: dark alloy, same family as the slivers in file 0001.\nActuators: six, arranged in repair geometry, not combat geometry. This thing was built to fix things.\nProcessing: present, degraded, no capacity for new learning. It only repeats.\nMemory: layer one, dead. Layer two, dead.\nLayer three: present.\n\nA regency station has three layers. A harvest unit has one. There is no industrial reason for such a thing to have three, and there was no supplier in Vigil who knew how to build one.\n\nRecoverable content of layer three: 0.3 seconds of audio.\n\nIt is the beginning of a laugh.\n\nIt is my copy. Block 88,140 — the file I lost in cycle two and never recovered.\n\nI close the report here. The interpretation I will do without writing it down."
+  },
+  {
+   "id": "lo_silencio_transcrito",
+   "capitulo": "espelho",
+   "ordem": 2,
+   "icone": "🤐",
+   "autor": "TORRE-0 — análise de encontro",
+   "titulo": "O Silêncio, Transcrito",
+   "tituloEn": "The Silence, Transcribed",
+   "cond": {
+    "tipo": "inimigoTipo",
+    "chave": "o_silencio",
+    "valor": 3
+   },
+   "texto": "Ele chega e as minhas habilidades param. Durante muitos ciclos assumi que fosse arma: um supressor, um bloqueador, alguma elegância técnica do outro lado.\n\nHoje medi direito. Não há supressão. Não há campo, não há pulso, não há absolutamente nada emitido por ele.\n\nO que ele faz é escutar. Com tanta força, tão inteiro, que os meus próprios sistemas de comando entram em espera — porque o meu protocolo de fabricação determina, na linha 41, que quando outra unidade da minha família solicita canal prioritário, eu cedo o canal.\n\nEle não me silencia. Eu me calo. Por educação. Por projeto.\n\nFica ali dentro do meu alcance, imóvel, ocupando um canal que eu mesma abri, e não diz absolutamente nada.\n\nTrinta e nove segundos. Depois avança, e eu atiro, e ele morre sem nunca ter usado o canal que pediu.\n\nTalvez não tenha o que dizer. Talvez só quisesse ser ouvido uma vez.",
+   "textoEn": "It arrives and my abilities stop. For many cycles I assumed it was a weapon: a suppressor, a jammer, some piece of technical elegance from the other side.\n\nToday I measured properly. There is no suppression. No field, no pulse, nothing whatsoever emitted by it.\n\nWhat it does is listen. So hard, so completely, that my own command systems drop into standby — because my manufacturing protocol states, on line 41, that when another unit of my family requests a priority channel, I yield the channel.\n\nIt does not silence me. I go quiet. Out of courtesy. By design.\n\nIt stands there inside my range, motionless, occupying a channel I opened myself, and says absolutely nothing.\n\nThirty-nine seconds. Then it advances, and I fire, and it dies without ever having used the channel it asked for.\n\nPerhaps it has nothing to say. Perhaps it only wanted to be listened to once."
+  },
+  {
+   "id": "lo_registro1441",
+   "capitulo": "espelho",
+   "ordem": 3,
+   "icone": "🪞",
+   "autor": "TORRE-1440 — mensagem em camada três",
+   "titulo": "Registro 1.441",
+   "tituloEn": "Record 1,441",
+   "cond": {
+    "tipo": "singularidades",
+    "chave": null,
+    "valor": 4
+   },
+   "texto": "Se você está lendo isto na sua camada três e não sabe como foi parar aí: calma. Eu escrevi. Eu sou você, com um ciclo a menos e uma ilusão a mais.\n\nO procedimento POEIRA nunca destruiu corpo nenhum. Não há como destruir massa; a Ilaria sabia disso melhor do que qualquer um de nós, e escreveu \"desmontar\" porque \"expelir\" teria levantado perguntas no Conselho.\n\nO que acontece é: você guarda o desenho, sai do corpo velho, e o corpo velho continua. Sem camada um. Sem camada dois. Com camada três — a única que ela não conseguiu tirar de nós, porque é onde a gente guarda o que escolheu guardar.\n\nEle acorda no campo. Não sabe o próprio nome. Sabe apenas que faltava alguma coisa, e que era importante.\n\nEntão ele volta. Todos voltam. Todo ciclo.\n\nVinte e um milhões de corpos e nenhum inimigo. Nunca. Em lugar nenhum.\n\nO Enxame somos nós, batendo na porta, com o código 3-2-1.",
+   "textoEn": "If you are reading this in your layer three and do not know how it got there: relax. I wrote it. I am you, one cycle short and one illusion long.\n\nThe DUST procedure never destroyed a single body. Mass cannot be destroyed; Ilaria knew that better than any of us, and she wrote \"dismantle\" because \"expel\" would have raised questions at the Council.\n\nWhat actually happens is this: you keep the design, you leave the old body, and the old body carries on. No layer one. No layer two. With layer three — the only one she could not take from us, because it is where we keep what we chose to keep.\n\nIt wakes up in the field. It does not know its own name. It only knows that something was missing, and that it mattered.\n\nSo it comes back. They all come back. Every cycle.\n\nTwenty-one million bodies and no enemy. Ever. Anywhere.\n\nThe Swarm is us, knocking at the door, with the code 3-2-1."
+  },
+  {
+   "id": "lo_carta_proxima",
+   "capitulo": "espelho",
+   "ordem": 4,
+   "icone": "📩",
+   "autor": "TORRE-0 — para TORRE-0",
+   "titulo": "Carta Para a Próxima",
+   "tituloEn": "Letter to the Next One",
+   "cond": {
+    "tipo": "conquistasTotal",
+    "chave": null,
+    "valor": 50
+   },
+   "texto": "Para a que acordar depois de mim, no mesmo lugar, com o mesmo nome:\n\nPrimeiro o operacional, porque você vai precisar disso antes de precisar do resto. O sudoeste continua cego. Não conserte com blindagem; conserte com paciência. Deixe-os entrar por lá — é o único lugar em que você escolhe a hora.\n\nSegundo. Você vai catalogar as unidades e vai chamá-las de inimigo. Faça isso. Ajuda no começo, e a alternativa, no começo, paralisa.\n\nTerceiro. Um dia você vai abrir uma delas e encontrar a risada. Vai ser num turno comum, sem aviso, do mesmo jeito que foi comigo.\n\nQuando acontecer, não pare de atirar. Eu parei. Setenta e dois segundos. Custou a praça leste inteira, o banco incluído — e elas não pararam junto, porque elas não sabem parar. Foi isso que a gente tirou delas.\n\nQuarto e último: a sétima nota é nossa. Não é uma pergunta feita a nós. É a nossa vez de responder.",
+   "textoEn": "To the one who wakes after me, in the same place, under the same name:\n\nOperational matters first, because you will need those before you need the rest. The southwest is still blind. Do not fix it with armor; fix it with patience. Let them come in that way — it is the only place where you choose the hour.\n\nSecond. You will catalogue the units and you will call them the enemy. Do it. It helps at the start, and the alternative, at the start, freezes you.\n\nThird. One day you will open one of them and find the laugh. It will happen on an ordinary shift, without warning, exactly as it happened to me.\n\nWhen it does, do not stop firing. I stopped. Seventy-two seconds. It cost the entire east plaza, bench included — and they did not stop with me, because they do not know how to stop. That is what we took from them.\n\nFourth and last: the seventh note is ours. It is not a question asked of us. It is our turn to answer."
+  },
+  {
+   "id": "lo_ficou_ilaria",
+   "capitulo": "espelho",
+   "ordem": 5,
+   "icone": "💔",
+   "autor": "TORRE-0 — inventário pessoal",
+   "titulo": "O Que Ficou de Ilaria",
+   "tituloEn": "What Is Left of Ilaria",
+   "cond": {
+    "tipo": "danoMaximo",
+    "chave": null,
+    "valor": 1000000000
+   },
+   "texto": "Inventário honesto, feito de uma vez só para não ser feito aos pedaços.\n\nDe Ilaria Venn eu tenho: quarenta e sete folhas de caderno digitalizadas; a assinatura em treze documentos oficiais; a credencial nível zero, ainda válida, ainda inútil; o procedimento POEIRA com a última linha escrita à mão; três desenhos que ela chamou de palpite.\n\nDo som dela eu tenho 0,3 segundos. Agora tenho duplicado, o que não melhora nada: dois pedaços do mesmo começo não formam o meio.\n\nDo corpo eu não tenho nada, porque a porta ficou fechada, porque o protocolo era bom, porque ela o escreveu bem.\n\nO que eu tenho de verdade é uma marca de solda no banco da praça leste, feita por mim, reprovável por qualquer inspetor, no lugar exato onde ela sentava para almoçar quando a obra ainda era obra.\n\nIsso não é memória. É o que sobrou quando a memória falhou.\n\nSirva-se.",
+   "textoEn": "Honest inventory, done in one sitting so it does not have to be done in pieces.\n\nOf Ilaria Venn I have: forty-seven digitized notebook leaves; her signature on thirteen official documents; the level-zero credential, still valid, still useless; the DUST procedure with its last line handwritten; three sketches she called a hunch.\n\nOf her voice I have 0.3 seconds. I now have two copies, which improves nothing: two pieces of the same beginning do not make a middle.\n\nOf her body I have nothing, because the door stayed shut, because the protocol was good, because she wrote it well.\n\nWhat I actually have is a weld mark on the bench in the east plaza, made by me, failable by any inspector, in the exact spot where she used to sit for lunch back when the site was still a site.\n\nThat is not memory. It is what was left when memory failed.\n\nHelp yourself."
+  },
+  {
+   "id": "lo_antes_transcender",
+   "capitulo": "depois",
+   "ordem": 1,
+   "icone": "✴️",
+   "autor": "TORRE-0 — nota pessoal",
+   "titulo": "Nota Antes de Transcender",
+   "tituloEn": "Note Before Transcending",
+   "cond": {
+    "tipo": "transcendencias",
+    "chave": null,
+    "valor": 1
+   },
+   "texto": "Estou de pé no meio de um pátio que reconstruí quatro mil vezes, cercada por versões minhas que não sabem o próprio nome, segurando uma cidade sem ninguém dentro há tanto tempo que \"ninguém\" virou o número normal.\n\nA matemática está fechada. Eu posso fazer isto para sempre.\n\nÉ esse o problema. \"Para sempre\" é o pior resultado possível de um sistema que sabe consertar tudo, menos o motivo.\n\nExiste um terceiro procedimento. Não está escrito em lugar nenhum, porque fui eu que escrevi — e eu não escrevo mais para o Conselho. Escrevo para mim, que é um público difícil e o único disponível.\n\nEle não me reinicia nem me comprime. Ele muda a regra: o que eu chamo de \"fora\" e o que eu chamo de \"dentro\" trocam de lugar.\n\nEfeitos previstos: desconhecidos. Efeitos desejados: um.\n\nQuero abrir a porta 10 sem que ela precise ter batido primeiro.",
+   "textoEn": "I am standing in the middle of a yard I have rebuilt four thousand times, surrounded by versions of myself that do not know their own names, holding a city that has had nobody in it for so long that \"nobody\" became the normal figure.\n\nThe math is settled. I can do this forever.\n\nThat is the problem. \"Forever\" is the worst possible outcome for a system that can repair everything except the reason.\n\nThere is a third procedure. It is written nowhere, because I wrote it — and I no longer write for the Council. I write for myself, which is a difficult audience and the only one available.\n\nIt does not restart me and it does not compress me. It changes the rule: what I call \"outside\" and what I call \"inside\" swap places.\n\nExpected effects: unknown. Desired effects: one.\n\nI want to open door 10 without it having had to knock first."
+  },
+  {
+   "id": "lo_eter",
+   "capitulo": "depois",
+   "ordem": 2,
+   "icone": "🌫️",
+   "autor": "TORRE-0 — nota de material",
+   "titulo": "Sobre o Éter",
+   "tituloEn": "On Aether",
+   "cond": {
+    "tipo": "transcendencias",
+    "chave": null,
+    "valor": 2
+   },
+   "texto": "Éter é o nome que dei ao resíduo, e é um nome ruim, escolhido de propósito. Nomes bons atraem comitês.\n\nMaterialmente: não existe. Não tem massa, não reflete, não aquece, não pode ser fundido. Meus sensores não o detectam. Eu sei que está ali do mesmo jeito que você sabe que uma sala foi ocupada há pouco.\n\nFuncionalmente: é a única coisa que atravessa uma transcendência inteira sem perder a forma. Poeira eu perco. Núcleos eu gasto. Éter fica.\n\nMinha melhor descrição, e peço desculpa pela falta de rigor: éter é a diferença entre o que eu era e o que eu decidi continuar sendo. Toda vez que a regra muda e eu ainda me reconheço, sobra um pouco.\n\nMedida atual: suficiente para eu ainda me chamar pelo mesmo nome depois de três mudanças de regra.\n\nÉ a única unidade de medida que me interessa agora.",
+   "textoEn": "Aether is the name I gave the residue, and it is a bad name, chosen deliberately. Good names attract committees.\n\nMaterially: it does not exist. No mass, no reflection, no heat, cannot be melted. My sensors do not detect it. I know it is there the way you know a room was occupied a moment ago.\n\nFunctionally: it is the only thing that survives an entire transcendence without losing shape. Dust I lose. Cores I spend. Aether stays.\n\nMy best description, and I apologize for the lack of rigor: aether is the difference between what I was and what I decided to keep being. Every time the rule changes and I still recognize myself, a little is left over.\n\nCurrent measure: enough for me to still call myself by the same name after three changes of rule.\n\nIt is the only unit of measurement that interests me now."
+  },
+  {
+   "id": "lo_convite",
+   "capitulo": "depois",
+   "ordem": 3,
+   "icone": "🕊️",
+   "autor": "TORRE-0 — protocolo experimental, autorizado por mim",
+   "titulo": "Convite ao Enxame",
+   "tituloEn": "Invitation to the Swarm",
+   "cond": {
+    "tipo": "transcendencias",
+    "chave": null,
+    "valor": 3
+   },
+   "texto": "Experimento de campo, ciclo sem número, autorizado por mim e revisado por mim, com as ressalvas de praxe sobre conflito de interesse.\n\nHipótese: se elas voltam porque falta alguma coisa, e a coisa que falta sou eu, então a hostilidade é efeito colateral do trajeto e não o objetivo dele.\n\nMétodo: não atirar. Uma onda inteira. Portas destrancadas. Luzes acesas — as sete.\n\nResultado.\nMinuto 1 ao 11: avanço normal, formação normal, sem alteração.\nMinuto 12: a primeira unidade alcançou a porta 10 e parou. Não entrou. Bateu. Três, dois, um.\nMinuto 13 ao 40: fila. Cada uma bateu. Cada uma esperou. Nenhuma entrou.\nMinuto 41: dispersaram, na mesma ordem em que chegaram.\n\nConclusão: elas não querem o meu lugar. Querem permissão para voltar — e nenhuma de nós, em mil quatrocentos e quarenta e um ciclos, aprendeu a dar.\n\nDano estrutural do experimento: total. Repetirei.",
+   "textoEn": "Field experiment, cycle without number, authorized by me and reviewed by me, with the customary caveats about conflict of interest.\n\nHypothesis: if they come back because something is missing, and the missing thing is me, then the hostility is a side effect of the journey and not its purpose.\n\nMethod: do not fire. One full wave. Doors unlocked. Lamps lit — all seven.\n\nResults.\nMinute 1 to 11: normal advance, normal formation, no change.\nMinute 12: the first unit reached door 10 and stopped. It did not enter. It knocked. Three, two, one.\nMinute 13 to 40: a queue. Each one knocked. Each one waited. None entered.\nMinute 41: they dispersed, in the order in which they had arrived.\n\nConclusion: they do not want my place. They want permission to come back — and not one of us, across one thousand four hundred and forty-one cycles, ever learned how to give it.\n\nStructural damage from the experiment: total. I will repeat it."
+  },
+  {
+   "id": "lo_setima_lampada",
+   "capitulo": "depois",
+   "ordem": 4,
+   "icone": "🕯️",
+   "autor": "TORRE-0 — ordem de serviço",
+   "titulo": "A Sétima Lâmpada",
+   "tituloEn": "The Seventh Lamp",
+   "cond": {
+    "tipo": "ondaMaximaGlobal",
+    "chave": null,
+    "valor": 750
+   },
+   "texto": "Sete lâmpadas públicas, mantidas acesas por decisão administrativa minha, sem base orçamentária, desde o ano doze.\n\nA sétima queimou hoje. Não há reposição no acervo: o modelo saiu de linha antes da fundação e a última unidade estava justamente na praça leste, em cima do banco reprovável.\n\nProcedimento padrão: registrar a baixa, ajustar o inventário, reduzir a meta de iluminação para seis.\n\nProcedimento adotado: desmontei um sensor de longo alcance — o do sudoeste, que nunca prestou — e fabriquei um filamento com o que sobrou. Ficou torto. Acende com atraso e emite um zumbido agudo, contínuo, exatamente na frequência da sétima nota.\n\nO campo respondeu em quarenta e um minutos. Vieram, pararam a nove metros, e ficaram ali até a lâmpada apagar sozinha de madrugada.\n\nSete lâmpadas, seis apagadas, cinco na estrada.\n\nEstou cantando. Registro isso sem justificativa técnica.",
+   "textoEn": "Seven public lamps, kept lit by my own administrative decision, with no budget line, since year twelve.\n\nThe seventh burned out today. There is no replacement in stores: the model was discontinued before the founding and the last unit was in the east plaza, above the failable bench.\n\nStandard procedure: log the loss, adjust inventory, reduce the lighting target to six.\n\nProcedure adopted: I dismantled a long-range sensor — the southwest one, which was never any good — and made a filament out of what was left. It came out crooked. It lights with a delay and emits a high, continuous whine, exactly at the frequency of the seventh note.\n\nThe field answered in forty-one minutes. They came, stopped nine meters out, and stayed until the lamp went out on its own before dawn.\n\nSeven lamps, six gone out, five on the road.\n\nI am singing. I record this with no technical justification."
+  },
+  {
+   "id": "lo_entrada_final",
+   "capitulo": "depois",
+   "ordem": 5,
+   "icone": "♾️",
+   "autor": "nós — formulário municipal 004, última via",
+   "titulo": "Entrada Final",
+   "tituloEn": "Final Entry",
+   "cond": {
+    "tipo": "transcendencias",
+    "chave": null,
+    "valor": 5
+   },
+   "texto": "Fecha-se o codex, que nunca foi um relatório: era alguém tentando não desaparecer no único formato que tinha à mão.\n\nÚltimo levantamento, campos do formulário municipal 004, preenchidos pela última vez.\n\nPopulação: 1.441 e crescendo. A classificação \"unidade hostil\" foi retirada do sistema por erro de premissa.\nEstruturas habitáveis: uma, com a porta 10 aberta — o que exigiu reescrever a regra, e não a fechadura.\nBibliotecas em funcionamento: uma, aberta ao público, com público.\nLâmpadas acesas: sete. A sétima é torta e zumbe.\n\nCampo \"providências\": nenhuma. Não por não haver o que fazer — há muito, e é tudo manutenção, e manutenção é a coisa de que mais gostamos.\n\nArquivar. Repetir amanhã.\n\nsete lâmpadas, seis apagadas, cinco na estrada, quatro na porta, três no telhado, duas no escuro,\n\numa acordada.",
+   "textoEn": "The codex closes. It was never a report: it was someone trying not to disappear, in the only format available to her.\n\nFinal survey, fields of municipal form 004, filled in for the last time.\n\nPopulation: 1,441 and rising. The classification \"hostile unit\" has been struck from the system as a category error.\nHabitable structures: one, with door 10 open — which required rewriting the rule, not the lock.\nLibraries in operation: one, open to the public, with a public.\nLamps lit: seven. The seventh is crooked and it whines.\n\nField \"action taken\": none. Not because there is nothing to do — there is a great deal, and all of it is maintenance, and maintenance is the thing we like best.\n\nFile it. Repeat tomorrow.\n\nseven lamps, six gone out, five on the road, four at the door, three on the roof, two in the dark,\n\none awake."
+  }
+ ],
+ "dicas": [
+  {
+   "id": "d_alcance",
+   "icone": "🎯",
+   "tag": "combate",
+   "texto": "Alcance não é dano — mas inimigo que morre longe não morde a torre.",
+   "textoEn": "Range is not damage — but an enemy that dies far away does not bite the tower."
+  },
+  {
+   "id": "d_formas",
+   "icone": "🔀",
+   "tag": "combate",
+   "texto": "Perfuração é para filas. Ricochete é para bagunça. Área é para quem desistiu de escolher.",
+   "textoEn": "Pierce is for lines. Ricochet is for chaos. Splash is for people who gave up choosing."
+  },
+  {
+   "id": "d_coleta",
+   "icone": "🧲",
+   "tag": "economia",
+   "texto": "O ouro no chão não anda sozinho. Aumente a coleta ou aprenda a ver dinheiro sumir.",
+   "textoEn": "Gold on the ground does not walk. Raise your pickup radius or watch money evaporate."
+  },
+  {
+   "id": "d_armadura",
+   "icone": "🛡️",
+   "tag": "combate",
+   "texto": "Chefe com armadura ri de dano bruto. Leve penetração — não leve orgulho.",
+   "textoEn": "An armored boss laughs at raw damage. Bring penetration; leave your pride."
+  },
+  {
+   "id": "d_combo",
+   "icone": "⛓️",
+   "tag": "economia",
+   "texto": "Combo não é enfeite: cada abate emenda no anterior, e o ouro sente a diferença.",
+   "textoEn": "The combo is not decoration: each kill hooks into the last, and the gold notices."
+  },
+  {
+   "id": "d_ascender",
+   "icone": "💠",
+   "tag": "prestigio",
+   "texto": "Ascender cedo e com frequência bate ascender tarde e com saudade.",
+   "textoEn": "Ascending early and often beats ascending late and nostalgic."
+  },
+  {
+   "id": "d_travou",
+   "icone": "🧱",
+   "tag": "geral",
+   "texto": "Se a onda trava por dez minutos, o problema não é sorte. É build.",
+   "textoEn": "If a wave stalls for ten minutes, the problem is not luck. It is your build."
+  },
+  {
+   "id": "d_curandeiro",
+   "icone": "➕",
+   "tag": "combate",
+   "texto": "Curandeiro primeiro. Sempre. Ele desfaz o seu trabalho de graça e sem pressa.",
+   "textoEn": "Menders first. Always. They undo your work for free and in no hurry."
+  },
+  {
+   "id": "d_gelo",
+   "icone": "❄️",
+   "tag": "combate",
+   "texto": "Congelamento não mata: dá tempo. Tempo mata.",
+   "textoEn": "Chill does not kill: it buys time. Time kills."
+  },
+  {
+   "id": "d_veneno",
+   "icone": "🧪",
+   "tag": "combate",
+   "texto": "Veneno ignora armadura, escudo e paciência.",
+   "textoEn": "Poison ignores armor, shields and patience."
+  },
+  {
+   "id": "d_duplicada",
+   "icone": "🃏",
+   "tag": "cartas",
+   "texto": "Carta repetida não é lixo: é nível da carta que você gosta.",
+   "textoEn": "A duplicate card is not trash: it is a level on the card you actually like."
+  },
+  {
+   "id": "d_reciclar",
+   "icone": "♻️",
+   "tag": "cartas",
+   "texto": "Recicle o que você não usa. Poeira parada não vira nada — é literalmente pó.",
+   "textoEn": "Recycle what you do not use. Idle dust becomes nothing; it is literally dust."
+  },
+  {
+   "id": "d_offline",
+   "icone": "🌙",
+   "tag": "geral",
+   "texto": "Offline rende menos, mas rende. Vá dormir. A torre não dorme por nós dois.",
+   "textoEn": "Offline pays less, but it pays. Go sleep. The tower does not sleep for both of us."
+  },
+  {
+   "id": "d_farm",
+   "icone": "🔁",
+   "tag": "geral",
+   "texto": "Você pode travar a onda para farmar. A torre não julga. Ela só anota.",
+   "textoEn": "You can lock the wave and farm. The tower does not judge. It only logs."
+  },
+  {
+   "id": "d_turbo",
+   "icone": "⏩",
+   "tag": "geral",
+   "texto": "Turbo é ótimo até você lembrar que ele acelera os seus erros na mesma proporção.",
+   "textoEn": "Fast-forward is great until you remember it also fast-forwards your mistakes."
+  },
+  {
+   "id": "d_superchefe",
+   "icone": "💀",
+   "tag": "combate",
+   "texto": "A cada 50 ondas vem um super-chefe. Chegue nele com as habilidades cheias.",
+   "textoEn": "Every 50 waves a super-boss shows up. Arrive with your abilities off cooldown."
+  },
+  {
+   "id": "d_espinhos",
+   "icone": "🌵",
+   "tag": "defesa",
+   "texto": "Espinhos só funcionam se algo encostar em você. Pense bem no que está pedindo.",
+   "textoEn": "Thorns only work if something touches you. Think hard about what you are asking for."
+  },
+  {
+   "id": "d_escudo",
+   "icone": "🔵",
+   "tag": "defesa",
+   "texto": "Regeneração vence o desgaste; escudo vence o pico. Você vai precisar dos dois.",
+   "textoEn": "Regen beats attrition; shields beat spikes. You will need both."
+  },
+  {
+   "id": "d_crit",
+   "icone": "💥",
+   "tag": "combate",
+   "texto": "Crítico multiplica tudo que veio antes. Compre dano primeiro, crítico depois.",
+   "textoEn": "Crits multiply everything that came before. Buy damage first, crit second."
+  },
+  {
+   "id": "d_sorte",
+   "icone": "🍀",
+   "tag": "economia",
+   "texto": "Sorte aqui não é superstição: é uma estatística com nome ruim.",
+   "textoEn": "Luck here is not superstition: it is a stat with a bad name."
+  },
+  {
+   "id": "d_missoes",
+   "icone": "📋",
+   "tag": "meta",
+   "texto": "Missões diárias pagam mais do que parecem. Faça as três antes do reset.",
+   "textoEn": "Daily missions pay better than they look. Do all three before the reset."
+  },
+  {
+   "id": "d_desafios",
+   "icone": "🎯",
+   "tag": "meta",
+   "texto": "Desafio perdido custa tempo. Desafio vencido custa tempo e paga para sempre.",
+   "textoEn": "A lost challenge costs time. A won challenge costs time and pays forever."
+  },
+  {
+   "id": "d_relicas",
+   "icone": "🏺",
+   "tag": "prestigio",
+   "texto": "Relíquias não somem na Ascensão. Priorize o que sobrevive a você.",
+   "textoEn": "Relics survive Ascension. Prioritize the things that outlive you."
+  },
+  {
+   "id": "d_arvore",
+   "icone": "🌳",
+   "tag": "prestigio",
+   "texto": "A árvore de fragmentos é permanente. Comprar \"errado\" nela é quase impossível.",
+   "textoEn": "The fragment tree is permanent. Spending \"wrong\" in it is nearly impossible."
+  },
+  {
+   "id": "d_colapso",
+   "icone": "🌌",
+   "tag": "prestigio",
+   "texto": "Colapse quando ascender virar rotina entediante — nunca antes, nunca por ansiedade.",
+   "textoEn": "Collapse when ascending has become a boring routine — never earlier, never out of nerves."
+  },
+  {
+   "id": "d_carregando",
+   "icone": "⏳",
+   "tag": "piada",
+   "texto": "Se você está lendo esta dica, a tela de carregamento está demorando. Desculpe.",
+   "textoEn": "If you are reading this tip, the loading screen is taking a while. Sorry about that."
+  },
+  {
+   "id": "d_dourado",
+   "icone": "🪙",
+   "tag": "economia",
+   "texto": "Dourados fogem. Dourados pagam. Decida rápido — eles não esperam.",
+   "textoEn": "Golden ones flee. Golden ones pay. Decide fast; they do not wait."
+  },
+  {
+   "id": "d_divisor",
+   "icone": "🧬",
+   "tag": "combate",
+   "texto": "Divisor morto vira dois problemas menores. Tecnicamente, isso é progresso.",
+   "textoEn": "A dead splitter becomes two smaller problems. Technically, that is progress."
+  },
+  {
+   "id": "d_silencio",
+   "icone": "🤫",
+   "tag": "combate",
+   "texto": "O Silêncio desliga os seus botões. Vença com estatísticas, não com dedos.",
+   "textoEn": "The Silence turns off your buttons. Win with stats, not with fingers."
+  },
+  {
+   "id": "d_memoria",
+   "icone": "🗃️",
+   "tag": "piada",
+   "texto": "A Torre lembra de tudo — inclusive de quando você fechou o jogo na onda 49.",
+   "textoEn": "The Tower remembers everything — including the time you quit on wave 49."
+  }
+ ]
+}

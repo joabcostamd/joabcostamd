@@ -1,0 +1,151 @@
+class_name Bal
+extends RefCounted
+
+## Bal — TODA a matemática de balanceamento num lugar só.
+## Quem quiser rebalancear mexe aqui e roda `tools/sim_balance.gd`.
+
+# ============================================================== ONDAS =====
+const HP_BASE := 10.0
+const HP_CRESC := 1.152
+const HP_POLI_DIV := 55.0
+const HP_POLI_EXP := 2.35
+
+const OURO_BASE := 3.2
+const OURO_CRESC := 1.128
+const XP_BASE := 1.6
+const XP_CRESC := 1.09
+
+## HP (log10) de um inimigo comum na onda w.
+static func hp_onda(w: int) -> float:
+	var poli := 1.0 + pow(maxf(0.0, float(w)) / HP_POLI_DIV, HP_POLI_EXP)
+	return Big.mul_f(Big.mul_f(Big.from(HP_BASE), pow(HP_CRESC, float(w - 1))), poli)
+
+static func ouro_onda(w: int) -> float:
+	return Big.mul_f(Big.from(OURO_BASE), pow(OURO_CRESC, float(w - 1)))
+
+static func xp_onda(w: int) -> float:
+	return Big.mul_f(Big.from(XP_BASE), pow(XP_CRESC, float(w - 1)))
+
+static func contagem_onda(w: int) -> int:
+	return 8 + mini(22, w / 3)
+
+static func eh_chefe(w: int) -> bool:
+	return w % 10 == 0
+
+static func eh_super_chefe(w: int) -> bool:
+	return w % 50 == 0
+
+static func velocidade_inimigo(w: int) -> float:
+	return 26.0 + minf(26.0, float(w) * 0.16)
+
+static func intervalo_spawn(w: int) -> float:
+	return maxf(0.22, 1.15 - log(float(w) + 1.0) / 2.302585 * 0.28)
+
+static func chance_elite(w: int) -> float:
+	return 0.0 if w < 8 else minf(0.28, 0.02 + float(w) * 0.0022)
+
+static func chance_dourado(w: int) -> float:
+	return 0.0 if w < 5 else minf(0.035, 0.004 + float(w) * 0.00018)
+
+# multiplicadores por arquétipo  [hp, ouro, xp, escala, velocidade]
+const CHEFE := {"hp": 16.0, "ouro": 22.0, "xp": 18.0, "escala": 2.1, "vel": 0.62}
+const SUPER_CHEFE := {"hp": 70.0, "ouro": 90.0, "xp": 70.0, "escala": 2.9, "vel": 0.5}
+const ELITE := {"hp": 3.4, "ouro": 4.2, "xp": 3.5, "escala": 1.35, "vel": 1.0}
+const DOURADO := {"hp": 0.9, "ouro": 35.0, "xp": 6.0, "escala": 1.15, "vel": 1.9}
+
+# ========================================================== PROGRESSÃO ====
+const NIVEL_MAX := 500
+
+static func custo_nivel(n: int) -> float:
+	return Big.mul_f(Big.mul_f(Big.from(12.0), pow(1.28, float(n - 1))), 1.0 + pow(float(n) / 30.0, 1.6))
+
+static func pontos_por_nivel(n: int) -> int:
+	var p := 1
+	if n % 5 == 0:
+		p += 1
+	if n % 25 == 0:
+		p += 3
+	return p
+
+# ============================================================= COMBATE ====
+const DANO_BASE := 4.0
+const CADENCIA_BASE := 1.6
+const ALCANCE_BASE := 210.0
+const CRIT_BASE := 0.05
+const CRIT_MULT_BASE := 2.0
+const VEL_PROJETIL := 460.0
+const VIDA_BASE := 100.0
+const REGEN_BASE := 0.5
+
+const ARMADURA_K := 60.0
+const COMBO_JANELA := 2.6
+const COMBO_BONUS_POR := 0.006
+const COMBO_TETO := 250
+const OVERKILL_TETO := 0.5
+const DANO_CONTATO_FRAC := 0.055
+const DANO_CONTATO_CHEFE := 0.22
+const IFRAMES := 0.35
+const RESPAWN := 3.0
+const PENALIDADE_MORTE := 1
+const RAIO_TORRE := 34.0
+
+static func fator_armadura(armadura: float, penetracao: float) -> float:
+	var a := maxf(0.0, armadura * (1.0 - minf(0.95, penetracao)))
+	return ARMADURA_K / (ARMADURA_K + a)
+
+# ---------------------------------------------------------- elementos ----
+const ELEMENTOS := {
+	"fogo":   {"cor": "#ff6b35", "dot": 0.35, "duracao": 3.0,  "pilhas": 5},
+	"gelo":   {"cor": "#6bd6ff", "lentidao": 0.30, "duracao": 2.5, "pilhas": 3},
+	"raio":   {"cor": "#ffe45e", "corrente": 3, "fator": 0.45},
+	"veneno": {"cor": "#8cff6b", "dot": 0.22, "duracao": 6.0, "pilhas": 12},
+	"vazio":  {"cor": "#b06bff", "ampliacao": 0.18, "duracao": 4.0, "pilhas": 4},
+}
+
+# =========================================================== PRESTÍGIO ====
+const ASC_ONDA_MIN := 25
+const ASC_EXP := 0.055
+const SING_ONDA_MIN := 150
+const SING_ASC_MIN := 8
+const SING_EXP := 0.021
+const TRANS_ONDA_MIN := 500
+const TRANS_SING_MIN := 5
+const TRANS_EXP := 0.008
+
+static func fragmentos(w: int, bonus: float = 1.0) -> float:
+	if w < ASC_ONDA_MIN:
+		return Big.ZERO
+	return Big.mul_f(Big.from_log(float(w - ASC_ONDA_MIN + 1) * ASC_EXP), bonus)
+
+static func nucleos(w_global: int, ascensoes: int, bonus: float = 1.0) -> float:
+	if w_global < SING_ONDA_MIN:
+		return Big.ZERO
+	var base := Big.from_log(float(w_global - SING_ONDA_MIN + 1) * SING_EXP)
+	return Big.mul_f(base, (1.0 + log(1.0 + float(ascensoes)) / 2.302585 * 0.6) * bonus)
+
+static func eter(w_global: int, singularidades: int, bonus: float = 1.0) -> float:
+	if w_global < TRANS_ONDA_MIN:
+		return Big.ZERO
+	var base := Big.from_log(float(w_global - TRANS_ONDA_MIN + 1) * TRANS_EXP)
+	return Big.mul_f(base, (1.0 + float(singularidades) * 0.15) * bonus)
+
+# ============================================================= OFFLINE ====
+const OFFLINE_EFICIENCIA := 0.45
+const OFFLINE_HORAS_BASE := 4.0
+const OFFLINE_HORAS_TETO := 48.0
+const OFFLINE_MIN_SEG := 30.0
+
+# ================================================================ LOOT ====
+const CHANCE_CARTA := 0.0016
+const CHANCE_CARTA_CHEFE := 1.0
+const CHANCE_CARTA_ELITE := 0.022
+const PITY_PASSO := 0.0009
+const GEMAS_CHEFE := 3
+const GEMAS_SUPER := 25
+const POEIRA := {"comum": 5, "incomum": 14, "raro": 45, "epico": 160, "lendario": 600, "mitico": 2400}
+
+# ========================================================== AUTOMAÇÃO ====
+const INTERVALO_AUTOCOMPRA := 0.35
+
+static func velocidade_max(nucleos_log: float) -> float:
+	return minf(6.0, 1.0 + floor(maxf(0.0, nucleos_log) * 2.0))

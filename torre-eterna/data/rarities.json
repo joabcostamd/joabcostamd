@@ -1,0 +1,99 @@
+{
+ "raridades": [
+  {
+   "id": "comum",
+   "nome": "Comum",
+   "nomeEn": "Common",
+   "cor": "#9aa5b1",
+   "peso": 1000,
+   "mult": 1,
+   "brilho": 0
+  },
+  {
+   "id": "incomum",
+   "nome": "Incomum",
+   "nomeEn": "Uncommon",
+   "cor": "#4ade80",
+   "peso": 380,
+   "mult": 1.45,
+   "brilho": 0.2
+  },
+  {
+   "id": "raro",
+   "nome": "Raro",
+   "nomeEn": "Rare",
+   "cor": "#38bdf8",
+   "peso": 120,
+   "mult": 2.1,
+   "brilho": 0.45
+  },
+  {
+   "id": "epico",
+   "nome": "Épico",
+   "nomeEn": "Epic",
+   "cor": "#c084fc",
+   "peso": 34,
+   "mult": 3.2,
+   "brilho": 0.7
+  },
+  {
+   "id": "lendario",
+   "nome": "Lendário",
+   "nomeEn": "Legendary",
+   "cor": "#fbbf24",
+   "peso": 7,
+   "mult": 5,
+   "brilho": 1
+  },
+  {
+   "id": "mitico",
+   "nome": "Mítico",
+   "nomeEn": "Mythic",
+   "cor": "#fb7185",
+   "peso": 1,
+   "mult": 8,
+   "brilho": 1.4
+  }
+ ],
+ "elementos": {
+  "fogo": {
+   "cor": "#ff6b35",
+   "dot": 0.35,
+   "duracao": 3,
+   "pilhas": 5,
+   "nome": "Queimadura",
+   "nomeEn": "Burn"
+  },
+  "gelo": {
+   "cor": "#6bd6ff",
+   "lentidao": 0.3,
+   "duracao": 2.5,
+   "pilhas": 3,
+   "nome": "Congelamento",
+   "nomeEn": "Chill"
+  },
+  "raio": {
+   "cor": "#ffe45e",
+   "corrente": 3,
+   "fator": 0.45,
+   "nome": "Corrente",
+   "nomeEn": "Chain"
+  },
+  "veneno": {
+   "cor": "#8cff6b",
+   "dot": 0.22,
+   "duracao": 6,
+   "pilhas": 12,
+   "nome": "Veneno",
+   "nomeEn": "Poison"
+  },
+  "vazio": {
+   "cor": "#b06bff",
+   "ampliacao": 0.18,
+   "duracao": 4,
+   "pilhas": 4,
+   "nome": "Fissura",
+   "nomeEn": "Rift"
+  }
+ }
+}

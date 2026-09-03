@@ -1,0 +1,1008 @@
+{
+ "eventos": [
+  {
+   "id": "caravana_sucata",
+   "nome": "Caravana de Sucata",
+   "nomeEn": "Scrap Caravan",
+   "icone": "🚚",
+   "cor": "#fbbf24",
+   "peso": 100,
+   "texto": "Três carroças blindadas param no limite do seu alcance e esperam, educadas. O condutor não tira o capacete nem para falar, e cobra tudo adiantado. Diz que o preço é honesto — e faz questão de avisar que honesto não é a mesma coisa que bom.",
+   "textoEn": "Three armored wagons stop at the edge of your range and wait, politely. The driver never lifts his helmet, not even to speak, and everything is paid up front. He says the price is honest, and makes a point of adding that honest is not the same as good.",
+   "opcoes": [
+    {
+     "texto": "Vender a sucata pelo preço combinado.",
+     "textoEn": "Sell the scrap at the agreed price.",
+     "resultado": {
+      "tipo": "ouro",
+      "valor": 2
+     }
+    },
+    {
+     "texto": "Aceitar pagamento em \"crédito de guilda\".",
+     "textoEn": "Take payment in \"guild credit\".",
+     "resultado": {
+      "tipo": "ouro",
+      "valor": 7
+     },
+     "risco": {
+      "chance": 0.4,
+      "falha": {
+       "tipo": "nada",
+       "valor": 0
+      }
+     }
+    },
+    {
+     "texto": "Pedir para receber em cartas usadas.",
+     "textoEn": "Ask to be paid in used cards.",
+     "resultado": {
+      "tipo": "carta",
+      "valor": 1
+     },
+     "risco": {
+      "chance": 0.35,
+      "falha": {
+       "tipo": "ouro",
+       "valor": 1
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "colheita_dourada",
+   "nome": "Colheita Dourada",
+   "nomeEn": "Golden Harvest",
+   "icone": "🪙",
+   "cor": "#facc15",
+   "peso": 78,
+   "requer": {
+    "onda": 3
+   },
+   "texto": "Um veio inteiro de inimigos dourados encalhou numa fenda a leste. Estão presos, brilhando e completamente inúteis para o Enxame, que passou por cima sem olhar. Esperam com uma paciência que ninguém pediu.",
+   "textoEn": "A whole vein of golden enemies has run aground in a fissure to the east. They are stuck, glowing and entirely useless to the Swarm, which walked over them without looking. They wait with a patience nobody asked for.",
+   "opcoes": [
+    {
+     "texto": "Recolher só o que está solto na borda.",
+     "textoEn": "Collect only what lies loose at the rim.",
+     "resultado": {
+      "tipo": "ouro",
+      "valor": 2.5
+     }
+    },
+    {
+     "texto": "Descer na fenda com um cabo e uma lanterna.",
+     "textoEn": "Rappel into the fissure with a cable and a lamp.",
+     "resultado": {
+      "tipo": "ouro",
+      "valor": 8
+     },
+     "risco": {
+      "chance": 0.35,
+      "falha": {
+       "tipo": "dano",
+       "valor": 0.22
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "veterano_enferrujado",
+   "nome": "Veterano Enferrujado",
+   "nomeEn": "Rusted Veteran",
+   "icone": "🦿",
+   "cor": "#94a3b8",
+   "peso": 72,
+   "requer": {
+    "onda": 3
+   },
+   "texto": "Um exoesqueleto arrasta-se até a base carregando metade de um homem lá dentro. Ele pede abrigo por uma noite e oferece em troca tudo o que sabe. O que ele sabe, principalmente, é como morrer devagar.",
+   "textoEn": "An exosuit drags itself to the base with half a man still inside. He asks for one night of shelter and offers everything he knows in return. Mostly what he knows is how to die slowly.",
+   "opcoes": [
+    {
+     "texto": "Dar abrigo. Ele conserta o que as mãos alcançam.",
+     "textoEn": "Take him in. He fixes whatever his hands can reach.",
+     "resultado": {
+      "tipo": "cura",
+      "valor": 0.4
+     }
+    },
+    {
+     "texto": "Ficar acordado ouvindo as histórias dele.",
+     "textoEn": "Stay up all night listening to his stories.",
+     "resultado": {
+      "tipo": "xp",
+      "valor": 3
+     }
+    },
+    {
+     "texto": "Desmontar o exoesqueleto enquanto ele dorme.",
+     "textoEn": "Strip the exosuit for parts while he sleeps.",
+     "resultado": {
+      "tipo": "ouro",
+      "valor": 4
+     },
+     "risco": {
+      "chance": 0.3,
+      "falha": {
+       "tipo": "dano",
+       "valor": 0.18
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "reator_instavel",
+   "nome": "Reator Instável",
+   "nomeEn": "Unstable Reactor",
+   "icone": "☢️",
+   "cor": "#f43f5e",
+   "peso": 80,
+   "requer": {
+    "onda": 5
+   },
+   "texto": "O núcleo entra em ressonância sozinho, sem que ninguém tenha pedido. Pela primeira vez em semanas todos os mostradores concordam entre si. Todos apontam para cima.",
+   "textoEn": "The core starts resonating on its own, unprompted. For the first time in weeks every gauge agrees with every other gauge. All of them point up.",
+   "opcoes": [
+    {
+     "texto": "Purgar o excesso pelas válvulas, com calma.",
+     "textoEn": "Vent the excess through the valves, calmly.",
+     "resultado": {
+      "tipo": "buff",
+      "stat": "dano",
+      "valor": 0.3,
+      "duracao": 45,
+      "modo": "pct"
+     }
+    },
+    {
+     "texto": "Deixar acumular e ver até onde a agulha vai.",
+     "textoEn": "Let it build and see how far the needle goes.",
+     "resultado": {
+      "tipo": "buff",
+      "stat": "dano",
+      "valor": 1.2,
+      "duracao": 60,
+      "modo": "pct"
+     },
+     "risco": {
+      "chance": 0.35,
+      "falha": {
+       "tipo": "dano",
+       "valor": 0.28
+      }
+     }
+    },
+    {
+     "texto": "Desviar a sobrecarga para a rede e faturar.",
+     "textoEn": "Divert the surge into the grid and invoice it.",
+     "resultado": {
+      "tipo": "ouro",
+      "valor": 3
+     }
+    }
+   ]
+  },
+  {
+   "id": "mercador_cego",
+   "nome": "O Mercador Cego",
+   "nomeEn": "The Blind Merchant",
+   "icone": "🕶️",
+   "cor": "#c084fc",
+   "peso": 68,
+   "requer": {
+    "onda": 12
+   },
+   "texto": "Ele chega sem olhos e com um inventário impecável. Aponta para três caixas idênticas e garante que uma delas você vai lembrar pelo resto da vida. Não faz questão de especificar em qual sentido.",
+   "textoEn": "He arrives with no eyes and a flawless inventory. He points at three identical crates and promises one of them will stay with you for the rest of your life. He declines to specify in which direction.",
+   "opcoes": [
+    {
+     "texto": "A da esquerda. É a mais leve.",
+     "textoEn": "The left one. It is the lightest.",
+     "resultado": {
+      "tipo": "gemas",
+      "valor": 10
+     }
+    },
+    {
+     "texto": "A do meio. Ele hesitou nela.",
+     "textoEn": "The middle one. He hesitated on that one.",
+     "resultado": {
+      "tipo": "carta",
+      "valor": 1
+     },
+     "risco": {
+      "chance": 0.4,
+      "falha": {
+       "tipo": "nada",
+       "valor": 0
+      }
+     }
+    },
+    {
+     "texto": "A da direita. É a que zumbe.",
+     "textoEn": "The right one. It is the one that hums.",
+     "resultado": {
+      "tipo": "gemas",
+      "valor": 40
+     },
+     "risco": {
+      "chance": 0.5,
+      "falha": {
+       "tipo": "dano",
+       "valor": 0.35
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "sinal_fantasma",
+   "nome": "Sinal Fantasma",
+   "nomeEn": "Ghost Signal",
+   "icone": "📡",
+   "cor": "#67e8f9",
+   "peso": 66,
+   "requer": {
+    "onda": 15
+   },
+   "texto": "A antena capta uma transmissão em loop, nítida demais para ser antiga. É a sua própria voz dando ordens que você ainda não deu. O carimbo de tempo está três ondas no futuro.",
+   "textoEn": "The antenna picks up a looping transmission, far too clean to be old. It is your own voice giving orders you have not given yet. The timestamp sits three waves in the future.",
+   "opcoes": [
+    {
+     "texto": "Obedecer às ordens ao pé da letra.",
+     "textoEn": "Follow the orders to the letter.",
+     "resultado": {
+      "tipo": "onda",
+      "valor": 1
+     },
+     "risco": {
+      "chance": 0.3,
+      "falha": {
+       "tipo": "dano",
+       "valor": 0.25
+      }
+     }
+    },
+    {
+     "texto": "Estudar o sinal em vez de segui-lo.",
+     "textoEn": "Study the signal instead of obeying it.",
+     "resultado": {
+      "tipo": "xp",
+      "valor": 4
+     }
+    },
+    {
+     "texto": "Desligar a antena. Hoje não.",
+     "textoEn": "Kill the antenna. Not today.",
+     "resultado": {
+      "tipo": "gemas",
+      "valor": 8
+     }
+    }
+   ]
+  },
+  {
+   "id": "tregua_improvavel",
+   "nome": "Trégua Improvável",
+   "nomeEn": "Improbable Truce",
+   "icone": "🕊️",
+   "cor": "#a3e635",
+   "peso": 60,
+   "requer": {
+    "onda": 18
+   },
+   "texto": "A onda inteira para a cem metros e senta no chão. Um grunhido avança sozinho, desarmado, carregando alguma coisa que brilha. Nenhuma página do manual cobre este procedimento.",
+   "textoEn": "The whole wave halts a hundred meters out and sits down. A single grunt walks forward, unarmed, carrying something that shines. No page of the manual covers this procedure.",
+   "opcoes": [
+    {
+     "texto": "Atirar. É literalmente a função da torre.",
+     "textoEn": "Shoot. That is literally what the tower is for.",
+     "resultado": {
+      "tipo": "ouro",
+      "valor": 3
+     }
+    },
+    {
+     "texto": "Aceitar o presente das mãos dele.",
+     "textoEn": "Accept the gift from its hands.",
+     "resultado": {
+      "tipo": "carta",
+      "valor": 1
+     },
+     "risco": {
+      "chance": 0.38,
+      "falha": {
+       "tipo": "dano",
+       "valor": 0.3
+      }
+     }
+    },
+    {
+     "texto": "Não fazer nada. Só olhar até o fim.",
+     "textoEn": "Do nothing. Just watch it through.",
+     "resultado": {
+      "tipo": "xp",
+      "valor": 5
+     }
+    }
+   ]
+  },
+  {
+   "id": "cofre_orbital",
+   "nome": "Cofre Orbital",
+   "nomeEn": "Orbital Vault",
+   "icone": "🛰️",
+   "cor": "#facc15",
+   "peso": 62,
+   "requer": {
+    "onda": 20
+   },
+   "texto": "Um cofre de banco reentra na atmosfera e para de queimar exatamente sobre o seu perímetro. Continua trancado. Os juros correm há duzentos anos e ninguém apareceu para reclamar.",
+   "textoEn": "A bank vault re-enters the atmosphere and stops burning directly over your perimeter. It is still locked. The interest has been compounding for two hundred years and nobody has come to collect.",
+   "opcoes": [
+    {
+     "texto": "Abrir com paciência, dobradiça por dobradiça.",
+     "textoEn": "Open it patiently, hinge by hinge.",
+     "resultado": {
+      "tipo": "ouro",
+      "valor": 4
+     }
+    },
+    {
+     "texto": "Abrir com o canhão principal.",
+     "textoEn": "Open it with the main cannon.",
+     "resultado": {
+      "tipo": "ouro",
+      "valor": 12
+     },
+     "risco": {
+      "chance": 0.42,
+      "falha": {
+       "tipo": "dano",
+       "valor": 0.32
+      }
+     }
+    },
+    {
+     "texto": "Deixar lacrado e vender a coordenada.",
+     "textoEn": "Leave it sealed and sell the coordinates.",
+     "resultado": {
+      "tipo": "gemas",
+      "valor": 16
+     }
+    }
+   ]
+  },
+  {
+   "id": "praga_ferrugem",
+   "nome": "Praga da Ferrugem",
+   "nomeEn": "Rustblight",
+   "icone": "🦠",
+   "cor": "#b45309",
+   "peso": 58,
+   "requer": {
+    "onda": 22
+   },
+   "texto": "Uma cepa que digere metal se instala nas fundações. É lenta, metódica e absolutamente imparcial: come a sua torre e come o Enxame com o mesmo apetite. Só uma dessas duas coisas dá para substituir.",
+   "textoEn": "A strain that digests metal settles into the foundations. It is slow, methodical and perfectly impartial: it eats your tower and the Swarm with equal appetite. Only one of those two is replaceable.",
+   "opcoes": [
+    {
+     "texto": "Erradicar tudo antes que desça mais um andar.",
+     "textoEn": "Burn it out before it takes another floor.",
+     "resultado": {
+      "tipo": "cura",
+      "valor": 0.35
+     }
+    },
+    {
+     "texto": "Cultivar a cepa e carregar os projéteis com ela.",
+     "textoEn": "Cultivate the strain and load the projectiles with it.",
+     "resultado": {
+      "tipo": "buff",
+      "stat": "danoVeneno",
+      "valor": 0.35,
+      "duracao": 180,
+      "modo": "flat"
+     },
+     "risco": {
+      "chance": 0.35,
+      "falha": {
+       "tipo": "dano",
+       "valor": 0.28
+      }
+     }
+    },
+    {
+     "texto": "Engarrafar amostras e vender a quem perguntar.",
+     "textoEn": "Bottle samples and sell to whoever asks.",
+     "resultado": {
+      "tipo": "gemas",
+      "valor": 18
+     }
+    }
+   ]
+  },
+  {
+   "id": "banco_ossario",
+   "nome": "Banco Ossuário",
+   "nomeEn": "Ossuary Bank",
+   "icone": "🏦",
+   "cor": "#fbbf24",
+   "peso": 58,
+   "requer": {
+    "onda": 25
+   },
+   "texto": "A instituição atravessou o fim do mundo porque ninguém teve coragem de auditá-la. Um gerente esquelético oferece juros generosos e um sorriso que já era assim antes da oferta. O contrato tem uma cláusula em letra miúda e outra em osso.",
+   "textoEn": "The institution outlived the end of the world because nobody had the nerve to audit it. A skeletal manager offers generous interest and a smile that predates the offer. The contract has one clause in fine print and another one in bone.",
+   "opcoes": [
+    {
+     "texto": "Depósito conservador, prazo curto.",
+     "textoEn": "Conservative deposit, short term.",
+     "resultado": {
+      "tipo": "ouro",
+      "valor": 3
+     }
+    },
+    {
+     "texto": "Aplicar tudo no fundo de alto rendimento.",
+     "textoEn": "Put everything into the high-yield fund.",
+     "resultado": {
+      "tipo": "ouro",
+      "valor": 15
+     },
+     "risco": {
+      "chance": 0.5,
+      "falha": {
+       "tipo": "ouro",
+       "valor": -6
+      }
+     }
+    },
+    {
+     "texto": "Sacar tudo pela porta dos fundos.",
+     "textoEn": "Withdraw everything through the back door.",
+     "resultado": {
+      "tipo": "gemas",
+      "valor": 30
+     },
+     "risco": {
+      "chance": 0.45,
+      "falha": {
+       "tipo": "dano",
+       "valor": 0.4
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "apostador",
+   "nome": "O Apostador de Ondas",
+   "nomeEn": "The Wave Bookie",
+   "icone": "🎲",
+   "cor": "#e879f9",
+   "peso": 58,
+   "requer": {
+    "onda": 28
+   },
+   "texto": "Ele só aparece entre ondas, com um caderninho cheio de números que fecham certo demais. Aceita apostas sobre quanto tempo a sua torre ainda dura. Jura que nunca apostou contra você, e sorri torto ao dizer isso.",
+   "textoEn": "He only shows up between waves, carrying a little book of numbers that add up a bit too well. He takes bets on how much longer your tower lasts. He swears he has never bet against you, and smiles crooked while saying it.",
+   "opcoes": [
+    {
+     "texto": "Apostar pouco, no favorito óbvio.",
+     "textoEn": "Bet small, on the obvious favorite.",
+     "resultado": {
+      "tipo": "ouro",
+      "valor": 2
+     }
+    },
+    {
+     "texto": "Apostar a onda inteira em você mesmo.",
+     "textoEn": "Bet the whole wave on yourself.",
+     "resultado": {
+      "tipo": "ouro",
+      "valor": 14
+     },
+     "risco": {
+      "chance": 0.45,
+      "falha": {
+       "tipo": "ouro",
+       "valor": -6
+      }
+     }
+    },
+    {
+     "texto": "Apostar contra você mesmo, por garantia.",
+     "textoEn": "Bet against yourself, as insurance.",
+     "resultado": {
+      "tipo": "gemas",
+      "valor": 26
+     },
+     "risco": {
+      "chance": 0.5,
+      "falha": {
+       "tipo": "dano",
+       "valor": 0.35
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "forja_esquecida",
+   "nome": "Forja Esquecida",
+   "nomeEn": "Forgotten Forge",
+   "icone": "🌋",
+   "cor": "#fb923c",
+   "peso": 56,
+   "requer": {
+    "onda": 30
+   },
+   "texto": "Debaixo da plataforma existe uma forja que ninguém acendeu nesta era. O fole ainda respira sozinho, devagar. Preso na bigorna há um bilhete de uma linha só: \"não use com pressa\".",
+   "textoEn": "Beneath the platform there is a forge nobody lit in this era. The bellows still breathe on their own, slowly. Pinned to the anvil is a one-line note: \"do not use in a hurry\".",
+   "opcoes": [
+    {
+     "texto": "Reforçar o casco, camada por camada.",
+     "textoEn": "Reinforce the hull, layer by layer.",
+     "resultado": {
+      "tipo": "buff",
+      "stat": "vidaMax",
+      "valor": 0.5,
+      "duracao": 180,
+      "modo": "pct"
+     }
+    },
+    {
+     "texto": "Temperar os canhões direto no calor bruto.",
+     "textoEn": "Quench the cannons straight in the raw heat.",
+     "resultado": {
+      "tipo": "buff",
+      "stat": "dano",
+      "valor": 0.9,
+      "duracao": 120,
+      "modo": "pct"
+     },
+     "risco": {
+      "chance": 0.32,
+      "falha": {
+       "tipo": "dano",
+       "valor": 0.3
+      }
+     }
+    },
+    {
+     "texto": "Fundir a sucata em barras e vender por peso.",
+     "textoEn": "Melt the scrap into bars and sell it by weight.",
+     "resultado": {
+      "tipo": "ouro",
+      "valor": 6
+     }
+    }
+   ]
+  },
+  {
+   "id": "tempestade_ionica",
+   "nome": "Tempestade Iônica",
+   "nomeEn": "Ion Storm",
+   "icone": "🌩️",
+   "cor": "#818cf8",
+   "peso": 55,
+   "requer": {
+    "onda": 33
+   },
+   "texto": "A atmosfera fica com gosto de moeda velha e os para-raios cantam uma nota só. É bonito. É também exatamente a nota que os fusíveis fazem antes de desistir.",
+   "textoEn": "The air starts tasting like old coins and the lightning rods sing a single note. It is beautiful. It is also precisely the note fuses make right before they give up.",
+   "opcoes": [
+    {
+     "texto": "Aterrar tudo e deixar a tempestade passar por cima.",
+     "textoEn": "Ground everything and let the storm roll over.",
+     "resultado": {
+      "tipo": "cura",
+      "valor": 0.3
+     }
+    },
+    {
+     "texto": "Canalizar a carga direto para os canhões.",
+     "textoEn": "Channel the charge straight into the cannons.",
+     "resultado": {
+      "tipo": "buff",
+      "stat": "danoRaio",
+      "valor": 0.4,
+      "duracao": 150,
+      "modo": "flat"
+     },
+     "risco": {
+      "chance": 0.3,
+      "falha": {
+       "tipo": "dano",
+       "valor": 0.26
+      }
+     }
+    },
+    {
+     "texto": "Encher as baterias e vender para a rede que sobrou.",
+     "textoEn": "Fill the batteries and sell to whatever grid is left.",
+     "resultado": {
+      "tipo": "ouro",
+      "valor": 5
+     }
+    }
+   ]
+  },
+  {
+   "id": "leilao_sussurrado",
+   "nome": "Leilão Sussurrado",
+   "nomeEn": "Whispered Auction",
+   "icone": "🔨",
+   "cor": "#a78bfa",
+   "peso": 52,
+   "requer": {
+    "onda": 35
+   },
+   "texto": "Cinco compradores sem rosto disputam um caixote lacrado com o brasão da Primeira Torre. Ninguém explica como atravessaram o Enxame para chegar até aqui. Aceitam o seu ouro sem contar, que é justamente a parte que incomoda.",
+   "textoEn": "Five faceless buyers bid on a sealed crate stamped with the First Tower's crest. Nobody explains how they crossed the Swarm to get here. They take your gold without counting it, which is exactly the part that bothers you.",
+   "opcoes": [
+    {
+     "texto": "Dar um lance baixo e levar o lote de consolo.",
+     "textoEn": "Bid low and walk off with the consolation lot.",
+     "resultado": {
+      "tipo": "gemas",
+      "valor": 20
+     }
+    },
+    {
+     "texto": "Cobrir todos os lances até o martelo cair.",
+     "textoEn": "Outbid everyone until the hammer falls.",
+     "resultado": {
+      "tipo": "fragmentos",
+      "valor": 2
+     },
+     "risco": {
+      "chance": 0.4,
+      "falha": {
+       "tipo": "ouro",
+       "valor": -5
+      }
+     }
+    },
+    {
+     "texto": "Levar o caixote antes do martelo cair.",
+     "textoEn": "Take the crate before the hammer falls.",
+     "resultado": {
+      "tipo": "carta",
+      "valor": 1,
+      "raridadeMin": "raro"
+     },
+     "risco": {
+      "chance": 0.55,
+      "falha": {
+       "tipo": "dano",
+       "valor": 0.45
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "torre_gemea",
+   "nome": "Torre Gêmea",
+   "nomeEn": "Twin Tower",
+   "icone": "🗼",
+   "cor": "#38bdf8",
+   "peso": 50,
+   "requer": {
+    "onda": 40
+   },
+   "texto": "No horizonte, outra torre atira contra o mesmo escuro que você. Ela pisca em código antigo: está ficando sem munição. Você tem munição de sobra e contas para pagar.",
+   "textoEn": "On the horizon, another tower fires into the same dark you do. It blinks in old code: it is running out of ammunition. You have ammunition to spare and bills to pay.",
+   "opcoes": [
+    {
+     "texto": "Mandar metade do estoque sem cobrar nada.",
+     "textoEn": "Send half your stock and charge nothing.",
+     "resultado": {
+      "tipo": "gemas",
+      "valor": 18
+     }
+    },
+    {
+     "texto": "Vender a munição pelo preço do desespero.",
+     "textoEn": "Sell the ammunition at desperation prices.",
+     "resultado": {
+      "tipo": "ouro",
+      "valor": 8
+     }
+    },
+    {
+     "texto": "Esperar a gêmea cair e saquear os destroços.",
+     "textoEn": "Wait for the twin to fall and loot the wreck.",
+     "resultado": {
+      "tipo": "carta",
+      "valor": 1
+     },
+     "risco": {
+      "chance": 0.4,
+      "falha": {
+       "tipo": "dano",
+       "valor": 0.38
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "nucleo_dormente",
+   "nome": "Núcleo Dormente",
+   "nomeEn": "Dormant Core",
+   "icone": "🔋",
+   "cor": "#4ade80",
+   "peso": 48,
+   "requer": {
+    "onda": 45
+   },
+   "texto": "Os sensores encontram uma bateria de uma era anterior enterrada sob a plataforma. Ainda tem carga, e muita. Tem também um adesivo desbotado: \"PROPRIEDADE DO OPERADOR — NÃO ABRIR\".",
+   "textoEn": "Sensors find a battery from an earlier era buried under the platform. It still holds charge, plenty of it. It also holds a faded sticker: \"PROPERTY OF THE OPERATOR - DO NOT OPEN\".",
+   "opcoes": [
+    {
+     "texto": "Drenar devagar, respeitando o adesivo.",
+     "textoEn": "Drain it slowly, respecting the sticker.",
+     "resultado": {
+      "tipo": "buff",
+      "stat": "cadencia",
+      "valor": 0.6,
+      "duracao": 120,
+      "modo": "pct"
+     }
+    },
+    {
+     "texto": "Abrir mesmo assim. O Operador não está aqui.",
+     "textoEn": "Open it anyway. The Operator is not here.",
+     "resultado": {
+      "tipo": "gemas",
+      "valor": 45
+     },
+     "risco": {
+      "chance": 0.45,
+      "falha": {
+       "tipo": "dano",
+       "valor": 0.5
+      }
+     }
+    },
+    {
+     "texto": "Reenterrar e marcar o lugar com um X.",
+     "textoEn": "Bury it again and mark the spot with an X.",
+     "resultado": {
+      "tipo": "xp",
+      "valor": 8
+     }
+    }
+   ]
+  },
+  {
+   "id": "biblioteca_submersa",
+   "nome": "Biblioteca Submersa",
+   "nomeEn": "Sunken Library",
+   "icone": "📚",
+   "cor": "#60a5fa",
+   "peso": 46,
+   "requer": {
+    "onda": 50
+   },
+   "texto": "Quando a maré de corpos recua, um arquivo inteiro emerge do lodo. As páginas estão intactas; o idioma, não. Mas diagrama é língua universal, e boa parte destes é de arma.",
+   "textoEn": "When the tide of bodies pulls back, an entire archive surfaces from the silt. The pages are intact; the language is not. But a diagram is a universal tongue, and a good share of these are weapons.",
+   "opcoes": [
+    {
+     "texto": "Ler com calma o que ainda dá para ler.",
+     "textoEn": "Read, unhurried, whatever is still readable.",
+     "resultado": {
+      "tipo": "xp",
+      "valor": 10
+     }
+    },
+    {
+     "texto": "Arrancar os diagramas e testar agora mesmo.",
+     "textoEn": "Rip out the diagrams and test them right now.",
+     "resultado": {
+      "tipo": "buff",
+      "stat": "dano",
+      "valor": 1.6,
+      "duracao": 90,
+      "modo": "pct"
+     },
+     "risco": {
+      "chance": 0.35,
+      "falha": {
+       "tipo": "dano",
+       "valor": 0.35
+      }
+     }
+    },
+    {
+     "texto": "Vender o arquivo lacrado, sem abrir.",
+     "textoEn": "Sell the archive sealed, without opening it.",
+     "resultado": {
+      "tipo": "ouro",
+      "valor": 10
+     }
+    }
+   ]
+  },
+  {
+   "id": "caderno_operador",
+   "nome": "O Caderno do Operador",
+   "nomeEn": "The Operator's Logbook",
+   "icone": "📓",
+   "cor": "#38bdf8",
+   "peso": 45,
+   "requer": {
+    "onda": 30
+   },
+   "unico": true,
+   "texto": "Sob uma placa solta do painel há um caderno com a letra de alguém que sentava exatamente onde você senta. A última página traz uma lista de nomes, todos riscados. Só um nome continua sem risco, e é o seu.",
+   "textoEn": "Under a loose panel plate there is a logbook, in the handwriting of someone who sat exactly where you sit. Its last page holds a list of names, every one crossed out. Only one name is still unmarked, and it is yours.",
+   "opcoes": [
+    {
+     "texto": "Ler a lista inteira, nome por nome.",
+     "textoEn": "Read the whole list, name by name.",
+     "resultado": {
+      "tipo": "xp",
+      "valor": 12
+     }
+    },
+    {
+     "texto": "Riscar o próprio nome e fechar o caderno.",
+     "textoEn": "Cross out your own name and shut the book.",
+     "resultado": {
+      "tipo": "buff",
+      "stat": "multiplicador",
+      "valor": 0.6,
+      "duracao": 300,
+      "modo": "pct"
+     },
+     "risco": {
+      "chance": 0.25,
+      "falha": {
+       "tipo": "dano",
+       "valor": 0.35
+      }
+     }
+    },
+    {
+     "texto": "Seguir as coordenadas anotadas na contracapa.",
+     "textoEn": "Follow the coordinates scribbled on the back cover.",
+     "resultado": {
+      "tipo": "carta",
+      "valor": 1,
+      "raridadeMin": "epico"
+     },
+     "risco": {
+      "chance": 0.4,
+      "falha": {
+       "tipo": "onda",
+       "valor": -2
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "ruinas_da_primeira",
+   "nome": "As Ruínas da Primeira",
+   "nomeEn": "Ruins of the First",
+   "icone": "🫀",
+   "cor": "#f43f5e",
+   "peso": 42,
+   "requer": {
+    "onda": 65
+   },
+   "unico": true,
+   "texto": "A leste existe um toco de concreto do tamanho de uma cidade: a Primeira Torre, derrubada antes de existir nome para o que a derrubou. No centro exato das ruínas alguma coisa ainda bate. Devagar, fora de compasso, mas bate.",
+   "textoEn": "To the east stands a stump of concrete the size of a city: the First Tower, felled before there was a name for what felled it. At the exact center of the ruin, something is still beating. Slowly, off-rhythm, but beating.",
+   "opcoes": [
+    {
+     "texto": "Recolher as placas de blindagem que sobraram.",
+     "textoEn": "Salvage whatever armor plating is left.",
+     "resultado": {
+      "tipo": "ouro",
+      "valor": 16
+     }
+    },
+    {
+     "texto": "Ficar até entender o ritmo da batida.",
+     "textoEn": "Stay until you understand the rhythm of the beat.",
+     "resultado": {
+      "tipo": "fragmentos",
+      "valor": 3
+     },
+     "risco": {
+      "chance": 0.3,
+      "falha": {
+       "tipo": "onda",
+       "valor": -3
+      }
+     }
+    },
+    {
+     "texto": "Arrancar o coração e ligá-lo ao seu núcleo.",
+     "textoEn": "Tear the heart out and wire it into your core.",
+     "resultado": {
+      "tipo": "buff",
+      "stat": "vidaMax",
+      "valor": 2,
+      "duracao": 300,
+      "modo": "pct"
+     },
+     "risco": {
+      "chance": 0.38,
+      "falha": {
+       "tipo": "dano",
+       "valor": 0.6
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "trono_vazio",
+   "nome": "O Trono Vazio",
+   "nomeEn": "The Hollow Throne",
+   "icone": "🕳️",
+   "cor": "#a855f7",
+   "peso": 40,
+   "requer": {
+    "onda": 120
+   },
+   "unico": true,
+   "texto": "No fundo da última fenda existe um trono, e o trono está vazio porque estava esperando. O Enxame inteiro para de avançar e se ajoelha — não para o trono. Para você.",
+   "textoEn": "At the bottom of the last fissure there is a throne, and the throne is empty because it was waiting. The entire Swarm stops advancing and kneels - not to the throne. To you.",
+   "opcoes": [
+    {
+     "texto": "Recusar e voltar para o posto.",
+     "textoEn": "Refuse, and go back to your post.",
+     "resultado": {
+      "tipo": "xp",
+      "valor": 25
+     }
+    },
+    {
+     "texto": "Sentar. Só um instante, só para ver.",
+     "textoEn": "Sit. Just for a moment, just to see.",
+     "resultado": {
+      "tipo": "buff",
+      "stat": "multiplicador",
+      "valor": 1.5,
+      "duracao": 300,
+      "modo": "pct"
+     },
+     "risco": {
+      "chance": 0.35,
+      "falha": {
+       "tipo": "dano",
+       "valor": 0.7
+      }
+     }
+    },
+    {
+     "texto": "Perguntar quem sentava aqui antes de você.",
+     "textoEn": "Ask who used to sit here before you.",
+     "resultado": {
+      "tipo": "carta",
+      "valor": 1,
+      "raridadeMin": "lendario"
+     },
+     "risco": {
+      "chance": 0.42,
+      "falha": {
+       "tipo": "onda",
+       "valor": -5
+      }
+     }
+    }
+   ]
+  }
+ ]
+}
