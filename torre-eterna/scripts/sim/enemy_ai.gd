@@ -45,7 +45,10 @@ static func criar(def: Dictionary, onda: int, j, opt: Dictionary = {}) -> Inimig
 		m_vel *= float(mod.get("vel", 1.0))
 	if e.dourado:
 		m_hp *= float(Bal.DOURADO["hp"]); m_ouro *= float(Bal.DOURADO["ouro"])
-		m_xp *= float(Bal.DOURADO["xp"]); m_esc *= float(Bal.DOURADO["escala"]); m_vel *= float(Bal.DOURADO["vel"])
+		m_xp *= float(Bal.DOURADO["xp"]); m_esc *= float(Bal.DOURADO["escala"])
+		# "nunca fogem da tela": o dourado corre a 1,9× e some antes de a torre
+		# alcançar. Com a Coleira ele anda no ritmo dos outros.
+		m_vel *= 1.0 if j.pas.has("coleira_dourada") else float(Bal.DOURADO["vel"])
 	m_hp *= float(opt.get("hp_mult", 1.0))
 	m_esc *= float(opt.get("esc_mult", 1.0))
 
@@ -108,7 +111,14 @@ static func spawn_onda(onda: int, j) -> void:
 	var def: Dictionary = def_v
 
 	var elite: bool = j.rng.chance(Bal.chance_elite(onda))
-	var dourado: bool = (not elite) and bool(j.rng.chance(Bal.chance_dourado(onda) * maxf(1.0, float(j.stats.n("sorte")))))
+	# Coleira Dourada: "dourados aparecem 2× mais por nível, nunca fogem da tela
+	# e soltam 1 gema ao morrer". A relíquia prometia as três coisas e o código
+	# não fazia nenhuma.
+	var mult_dourado := 1.0
+	if j.pas.has("coleira_dourada"):
+		mult_dourado = pow(maxf(1.0, float(j.pas.get("coleira_dourada:valor", 2.0))), float(j.pas["coleira_dourada"]))
+	var dourado: bool = (not elite) and bool(j.rng.chance(
+		Bal.chance_dourado(onda) * maxf(1.0, float(j.stats.n("sorte"))) * mult_dourado))
 	var opt := {"elite": elite, "dourado": dourado}
 	if elite and not Dados.elites.is_empty():
 		var em: Dictionary = j.rng.escolher(Dados.elites)

@@ -78,5 +78,9 @@
   "sim_torre_caiu": {
     "pt": "A torre caiu. Volta em {s}s, {n} onda atrás.",
     "en": "The tower fell. Back in {s}s, {n} wave behind."
+  },
+  "sim_recompra": {
+    "pt": "Contrato de Recompra: onda mantida. Restam {n} nesta onda.",
+    "en": "Buyback Contract: wave kept. {n} left this wave."
   }
 }

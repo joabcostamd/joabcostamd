@@ -178,6 +178,10 @@ static func matar(e: Inimigo, j, overkill: float = Big.ZERO, critico: bool = fal
 		s["codex"]["chefes"][e.tipo] = int(s["codex"]["chefes"].get(e.tipo, 0)) + 1
 	if e.dourado:
 		st["dourados"] = int(st["dourados"]) + 1
+		# Coleira Dourada: "soltam 1 gema ao morrer" — a terceira promessa da
+		# relíquia, também sem código por trás.
+		if j.pas.has("coleira_dourada"):
+			Economia.ganhar_moeda("gemas", Big.from(1.0), j, "dourado")
 
 	# combo
 	var teto := int(j.esp.get("comboTeto", Bal.COMBO_TETO))

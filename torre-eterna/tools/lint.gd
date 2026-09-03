@@ -24,6 +24,7 @@ func _initialize() -> void:
 	_checar_entradas()
 	_checar_i18n()
 	_checar_sons()
+	_checar_passivas()
 
 	print("===LINT=== arquivos=%d linhas=%d erros=%d avisos=%d" % [arquivos, linhas, erros.size(), avisos.size()])
 	for e in erros:
@@ -334,3 +335,61 @@ func _checar_sons() -> void:
 			var nome := m.get_string(1)
 			if not catalogo.has(nome):
 				erros.append("%s toca som inexistente: \"%s\"" % [caminho, nome])
+
+## Passiva declarada no JSON e nunca lida pelo código é promessa vazia: o
+## jogador compra a relíquia, o texto diz o que ela faz, e não acontece nada.
+## Sete estavam assim. É o pior tipo de bug do projeto — passa em todo teste e
+## ainda assim engana quem joga.
+func _checar_passivas() -> void:
+	var declaradas := {}
+	var d := DirAccess.open("res://data")
+	if d == null:
+		return
+	d.list_dir_begin()
+	var arq := d.get_next()
+	while arq != "":
+		if arq.ends_with(".json"):
+			var f := FileAccess.open("res://data/" + arq, FileAccess.READ)
+			if f != null:
+				var bruto = JSON.parse_string(f.get_as_text())
+				f.close()
+				_coletar_passivas(bruto, arq, declaradas)
+		arq = d.get_next()
+	d.list_dir_end()
+
+	var lidas := ""
+	for caminho in _todos_gd():
+		if not caminho.begins_with("res://scripts"):
+			continue
+		var f2 := FileAccess.open(caminho, FileAccess.READ)
+		if f2 == null:
+			continue
+		lidas += _sem_comentarios(f2.get_as_text())
+		f2.close()
+
+	for chave in declaradas.keys():
+		var k := str(chave)
+		# basta o nome aparecer no código da simulação: além de `pas.has`, há
+		# leitor legítimo por comparação direta (Espelho do Operador).
+		if lidas.contains('"%s"' % k):
+			continue
+		erros.append("passiva declarada em %s e nunca lida: \"%s\"" % [str(declaradas[chave]), k])
+
+## Só o que está dentro de um `efeito` conta. `chave` também aparece em
+## CONDIÇÃO de missão e conquista ({"tipo": "inimigoTipo", "chave": "grunhido"}),
+## que é outra coisa: ali a chave é o alvo da condição, não uma passiva.
+func _coletar_passivas(o, arquivo: String, saida: Dictionary) -> void:
+	if o is Dictionary:
+		var ef = o.get("efeito", null)
+		if ef is Array:
+			for item in ef:
+				if not (item is Dictionary) or item.has("stat"):
+					continue
+				var ch = item.get("chave", null)
+				if ch is String and str(ch) != "":
+					saida[str(ch)] = arquivo
+		for v in o.values():
+			_coletar_passivas(v, arquivo, saida)
+	elif o is Array:
+		for v in o:
+			_coletar_passivas(v, arquivo, saida)

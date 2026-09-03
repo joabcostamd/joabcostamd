@@ -26,6 +26,8 @@ var buraco_negro = null
 var parasitas := 0
 var coleta_instantanea := false
 var fenix_usada := false
+## Quantas recompras (relíquia Contrato de Recompra) já foram gastas nesta onda.
+var recompras_usadas := 0
 var tempo_autosave := 0.0
 var tempo_autohab := 0.0
 var tempo_autocompra := 0.0
@@ -124,7 +126,14 @@ func recalcular() -> void:
 	_aplicar_mods_desafio()
 
 func _aplicar_mods_desafio() -> void:
-	mods_dif = {"hpInimigo": float(esp.get("hpInimigo", 1.0)), "velocidadeInimigo": 1.0, "ouro": 1.0, "danoTorre": 1.0, "xp": 1.0}
+	# `densidade` e `ondaAuto` estavam anunciados no painel de Desafios e nunca
+	# eram lidos por ninguém: o desafio Enxame prometia 5× mais inimigos e a
+	# Esteira prometia a onda avançando sozinha; os dois entregavam uma partida
+	# normal com o texto mentindo na tela.
+	mods_dif = {
+		"hpInimigo": float(esp.get("hpInimigo", 1.0)), "velocidadeInimigo": 1.0,
+		"ouro": 1.0, "danoTorre": 1.0, "xp": 1.0, "densidade": 1.0, "ondaAuto": 0.0,
+	}
 	var id := str(s["desafios"]["ativo"])
 	if id == "":
 		return
@@ -135,6 +144,8 @@ func _aplicar_mods_desafio() -> void:
 	mods_dif["ouro"] *= float(m.get("ouro", 1.0))
 	mods_dif["danoTorre"] *= float(m.get("danoTorre", 1.0))
 	mods_dif["xp"] *= float(m.get("xp", 1.0))
+	mods_dif["densidade"] *= float(m.get("densidade", 1.0))
+	mods_dif["ondaAuto"] = float(m.get("ondaAuto", 0.0))
 
 func sincronizar_torre(cheia: bool) -> void:
 	var t: Dictionary = s["torre"]
@@ -176,9 +187,11 @@ func simular(dt: float) -> void:
 	st["tempo_total"] = float(st["tempo_total"]) + dt
 	st["tempo_sessao"] = float(st["tempo_sessao"]) + dt
 
-	# combo esfria
+	# Combo esfria — a não ser com a Ampulheta Rachada, cuja passiva
+	# `combo_imortal` promete "o combo nunca expira por tempo: só zera quando a
+	# torre leva dano". A promessa estava no JSON e ninguém a lia.
 	var combo: Dictionary = s["combo"]
-	if int(combo["atual"]) > 0:
+	if int(combo["atual"]) > 0 and not pas.has("combo_imortal"):
 		combo["timer"] = float(combo["timer"]) - dt
 		if float(combo["timer"]) <= 0.0:
 			combo["atual"] = 0
@@ -282,7 +295,15 @@ func reviver_torre() -> void:
 	invulneravel = 2.5
 	fenix_usada = false
 	arena.limpar_inimigos()
-	diretor.reiniciar_onda(Bal.PENALIDADE_MORTE)
+	# Contrato de Recompra: "ao cair, você mantém todo o ouro e não retrocede
+	# ondas — 1 vez por onda, por nível". Também não era lido por ninguém.
+	var recompras := int(pas.get("contrato_recompra", 0))
+	if recompras > 0 and recompras_usadas < recompras:
+		recompras_usadas += 1
+		diretor.reiniciar_onda(0)
+		Bus.toast(Txt.f("sim_recompra", {"n": recompras - recompras_usadas}), "bom", "escudo")
+	else:
+		diretor.reiniciar_onda(Bal.PENALIDADE_MORTE)
 	Bus.torre_renasceu.emit()
 
 func impacto_na_torre(e: Inimigo) -> void:
@@ -724,7 +745,10 @@ func transcender() -> bool:
 func _resetar_run() -> void:
 	var onda_anterior := int(s["onda_maxima"])
 	Mecanicas.encerrar_retomada(self)
-	s["moedas"]["ouro"] = Big.ZERO
+	# Testamento Dourado: "ao Ascender, você herda 8% do seu ouro por nível".
+	# A relíquia existia, o texto prometia, e o ouro era zerado assim mesmo.
+	var frac_herdada := minf(0.8, float(pas.get("heranca_dourada:valor", 0.0)) * float(pas.get("heranca_dourada", 0)))
+	s["moedas"]["ouro"] = Big.mul_f(s["moedas"]["ouro"], frac_herdada) if frac_herdada > 0.0 else Big.ZERO
 	s["upgrades"] = {}
 	s["nivel"] = 1
 	s["xp"] = Big.ZERO

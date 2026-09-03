@@ -153,6 +153,20 @@ func t_modificadores() -> void:
 	ok("combo multiplica, nao soma", cb < 0.05, str(cb))
 	ok("combo cresce mesmo assim", cb > Bal.COMBO_BONUS_POR * 5.0, str(cb))
 
+	# Sete passivas de reliquia estavam ESPECIFICADAS no JSON e nao eram lidas
+	# por ninguem: o jogador comprava, o texto prometia e nada acontecia.
+	var pas_sem_leitor: Array = []
+	var s_rel := GameState.novo()
+	for rel in Dados.reliquias:
+		for ef in rel.get("efeito", []):
+			if not (ef is Dictionary) or str(ef.get("chave", "")) == "":
+				continue
+			s_rel["relicas"] = {str(rel["id"]): 1}
+			var r_rel := Mods.recalcular(s_rel, m)
+			if not r_rel["passivas"].has(str(ef["chave"])):
+				pas_sem_leitor.append("%s:%s" % [rel["id"], ef["chave"]])
+	ok("toda passiva de reliquia chega em pas", pas_sem_leitor.is_empty(), str(pas_sem_leitor))
+
 	# talento com passiva
 	s["talentos"]["f_sede"] = 1
 	s["combo"]["atual"] = 10
@@ -483,6 +497,47 @@ func t_mecanicas() -> void:
 		Mecanicas._purga_ja_explicada({"tutorial": {"completo": false, "vistas": ["purga"]}}))
 	ok("purga pune com tutorial dispensado",
 		Mecanicas._purga_ja_explicada({"tutorial": {"completo": true, "vistas": []}}))
+
+	# Modificadores de desafio que eram ANUNCIADOS no painel e nunca lidos por
+	# ninguem: o texto prometia e a partida saia normal.
+	jogo.s["desafios"]["ativo"] = "enxame"
+	jogo.marcar_sujo()
+	jogo.recalcular()
+	jogo.diretor.iniciar_onda(20)
+	var com_densidade := int(jogo.s["necessarios"])
+	jogo.s["desafios"]["ativo"] = ""
+	jogo.marcar_sujo()
+	jogo.recalcular()
+	jogo.diretor.iniciar_onda(20)
+	var sem_densidade := int(jogo.s["necessarios"])
+	ok("densidade multiplica a contagem", com_densidade > sem_densidade * 3, "%d vs %d" % [com_densidade, sem_densidade])
+
+	jogo.s["desafios"]["ativo"] = "silencio"
+	ok("semHabilidades bloqueia de verdade", Habilidades._sem_habilidades(jogo.s))
+	jogo.s["desafios"]["ativo"] = ""
+	ok("sem desafio, habilidade livre", not Habilidades._sem_habilidades(jogo.s))
+	jogo.marcar_sujo()
+	jogo.recalcular()
+
+	# `danoTorre` e o dano QUE A TORRE CAUSA ("cada tiro causa 5x de dano"), e
+	# estava sendo aplicado no dano que ela RECEBE — sinal invertido, e pintado
+	# de verde no painel como se fosse bonus.
+	jogo.s["desafios"]["ativo"] = "ferrugem"
+	jogo.marcar_sujo()
+	jogo.recalcular()
+	ok("danoTorre multiplica o dano causado", float(jogo.mods_dif["danoTorre"]) > 1.0)
+	jogo.s["torre"]["vida_max"] = Big.from(1.0e6)
+	jogo.s["torre"]["vida"] = jogo.s["torre"]["vida_max"]
+	jogo.s["torre"]["viva"] = true
+	jogo.invulneravel = 0.0
+	jogo.torre.iframes = 0.0
+	var antes_v: float = jogo.s["torre"]["vida"]
+	jogo.dano_na_torre(Big.from(1000.0), null, {"ignora_iframes": true})
+	var perdeu := Big.to_f(antes_v) - Big.to_f(jogo.s["torre"]["vida"])
+	ok("danoTorre nao amplifica o dano recebido", perdeu < 2000.0, str(perdeu))
+	jogo.s["desafios"]["ativo"] = ""
+	jogo.marcar_sujo()
+	jogo.recalcular()
 
 	# A Retomada ia para o save. Quem fechava o jogo no meio voltava dentro de
 	# uma, sem velocidade (ela mora no no, nao no estado) e com a compra

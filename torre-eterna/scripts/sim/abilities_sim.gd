@@ -43,10 +43,22 @@ static func desbloquear_por_progresso(s: Dictionary) -> Array:
 	return novas
 
 ## Executa a habilidade. Devolve true se usou.
+## O desafio ativo proíbe habilidades?
+static func _sem_habilidades(s: Dictionary) -> bool:
+	var id := str(s["desafios"]["ativo"])
+	if id == "":
+		return false
+	return bool(Dados.desafio_por_id.get(id, {}).get("mods", {}).get("semHabilidades", false))
+
 static func usar(id: String, j) -> bool:
 	var s: Dictionary = j.s
 	var def: Dictionary = Dados.habilidade_por_id.get(id, {})
 	if def.is_empty() or not disponivel(s, id) or j.silenciado > 0.0:
+		return false
+	# `semHabilidades` (desafios Silêncio e Purgatório) era anunciado no painel
+	# e nunca lido: os dois desafios prometiam "sem botões para apertar" e
+	# entregavam todas as habilidades funcionando.
+	if _sem_habilidades(s):
 		return false
 	var h := GameState.hab(s, id)
 	var nivel := int(h["nivel"])

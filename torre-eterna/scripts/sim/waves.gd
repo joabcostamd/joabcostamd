@@ -20,7 +20,9 @@ func iniciar_onda(n: int) -> void:
 	s["mortos_na_onda"] = 0
 	s["tempo_na_onda"] = 0.0
 	s["em_chefe"] = Bal.eh_chefe(n)
-	s["necessarios"] = 1 if bool(s["em_chefe"]) else Bal.contagem_onda(n, bool(s.get("modo_infinito", false)))
+	var quantos := 1 if bool(s["em_chefe"]) else Bal.contagem_onda(n, bool(s.get("modo_infinito", false)))
+	# densidade: o desafio Enxame multiplica a contagem (5× mais inimigos)
+	s["necessarios"] = maxi(1, int(round(float(quantos) * float(j.mods_dif.get("densidade", 1.0)))))
 	spawnados = 0
 	cd_spawn = 0.25
 	chefe_atual = null
@@ -35,6 +37,16 @@ func iniciar_onda(n: int) -> void:
 	# inicial) para a habilidade ficar presa: o painel dizia "requisito
 	# cumprido" e mostrava cadeado ao mesmo tempo. São dez habilidades — custa
 	# nada conferir sempre.
+	# Sino do Recomeço: "toda onda nova começa com TODAS as habilidades sem
+	# recarga". Estava escrito no JSON e não existia no código.
+	if j.pas.has("sino_de_recomeco"):
+		for id in s["habilidades"].keys():
+			var h: Dictionary = s["habilidades"][id]
+			if bool(h.get("desbloqueada", false)):
+				h["cd"] = 0.0
+	# as recompras do Contrato são por onda
+	j.recompras_usadas = 0
+
 	var novas: Array = Habilidades.desbloquear_por_progresso(s)
 	if not novas.is_empty():
 		for def in novas:
@@ -59,6 +71,13 @@ func atualizar(dt: float) -> void:
 			if timer <= 0.0:
 				iniciar_onda(int(s["onda"]))
 		"ativa":
+			# `ondaAuto` (desafio Esteira): a onda avança sozinha a cada N
+			# segundos, tendo o jogador limpado ou não. Os atrasados ficam no
+			# mapa e se acumulam — que é exatamente o que o texto promete.
+			var auto_seg := float(j.mods_dif.get("ondaAuto", 0.0))
+			if auto_seg > 0.0 and float(s["tempo_na_onda"]) >= auto_seg:
+				concluir()
+				return
 			cd_spawn -= dt
 			var faltam := int(s["necessarios"]) - spawnados
 			if cd_spawn <= 0.0 and faltam > 0:

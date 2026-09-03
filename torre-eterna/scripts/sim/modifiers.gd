@@ -104,11 +104,24 @@ static func recalcular(s: Dictionary, m: StatEngine) -> Dictionary:
 				aplicar_efeitos(m, def.get("efeito", []), n, str(def.get("nome", id)), esp, pas)
 
 	# --------------------------------------------------------- relíquias
+	var espelho := false
 	for id in s["relicas"].keys():
 		var n := int(s["relicas"][id])
 		var def: Dictionary = Dados.reliquia_por_id.get(id, {})
 		if not def.is_empty() and n > 0:
 			aplicar_efeitos(m, def.get("efeito", []), n, str(def.get("nome", id)), esp, pas)
+			if _tem_passiva(def, "espelho_do_operador"):
+				espelho = true
+
+	# Espelho do Operador: "a sua relíquia mais cara (excluindo esta) tem todos
+	# os efeitos aplicados uma segunda vez". A relíquia existia no JSON, o texto
+	# prometia, e o código nunca duplicava nada.
+	if espelho:
+		var alvo := _reliquia_mais_cara(s)
+		if not alvo.is_empty():
+			var def_alvo: Dictionary = Dados.reliquia_por_id.get(str(alvo["id"]), {})
+			aplicar_efeitos(m, def_alvo.get("efeito", []), int(alvo["nivel"]),
+				str(def_alvo.get("nome", alvo["id"])), esp, pas)
 
 	# ------------------------------------------------------------ cartas
 	var equipadas_ids: Array = []
@@ -271,3 +284,28 @@ static func _achar_carta(s: Dictionary, uid: String) -> Dictionary:
 		if str(item.get("uid", "")) == uid:
 			return item
 	return {}
+
+## A relíquia possuída de maior custo base, ignorando o próprio Espelho. Custo
+## é o critério porque é o que o texto da relíquia diz: "a sua relíquia mais
+## cara".
+static func _reliquia_mais_cara(s: Dictionary) -> Dictionary:
+	var melhor: Dictionary = {}
+	var melhor_custo := -1.0
+	for id in s["relicas"].keys():
+		var n := int(s["relicas"][id])
+		if n <= 0:
+			continue
+		var def: Dictionary = Dados.reliquia_por_id.get(str(id), {})
+		if def.is_empty() or _tem_passiva(def, "espelho_do_operador"):
+			continue
+		var custo := float(def.get("base", 0)) * float(n)
+		if custo > melhor_custo:
+			melhor_custo = custo
+			melhor = {"id": str(id), "nivel": n}
+	return melhor
+
+static func _tem_passiva(def: Dictionary, chave: String) -> bool:
+	for ef in def.get("efeito", []):
+		if ef is Dictionary and str(ef.get("chave", "")) == chave:
+			return true
+	return false

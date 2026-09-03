@@ -12,6 +12,8 @@ var iframes := 0.0
 var tempo_sem_dano := 0.0
 var orbes: Array = []                 # [{ang, raio, cd, pos}]
 var orbes_extra := 0
+## Contador da salva circular do Coro de Estilhaços.
+var tiros_para_salva := 0
 
 const MODOS_MIRA := ["proximo", "avancado", "forte", "fraco", "chefe", "longe"]
 
@@ -127,9 +129,27 @@ func disparar(alvo: Inimigo) -> void:
 	j.s["stats"]["tiros"] = int(j.s["stats"]["tiros"]) + 1
 	Bus.torre_atirou.emit(angulo_canhao, n)
 
+	# Coro de Estilhaços: "a cada 5º disparo, a torre solta uma salva circular
+	# de 12 projéteis; cada nível reduz o intervalo em 1 tiro". A relíquia
+	# existia, o texto prometia e nada acontecia.
+	if j.pas.has("salva_coral"):
+		tiros_para_salva += 1
+		var intervalo := maxi(2, 5 - (int(j.pas["salva_coral"]) - 1))
+		if tiros_para_salva >= intervalo:
+			tiros_para_salva = 0
+			var quantos := int(j.pas.get("salva_coral:valor", 12.0))
+			for i in quantos:
+				_criar_projetil(TAU * float(i) / float(quantos), alvo)
+			Bus.particulas.emit("pulso", centro_b, {"raio": 110.0, "cor": "#fcd34d"})
+
 func _criar_projetil(ang: float, alvo: Inimigo) -> void:
 	var p: Projetil = j.arena.novo_projetil()
-	var dano_base := Big.mul_f(j.stats.b("dano"), j.stats.n("multiplicador"))
+	# `danoTorre` é o dano QUE A TORRE CAUSA — "cada tiro causa 5× de dano",
+	# "Dano ×20" — e estava sendo aplicado no dano que ela RECEBE. O desafio
+	# Ferrugem, anunciado e pintado de verde como bônus, multiplicava por cinco
+	# o dano que o jogador levava. Sinal invertido no lugar mais caro possível.
+	var dano_base := Big.mul_f(Big.mul_f(j.stats.b("dano"), j.stats.n("multiplicador")),
+		float(j.mods_dif.get("danoTorre", 1.0)))
 	var golpe := Combate.rolar_golpe(dano_base, j, alvo)
 
 	p.ativo = true
@@ -320,7 +340,6 @@ func levar_dano(dano_log: float, fonte, opt: Dictionary = {}) -> float:
 
 	var armadura: float = j.stats.n("armadura")
 	var dano := Big.mul_f(dano_log, Bal.ARMADURA_K / (Bal.ARMADURA_K + armadura))
-	dano = Big.mul_f(dano, float(j.mods_dif.get("danoTorre", 1.0)))
 
 	if not Big.is_zero(torre["escudo"]):
 		var esc: float = torre["escudo"]
