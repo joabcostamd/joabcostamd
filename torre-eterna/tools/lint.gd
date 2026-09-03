@@ -11,6 +11,7 @@ var arquivos := 0
 var linhas := 0
 
 const PASTAS := ["res://scripts", "res://tools"]
+const Textos := preload("res://scripts/core/textos.gd")
 
 func _initialize() -> void:
 	Dados.carregar(true)
@@ -20,6 +21,7 @@ func _initialize() -> void:
 	_checar_paineis()
 	_checar_recursos()
 	_checar_entradas()
+	_checar_i18n()
 
 	print("===LINT=== arquivos=%d linhas=%d erros=%d avisos=%d" % [arquivos, linhas, erros.size(), avisos.size()])
 	for e in erros:
@@ -229,3 +231,19 @@ func _sem_comentarios(texto: String) -> String:
 			continue
 		out += _antes_do_comentario(l) + "\n"
 	return out
+
+## Toda `Txt.t("chave")` precisa ter tradução. Sem esta regra a chave aparece
+## crua na tela (é assim que o Txt sinaliza chave perdida) e ninguém percebe
+## até um jogador tirar print.
+func _checar_i18n() -> void:
+	var re := RegEx.create_from_string('Txt\\.[tf]\\("([a-z0-9_]+)"')
+	for caminho in _todos_gd():
+		var f := FileAccess.open(caminho, FileAccess.READ)
+		if f == null:
+			continue
+		var texto := _sem_comentarios(f.get_as_text())
+		f.close()
+		for m in re.search_all(texto):
+			var chave := m.get_string(1)
+			if not Textos.tem(chave):
+				erros.append("%s usa Txt.t(\"%s\") sem tradução" % [caminho, chave])

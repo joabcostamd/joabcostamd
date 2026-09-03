@@ -119,13 +119,65 @@ static var ingles := false
 static func definir_idioma(usar_ingles: bool) -> void:
 	ingles = usar_ingles
 
+## Textos carregados de `res://data/i18n/*.json`.
+##
+## Por que em arquivo e não aqui dentro: cada painel tem o seu próprio arquivo,
+## então dois trabalhos em painéis diferentes nunca disputam a mesma linha. O
+## formato é `{"chave": {"pt": "...", "en": "..."}}`.
+static var _extra_pt := {}
+static var _extra_en := {}
+static var _carregado := false
+
+const PASTA_I18N := "res://data/i18n"
+
+static func carregar_extras(forcar: bool = false) -> void:
+	if _carregado and not forcar:
+		return
+	_carregado = true
+	_extra_pt = {}
+	_extra_en = {}
+	var d := DirAccess.open(PASTA_I18N)
+	if d == null:
+		return
+	d.list_dir_begin()
+	var nome := d.get_next()
+	while nome != "":
+		if nome.ends_with(".json"):
+			_ler_arquivo(PASTA_I18N.path_join(nome))
+		nome = d.get_next()
+	d.list_dir_end()
+
+static func _ler_arquivo(caminho: String) -> void:
+	var f := FileAccess.open(caminho, FileAccess.READ)
+	if f == null:
+		return
+	var r = JSON.parse_string(f.get_as_text())
+	f.close()
+	if not (r is Dictionary):
+		push_error("[i18n] %s não é um objeto JSON" % caminho)
+		return
+	for k in r.keys():
+		var par = r[k]
+		if not (par is Dictionary):
+			continue
+		if par.has("pt"):
+			_extra_pt[str(k)] = str(par["pt"])
+		if par.has("en"):
+			_extra_en[str(k)] = str(par["en"])
+
 ## Texto da interface na língua atual.
 static func t(chave: String) -> String:
+	carregar_extras()
 	if ingles:
-		var en = EN.get(chave, null)
+		var en = EN.get(chave, _extra_en.get(chave, null))
 		if en != null:
 			return str(en)
-	return str(PT.get(chave, chave))
+	var pt = PT.get(chave, _extra_pt.get(chave, null))
+	if pt != null:
+		return str(pt)
+	# Chave desconhecida volta como está — aparece feio de propósito, para ser
+	# notada na primeira vez que alguém abrir o painel.
+	return chave
 
 ## Texto com substituição: Txt.f("onda_n", {"n": 42})
 static func f(chave: String, params: Dictionary) -> String:
@@ -136,8 +188,22 @@ static func f(chave: String, params: Dictionary) -> String:
 
 ## Todas as chaves — usado pelo validador para achar tradução faltando.
 static func chaves_sem_en() -> Array:
+	carregar_extras()
 	var faltando: Array = []
 	for k in PT.keys():
 		if not EN.has(k):
 			faltando.append(k)
+	for k in _extra_pt.keys():
+		if not _extra_en.has(k):
+			faltando.append(k)
 	return faltando
+
+## Chaves vindas dos arquivos — o validador usa para checar duplicata e sobra.
+static func chaves_extras() -> Array:
+	carregar_extras()
+	return _extra_pt.keys()
+
+## Uma chave existe (em qualquer fonte)?
+static func tem(chave: String) -> bool:
+	carregar_extras()
+	return PT.has(chave) or _extra_pt.has(chave)
