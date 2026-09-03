@@ -399,7 +399,7 @@ func _marcar_selecao() -> void:
 		var cx: PanelContainer = r["caixa"]
 		if not is_instance_valid(cx):
 			continue
-		var cor_b: Color = r["cor"] if bool(r["conhecido"]) else UI.BORDA
+		var cor_b: Color = r["cor"] if bool(r["conhecido"]) else UI.BORDA_FORTE
 		if str(id) == sel_id:
 			cx.add_theme_stylebox_override("panel", UI.caixa(UI.PAINEL2.lerp(cor_b, 0.14), 10, 2, cor_b))
 		else:

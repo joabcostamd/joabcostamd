@@ -201,6 +201,57 @@ static func peregrino_morto(j) -> void:
 	var s: Dictionary = j.s
 	s["peregrinos_mortos"] = int(s.get("peregrinos_mortos", 0)) + 1
 
+# =========================================================== A RETOMADA ====
+## Depois de um prestígio, o jogo acelera sozinho e reconstrói o império
+## enquanto você assiste — com a marca da run anterior na tela para ser
+## ultrapassada ao vivo. O reset deixa de ser o anticlímax e vira o clímax.
+const RETOMADA_DURACAO := 10.0
+const RETOMADA_VELOCIDADE := 6.0
+
+static func iniciar_retomada(j, onda_anterior: int) -> void:
+	if onda_anterior < 8:
+		return
+	j.s["retomada"] = {
+		"restante": RETOMADA_DURACAO,
+		"alvo": onda_anterior,
+		"velocidade_antes": float(j.velocidade),
+		"auto_antes": bool(j.s["auto"]["comprar"]),
+		"superou": false,
+	}
+	j.s["auto"]["comprar"] = true
+	Engine.time_scale = RETOMADA_VELOCIDADE
+	Bus.celebracao.emit("retomada", {"alvo": onda_anterior})
+
+static func atualizar_retomada(dt: float, j) -> void:
+	var r = j.s.get("retomada", null)
+	if not (r is Dictionary):
+		return
+	# a compra automática da Retomada não depende de desbloqueio: é cortesia da casa
+	j.auto_comprar()
+	j.auto_comprar()
+	j.auto_comprar()
+
+	if int(j.s["onda"]) > int(r["alvo"]) and not bool(r["superou"]):
+		r["superou"] = true
+		Bus.celebracao.emit("retomada_superada", {"onda": int(j.s["onda"])})
+		Bus.toast("Você já passou de onde parou. E ainda está acelerando.", "epico")
+
+	r["restante"] = float(r["restante"]) - dt / maxf(0.001, RETOMADA_VELOCIDADE)
+	if float(r["restante"]) <= 0.0 or bool(r["superou"]):
+		encerrar_retomada(j)
+
+static func encerrar_retomada(j) -> void:
+	var r = j.s.get("retomada", null)
+	if not (r is Dictionary):
+		return
+	j.s["auto"]["comprar"] = bool(r["auto_antes"])
+	j.velocidade = float(r["velocidade_antes"])
+	Engine.time_scale = j.velocidade
+	j.s.erase("retomada")
+
+static func em_retomada(s: Dictionary) -> bool:
+	return s.get("retomada", null) is Dictionary
+
 # ============================================================== DICAS ======
 ## As dicas vêm dos dados como objetos {id, icone, tag, texto}. Esta função
 ## existe para que ninguém precise lembrar disso na hora de mostrar uma.

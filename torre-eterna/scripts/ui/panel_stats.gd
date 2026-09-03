@@ -59,6 +59,8 @@ func _montar_resumo() -> Control:
 	v.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	sc.add_child(v)
 
+	v.add_child(_painel_grafico())
+
 	var g := GridContainer.new()
 	g.columns = COLUNAS
 	g.add_theme_constant_override("h_separation", 10)
@@ -71,8 +73,6 @@ func _montar_resumo() -> Control:
 	_cartao_colecao(g)
 	_cartao_tempo(g)
 	_cartao_cacadas(g)
-
-	v.add_child(_painel_grafico())
 	return sc
 
 func _cartao_progresso(g: GridContainer) -> void:
@@ -87,7 +87,7 @@ func _cartao_progresso(g: GridContainer) -> void:
 		func(): return Fmt.inteiro(int(_st()["ondas_completas"])))
 	_linha(v, "Nível", "Nível da torre — cada nível dá um ponto de talento.",
 		func(): return Fmt.inteiro(int(jogo.s["nivel"])))
-	_linha(v, "Ascensões · Singularidades · Transcendências", "As três camadas de prestígio.",
+	_linha(v, "Prestígio (asc · sing · trans)", "As três camadas de prestígio.",
 		func(): return "%d · %d · %d" % [int(jogo.s["prestigio"]["ascensoes"]),
 			int(jogo.s["prestigio"]["singularidades"]), int(jogo.s["prestigio"]["transcendencias"])], UI.ACENTO2)
 	_linha(v, "Tempo médio por onda", "Tempo total dividido pelas ondas completas.",
@@ -480,7 +480,7 @@ class Grafico extends Control:
 	var pontos: Array = []            # [Vector2(t_segundos, onda)]
 	const ML := 54.0
 	const MR := 16.0
-	const MT := 16.0
+	const MT := 22.0
 	const MB := 26.0
 
 	func _ready() -> void:
@@ -589,11 +589,11 @@ class Grafico extends Control:
 		draw_line(area.position + Vector2(0, area.size.y), area.end, UI.BORDA_FORTE, 1.5)
 		draw_line(area.position, area.position + Vector2(0, area.size.y), UI.BORDA_FORTE, 1.5)
 		if f != null:
-			draw_string(f, Vector2(area.position.x - 46.0, area.position.y - 3.0), "onda",
+			draw_string(f, Vector2(area.position.x - 46.0, area.position.y - 9.0), "onda",
 				HORIZONTAL_ALIGNMENT_LEFT, -1, 11, UI.TEXTO3)
 			var st := "tempo de jogo"
 			var wt := f.get_string_size(st, HORIZONTAL_ALIGNMENT_LEFT, -1, 11).x
-			draw_string(f, Vector2(area.end.x - wt, area.position.y - 3.0), st,
+			draw_string(f, Vector2(area.end.x - wt, area.position.y - 9.0), st,
 				HORIZONTAL_ALIGNMENT_LEFT, -1, 11, UI.TEXTO3)
 
 	## Chaikin: tira os cantos duros sem inventar dados.

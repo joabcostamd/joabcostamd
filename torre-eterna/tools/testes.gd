@@ -391,6 +391,23 @@ func t_mecanicas() -> void:
 	ok("tela cheia bonifica", Mecanicas.fator_aglomeracao(40) > 1.2, str(Mecanicas.fator_aglomeracao(40)))
 	ok("ganho e sublinear", Mecanicas.fator_aglomeracao(80) < Mecanicas.fator_aglomeracao(40) * 2.0)
 
+	# --- A Retomada ---
+	s["retomada"] = null
+	s.erase("retomada")
+	Mecanicas.iniciar_retomada(jogo, 3)
+	ok("retomada nao dispara em run curta", not Mecanicas.em_retomada(s))
+	jogo.velocidade = 1.0
+	Mecanicas.iniciar_retomada(jogo, 60)
+	ok("retomada dispara apos run boa", Mecanicas.em_retomada(s))
+	ok("liga a compra automatica", bool(s["auto"]["comprar"]))
+	ok("guarda o alvo", int(s["retomada"]["alvo"]) == 60)
+	ok("acelera o jogo", Engine.time_scale >= Mecanicas.RETOMADA_VELOCIDADE - 0.01)
+	s["onda"] = 61
+	Mecanicas.atualizar_retomada(0.016, jogo)
+	ok("encerra ao superar o alvo", not Mecanicas.em_retomada(s))
+	ok("devolve a velocidade", perto(Engine.time_scale, 1.0, 0.01), str(Engine.time_scale))
+	Engine.time_scale = 1.0
+
 	# --- O Peregrino ---
 	ok("peregrino existe no bestiario", Dados.inimigo_por_id.has("peregrino"))
 	var def_p: Dictionary = Dados.inimigo_por_id.get("peregrino", {})

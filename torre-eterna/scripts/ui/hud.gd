@@ -11,6 +11,7 @@ var _acc := 0.0
 var lbl_moedas := {}
 var lbl_onda: Label
 var lbl_chefe: Label
+var lbl_retomada: Label
 var barra_onda: ProgressBar
 var barra_vida: ProgressBar
 var lbl_vida: Label
@@ -85,6 +86,9 @@ func _construir() -> void:
 	lbl_chefe = UI.rotulo("", 14, UI.VERMELHO)
 	lbl_chefe.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	centro.add_child(lbl_chefe)
+	lbl_retomada = UI.rotulo("", 15, UI.ACENTO2)
+	lbl_retomada.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	centro.add_child(lbl_retomada)
 
 	# ---------- esquerda: vitais ----------
 	var vitais := UI.vbox(4)
@@ -342,6 +346,12 @@ func _atualizar_lento() -> void:
 	barra_xp.value = Economia.progresso_nivel(s)
 	var pts := int(s["pontos_talento"])
 	aviso_pontos.text = ("  ●%d" % pts) if pts > 0 else ""
+
+	if Mecanicas.em_retomada(s):
+		var r: Dictionary = s["retomada"]
+		lbl_retomada.text = "RETOMADA ×%d  ·  alvo: onda %d" % [int(Mecanicas.RETOMADA_VELOCIDADE), int(r["alvo"])]
+	else:
+		lbl_retomada.text = ""
 
 	var combo := int(s["combo"]["atual"])
 	lbl_combo.text = ("%d×" % combo) if combo >= 5 else ""

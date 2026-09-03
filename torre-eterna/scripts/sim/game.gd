@@ -170,6 +170,7 @@ func simular(dt: float) -> void:
 			marcar_sujo()
 
 	Mecanicas.atualizar_purga(dt, self)
+	Mecanicas.atualizar_retomada(dt, self)
 	Mecanicas.decair_adaptacao(dt, self.s)
 
 	arena.reconstruir_grade()
@@ -624,6 +625,8 @@ func transcender() -> bool:
 	return true
 
 func _resetar_run() -> void:
+	var onda_anterior := int(s["onda_maxima"])
+	Mecanicas.encerrar_retomada(self)
 	s["moedas"]["ouro"] = Big.ZERO
 	s["upgrades"] = {}
 	s["nivel"] = 1
@@ -649,6 +652,7 @@ func _resetar_run() -> void:
 	diretor.iniciar_onda(inicio)
 	fenix_usada = false
 	invulneravel = 3.0
+	Mecanicas.iniciar_retomada(self, onda_anterior)
 	Bus.ui_atualizar.emit(true)
 
 ## ============================================================ desafios ====
