@@ -63,12 +63,9 @@ var _poeira: Array[Vector3] = []
 
 func _ready() -> void:
     mouse_filter = Control.MOUSE_FILTER_IGNORE
-    # Semente fixa: a maquete precisa sair idêntica em toda captura, senão duas
-    # rodadas do mesmo tema não são comparáveis.
-    var rng := RandomNumberGenerator.new()
-    rng.seed = 20260904
-    for i in 90:
-        _poeira.append(Vector3(rng.randf(), rng.randf(), rng.randf_range(1.0, 3.0)))
+    # Semente fixa (dentro de Pintura): a maquete precisa sair idêntica em toda
+    # captura, senão duas rodadas do mesmo tema não são comparáveis.
+    _poeira = Pintura.semear_poeira()
     _acompanhar()
     get_viewport().size_changed.connect(_acompanhar)
 
@@ -78,106 +75,11 @@ func _acompanhar() -> void:
     queue_redraw()
 
 func _draw() -> void:
-    _fundo()
+    Pintura.fundo(self, size, _poeira)
     if size.y > size.x:
         _retrato()
     else:
         _paisagem()
-
-# ─────────────────────────────── o fundo ───────────────────────────────
-# Cada tema tem o SEU tratamento de fundo, não só a sua cor. Enquanto os oito
-# compartilhavam um brilho radial, vários pareciam o mesmo tema repintado — foi
-# o que a folha de contato mostrou. Fundo é identidade.
-
-func _fundo() -> void:
-    draw_rect(Rect2(Vector2.ZERO, size), Temas.FUNDO)
-    match Temas.FUNDO_ESTILO:
-        "grade": _fundo_grade()
-        "tecido": _fundo_tecido()
-        "papel": _fundo_papel()
-        "vinheta": pass
-        _: _fundo_brilho()
-    _poeira_flutuante()
-    _vinheta()
-
-## Brilho radial suave, em muitas camadas fracas: com poucas, as bordas dos
-## círculos aparecem como anéis em vez de um brilho contínuo.
-func _fundo_brilho() -> void:
-    if Temas.BRILHO <= 0.0:
-        return
-    var centro := size * Vector2(0.5, 0.42)
-    var raio := maxf(size.x, size.y) * 0.62
-    for i in 18:
-        var t := float(i) / 17.0
-        var cor := Temas.ACENTO.lerp(Temas.DESTAQUE, t * 0.35)
-        draw_circle(centro, raio * (1.0 - t * 0.85), Color(cor, 0.008 * Temas.BRILHO))
-
-## Grade de linhas acesas: a assinatura do fliperama. Substitui o brilho radial,
-## que misturava ciano com amarelo e lavava a tela de verde-piscina.
-func _fundo_grade() -> void:
-    var passo := 48.0
-    var cor := Color(Temas.ACENTO, 0.055)
-    var x := passo
-    while x < size.x:
-        draw_line(Vector2(x, 0), Vector2(x, size.y), cor, 1.0)
-        x += passo
-    var y := passo
-    while y < size.y:
-        draw_line(Vector2(0, y), Vector2(size.x, y), Color(Temas.ACENTO, 0.035), 1.0)
-        y += passo
-    # Duas linhas mais fortes dão o "horizonte" sem custar nada.
-    draw_line(Vector2(0, size.y * 0.62), Vector2(size.x, size.y * 0.62),
-              Color(Temas.ACENTO, 0.16), 1.0)
-    draw_line(Vector2(size.x * 0.5, 0), Vector2(size.x * 0.5, size.y),
-              Color(Temas.ACENTO, 0.05), 1.0)
-
-## Trama fina de feltro. Linhas cruzadas quase invisíveis: de perto some, de
-## longe dá textura de pano.
-func _fundo_tecido() -> void:
-    var passo := 4.0
-    var cor := Color(Temas.TEXTO, 0.014)
-    var y := 0.0
-    while y < size.y:
-        draw_line(Vector2(0, y), Vector2(size.x, y), cor, 1.0)
-        y += passo
-    var x := 0.0
-    while x < size.x:
-        draw_line(Vector2(x, 0), Vector2(x, size.y), Color(0, 0, 0, 0.012), 1.0)
-        x += passo
-
-## Grão de papel: manchas largas e fraquíssimas, para o creme não ficar chapado.
-func _fundo_papel() -> void:
-    for p in _poeira:
-        draw_circle(Vector2(p.x * size.x, p.y * size.y), 40.0 + p.z * 30.0,
-                    Color(Temas.TEXTO, 0.006))
-
-func _poeira_flutuante() -> void:
-    if Temas.PARTICULA <= 0.0:
-        return
-    for i in mini(_poeira.size(), 40):
-        var p := _poeira[i]
-        draw_circle(Vector2(p.x * size.x, p.y * size.y), p.z * 0.7,
-                    Color(Temas.TEXTO, Temas.PARTICULA))
-
-## Bordas escuras para o olho ir ao centro. Só faz sentido onde há o que
-## escurecer — sobre papel ela suja.
-func _vinheta() -> void:
-    if Temas.e_claro():
-        return
-    var forca := 0.05
-    if Temas.FUNDO_ESTILO == "vinheta" or Temas.FUNDO_ESTILO == "grade":
-        forca = 0.085
-    var faixa := size.y * 0.22
-    for i in 12:
-        var t := float(i) / 11.0
-        var a := forca * (1.0 - t)
-        var e := faixa * (1.0 - t) / 12.0 + 2.0
-        draw_rect(Rect2(0, t * faixa / 2.0, size.x, e), Color(0, 0, 0, a))
-        draw_rect(Rect2(0, size.y - t * faixa / 2.0 - e, size.x, e), Color(0, 0, 0, a))
-        draw_rect(Rect2(t * faixa / 3.0, 0, e, size.y), Color(0, 0, 0, a * 0.8))
-        draw_rect(Rect2(size.x - t * faixa / 3.0 - e, 0, e, size.y), Color(0, 0, 0, a * 0.8))
-
-# ─────────────────────── paisagem: três colunas ───────────────────────
 
 func _paisagem() -> void:
     var util := size.x - MARGEM * 2.0
@@ -228,7 +130,7 @@ func _centro(r: Rect2) -> void:
     var grade := Rect2(gx, r.position.y, grade_larg, grade_alt)
 
     var mesa := Rect2(grade.position, Vector2(bloco, grade.size.y + ROT_COLUNA + 6.0))
-    _mesa_embutida(mesa)
+    Pintura.mesa_embutida(self, mesa)
     _grade(grade, celula, VAO_CELULA)
     _rotulos(grade, celula, VAO_CELULA, ROT_FILEIRA, ROT_COLUNA)
     # A mão alinha pelo centro da MESA, não da grade nem da coluna. A massa
@@ -261,7 +163,7 @@ func _retrato() -> void:
     var grade_larg := celula * 5.0 + VAO_CELULA * 4.0
     var grade_alt := celula * Carta.RAZAO * 5.0 + VAO_CELULA * 4.0
     var grade := Rect2(MARGEM_R, 154, grade_larg, grade_alt)
-    _mesa_embutida(grade)
+    Pintura.mesa_embutida(self, grade)
     _grade(grade, celula, VAO_CELULA)
     _barras_de_fileira(grade, celula, VAO_CELULA, BARRA_FILEIRA)
     _rotulos_coluna(grade, celula, VAO_CELULA, 20.0)
@@ -277,7 +179,7 @@ func _retrato() -> void:
     var vao_alt := mao_y - vao_topo - 10.0
     if vao_alt >= 34.0:
         var faixa := Rect2(MARGEM_R, vao_topo + (vao_alt - 40.0) * 0.5, util, minf(40.0, vao_alt))
-        _caixa(faixa, 10, 0.72)
+        Pintura.caixa(self, faixa, 10, 0.72)
         var ff := Temas.fonte_do_tema(true)
         draw_string(ff, Vector2(faixa.position.x + 14, faixa.position.y + faixa.size.y * 0.66),
                     "MESA", HORIZONTAL_ALIGNMENT_LEFT, -1, Temas.T_ROTULO, Temas.TEXTO_SUAVE)
@@ -303,12 +205,12 @@ func _barra(r: Rect2) -> void:
 
     # REGRAS: âncora fixa no alto à direita, 44 px de altura mínima para o dedo.
     var b := Rect2(r.end.x - 112, r.position.y, 112, maxf(r.size.y, 44.0))
-    _caixa(b, 8, 0.9)
-    _centrado(Temas.fonte_do_tema(true), b, "REGRAS", Temas.T_CORPO, Temas.TEXTO)
+    Pintura.caixa(self, b, 8, 0.9)
+    Pintura.centrado(self, Temas.fonte_do_tema(true), b, "REGRAS", Temas.T_CORPO, Temas.TEXTO)
 
 ## Coluna esquerda: o ESTADO. O jogador consulta, não toca.
 func _painel_estado(r: Rect2) -> void:
-    _caixa(r, 12, 0.72)
+    Pintura.caixa(self, r, 12, 0.72)
     var f := Temas.fonte_do_tema()
     var ff := Temas.fonte_do_tema(true)
     var x := r.position.x + 20.0
@@ -316,14 +218,14 @@ func _painel_estado(r: Rect2) -> void:
 
     draw_string(ff, Vector2(x, r.position.y + 30), "PONTOS",
                 HORIZONTAL_ALIGNMENT_LEFT, -1, Temas.T_ROTULO, Temas.TEXTO_SUAVE)
-    draw_string(ff, Vector2(x, r.position.y + 84), _milhar(PONTOS),
+    draw_string(ff, Vector2(x, r.position.y + 84), Pintura.milhar(PONTOS),
                 HORIZONTAL_ALIGNMENT_LEFT, -1, Temas.T_HEROI, Temas.TEXTO)
-    draw_string(f, Vector2(x, r.position.y + 112), "de " + _milhar(META),
+    draw_string(f, Vector2(x, r.position.y + 112), "de " + Pintura.milhar(META),
                 HORIZONTAL_ALIGNMENT_LEFT, -1, Temas.T_CORPO, Temas.TEXTO_SUAVE)
 
     var trilho := Rect2(x, r.position.y + 128, larg, 10)
-    _pilula(trilho, Color(Temas.BORDA, 0.8))
-    _pilula(trilho, Temas.SUCESSO)   # meta estourada: o verde diz "bateu" sem palavra
+    Pintura.pilula(self, trilho, Color(Temas.BORDA, 0.8))
+    Pintura.pilula(self, trilho, Temas.SUCESSO)   # meta estourada: o verde diz "bateu" sem palavra
 
     # Um filete separando os dois blocos de informação. Régua, não decoração:
     # é ele que dá ritmo à coluna sem precisar de mais moldura.
@@ -367,24 +269,24 @@ func _contadores(r: Rect2) -> void:
     var itens := [[str(JOGADAS), "JOGADAS"], [str(DESCARTES), "DESCARTES"]]
     for i in itens.size():
         var b := Rect2(r.position.x + i * (larg + 10), r.position.y, larg, r.size.y)
-        _pilula(b, Color(Temas.BORDA, 0.35))
-        _centrado(f, b, "%s  %s" % [itens[i][0], itens[i][1]], Temas.T_CORPO, Temas.TEXTO)
+        Pintura.pilula(self, b, Color(Temas.BORDA, 0.35))
+        Pintura.centrado(self, f, b, "%s  %s" % [itens[i][0], itens[i][1]], Temas.T_CORPO, Temas.TEXTO)
 
 ## Faixa de estado do retrato: os mesmos três números, deitados.
 func _faixa_estado(r: Rect2) -> void:
-    _caixa(r, 12, 0.72)
+    Pintura.caixa(self, r, 12, 0.72)
     var col := r.size.x / 3.0
-    _numero(Rect2(r.position.x, r.position.y + 8, col, 44), "PONTOS", _milhar(PONTOS),
+    Pintura.numero(self, Rect2(r.position.x, r.position.y + 8, col, 44), "PONTOS", Pintura.milhar(PONTOS),
             Temas.TEXTO, 26)
-    _numero(Rect2(r.position.x + col, r.position.y + 8, col, 44), "META", _milhar(META),
+    Pintura.numero(self, Rect2(r.position.x + col, r.position.y + 8, col, 44), "META", Pintura.milhar(META),
             Temas.TEXTO_SUAVE, 26)
-    _numero(Rect2(r.position.x + col * 2, r.position.y + 8, col, 44), "MULT", "×%d" % MULT,
+    Pintura.numero(self, Rect2(r.position.x + col * 2, r.position.y + 8, col, 44), "MULT", "×%d" % MULT,
             Temas.DESTAQUE, 26)
     _contadores(Rect2(r.position.x + 12, r.end.y - 32, r.size.x - 24, 24))
 
 ## Coluna direita: a REFERÊNCIA. Consulta ocasional, nunca no caminho do dedo.
 func _painel_referencia(r: Rect2) -> void:
-    _caixa(r, 12, 0.72)
+    Pintura.caixa(self, r, 12, 0.72)
     var f := Temas.fonte_do_tema()
     var ff := Temas.fonte_do_tema(true)
     draw_string(ff, Vector2(r.position.x + 20, r.position.y + 30), "MÃOS",
@@ -396,7 +298,7 @@ func _painel_referencia(r: Rect2) -> void:
         var feita: bool = m[3]
         var cor: Color = Temas.DESTAQUE if feita else Temas.TEXTO
         if feita:
-            _pilula(Rect2(r.position.x + 12, y - 15, r.size.x - 24, 28),
+            Pintura.pilula(self, Rect2(r.position.x + 12, y - 15, r.size.x - 24, 28),
                     Color(Temas.DESTAQUE, 0.16), 6)
         draw_string(f, Vector2(r.position.x + 20, y + 5), str(m[0]),
                     HORIZONTAL_ALIGNMENT_LEFT, -1, Temas.T_CORPO, cor)
@@ -413,23 +315,8 @@ func _painel_referencia(r: Rect2) -> void:
 ## rebaixado na madeira, e é esse degrau que faz o objeto parecer caro. Aqui
 ## são três desenhos: um retângulo mais escuro, uma sombra interna no topo e um
 ## filete dourado na borda.
-func _mesa_embutida(g: Rect2) -> void:
-    var mesa := g.grow(14.0)
-    var caixa := StyleBoxFlat.new()
-    caixa.bg_color = Color(Temas.FUNDO, 0.55) if Temas.e_claro() else Color(0, 0, 0, 0.22)
-    caixa.set_corner_radius_all(16)
-    caixa.border_color = Color(Temas.FILETE, 0.16)
-    caixa.set_border_width_all(1)
-    draw_style_box(caixa, mesa)
-    # Sombra interna só no topo: a luz vem de cima, então o degrau só escurece
-    # a aba superior. Sombra nos quatro lados lê como buraco, não como encaixe.
-    for i in 6:
-        var t := float(i) / 5.0
-        draw_rect(Rect2(mesa.position.x + 2, mesa.position.y + 1 + i, mesa.size.x - 4, 1),
-                  Color(0, 0, 0, 0.10 * (1.0 - t)))
-
 func _rodape_mesa(r: Rect2) -> void:
-    _caixa(r, 10, 0.72)
+    Pintura.caixa(self, r, 10, 0.72)
     var ff := Temas.fonte_do_tema(true)
     draw_string(ff, Vector2(r.position.x + 18, r.position.y + 22), "MESA",
                 HORIZONTAL_ALIGNMENT_LEFT, -1, Temas.T_ROTULO, Temas.TEXTO_SUAVE)
@@ -446,26 +333,10 @@ func _grade(r: Rect2, celula: float, vao: float) -> void:
             var conteudo: Variant = GRADE[linha][coluna]
             var viva := linha == CHEIA_FILEIRA or coluna == CHEIA_COLUNA
             if typeof(conteudo) != TYPE_ARRAY:
-                _casa_vazia(c, viva)
+                Pintura.casa_vazia(self, c, viva)
                 continue
             Carta.desenhar(self, c, int(conteudo[0]), int(conteudo[1]),
                            Carta.MADURA if viva else Carta.NA_GRADE)
-
-func _casa_vazia(c: Rect2, viva: bool) -> void:
-    var caixa := StyleBoxFlat.new()
-    # Token próprio, nunca PAINEL com alfa: derivar a cor da casa de outra cor
-    # funciona no tema escuro e faz o tabuleiro sumir no claro.
-    caixa.bg_color = Temas.CASA
-    caixa.border_color = Temas.DESTAQUE if viva else Temas.CASA_BORDA
-    caixa.set_border_width_all(3 if viva else 2)
-    caixa.set_corner_radius_all(int(maxf(4.0, c.size.x * 0.09)))
-    draw_style_box(caixa, c)
-    # Um fio de luz na aresta de cima. A luz da cena vem de cima, então só a
-    # aba superior a recebe — é o que faz a casa ler como marcação rebaixada no
-    # feltro em vez de buraco recortado nele. Um draw_rect.
-    if not viva:
-        draw_rect(Rect2(c.position.x + c.size.x * 0.12, c.position.y + 1.5,
-                        c.size.x * 0.76, 1.0), Color(Temas.TEXTO, 0.07))
 
 ## Os rótulos de linha: a fração e a categoria, colados na linha. É a informação
 ## que o jogador mais lê — painel distante obrigaria o olho a viajar.
@@ -489,13 +360,13 @@ func _barras_de_fileira(g: Rect2, celula: float, vao: float, larg: float) -> voi
     for i in 5:
         var y := g.position.y + i * (alt + vao)
         var trilho := Rect2(g.end.x + 2, y + alt * 0.12, larg - 2, alt * 0.76)
-        _pilula(trilho, Color(Temas.BORDA, 0.45), int(larg * 0.5))
+        Pintura.pilula(self, trilho, Color(Temas.BORDA, 0.45), int(larg * 0.5))
         var texto: String = ROTULO_FILEIRA[i]
         var cheios := 5.0 if i == CHEIA_FILEIRA else float(texto.split("/")[0].to_int())
         var fracao := cheios / 5.0
         var cheio := Rect2(trilho.position.x, trilho.end.y - trilho.size.y * fracao,
                            trilho.size.x, trilho.size.y * fracao)
-        _pilula(cheio, Temas.DESTAQUE if i == CHEIA_FILEIRA else Temas.TEXTO_SUAVE,
+        Pintura.pilula(self, cheio, Temas.DESTAQUE if i == CHEIA_FILEIRA else Temas.TEXTO_SUAVE,
                 int(larg * 0.5))
 
 func _rotulos_coluna(g: Rect2, celula: float, vao: float, alt_rot: float) -> void:
@@ -511,12 +382,12 @@ func _rotulo(f: FontFile, r: Rect2, texto: String, cheia: bool, compacto: bool) 
         # Preenchimento sólido com texto invertido. O chip translúcido de antes
         # sumia em escala de cinza: virava cinza sobre cinza. Sólido, o contraste
         # é de valor tonal e sobrevive sem cor.
-        _pilula(r, Temas.DESTAQUE, 6)
+        Pintura.pilula(self, r, Temas.DESTAQUE, 6)
         cor = Temas.CARTA if Temas.e_claro() else Temas.FUNDO
     var t := texto
     if compacto and cheia:
         t = "CHEIA"
-    _centrado(f, r, t, Temas.T_ROTULO, cor)
+    Pintura.centrado(self, f, r, t, Temas.T_ROTULO, cor)
 
 func _mao(r: Rect2, largura: float, vao: float) -> void:
     var n := MAO.size()
@@ -534,53 +405,3 @@ func _mao(r: Rect2, largura: float, vao: float) -> void:
             c.position.y -= alt * 0.05
             estado = Carta.HOVER
         Carta.desenhar(self, c, int(MAO[i][0]), int(MAO[i][1]), estado)
-
-# ────────────────────────────── utilidades ──────────────────────────────
-
-func _caixa(r: Rect2, raio := 12, alfa := 0.72) -> void:
-    var caixa := StyleBoxFlat.new()
-    caixa.bg_color = Color(Temas.PAINEL, alfa)
-    caixa.border_color = Temas.BORDA
-    caixa.set_border_width_all(1)
-    caixa.set_corner_radius_all(raio)
-    draw_style_box(caixa, r)
-    # O filete: 1 px do acento por dentro da borda. Borda grossa é a assinatura
-    # da interface improvisada; a linha fina é a da interface cara. Custa um
-    # draw_rect e muda a leitura da tela inteira.
-    var dentro := StyleBoxFlat.new()
-    dentro.bg_color = Color(0, 0, 0, 0)
-    dentro.border_color = Color(Temas.FILETE, 0.22)
-    dentro.set_border_width_all(1)
-    dentro.set_corner_radius_all(maxi(raio - 2, 2))
-    draw_style_box(dentro, r.grow(-3.0))
-
-func _pilula(r: Rect2, cor: Color, raio := -1) -> void:
-    var caixa := StyleBoxFlat.new()
-    caixa.bg_color = cor
-    caixa.set_corner_radius_all(int(r.size.y * 0.5) if raio < 0 else raio)
-    draw_style_box(caixa, r)
-
-func _numero(r: Rect2, titulo: String, valor: String, cor: Color, tam: int) -> void:
-    var f := Temas.fonte_do_tema(true)
-    draw_string(f, Vector2(r.position.x, r.position.y + 14), titulo,
-                HORIZONTAL_ALIGNMENT_CENTER, r.size.x, Temas.T_ROTULO, Temas.TEXTO_SUAVE)
-    draw_string(f, Vector2(r.position.x, r.position.y + 14 + tam), valor,
-                HORIZONTAL_ALIGNMENT_CENTER, r.size.x, tam, cor)
-
-func _centrado(f: FontFile, r: Rect2, texto: String, tam: int, cor: Color) -> void:
-    var med := f.get_string_size(texto, HORIZONTAL_ALIGNMENT_LEFT, -1, tam)
-    draw_string(f, Vector2(r.position.x + (r.size.x - med.x) * 0.5,
-                r.position.y + (r.size.y + med.y * 0.62) * 0.5),
-                texto, HORIZONTAL_ALIGNMENT_LEFT, -1, tam, cor)
-
-## Milhar com ponto, como se escreve em português.
-func _milhar(n: int) -> String:
-    var s := str(n)
-    var saida := ""
-    var conta := 0
-    for i in range(s.length() - 1, -1, -1):
-        saida = s[i] + saida
-        conta += 1
-        if conta % 3 == 0 and i > 0:
-            saida = "." + saida
-    return saida
