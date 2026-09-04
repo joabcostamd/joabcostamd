@@ -179,8 +179,17 @@ func _reconstruir() -> void:
 func _aba_jogo() -> void:
 	var b := _bloco("livro", UI.ACENTO, Txt.t("c_idioma"), Txt.t("cfg_idioma_sub"))
 	var l := _opcao(b, "livro", UI.ACENTO, Txt.t("cfg_idioma_textos"), Txt.t("cfg_idioma_desc"))
-	l["direita"].add_child(_menu("idioma", ["Português (BR)", "English"], ["pt", "en"],
-		Txt.t("cfg_idioma_dica")))
+	# O SELETOR MOSTRA CADA IDIOMA NA PRÓPRIA LÍNGUA. Ninguém procura "German"
+	# numa lista: procura "Deutsch". E a ordem é por público, não alfabética —
+	# em ordem alfabética o chinês simplificado, segundo maior público do mundo,
+	# ficaria escondido atrás de "Čeština".
+	var nomes: Array = []
+	var codigos: Array = []
+	for d in Idiomas.LISTA:
+		var di: Dictionary = d
+		nomes.append(str(di["nome"]))
+		codigos.append(str(di["cod"]))
+	l["direita"].add_child(_menu("idioma", nomes, codigos, Txt.t("cfg_idioma_dica")))
 
 	var b2 := _bloco("stats", UI.OURO, Txt.t("cfg_numeros"), Txt.t("cfg_numeros_sub"))
 	var l2 := _opcao(b2, "stats", UI.OURO, Txt.t("c_notacao"), Txt.t("cfg_notacao_desc"))

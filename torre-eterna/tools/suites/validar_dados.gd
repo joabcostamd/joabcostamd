@@ -162,7 +162,7 @@ func _contagens() -> void:
 
 func _ids_unicos() -> void:
 	var listas := {
-		"inimigos": Dados.inimigos, "chefes": Dados.chefes, "elites": Dados.elites,
+		"inimigos": Dados.inimigos, "chefes": Dados.chefes, "cepas": Dados.cepas,
 		"upgrades": Dados.upgrades, "talentos": Dados.talentos, "cartas": Dados.cartas,
 		"reliquias": Dados.reliquias, "conquistas": Dados.conquistas, "eventos": Dados.eventos,
 		"desafios": Dados.desafios, "eras": Dados.eras, "habilidades": Dados.habilidades,
@@ -328,7 +328,7 @@ func _mecanicas_lidas() -> void:
 		leitores += f.get_as_text()
 		f.close()
 	var vistas := {}
-	for grupo in [Dados.chefes, Dados.super_chefes, Dados.inimigos, Dados.elites]:
+	for grupo in [Dados.chefes, Dados.super_chefes, Dados.inimigos, Dados.cepas]:
 		for def in grupo:
 			var mec := str(def.get("mecanica", ""))
 			if mec == "" or vistas.has(mec):

@@ -53,6 +53,17 @@ func _checar(caminho: String) -> void:
 	# depuração esquecida.
 	var eh_ferramenta := caminho.begins_with("res://tools") \
 		or caminho.get_slice_count("/") == 3
+	# O REGISTRO DE IDIOMAS É A EXCEÇÃO DAS DUAS REGRAS DE TEXTO, e tem que ser.
+	#
+	# Um seletor de idioma escreve cada língua NA PRÓPRIA LÍNGUA: ninguém procura
+	# "German" numa lista, procura "Deutsch"; ninguém procura "Thai", procura
+	# "ไทย". As duas regras que este lint aplica — nada de glifo fora da fonte, e
+	# nada de português fora do `Txt` — são as regras certas para o resto do
+	# projeto e as regras erradas para este arquivo, porque aqui o texto NÃO é
+	# interface traduzível: é o nome próprio de cada idioma, que não se traduz e
+	# não pode ser trocado por ícone. E os glifos tailandeses e chineses daqui
+	# são exatamente os que a cadeia de fontes de reserva existe para desenhar.
+	var eh_registro_idiomas := caminho == "res://scripts/core/idiomas.gd"
 	while not f.eof_reached():
 		var linha := f.get_line()
 		n += 1
@@ -62,7 +73,7 @@ func _checar(caminho: String) -> void:
 			continue
 
 		# 1. emoji/símbolo sem glifo na fonte: sairia como quadradinho na tela
-		if limpa.contains('"'):
+		if limpa.contains('"') and not eh_registro_idiomas:
 			var fora := _sem_glifo(_antes_do_comentario(linha))
 			if fora != "":
 				erros.append("%s:%d sem glifo na fonte: %s (use Icone vetorial)" % [caminho, n, fora])
@@ -570,6 +581,11 @@ func _checar_texto_cru() -> void:
 			continue
 		# O próprio módulo de tradução guarda os textos padrão.
 		if caminho.ends_with("textos.gd"):
+			continue
+		# O registro de idiomas escreve cada língua NA PRÓPRIA LÍNGUA — inclusive
+		# "Português (Brasil)". É nome próprio de idioma, não frase de interface:
+		# não se traduz e não sai do lugar. Ver o comentário em `_checar_arquivo`.
+		if caminho.ends_with("idiomas.gd"):
 			continue
 		var f := FileAccess.open(caminho, FileAccess.READ)
 		if f == null:

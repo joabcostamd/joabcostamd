@@ -39,7 +39,21 @@ extends RefCounted
 ## esta aqui para o portao do CI e a documentacao concordarem sobre quais sao.
 const AUD_RESOLUCOES := ["1280x720", "900x1600", "1600x720"]
 
-const AUD_IDIOMAS := ["pt", "en"]
+## OS IDIOMAS QUE MAIS ESTOURAM CAIXA, e não todos os vinte.
+##
+## Rodar as 52 telas em vinte idiomas seriam 2.080 medições por resolução, e a
+## varredura deixaria de caber num portão. O que importa não é a quantidade de
+## idiomas: é o COMPRIMENTO do texto, porque é ele que estoura a caixa. Estes
+## quatro são os extremos conhecidos —
+##
+##   pt-BR  o texto fonte, e já mais longo que o inglês
+##   de     o mais longo de todos: palavra composta alemã não quebra linha
+##   ru     cirílico, e ~15% mais longo que o inglês
+##   zh-Hans  o mais CURTO, e o extremo oposto: caixa larga demais e texto
+##            perdido no meio dela, mais a fonte de reserva entrando em cena
+##
+## Um layout que sobrevive ao alemão e ao chinês sobrevive aos outros dezoito.
+const AUD_IDIOMAS := ["pt-BR", "en", "de", "ru", "zh-Hans"]
 const AUD_ESCALAS := [1.0, 1.25]
 const AUD_FOLGA := 1.0
 const AUD_FOLGA_MIN := 8.0
@@ -142,7 +156,7 @@ func rodar(main: Node, gerente, jogo) -> void:
 					gerente.dialogo.queue_free()
 				await main.get_tree().process_frame
 			Editos.recusar(jogo.s)
-	Cfg.set_v("idioma", "pt")
+	Cfg.set_v("idioma", "pt-BR")
 	Cfg.set_v("escala_ui", 1.0)
 	print("paineis conferidos: %d" % conferidos)
 	print("problemas: %d" % falhas.size())

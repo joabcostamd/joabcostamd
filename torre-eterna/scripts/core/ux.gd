@@ -115,9 +115,36 @@ static func peso_sorteio(itens: Array, campo: String, r: float) -> Variant:
 			return it
 	return itens[itens.size() - 1]
 
-## Texto bilíngue vindo dos JSONs: {"nome": "...", "nomeEn": "..."}
+## Texto de CONTEÚDO vindo dos JSONs: nome de inimigo, descrição de talento,
+## lore de prestígio, dica de chefe.
+##
+## PORTUGUÊS E INGLÊS MORAM NO PRÓPRIO DADO; O RESTO DO MUNDO MORA FORA.
+##
+## `{"nome": "...", "nomeEn": "..."}` é o formato de origem, e ele funciona bem
+## para dois idiomas. Para vinte, ele não escala: cada inimigo teria vinte
+## campos, os arquivos de conteúdo triplicariam de tamanho, e qualquer pessoa
+## editando o balanceamento passaria a rolar por dezenove traduções para achar
+## um número. Pior: um tradutor precisaria mexer nos mesmos arquivos que o
+## programador, e os dois brigariam pela mesma linha.
+##
+## Então as outras dezoito línguas vivem em `data/i18n/conteudo/<idioma>.json`,
+## indexadas por `arquivo:id.campo` — e a chave inclui o ARQUIVO porque há 37
+## colisões de id entre conteúdos diferentes (a cepa `blindado` e o inimigo
+## `blindado`, por exemplo). Sem o arquivo na chave, um tradutor sobrescreveria
+## o outro em silêncio.
+##
+## `_k` é gravado uma vez por `Dados.carregar` em cada dicionário de conteúdo.
+## Quem não tem `_k` (um dicionário montado na hora, um teste) simplesmente cai
+## no par pt/en, que é o comportamento de antes.
 static func txt(d: Dictionary, campo: String, ingles: bool) -> String:
-	if ingles:
+	var cod := Txt.idioma
+	if cod != Idiomas.FONTE and cod != Idiomas.PONTE:
+		var chave := str(d.get("_k", ""))
+		if chave != "":
+			var t := ConteudoI18n.buscar(chave + "." + campo, cod)
+			if t != "":
+				return t
+	if ingles or cod == Idiomas.PONTE:
 		var en = d.get(campo + "En", "")
 		if en is String and not en.is_empty():
 			return en

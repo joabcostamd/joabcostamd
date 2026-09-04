@@ -116,8 +116,24 @@ const EN := {
 ## de linha de comando, onde autoloads não resolvem.
 static var ingles := false
 
+## VINTE IDIOMAS, E DUAS PORTAS PARA A MESMA COISA.
+##
+## O jogo nasceu bilíngue, e `ingles: bool` está lido em mais de cem lugares.
+## Trocar tudo por um código de idioma de uma vez seria uma refatoração enorme
+## com risco proporcional, e sem ganho nenhum: `Cfg.ingles()` continua sendo a
+## pergunta certa em toda decisão binária (o conteúdo dos JSON tem `pt` e `En`,
+## e nada mais). Então `ingles` continua existindo e continua verdadeiro quando
+## o idioma é inglês — e `idioma` é a verdade completa, para quem precisa dela.
+static var idioma := Idiomas.FONTE
+
 static func definir_idioma(usar_ingles: bool) -> void:
-	ingles = usar_ingles
+	definir(Idiomas.PONTE if usar_ingles else Idiomas.FONTE)
+
+static func definir(cod: String) -> void:
+	if not Idiomas.existe(cod):
+		cod = Idiomas.PONTE
+	idioma = cod
+	ingles = cod == Idiomas.PONTE
 
 ## Textos carregados de `res://data/i18n/*.json`.
 ##
@@ -165,19 +181,90 @@ static func _ler_arquivo(caminho: String) -> void:
 		if par.has("en"):
 			_extra_en[str(k)] = str(par["en"])
 
+## As traduções dos outros dezoito idiomas, uma por arquivo, carregadas sob
+## demanda. Português e inglês continuam morando no código e nos arquivos por
+## painel: são o texto FONTE, escrito à mão, e o resto do mundo é traduzido a
+## partir deles.
+static var _traduzido: Dictionary = {}
+
+const PASTA_IDIOMAS := "res://data/i18n/idiomas"
+
+static func _mapa(cod: String) -> Dictionary:
+	if cod == Idiomas.FONTE or cod == Idiomas.PONTE:
+		return {}
+	if _traduzido.has(cod):
+		return _traduzido[cod]
+	var caminho := "%s/%s.json" % [PASTA_IDIOMAS, cod]
+	var m: Dictionary = {}
+	if FileAccess.file_exists(caminho):
+		var f := FileAccess.open(caminho, FileAccess.READ)
+		if f != null:
+			var r = JSON.parse_string(f.get_as_text())
+			f.close()
+			if r is Dictionary:
+				m = r
+			else:
+				push_error("[i18n] %s não é um objeto JSON" % caminho)
+	_traduzido[cod] = m
+	return m
+
 ## Texto da interface na língua atual.
+##
+## A BUSCA É EM CADEIA, E A ORDEM IMPORTA. Uma frase que falte em espanhol da
+## América Latina cai no espanhol da Espanha antes de cair no inglês: são a mesma
+## língua, e a frase da Espanha é sempre melhor do que uma frase inglesa no meio
+## de uma tela em espanhol. Só depois de esgotar a cadeia é que a chave crua
+## aparece — feia de propósito, para ser notada.
 static func t(chave: String) -> String:
 	carregar_extras()
-	if ingles:
-		var en = EN.get(chave, _extra_en.get(chave, null))
-		if en != null:
-			return str(en)
-	var pt = PT.get(chave, _extra_pt.get(chave, null))
-	if pt != null:
-		return str(pt)
-	# Chave desconhecida volta como está — aparece feio de propósito, para ser
-	# notada na primeira vez que alguém abrir o painel.
+	for passo in Idiomas.cadeia(idioma):
+		var cod := str(passo)
+		if cod == Idiomas.PONTE:
+			var en = EN.get(chave, _extra_en.get(chave, null))
+			if en != null and str(en) != "":
+				return str(en)
+			continue
+		if cod == Idiomas.FONTE:
+			var pt = PT.get(chave, _extra_pt.get(chave, null))
+			if pt != null and str(pt) != "":
+				return str(pt)
+			continue
+		var v = _mapa(cod).get(chave, null)
+		if v != null and str(v) != "":
+			return str(v)
 	return chave
+
+## Todas as chaves de interface que existem, na língua fonte. É a lista que o
+## portão de tradução usa para saber o que cada idioma tem que ter.
+static func todas_as_chaves() -> Array:
+	carregar_extras()
+	var d := {}
+	for k in PT.keys():
+		d[str(k)] = true
+	for k2 in _extra_pt.keys():
+		d[str(k2)] = true
+	var lista := d.keys()
+	lista.sort()
+	return lista
+
+## O texto fonte de uma chave — o que os tradutores recebem.
+static func fonte(chave: String) -> String:
+	carregar_extras()
+	var pt = PT.get(chave, _extra_pt.get(chave, null))
+	return str(pt) if pt != null else ""
+
+static func em(chave: String, cod: String) -> String:
+	carregar_extras()
+	if cod == Idiomas.FONTE:
+		return fonte(chave)
+	if cod == Idiomas.PONTE:
+		var en = EN.get(chave, _extra_en.get(chave, null))
+		return str(en) if en != null else ""
+	var v = _mapa(cod).get(chave, null)
+	return str(v) if v != null else ""
+
+static func recarregar_traducoes() -> void:
+	_traduzido = {}
 
 ## Texto com substituição: Txt.f("onda_n", {"n": 42})
 static func f(chave: String, params: Dictionary) -> String:

@@ -48,6 +48,10 @@ func rodar(cena: SceneTree) -> void:
 	t_repouso()
 	t_marca()
 	t_versao()
+	t_tipografia()
+	t_idiomas()
+	t_sem_fim()
+	t_steam()
 	t_mira()
 	t_fim_de_sessao()
 	t_celebracao()
@@ -90,7 +94,7 @@ func rodar(cena: SceneTree) -> void:
 	var minimo_por_grupo := {
 		"Acessibilidade": 22, "Alcancavel": 8, "Big": 12,
 		"Chaves dinamicas": 3, "Combate": 9, "Defesa": 27,
-		"Dicas": 5, "Economia": 9, "Cepas": 40, "Formas": 18, "Editos": 26, "Repouso": 13, "Marca": 8, "Versao": 17,
+		"Dicas": 5, "Economia": 9, "Cepas": 40, "Formas": 18, "Editos": 26, "Repouso": 13, "Marca": 8, "Versao": 17, "Tipografia": 15, "Idiomas": 28, "Sem fim": 26, "Steam": 20,
 		"Eventos": 12, "Feedback": 2, "Ferramentas": 3, "Daltonismo": 9, "Tempo": 5, "Conteudo lido": 21, "Fmt": 6,
 		"Habilidades": 17, "Icones": 2, "Integridade": 9,
 		"Longo prazo": 7, "Mecânicas": 69, "Mira": 6,
@@ -2162,6 +2166,362 @@ func t_versao() -> void:
 	ok("ele contem a licenca do Godot", lic.contains("Godot Engine") and lic.contains("MIT") or lic.contains("WITHOUT WARRANTY"))
 	ok("ele contem a licenca das fontes", lic.contains("SIL OPEN FONT LICENSE"))
 
+
+## ------------------------------------------------------------- tipografia
+## As fontes NÃO são versionadas: quem clona o repositório não as tem, o CI não
+## as tem, e quem só quer rodar o jogo não deveria precisar delas. Então tudo
+## aqui tem que funcionar nos dois mundos — com fonte e sem fonte —, e o mundo
+## sem fonte é o que a suíte consegue medir. Um jogo que não abre porque falta
+## um arquivo de fonte é pior do que um jogo com a letra genérica.
+func t_tipografia() -> void:
+	g("Tipografia")
+	var idiomas := ["pt", "en", "ru", "zh-Hans", "ja", "ko", "th", "vi"]
+	var quebrou := ""
+	for id in idiomas:
+		# Sem as fontes instaladas isto devolve `null`, e `null` é resposta
+		# válida: quer dizer "use a do motor". O que NÃO pode é estourar.
+		var f = Tipografia.ui(str(id))
+		var t = Tipografia.titulo(str(id))
+		if Tipografia.instalada():
+			if f == null or t == null:
+				quebrou = str(id)
+		elif f != null or t != null:
+			quebrou = "%s devolveu fonte sem arquivo instalado" % str(id)
+	ok("a tipografia responde a todo idioma sem quebrar", quebrou == "", quebrou)
+	ok("sem fonte instalada, a interface usa a do motor",
+		Tipografia.instalada() or Tipografia.ui("pt") == null)
+
+	# TODO IDIOMA DE ESCRITA NÃO-LATINA PRECISA DE UMA RESERVA DECLARADA. Sem
+	# ela, chinês, japonês, coreano e tailandês viram quadradinho — e o defeito
+	# só apareceria quando alguém trocasse o idioma, muito depois.
+	for id2 in ["zh-Hans", "zh-Hant", "ja", "ko", "th"]:
+		ok("%s tem fonte de reserva declarada" % str(id2),
+			Tipografia.RESERVA_POR_IDIOMA.has(str(id2)))
+
+	# A tag OpenType vira inteiro de 4 bytes. Se a conta estiver errada, os
+	# algarismos deixam de ser de largura fixa e a coluna de ouro dança a cada
+	# quadro — defeito visual que nenhum teste de layout pegaria.
+	ok("a tag tnum vira o inteiro certo", Tipografia._tag("tnum") == 0x746e756d,
+		"0x%x" % Tipografia._tag("tnum"))
+	ok("a tag lnum vira o inteiro certo", Tipografia._tag("lnum") == 0x6c6e756d)
+
+	# A EXCEÇÃO DE MÍDIA É FECHADA À PASTA DE FONTES. O projeto inteiro se
+	# apoia em não ter arquivo de mídia; a fonte é a única exceção, e ela é
+	# obrigatória (não dá para desenhar um ideograma por código).
+	var codigo_lint := FileAccess.get_file_as_string("res://tools/lint.gd")
+	ok("o lint continua proibindo imagem e som",
+		codigo_lint.contains("\"png\"") and codigo_lint.contains("\"ogg\""))
+	ok("e abre excecao so para a pasta de fontes",
+		codigo_lint.contains("PASTA_FONTES") and codigo_lint.contains("res://fontes/"))
+	# A procedência de cada fonte precisa estar declarada: fonte solta sem
+	# origem é problema jurídico na loja.
+	var manifesto := FileAccess.get_file_as_string("res://fontes/FONTES.md")
+	ok("as fontes tem manifesto com licenca", manifesto.contains("SIL OFL"))
+	for nome in ["Orbitron", "Exo2", "NotoSansSC", "NotoSansJP", "NotoSansKR", "NotoSansThai"]:
+		ok("%s esta declarado no manifesto" % str(nome), manifesto.contains(str(nome)))
+
+
+## ------------------------------------------------------------- idiomas
+## Vinte idiomas é onde um jogo começa a mentir em silêncio: a tela fica em
+## branco, o número troca de ordem de grandeza, o chinês vira quadradinho — e
+## nada disso quebra, então nada disso aparece num teste que só roda em
+## português. Estas asserções são a rede.
+func t_idiomas() -> void:
+	g("Idiomas")
+	var cods := Idiomas.codigos()
+	ok("o jogo declara vinte idiomas", cods.size() == 20, "n=%d" % cods.size())
+
+	var vistos := {}
+	var steam_vistos := {}
+	var sem_nome: Array = []
+	var sem_steam: Array = []
+	for d in Idiomas.LISTA:
+		var di: Dictionary = d
+		var c := str(di.get("cod", ""))
+		if vistos.has(c):
+			sem_nome.append("codigo repetido: " + c)
+		vistos[c] = true
+		if str(di.get("nome", "")) == "":
+			sem_nome.append(c)
+		var st := str(di.get("steam", ""))
+		if st == "":
+			sem_steam.append(c)
+		elif steam_vistos.has(st):
+			sem_steam.append("codigo steam repetido: " + st)
+		steam_vistos[st] = true
+	ok("todo idioma tem nome na propria lingua", sem_nome.is_empty(), str(sem_nome))
+	# O CÓDIGO DA STEAM NÃO É O ISO, e essa diferença derruba página de loja em
+	# silêncio: chinês simplificado é `schinese` e não `zh-CN`, coreano é
+	# `koreana`, português do Brasil é `brazilian`, espanhol da América Latina é
+	# `latam`. Escrever o ISO ali faz a loja ignorar o idioma sem avisar.
+	ok("todo idioma tem codigo da Steam, e nenhum repetido", sem_steam.is_empty(), str(sem_steam))
+	ok("chines simplificado usa o codigo schinese", Idiomas.steam("zh-Hans") == "schinese")
+	ok("coreano usa o codigo koreana", Idiomas.steam("ko") == "koreana")
+	ok("portugues do Brasil usa o codigo brazilian", Idiomas.steam("pt-BR") == "brazilian")
+	ok("espanhol da America Latina usa o codigo latam", Idiomas.steam("es-419") == "latam")
+
+	# A fonte e a ponte precisam ESTAR na lista, senão a cadeia de busca aponta
+	# para um idioma que não existe e todo texto cai na chave crua.
+	ok("o idioma fonte esta na lista", Idiomas.existe(Idiomas.FONTE), Idiomas.FONTE)
+	ok("o idioma ponte esta na lista", Idiomas.existe(Idiomas.PONTE), Idiomas.PONTE)
+
+	# A CADEIA DE BUSCA. Espanhol da América Latina que não tenha uma frase cai
+	# no espanhol da Espanha ANTES de cair no inglês: é a mesma língua, e a frase
+	# da Espanha é sempre melhor do que uma frase inglesa no meio da tela.
+	var c_latam := Array(Idiomas.cadeia("es-419"))
+	ok("latam procura primeiro no espanhol da Espanha",
+		c_latam.size() > 1 and str(c_latam[1]) == "es-ES", str(c_latam))
+	ok("e o ingles vem depois do irmao", c_latam.find("en") > c_latam.find("es-ES"))
+	ok("a cadeia sempre termina na fonte", str(c_latam[c_latam.size() - 1]) == Idiomas.FONTE)
+	var c_hant := Array(Idiomas.cadeia("zh-Hant"))
+	ok("chines tradicional procura no simplificado antes do ingles",
+		c_hant.find("zh-Hans") >= 0 and c_hant.find("zh-Hans") < c_hant.find("en"))
+	ok("a cadeia do proprio ingles nao se repete",
+		Array(Idiomas.cadeia("en")).count("en") == 1)
+
+	# SEPARADOR DECIMAL. Este jogo é feito de número: "1.234,56" em alemão contra
+	# "1,234.56" em inglês, trocados, fazem o jogador ler a grandeza errada por
+	# uma ordem de mil.
+	ok("o alemao usa virgula decimal", Idiomas.decimal("de") == ",")
+	ok("o ingles usa ponto decimal", Idiomas.decimal("en") == ".")
+	var sem_sep: Array = []
+	for c2 in cods:
+		if Idiomas.decimal(str(c2)) == "" or Idiomas.milhar(str(c2)) == "":
+			sem_sep.append(str(c2))
+		if Idiomas.decimal(str(c2)) == Idiomas.milhar(str(c2)):
+			sem_sep.append("%s usa o mesmo separador para os dois" % str(c2))
+	ok("todo idioma tem separador decimal e de milhar, e sao diferentes",
+		sem_sep.is_empty(), str(sem_sep))
+
+	# DETECÇÃO PELO SISTEMA. "zh_TW" tem que virar chinês TRADICIONAL: cair no
+	# simplificado abriria o jogo em caracteres errados para Taiwan e Hong Kong.
+	var codigo_i := _ler("res://scripts/core/idiomas.gd")
+	ok("a deteccao separa os dois chineses",
+		codigo_i.contains("hant") and codigo_i.contains("tw"))
+
+	# ------------------------------------------------ resolucao de texto
+	var antes := Txt.idioma
+	Txt.definir("pt-BR")
+	var em_pt := Txt.t("fechar")
+	Txt.definir("en")
+	var em_en := Txt.t("fechar")
+	ok("a mesma chave muda com o idioma", em_pt != em_en, "%s / %s" % [em_pt, em_en])
+	# Idioma sem tradução ainda não deve QUEBRAR: ele cai na cadeia até achar
+	# alguma coisa, e o pior caso é o inglês — nunca a chave crua.
+	Txt.definir("hu")
+	var em_hu := Txt.t("fechar")
+	ok("idioma sem traducao cai na cadeia, nao na chave crua",
+		em_hu != "fechar" and em_hu != "", em_hu)
+	# Código inventado não pode virar tela em branco.
+	Txt.definir("xx-YY")
+	ok("codigo desconhecido vira o idioma ponte", Txt.idioma == Idiomas.PONTE)
+	# Chave que não existe volta como está, feia de propósito.
+	Txt.definir("pt-BR")
+	# A chave é MONTADA em tempo de execução, e não escrita inteira: o lint varre
+	# o código atrás de `Txt.t("...")` sem tradução, e uma chave inexistente
+	# escrita por extenso aqui seria acusada — com razão, se fosse de verdade.
+	var inexistente := "chave_que" + "_nao_existe"
+	ok("chave desconhecida volta como esta", Txt.t(inexistente) == inexistente)
+	ok("o par ingles continua respondendo", Txt.em("fechar", "en") != "")
+	ok("a lista de chaves nao esta vazia", Txt.todas_as_chaves().size() > 900,
+		"n=%d" % Txt.todas_as_chaves().size())
+	Txt.definir(antes)
+
+	# ------------------------------------------------ conteudo carimbado
+	# `Ux.txt` precisa saber de QUAL arquivo veio o dicionário para achar a
+	# tradução: existem 37 colisões de id entre conteúdos diferentes (a cepa
+	# `blindado` e o inimigo `blindado`). Sem o carimbo, uma tradução
+	# sobrescreveria a outra em silêncio.
+	var g_def: Dictionary = Dados.inimigo_por_id["grunhido"]
+	ok("o conteudo vem carimbado com a procedencia", str(g_def.get("_k", "")) != "",
+		str(g_def.get("_k", "")))
+	ok("o carimbo tem arquivo e id", str(g_def.get("_k", "")) == "enemies.json:grunhido")
+	var cepa_bl: Dictionary = Dados.cepa_por_id["blindado"]
+	ok("ids iguais em arquivos diferentes tem carimbos diferentes",
+		str(cepa_bl.get("_k", "")) != str(g_def.get("_k", "")),
+		str(cepa_bl.get("_k", "")))
+	# `_k` começa com sublinhado por convenção: é campo do motor, e nenhum
+	# validador de dados deve cobrar tradução dele.
+	var val := _ler("res://tools/suites/validar_dados.gd")
+	ok("o validador nao cobra traducao de campo do motor",
+		not val.contains('"_k"'))
+
+
+## ------------------------------------------------------------- sem fim
+## O jogo se vende como infinito, tem Modo Infinito, e vai ter placar de líderes.
+## Um placar sobre uma curva que congela mede quem teve mais paciência DEPOIS que
+## o jogo acabou. Estas asserções são o que separa "infinito" de "infinito até a
+## onda 5.100".
+func t_sem_fim() -> void:
+	g("Sem fim")
+
+	# A ARMADILHA ERA A ORDEM DAS CONTAS. `pow(1.152, w - 1)` era calculado como
+	# float comum ANTES de virar logaritmo, e float comum estoura em 1e308: por
+	# volta da onda 5.100 a conta virava infinito, o clamp do Big a prendia no
+	# teto, e a onda 5.101 passava a ser idêntica à onda 900.000. Sem travar,
+	# sem avisar.
+	var marcos := [100, 1000, 5000, 5100, 6000, 20000, 100000, 1000000, 100000000]
+	for i in range(1, marcos.size()):
+		var a: int = marcos[i - 1]
+		var b: int = marcos[i]
+		ok("a vida da onda cresce de %d para %d" % [a, b],
+			Bal.hp_onda(b) > Bal.hp_onda(a),
+			"%.2f -> %.2f" % [Bal.hp_onda(a), Bal.hp_onda(b)])
+		ok("o ouro da onda cresce de %d para %d" % [a, b],
+			Bal.ouro_onda(b) > Bal.ouro_onda(a))
+
+	# A onda SEGUINTE sempre vale mais que a anterior — inclusive lá no fundo.
+	# Se duas ondas vizinhas empatarem, a progressão morreu ali.
+	var empatou := 0
+	for w in [5099, 5100, 5101, 50000, 1000000, 10000000]:
+		if not (Bal.hp_onda(int(w) + 1) > Bal.hp_onda(int(w))):
+			empatou += 1
+		if not (Bal.ouro_onda(int(w) + 1) > Bal.ouro_onda(int(w))):
+			empatou += 1
+	ok("nenhuma onda vizinha empata, nem no fundo", empatou == 0, "empates=%d" % empatou)
+
+	# E NADA VIRA INFINITO OU NaN. Um NaN no estado faz `JSON.stringify` emitir
+	# `nan`, que não é JSON: a partir dali o jogo recusa TODO save, para sempre.
+	var sujo := 0
+	for w2 in [1, 1000, 100000, 100000000, 1000000000]:
+		for v in [Bal.hp_onda(int(w2)), Bal.ouro_onda(int(w2)), Bal.xp_onda(int(w2))]:
+			if not is_finite(float(v)):
+				sujo += 1
+	ok("nenhuma curva de onda vira infinito ou NaN", sujo == 0, "sujos=%d" % sujo)
+
+	# O custo de nível da torre caía na MESMA armadilha, por volta do nível 3.000.
+	ok("o custo de nivel cresce alem do estouro antigo",
+		Bal.custo_nivel(5000) > Bal.custo_nivel(3000))
+	ok("...e continua crescendo muito depois",
+		Bal.custo_nivel(1000000) > Bal.custo_nivel(5000))
+
+	# A conta em logaritmo tem que dar o MESMO resultado que a conta antiga dava
+	# na faixa em que a antiga funcionava. Sem isto, "consertar o infinito" teria
+	# rebalanceado o jogo inteiro em silêncio.
+	for w3 in [1, 2, 10, 50, 100, 500, 1000, 2000]:
+		var antiga: float = Big.mul_f(Big.mul_f(Big.from(Bal.HP_BASE),
+			pow(Bal.HP_CRESC, float(int(w3) - 1))),
+			1.0 + pow(float(int(w3)) / Bal.HP_POLI_DIV, Bal.HP_POLI_EXP))
+		ok("a curva nao mudou na onda %d" % int(w3),
+			absf(Bal.hp_onda(int(w3)) - antiga) < 0.0001,
+			"nova=%.6f antiga=%.6f" % [Bal.hp_onda(int(w3)), antiga])
+
+	# O TETO DE VERDADE. `Big` satura em 1e29 no expoente; a 0,0615 por onda, dá
+	# ~1,6e30 ondas. A uma onda por segundo são 5e22 anos. É infinito para
+	# qualquer efeito prático — e é isso que um placar de líderes precisa.
+	var por_onda := Big.from(Bal.HP_CRESC)
+	var ondas_ate_o_teto := Big.MAX_LOG / por_onda
+	ok("o teto da curva esta alem de qualquer partida humana",
+		ondas_ate_o_teto > 1.0e25, "ondas=%.3e" % ondas_ate_o_teto)
+
+
+## ------------------------------------------------------------- steam
+## A integração com a Steam depende de um binário nativo que NÃO está no
+## repositório. A pergunta que estas asserções respondem não é "a Steam
+## funciona?" — isso só dá para saber com o plugin instalado e um app id real.
+## É a pergunta que dá para responder daqui, e que é a que quebra jogo:
+## **sem o plugin, nada disso pode explodir.**
+func t_steam() -> void:
+	g("Steam")
+
+	# Nenhuma chamada pode estourar sem o plugin. Este é o caminho que roda no
+	# editor de quem clona o repositório, no CI e numa build fora da Steam.
+	# Chama `iniciar` aqui em vez de contar que o autoload já chamou: um teste
+	# que depende da ORDEM dos autoloads passa hoje e falha amanhã, quando
+	# alguém acrescentar um autoload antes deste.
+	ok("sem plugin, iniciar devolve falso sem drama", not SteamPonte.iniciar())
+	ok("sem plugin, a ponte se declara indisponivel", not SteamPonte.disponivel())
+	ok("sem plugin, nao esta ligada", not SteamPonte.ligado())
+	SteamPonte.destravar("p_onda10")
+	SteamPonte.enviar_placar("onda_maxima", 4123)
+	SteamPonte.presenca(412, "ascensao")
+	SteamPonte.limpar_presenca()
+	SteamPonte.passo()
+	SteamPonte.abrir_overlay("Store")
+	ok("nenhuma chamada estoura sem o plugin", true)
+	ok("sem plugin, a nuvem responde nao", not SteamPonte.nuvem_ligada())
+	ok("sem plugin, o nome do jogador e vazio", SteamPonte.nome_do_jogador() == "")
+	ok("sem plugin, o idioma da Steam e vazio", SteamPonte.idioma_da_steam() == "")
+	ok("sem plugin, a ponte explica o motivo", SteamPonte.erro() != "")
+
+	# O NOME DE API DA CONQUISTA É DERIVADO, e a derivação não pode colidir: duas
+	# conquistas com o mesmo nome de API significariam uma desbloqueando a outra.
+	var vistos := {}
+	var colisao := ""
+	var invalidos: Array = []
+	for c in Dados.conquistas:
+		var id := str((c as Dictionary).get("id", ""))
+		var api := SteamPonte.nome_api(id)
+		if vistos.has(api):
+			colisao = api
+		vistos[api] = true
+		# A Steam só aceita letras, números e sublinhado no nome de API.
+		for i in api.length():
+			var ch := api[i]
+			var ok_ch: bool = (ch >= "A" and ch <= "Z") or (ch >= "0" and ch <= "9") or ch == "_"
+			if not ok_ch:
+				invalidos.append(api)
+				break
+	ok("nenhum nome de API de conquista colide", colisao == "", colisao)
+	ok("todo nome de API so tem letra, numero e sublinhado",
+		invalidos.is_empty(), str(invalidos.slice(0, 4)))
+	ok("as 85 conquistas geram 85 nomes", vistos.size() == Dados.conquistas.size(),
+		"%d de %d" % [vistos.size(), Dados.conquistas.size()])
+
+	# O ARQUIVO QUE VAI PARA A STEAMWORKS PRECISA BATER COM O CÓDIGO. Se ele for
+	# gerado uma vez e o código mudar depois, cadastram-se conquistas que nunca
+	# disparam — e ninguém descobre até um jogador reclamar.
+	var lista := FileAccess.get_file_as_string("res://../steamworks/conquistas.txt")
+	if lista == "":
+		lista = FileAccess.get_file_as_string("res://steamworks/conquistas.txt")
+	if lista != "":
+		var faltando: Array = []
+		for c2 in Dados.conquistas:
+			var api2 := SteamPonte.nome_api(str((c2 as Dictionary).get("id", "")))
+			if not lista.contains('"%s"' % api2):
+				faltando.append(api2)
+		ok("o arquivo da Steamworks tem todas as conquistas",
+			faltando.is_empty(), str(faltando.slice(0, 4)))
+
+	# O PLACAR MEDE O QUE ATRAVESSA O PRESTÍGIO. Um placar sobre a onda da
+	# partida ATUAL mediria quem ascendeu por último, não quem foi mais longe.
+	var cola := _ler("res://scripts/core/steam_cola.gd")
+	ok("o placar usa a onda maxima global", cola.contains("onda_maxima_global"))
+	ok("e nao a onda da partida atual",
+		not cola.contains('s.get("onda", 0))\n\tSteamPonte.enviar_placar'))
+	for chave in ["onda_maxima", "ascensoes", "transcendencias", "formas_vistas"]:
+		ok("o placar %s esta declarado" % str(chave), SteamPonte.PLACARES.has(str(chave)))
+
+	# O JOGO NÃO PODE SABER QUE A STEAM EXISTE. Nenhum sistema de simulação
+	# chama a ponte: tudo entra por `Bus`. É isso que faz tirar a Steam do jogo
+	# ser apagar uma linha do autoload, e nada mais.
+	var vazou: Array = []
+	for arq in ["res://scripts/sim/game.gd", "res://scripts/sim/combat.gd",
+			"res://scripts/sim/progress.gd", "res://scripts/sim/prestige.gd",
+			"res://scripts/ui/hud.gd", "res://scripts/ui/panel_manager.gd"]:
+		if FileAccess.get_file_as_string(arq).contains("SteamPonte"):
+			vazou.append(arq)
+	ok("nenhum sistema do jogo chama a Steam direto", vazou.is_empty(), str(vazou))
+
+	# A PRESENÇA RICA MANDA CHAVE, E NÃO FRASE. Mandar texto pronto deixaria um
+	# brasileiro vendo "Onda 412" na lista de amigos de um japonês.
+	var ponte := _ler("res://scripts/core/steam.gd")
+	ok("a presenca rica manda uma chave de traducao", ponte.contains("#Status_"))
+
+	# CONTROLE. O jogo não tinha nenhum evento de joystick: quem joga de controle
+	# simplesmente não jogava, e o Steam Deck cairia no modo mouse emulado.
+	var sem_controle: Array = []
+	for acao in ["ui_pausa", "purga", "turbo", "comprar_max", "alternar_auto",
+			"painel_upgrades", "painel_talentos", "painel_cartas",
+			"painel_prestigio", "painel_conquistas", "painel_config"]:
+		var tem := false
+		for e in InputMap.action_get_events(str(acao)):
+			if e is InputEventJoypadButton or e is InputEventJoypadMotion:
+				tem = true
+		if not tem:
+			sem_controle.append(str(acao))
+	ok("toda acao principal responde a controle", sem_controle.is_empty(), str(sem_controle))
+
 ## ------------------------------------------------------------- mira
 ## `alvo_ids` é a busca mais quente do jogo (todo impacto de perfuração e todo
 ## ricochete faz uma) e não tinha UM teste. Ela foi trocada de varredura linear
@@ -2921,10 +3281,14 @@ func t_rodape() -> void:
 	ok("conquista nao vista acende o botao de Conquistas",
 		bool((H.portas_do_rodape(conq, esp_vazio)["acende"] as Dictionary)["conquistas"]))
 
-	# O idioma do sistema decide a PRIMEIRA abertura, e nunca sem tela.
-	ok("sem tela o idioma padrao continua sendo pt", Cfg.idioma_do_sistema() == "pt")
+	# O idioma do sistema decide a PRIMEIRA abertura, e nunca sem tela: os
+	# portoes medem textos em portugues e nao podem mudar de resposta porque a
+	# maquina do CI esta configurada em outro idioma.
+	ok("sem tela o idioma padrao continua sendo o do jogo",
+		Cfg.idioma_do_sistema() == Idiomas.FONTE, Cfg.idioma_do_sistema())
+	var txt_i := _ler("res://scripts/core/idiomas.gd")
+	ok("a deteccao de idioma le o locale do sistema", txt_i.contains("OS.get_locale()"))
 	var txt_c := _ler("res://scripts/core/config.gd")
-	ok("a deteccao de idioma le o locale do sistema", txt_c.contains("OS.get_locale()"))
 	ok("...e so quando nao ha escolha salva", txt_c.contains('not salvo.has("idioma")'))
 
 ## ---------------------------------------------------------- custo do quadro
@@ -3327,7 +3691,7 @@ func t_defesa() -> void:
 	# `hab`, entao o chefe nunca refletiu nada — e o codex explicava o reflexo
 	# dele. Este teste cobre as DUAS portas.
 	var reflete_por: Array = []
-	for grupo in [Dados.inimigos, Dados.chefes, Dados.super_chefes, Dados.elites]:
+	for grupo in [Dados.inimigos, Dados.chefes, Dados.super_chefes, Dados.cepas]:
 		for cand in grupo:
 			if str(cand.get("hab", "")) == "refletir":
 				reflete_por.append(["hab", cand])
@@ -4368,10 +4732,16 @@ func _conferir_ci() -> int:
 	# longas) e metade so existe na escala 1,25 (a janela logica encolhe de 1280
 	# para 1024). Uma varredura que rode so em ingles a 1,0 passa verde num jogo
 	# com quatro paineis estourando a tela — foi exatamente o que aconteceu.
+	# A REGRA VIROU "OS EXTREMOS", E NÃO "OS DOIS IDIOMAS". Com vinte idiomas, o
+	# que importa não é a quantidade: é o COMPRIMENTO do texto. O alemão é o mais
+	# longo (palavra composta não quebra linha), o chinês é o mais curto, e um
+	# layout que sobrevive aos dois sobrevive aos outros dezoito. O português
+	# continua obrigatório por ser o texto fonte.
 	var fonte_vr := _ler("res://tools/varredura_ui.gd")
-	if not fonte_vr.contains('const AUD_IDIOMAS := ["pt", "en"]'):
-		print("  FALHOU [doc] a varredura de layout precisa cobrir os DOIS idiomas")
-		erros += 1
+	for idioma_obrigatorio in ["pt-BR", "de", "zh-Hans"]:
+		if not fonte_vr.contains('"%s"' % str(idioma_obrigatorio)):
+			print("  FALHOU [doc] a varredura de layout precisa cobrir %s" % str(idioma_obrigatorio))
+			erros += 1
 	if not fonte_vr.contains("const AUD_ESCALAS := [1.0, 1.25]"):
 		print("  FALHOU [doc] a varredura de layout precisa cobrir as escalas que o jogo oferece")
 		erros += 1

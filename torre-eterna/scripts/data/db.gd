@@ -10,7 +10,6 @@ const PASTA := "res://data/"
 
 static var inimigos: Array = []
 static var inimigo_por_id: Dictionary = {}
-static var elites: Array = []
 static var chefes: Array = []
 static var super_chefes: Array = []
 
@@ -90,7 +89,6 @@ static func carregar(forcar: bool = false) -> void:
 	faltando.clear()
 	var e := _json("enemies")
 	inimigos = e.get("inimigos", [])
-	elites = e.get("elites", [])
 	chefes = e.get("chefes", [])
 	super_chefes = e.get("superChefes", [])
 	inimigo_por_id = _indexar(inimigos)
@@ -195,6 +193,26 @@ static func carregar(forcar: bool = false) -> void:
 
 	carregado = true
 
+## CARIMBA A PROCEDÊNCIA EM CADA DICIONÁRIO DE CONTEÚDO.
+##
+## `Ux.txt` recebe um Dicionário solto e precisa saber de onde ele veio para
+## achar a tradução: a chave é `arquivo:id`, e o arquivo é obrigatório porque há
+## 37 colisões de id entre conteúdos diferentes. O carimbo é feito UMA vez, aqui,
+## e não a cada leitura — `Ux.txt` roda a cada rótulo desenhado.
+##
+## `_k` começa com sublinhado por convenção: é campo do motor, não do conteúdo, e
+## nenhum validador de dados deve cobrar tradução dele.
+static func _carimbar(o, arquivo: String) -> void:
+	if o is Dictionary:
+		var d: Dictionary = o
+		if d.has("id") and d["id"] is String:
+			d["_k"] = "%s:%s" % [arquivo, str(d["id"])]
+		for v in d.values():
+			_carimbar(v, arquivo)
+	elif o is Array:
+		for v2 in o:
+			_carimbar(v2, arquivo)
+
 static func _json(nome: String) -> Dictionary:
 	var caminho := PASTA + nome + ".json"
 	if not ResourceLoader.exists(caminho) and not FileAccess.file_exists(caminho):
@@ -208,6 +226,7 @@ static func _json(nome: String) -> Dictionary:
 	f.close()
 	var r = JSON.parse_string(texto)
 	if r is Dictionary:
+		_carimbar(r, nome + ".json")
 		return r
 	faltando.append(nome + " (json inválido)")
 	return {}

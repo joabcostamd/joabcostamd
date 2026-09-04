@@ -4,7 +4,7 @@ extends Node
 ## então sobrevivem a um reset total.
 
 const PADRAO := {
-	"idioma": "pt",
+	"idioma": "pt-BR",   # ver scripts/core/idiomas.gd
 	"notacao": 0,              # Fmt.Notacao
 	"casas": 2,
 	"vol_master": 0.75,
@@ -54,17 +54,20 @@ func _ready() -> void:
 	for k in PADRAO.keys():
 		if salvo.has(k):
 			v[k] = salvo[k]
+	# MIGRAÇÃO DO CÓDIGO DE IDIOMA. O jogo guardava "pt" e "en"; com vinte
+	# idiomas os códigos passaram a distinguir variante ("pt-BR", "es-ES",
+	# "zh-Hant"). Sem esta linha, quem já jogava abriria numa configuração que
+	# não existe mais e cairia no inglês — perderia o idioma sem entender por quê.
+	if not Idiomas.existe(str(v["idioma"])):
+		v["idioma"] = "pt-BR" if str(v["idioma"]) == "pt" else Idiomas.do_sistema()
 	aplicar()
 
-## Idioma que o sistema operacional pede, reduzido aos dois que o jogo fala.
-##
-## `headless` e ferramenta, nao jogador: os portoes medem textos em portugues e
-## nao podem mudar de resposta porque a maquina do CI esta configurada em outro
-## idioma. Entao sem tela o padrao continua sendo `pt`, sempre.
+## Idioma que o sistema operacional pede, reduzido aos vinte que o jogo fala.
+## A conta em si mora em `Idiomas.do_sistema()`, junto com o resto do que define
+## um idioma. Aqui fica só a porta, porque `Cfg` é o autoload que todo mundo já
+## conhece.
 static func idioma_do_sistema() -> String:
-	if DisplayServer.get_name() == "headless":
-		return "pt"
-	return "pt" if OS.get_locale().to_lower().begins_with("pt") else "en"
+	return Idiomas.do_sistema()
 
 func get_v(chave: String, padrao = null):
 	return v.get(chave, PADRAO.get(chave, padrao))
@@ -88,7 +91,7 @@ func aplicar() -> void:
 	Fmt.notacao = int(v["notacao"]) as Fmt.Notacao
 	Fmt.casas = int(v["casas"])
 	Fmt.ingles = v["idioma"] == "en"
-	Txt.definir_idioma(v["idioma"] == "en")
+	Txt.definir(str(v["idioma"]))
 
 	var master := AudioServer.get_bus_index("Master")
 	if master >= 0:

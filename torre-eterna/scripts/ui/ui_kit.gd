@@ -209,9 +209,22 @@ static func tema() -> Theme:
 
 # ------------------------------------------------------------- widgets
 
+## A LETRA DO JOGO PASSA POR AQUI, e é por isso que uma linha resolve a tela
+## inteira. Todo texto do jogo nasce de `rotulo` ou de `titulo`: aplicar a fonte
+## nesses dois pontos veste as 52 telas de uma vez, sem tocar em nenhuma delas.
+##
+## `Tipografia.ui()` devolve `null` quando as fontes não estão instaladas (elas
+## não são versionadas — ver `fontes/FONTES.md`), e `null` aqui quer dizer "não
+## sobrescreva nada", ou seja, continua a fonte do motor. O jogo abre igual.
+static func _vestir(l: Label, de_titulo: bool) -> void:
+	var f := Tipografia.titulo(Cfg.v.get("idioma", "pt")) if de_titulo else Tipografia.ui(Cfg.v.get("idioma", "pt"))
+	if f != null:
+		l.add_theme_font_override("font", f)
+
 static func rotulo(texto: String, tamanho: int = 15, cor: Color = TEXTO, negrito: bool = false) -> Label:
 	var l := Label.new()
 	l.text = texto
+	_vestir(l, false)
 	l.add_theme_font_size_override("font_size", tamanho)
 	l.add_theme_color_override("font_color", cor)
 	if negrito:
@@ -256,6 +269,7 @@ static func _com_dica(no: Node) -> Array:
 
 static func titulo(texto: String, tamanho: int = 22) -> Label:
 	var l := rotulo(texto, tamanho, Color.WHITE)
+	_vestir(l, true)
 	l.add_theme_color_override("font_outline_color", ACENTO.darkened(0.7))
 	l.add_theme_constant_override("outline_size", 0)
 	return l
@@ -271,6 +285,9 @@ static func titulo(texto: String, tamanho: int = 22) -> Label:
 static func botao(texto: String, ao_clicar: Callable = Callable(), dica: String = "") -> Button:
 	var b := Button.new()
 	b.text = texto
+	var fb := Tipografia.ui(Cfg.v.get("idioma", "pt"))
+	if fb != null:
+		b.add_theme_font_override("font", fb)
 	b.focus_mode = Control.FOCUS_ALL
 	b.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	if dica != "":

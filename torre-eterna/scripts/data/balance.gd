@@ -18,13 +18,34 @@ const XP_CRESC := 1.09
 ## HP (log10) de um inimigo comum na onda w.
 static func hp_onda(w: int) -> float:
 	var poli := 1.0 + pow(maxf(0.0, float(w)) / HP_POLI_DIV, HP_POLI_EXP)
-	return Big.mul_f(Big.mul_f(Big.from(HP_BASE), pow(HP_CRESC, float(w - 1))), poli)
+	return _crescer(HP_BASE, HP_CRESC, w, poli)
 
 static func ouro_onda(w: int) -> float:
-	return Big.mul_f(Big.from(OURO_BASE), pow(OURO_CRESC, float(w - 1)))
+	return _crescer(OURO_BASE, OURO_CRESC, w, 1.0)
 
 static func xp_onda(w: int) -> float:
-	return Big.mul_f(Big.from(XP_BASE), pow(XP_CRESC, float(w - 1)))
+	return _crescer(XP_BASE, XP_CRESC, w, 1.0)
+
+## A CURVA DA ONDA, EM LOGARITMO — E ISSO É O QUE FAZ O JOGO SER SEM FIM.
+##
+## As três curvas eram `Big.mul_f(Big.from(BASE), pow(CRESC, w - 1))`. O problema
+## está na ordem: `pow(1.152, w - 1)` é calculado como float COMUM antes de virar
+## logaritmo, e float comum estoura em 1e308. Medido: por volta da **onda 5.100**
+## a conta vira infinito, o `clampf` do `Big` a prende no teto, e a partir dali
+## TODAS as ondas passam a ter exatamente a mesma vida e o mesmo ouro. O jogo não
+## trava e não avisa — ele simplesmente para de progredir, em silêncio, e a onda
+## 5.101 é igual à onda 900.000.
+##
+## Isso não é um detalhe: o jogo se vende como infinito, tem Modo Infinito, e vai
+## ter placar de líderes. Um placar sobre uma curva que congela na onda 5.100
+## mede quem tem mais paciência depois que o jogo acabou.
+##
+## Somando os logaritmos em vez de multiplicar os números, o mesmo resultado sai
+## sem passar por nenhum valor grande: o novo teto é a saturação do próprio `Big`
+## (1e29 no expoente), que a 0,0615 por onda fica em ~1,6e30 ondas. A uma onda
+## por segundo, são 5e22 anos. É infinito para qualquer efeito prático.
+static func _crescer(base: float, cresc: float, w: int, extra: float) -> float:
+	return Big.from_log(Big.from(base) + float(w - 1) * Big.from(cresc) + Big.from(extra))
 
 static func contagem_onda(w: int, infinito: bool = false) -> int:
 	if infinito:
@@ -74,7 +95,10 @@ const DOURADO := {"hp": 0.9, "ouro": 35.0, "xp": 6.0, "escala": 1.15, "vel": 1.9
 const NIVEL_MAX := 500
 
 static func custo_nivel(n: int) -> float:
-	return Big.mul_f(Big.mul_f(Big.from(12.0), pow(1.28, float(n - 1))), 1.0 + pow(float(n) / 30.0, 1.6))
+	# Mesma armadilha das curvas de onda: `pow(1.28, n - 1)` estoura o float por
+	# volta de n = 3.000. Em logaritmo, o teto vira astronômico.
+	return Big.from_log(Big.from(12.0) + float(n - 1) * Big.from(1.28)
+		+ Big.from(1.0 + pow(float(n) / 30.0, 1.6)))
 
 static func pontos_por_nivel(n: int) -> int:
 	var p := 1

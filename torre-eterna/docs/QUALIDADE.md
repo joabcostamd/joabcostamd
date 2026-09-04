@@ -281,7 +281,7 @@ real no save (ver `scripts/core/save_system.gd`, `_tem_nao_finito`).
 
 ```
 $ godot --headless --path . -s res://tools/verificar.gd
-===VERIFICAR=== scripts=97 falhas=0 dados_faltando=[]
+===VERIFICAR=== scripts=102 falhas=0 dados_faltando=[]
 ===STATUS=== PASS
 
 $ godot --headless --path . -s res://tools/lint.gd
@@ -309,7 +309,7 @@ $ godot --headless --path . -s res://tools/validar_dados.gd
 ===STATUS=== PASS
 
 $ godot --headless --path . -s res://tools/testes.gd
-===TESTES=== passou=917 falhou=0
+===TESTES=== passou=1013 falhou=0
 ===STATUS=== PASS
 
 $ godot --headless --path . -s res://tools/perf.gd -- 412
@@ -319,7 +319,7 @@ maquina: 39882 us na conta de referencia (39000 esperado) -> fator 1.02x
 
 --- PORTAO: 10 min de jogo real (onda 204 ao fim, automacao ligada) ---
   vivos medios 12 | pico de projeteis 349
-  media   1094 | p50   1206 | p90   1957 | p99   2725 | pior   5529  (us)
+  media   1098 | p50   1206 | p90   1957 | p99   2725 | pior   5529  (us)
   523 fps no p90
   normalizado p90: 1914 us  (orcamento 4090 us = 4000 x 1.02)
 
@@ -410,10 +410,10 @@ STATUS: PASS   (3418 ms)
 
 | | |
 |---|---:|
-| Scripts GDScript | 97 |
-| Linhas de código | 36.300 |
-| Testes da simulação | 917 |
-| Chaves de interface PT/EN | 1.094 |
+| Scripts GDScript | 102 |
+| Linhas de código | 37.654 |
+| Testes da simulação | 1013 |
+| Chaves de interface PT/EN | 1.098 |
 | Textos de conteúdo PT/EN | 1.286 |
 | Imagens no repositório | 1 (`icon.svg`, o ícone do projeto — nenhuma no jogo) |
 | Arquivos de som no repositório | 0 |
