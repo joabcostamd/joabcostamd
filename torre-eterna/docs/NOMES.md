@@ -514,3 +514,65 @@ lotado de "Infinite/Endless". Nenhum dos outros 23 fez as três coisas.
 Trocar continua sendo uma linha em `data/marca.json` mais os portões. Depois do
 lançamento, é a página da loja, o histórico de análises e o SEO.
 
+---
+
+## 3.5. ENDLESS TOWER — medido de propósito, a pedido
+
+Este é o campo mais lotado dos três estudos, e ele é lotado de dois jeitos
+diferentes. Os dois importam.
+
+### Lotado como nome
+
+| Jogo | Onde |
+|---|---|
+| *Endless Tower* | o nome exato, já existe |
+| *Monos: The Endless Tower* | Steam |
+| *Endless Tower Survivors* | Steam 4516320 |
+| *Adventurer Manager – Endless Tower* | Steam |
+| **Endless Void: Idle Tower Defense** | Steam 4710800 |
+| *Endless Defense: Survival* | Steam 3303150 |
+
+O quinto é o pior de todos. A descrição dele: *"jogo incremental minimalista
+onde o objetivo é segurar a linha contra ondas matematicamente infinitas de
+inimigos… construa uma fortaleza impenetrável, pesquise tecnologia que quebra o
+jogo, forje equipamento lendário e use habilidades cósmicas"*. **É a nossa
+sinopse, escrita por outra pessoa, já publicada.**
+
+### Lotado como palavra — e este é o problema de verdade
+
+`endless` não é só um nome ocupado. É **a palavra padrão de marketing do gênero
+inteiro**. Amostra do que a busca devolve, todos idle tower defense na Steam:
+
+| Jogo | O que a descrição diz |
+|---|---|
+| Idle Tower Defense (3054090) | "sobreviva a **ondas infinitas**" |
+| Idle Hero TD (2897580) | "**endless** idle tower defense… **infinite** monster waves" |
+| Idle Towers (3190950) | "**infinite waves** of enemies" |
+| Idle Monster TD (1482910) | "**endless** tower defense… **infinite** swarm" |
+| IdleTowerDefense (3149330) | idem |
+
+Quando toda a prateleira usa a mesma palavra, essa palavra **para de significar
+alguma coisa**. Ela deixa de ser uma promessa e vira ruído de fundo.
+
+### A conclusão prática
+
+Chamar o jogo de ENDLESS TOWER não diz "este jogo é infinito". Diz "este jogo é
+mais um". É pior que colisão: é **invisibilidade**.
+
+E é irônico, porque a nossa infinitude é a única da lista que foi **medida**.
+`balance.gd` soma logaritmos em vez de multiplicar potências, e por isso o teto
+real é ~1,6e30 ondas, com o portão de testes provando que a curva não muda entre
+a onda 1 e a 2000. Os outros escrevem "infinito" na loja; nós temos o número. O
+título não é o lugar de gastar isso — a descrição curta é.
+
+| Critério | Nota |
+|---|---|
+| Colisão | **1** — o nome exato existe, e mais cinco parentes |
+| Achável | **1** — compete com a prateleira inteira pela mesma palavra |
+| Sinal de gênero | 5 — todo mundo entende na hora |
+| 20 idiomas | 2 — "endless" e "tower" pedem tradução em 20 lugares |
+| Logo | 3 — duas palavras longas, ruim em *capsule* pequena |
+| **Soma** | **12** |
+
+**Fica atrás até de ETERNAL TOWER (13).** Não recomendo.
+
