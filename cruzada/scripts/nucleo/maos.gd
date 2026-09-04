@@ -196,23 +196,43 @@ static func padroes_parciais(cartas: Array) -> int:
 
     return mini(padroes, PISO_TETO_PADROES)
 
-# ───────────────────────── DESIGN R11 — a linha ─────────────────────────
+# ────────────────── DESIGN R11/R12 — a conta do evento ──────────────────
 
-## Os pontos de uma linha completa de 5 cartas, já com o piso da diagonal.
-## O Tear NÃO entra aqui: ele multiplica o evento inteiro (R12), não a linha.
-static func pontos_da_linha(cartas: Array, diagonal: bool) -> int:
+## As fichas de uma linha completa. É a parte que NÃO depende do evento: só o
+## que as cinco cartas valem, mais a base da categoria, mais o piso se for fraca.
+static func fichas_da_linha(cartas: Array) -> int:
     var cat := categoria(cartas[0], cartas[1], cartas[2], cartas[3], cartas[4])
     var fichas := FICHAS_BASE[cat] + fichas_de(cartas)
     if fraca(cat):
         fichas += padroes_parciais(cartas) * PISO_POR_PADRAO
-    var pontos := fichas * MULTIPLICADOR[cat]
+    return fichas
+
+## R12 — o fator do evento: a SOMA dos multiplicadores de todas as mãos colhidas
+## juntas, vezes o Tear. Um fator só, comum a todas as linhas do evento.
+##
+## É aqui que a cruzada existe. Uma Trinca sozinha paga `fichas × 3 × Tear`;
+## a mesma Trinca colhida junto com um Flush paga `fichas × 7 × Tear` — para as
+## duas. Se cada linha usasse o multiplicador dela, colher junto seria idêntico a
+## colher separado e a Janela da Colheita (R08) não teria razão de existir.
+static func fator_do_evento(categorias: Array, tear: int) -> int:
+    var soma := 0
+    for cat in categorias:
+        soma += MULTIPLICADOR[cat]
+    return soma * tear
+
+## Os pontos de uma linha dentro de um evento, já com o piso da diagonal.
+## Arredonda para baixo: o jogador nunca ganha ponto que a conta não tem.
+static func pontos_da_linha(fichas: int, fator: int, diagonal: bool) -> int:
+    var v := float(fichas) * float(fator)
     if diagonal:
-        pontos = int(round(float(pontos) * PISO_DIAGONAL))
-    return pontos
+        v *= PISO_DIAGONAL
+    return int(floor(maxf(0.0, v)))
+
+# ─────────────── DESIGN R13/R19 — a parcela e o fecho ───────────────
 
 ## Uma linha incompleta vale o que ela já tem: só as categorias por valor são
 ## garantidas com menos de 5 cartas, porque a 5ª carta pode desmanchar qualquer
-## promessa de naipe ou de sequência. Serve à PARCELA (R13) e ao FECHO (R19).
+## promessa de naipe ou de sequência.
 static func categoria_parcial(cartas: Array) -> int:
     if cartas.size() == 5:
         return categoria(cartas[0], cartas[1], cartas[2], cartas[3], cartas[4])
@@ -242,13 +262,103 @@ static func categoria_parcial(cartas: Array) -> int:
         return PAR
     return ALTA
 
-## Os pontos que uma linha incompleta pagaria se fosse colhida agora. É a base
-## da PARCELA (35%) e do FECHO (50%).
-static func pontos_parciais(cartas: Array, diagonal: bool) -> int:
+## O que uma linha incompleta paga. `fracao` é 0,35 na PARCELA e 0,50 no FECHO.
+##
+## A linha sozinha usa o multiplicador dela — não há evento partilhado aqui — e o
+## piso do padrão parcial NÃO entra: ele é recompensa de colheita, não de
+## promessa. Foi assim que a bancada mediu, e mudar isso muda a economia inteira.
+static func pontos_parciais(cartas: Array, diagonal: bool, tear: int,
+                            fracao: float) -> int:
     if cartas.is_empty():
         return 0
     var cat := categoria_parcial(cartas)
-    var pontos := (FICHAS_BASE[cat] + fichas_de(cartas)) * MULTIPLICADOR[cat]
+    var fichas := FICHAS_BASE[cat] + fichas_de(cartas)
+    var v := float(fichas) * float(MULTIPLICADOR[cat] * tear) * fracao
     if diagonal:
-        pontos = int(round(float(pontos) * PISO_DIAGONAL))
-    return pontos
+        v *= PISO_DIAGONAL
+    return int(floor(maxf(0.0, v)))
+
+# ──────────────── o que esta linha AINDA pode ser (§6, "COMO FECHAR") ────────────────
+
+## A melhor categoria que uma linha incompleta ainda consegue alcançar, se as
+## cartas que faltam vierem certas. É uma promessa, não uma garantia — e é a
+## régua que separa "esta linha ainda vale a pena" de "esta linha morreu".
+##
+## Serve ao painel COMO FECHAR e ao nível 2 das DICAS. É também o que um jogador
+## competente calcula de cabeça sem saber que está calculando.
+static func melhor_alcancavel(cartas: Array) -> int:
+    var k := cartas.size()
+    if k == 0:
+        return SEQ_COR
+    if k > 5:
+        return ALTA
+    var livres := 5 - k
+    _preparar()
+    for i in Cartas.VALORES:
+        _cv[i] = 0
+    for i in Cartas.NAIPES:
+        _cn[i] = 0
+    var mascara := 0
+    for c in cartas:
+        _cv[c % 13] += 1
+        _cn[c / 13] += 1
+        mascara |= 1 << (c % 13)
+
+    var mesmo_naipe := false
+    for n in Cartas.NAIPES:
+        if _cn[n] == k:
+            mesmo_naipe = true
+            break
+
+    var distintos := _bits(mascara)
+    var sem_repeticao := distintos == k
+
+    ## Sequência ainda possível: nenhum valor repetido e tudo cabendo numa
+    ## janela de cinco. A janela do Ás alto entra à parte, como no avaliador.
+    var seq := false
+    var real := false
+    if sem_repeticao:
+        var janela_real := (1 << 9) | (1 << 10) | (1 << 11) | (1 << 12) | 1
+        if (mascara & ~janela_real) == 0:
+            seq = true
+            real = true
+        if not seq:
+            for inicio in 9:
+                var janela := 0
+                for j in 5:
+                    janela |= 1 << (inicio + j)
+                if (mascara & ~janela) == 0:
+                    seq = true
+                    break
+
+    var maior := 0
+    var segunda := 0
+    for v in Cartas.VALORES:
+        var n: int = _cv[v]
+        if n > maior:
+            segunda = maior
+            maior = n
+        elif n > segunda:
+            segunda = n
+
+    if mesmo_naipe and real:
+        return REAL
+    if mesmo_naipe and seq:
+        return SEQ_COR
+    if maior + livres >= 4:
+        return QUADRA
+    if distintos <= 2 and maior <= 3 and segunda <= 2:
+        return FULL
+    if mesmo_naipe:
+        return FLUSH
+    if seq:
+        return SEQUENCIA
+    if maior + livres >= 3:
+        return TRINCA
+    if maior >= 2 and segunda >= 2:
+        return DOIS_PARES
+    if (2 - maior) + (2 - mini(segunda, 2)) <= livres and distintos >= 1:
+        return DOIS_PARES
+    if maior >= 2 or livres >= 1:
+        return PAR
+    return ALTA

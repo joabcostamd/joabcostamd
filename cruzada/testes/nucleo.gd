@@ -159,10 +159,10 @@ func _padroes() -> void:
     ok(Maos.devolve_troco(Maos.PAR) and not Maos.devolve_troco(Maos.DOIS_PARES),
        "só Alta e Par devolvem troco (R16)")
 
-# ────────────────────── R11 — os pontos da linha ──────────────────────
+# ───────────────── R11/R12 — a conta do evento ─────────────────
 
 func _pontos() -> void:
-    secao("pontos da linha (R11)")
+    secao("a conta do evento (R11/R12)")
     var H := Cartas.COPAS
     var O := Cartas.OUROS
     var P := Cartas.PAUS
@@ -170,33 +170,78 @@ func _pontos() -> void:
 
     ## Carta Alta com um quase-flush: 2♥ 5♥ 9♥ Q♦ 7♣
     var fraca := [c(H, 1), c(H, 4), c(H, 8), c(O, 11), c(P, 6)]
-    var fichas := 2 + 5 + 9 + 10 + 7
-    igual(Maos.pontos_da_linha(fraca, false),
-          (Maos.FICHAS_BASE[Maos.ALTA] + fichas + Maos.PISO_POR_PADRAO) * 1,
-          "a mão fraca recebe o piso")
+    igual(Maos.fichas_da_linha(fraca),
+          Maos.FICHAS_BASE[Maos.ALTA] + (2 + 5 + 9 + 10 + 7) + Maos.PISO_POR_PADRAO,
+          "a mão fraca recebe o piso do padrão parcial")
 
-    ## Flush: o piso NÃO entra, mesmo tendo cinco cartas do mesmo naipe.
+    ## Flush: o piso NÃO entra, mesmo com cinco cartas do mesmo naipe.
     var forte := [c(E, 0), c(E, 3), c(E, 6), c(E, 9), c(E, 12)]
-    igual(Maos.pontos_da_linha(forte, false),
-          (Maos.FICHAS_BASE[Maos.FLUSH] + Maos.fichas_de(forte))
-              * Maos.MULTIPLICADOR[Maos.FLUSH],
+    igual(Maos.fichas_da_linha(forte),
+          Maos.FICHAS_BASE[Maos.FLUSH] + Maos.fichas_de(forte),
           "a mão forte não recebe piso")
 
+    ## R12 — o fator é a SOMA dos multiplicadores, vezes o Tear.
+    igual(Maos.fator_do_evento([Maos.TRINCA], 1), 3,
+          "uma Trinca sozinha com Tear 1 dá fator 3")
+    igual(Maos.fator_do_evento([Maos.TRINCA], 5), 15, "o Tear multiplica o fator")
+    igual(Maos.fator_do_evento([Maos.TRINCA, Maos.FLUSH], 1), 7,
+          "Trinca mais Flush somam os multiplicadores: 3 + 4")
+    igual(Maos.fator_do_evento([Maos.TRINCA, Maos.FLUSH], 8), 56,
+          "e o Tear multiplica a soma inteira")
+    igual(Maos.fator_do_evento([], 8), 0, "evento sem linha não tem fator")
+
+    ## O NÚMERO QUE JUSTIFICA A JANELA DA COLHEITA (R08).
+    ## Colher junto tem de pagar mais que colher separado — senão a regra que
+    ## faz o jogador esperar um turno não teria razão de existir.
+    var fichas_t: int = Maos.fichas_da_linha(
+        [c(H, 7), c(O, 7), c(P, 7), c(E, 2), c(H, 11)])   # Trinca
+    var fichas_f: int = Maos.fichas_da_linha(forte)        # Flush
+    var tear := 4
+    var separado: int = (
+        Maos.pontos_da_linha(fichas_t, Maos.fator_do_evento([Maos.TRINCA], tear), false)
+        + Maos.pontos_da_linha(fichas_f, Maos.fator_do_evento([Maos.FLUSH], tear), false))
+    var fator_junto: int = Maos.fator_do_evento([Maos.TRINCA, Maos.FLUSH], tear)
+    var junto: int = (Maos.pontos_da_linha(fichas_t, fator_junto, false)
+                      + Maos.pontos_da_linha(fichas_f, fator_junto, false))
+    ok(junto > separado,
+       "a CRUZADA paga mais que as duas colheitas separadas — a razão da R08")
+    ok(float(junto) / float(separado) > 1.5,
+       "e paga bem mais: pelo menos uma vez e meia")
+
     ## R07 — a diagonal paga 60%.
-    var reto := Maos.pontos_da_linha(forte, false)
-    var diag := Maos.pontos_da_linha(forte, true)
-    igual(diag, int(round(float(reto) * 0.60)), "a diagonal paga 60%")
+    var fator := Maos.fator_do_evento([Maos.FLUSH], 3)
+    var reto := Maos.pontos_da_linha(fichas_f, fator, false)
+    var diag := Maos.pontos_da_linha(fichas_f, fator, true)
+    igual(diag, int(floor(float(reto) * 0.60)), "a diagonal paga 60%")
     ok(diag < reto, "a diagonal paga menos que a fileira")
 
-    ## R13/R19 — linha incompleta: só categoria por valor, nunca promessa de
-    ## naipe. Três de copas não são Flush enquanto faltarem duas cartas.
+    secao("parcela e fecho (R13/R19)")
+    ## Com menos de 5 cartas, só categoria por valor: nada de promessa de naipe.
     igual(Maos.categoria_parcial([c(H, 1), c(H, 4), c(H, 8)]), Maos.ALTA,
           "três do mesmo naipe ainda não é Flush")
     igual(Maos.categoria_parcial([c(H, 7), c(O, 7), c(P, 2)]), Maos.PAR,
           "a linha em 3/5 com um par vale Par")
-    igual(Maos.pontos_parciais([], false), 0, "linha vazia não paga nada")
-    ok(Maos.pontos_parciais([c(H, 7), c(O, 7), c(P, 2)], false) > 0,
+
+    var tres := [c(H, 7), c(O, 7), c(P, 2)]
+    var cheio := Maos.pontos_parciais(tres, false, 1, 1.0)
+    igual(Maos.pontos_parciais(tres, false, 1, Metas.PARCELA),
+          int(floor(float(cheio) * Metas.PARCELA)), "a parcela paga 35%")
+    igual(Maos.pontos_parciais(tres, false, 1, Metas.FECHO),
+          int(floor(float(cheio) * Metas.FECHO)), "o fecho paga 50%")
+    ok(Maos.pontos_parciais(tres, false, 8, Metas.PARCELA)
+       > Maos.pontos_parciais(tres, false, 1, Metas.PARCELA),
+       "o Tear também multiplica a parcela")
+    igual(Maos.pontos_parciais([], false, 4, Metas.FECHO), 0,
+          "linha vazia não paga nada")
+    ok(Maos.pontos_parciais(tres, false, 1, Metas.PARCELA) > 0,
        "linha em 3/5 paga alguma coisa — nada vale zero")
+
+    ## O piso do padrão parcial NÃO entra na parcela nem no fecho: ele é
+    ## recompensa de colheita, não de promessa.
+    var quatro_copas := [c(H, 1), c(H, 4), c(H, 8), c(H, 11)]
+    igual(Maos.pontos_parciais(quatro_copas, false, 1, 1.0),
+          (Maos.FICHAS_BASE[Maos.ALTA] + Maos.fichas_de(quatro_copas)) * 1,
+          "quatro do mesmo naipe em 4/5 não ganham piso")
 
 # ──────────────── R17 — a hierarquia do pôquer não inverte ────────────────
 

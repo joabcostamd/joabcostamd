@@ -18,6 +18,16 @@ echo "── núcleo: cartas, mãos, grade, metas, acaso ──"
 "$GODOT" --headless --script res://testes/nucleo.gd 2>&1 | limpar
 
 echo
+echo "── mesa: turno, janela, parcela, tear, avesso, fecho ──"
+"$GODOT" --headless --script res://testes/mesa.gd 2>&1 | limpar
+
+echo
+echo "── aferição contra as bandas da bancada ──"
+# O motor precisa REPRODUZIR o protótipo que produziu os números do DESIGN §9.
+# Sem isto, "portamos o núcleo" seria uma afirmação sem prova.
+"$GODOT" --headless --script res://ferramentas/aferir.gd -- "${AFERIR_SEMENTES:-12}" 2>&1 | limpar
+
+echo
 echo "── capturas da maquete (8 temas × 3 modos) ──"
 # Captura exige display: em --headless o renderizador é nulo e não desenha nada.
 if command -v xvfb-run >/dev/null 2>&1; then

@@ -59,6 +59,15 @@ nunca volta**. Invariante verificado a todo instante:
 **R06 — ORÇAMENTO.** 15 posicionamentos na mesa Pequena, 17 na Grande, 19 no Chefe.
 Descartes: 2 · 3 · 3.
 
+**R06b — GRADE INICIAL.** Toda mesa **Pequena** nasce com **3 cartas já postas**, sorteadas por
+um fluxo de acaso próprio. Numa grade 5×5 vazia todas as casas são equivalentes por simetria: o
+primeiro posicionamento seria uma decisão sem conteúdo, e a primeira decisão de uma mesa é a
+que ensina. As três cartas quebram a simetria e o turno 1 já vale alguma coisa.
+
+**R06c — DOIS FLUXOS DE ACASO.** O baralho e a grade inicial sorteiam de geradores separados,
+ambos derivados da semente da mesa. Separados de propósito: assim mudar a grade inicial não
+reembaralha o baralho, e um replay continua verificável quando uma das duas regras muda.
+
 ---
 
 ## 2. AS LINHAS E A JANELA DA COLHEITA
@@ -128,22 +137,38 @@ do CRUZADA e precisa ter nome na tela.
 
 A Quina só existe com Avesso. `A-2-3-4-5` e `10-J-Q-K-A` são sequências; nada entre elas.
 
-**R11 — PONTOS DE UMA LINHA.**
+**R11 — AS FICHAS DE UMA LINHA.** É a parte que não depende do evento:
 
-    pontos_da_linha = (fichas_base + soma_das_fichas_das_5_cartas + piso_do_padrão) × mult
-    se for diagonal: × 0,60
+    fichas_da_linha = fichas_base_da_categoria
+                    + soma_das_fichas_das_5_cartas
+                    + piso_do_padrão_parcial        (só em mão fraca — R15)
 
-**R12 — PONTOS DO EVENTO.** *A leitura é SOMA dos mults, vezes o Tear. Não é produto.*
+**R12 — O FATOR DO EVENTO, E POR QUE ELE É UM SÓ.** *Aqui mora a cruzada.*
 
-    pontos_do_evento = Σ pontos_das_linhas_colhidas × Tear
+    fator = (Σ multiplicadores de TODAS as mãos colhidas no evento) × Tear
 
-Sob produto, um teto morderia 57,5% das cruzadas e 78,5% das CRUZ TOTAIS, e a escada
-2×/3×/4× colapsaria em silêncio. **Não existe teto de multiplicador** — o antigo
-`24 + 4×rodada` foi removido: ele mordia 0% e era matemática escondida.
+    pontos_da_linha  = piso(fichas_da_linha × fator)     × 0,60 se for diagonal
+    pontos_do_evento = Σ pontos_das_linhas
 
-**R13 — A PARCELA (troco de 3/5 e 4/5).** Uma linha paga **35%** do que pagaria completa ao
-chegar em 3 e em 4 cartas, sem gastar carta nem turno. Uma vez por limiar; linha madura não
-pulsa mais.
+O fator é **comum a todas as linhas do evento** — não é cada linha com o multiplicador dela.
+Colher uma Trinca (mult 3) sozinha paga `fichas × 3 × Tear`; colher a mesma Trinca junto com
+um Flush (mult 4) paga `fichas × 7 × Tear` **para as duas**. É exatamente essa partilha que faz
+a cruzada valer mais que duas colheitas separadas, e é o motivo de a Janela (R08) existir.
+
+*A leitura é SOMA dos mults, vezes o Tear.* Não é produto: sob produto um teto morderia 57,5%
+das cruzadas e 78,5% das CRUZ TOTAIS, e a escada 2×/3×/4× colapsaria em silêncio. E **não
+existe teto de multiplicador** — o antigo `24 + 4×rodada` foi removido: ele mordia 0% e era
+matemática escondida.
+
+**R13 — A PARCELA (troco de 3/5 e 4/5).** Uma linha paga **35%** do que pagaria ao chegar em
+3 e em 4 cartas, sem gastar carta nem turno:
+
+    parcela = piso(fichas_parciais × mult_parcial × Tear × 0,35)   × 0,60 se for diagonal
+
+Uma vez por limiar; linha madura não pulsa mais; linha que é colhida no mesmo posicionamento
+não pulsa. Com menos de 5 cartas só as categorias por valor contam — três cartas de copas não
+são Flush enquanto faltarem duas, e **o piso do padrão parcial não entra na parcela**: ele é
+recompensa de colheita, não de promessa.
 
 É a regra que fez o jogo deixar de ser mudo: turnos com recompensa **14,3% → 65,7%**, seca
 mediana **7 → 2** turnos. *(`02-NUCLEO-POLIDO.md` §3)*
@@ -197,8 +222,10 @@ O `2178` é `450 × 4,84`, onde 4,84 é a constante calibrada até a razão pont
 0,79 com a Janela e a BC_rec ligadas. Ela **não** é um dial de dificuldade: é o resultado de uma
 calibragem. Mexer nela sem remedir invalida todas as bandas.
 
-**R19 — FECHO.** Ao acabarem os posicionamentos, as linhas incompletas (3 ou 4 cartas) pagam
-**50%** — e **esse fecho conta para a meta**. O contrário era um `if` na ordem errada que valia
+**R19 — FECHO.** Ao acabarem os posicionamentos, as linhas com **3 ou 4 cartas** pagam
+**50%**, pela mesma conta da parcela, e **esse fecho conta para a meta**. Linha com 1 ou 2
+cartas não paga nada. O que ficou **maduro** e não chegou a ser colhido é colhido aqui, inteiro,
+antes do fecho. O contrário era um `if` na ordem errada que valia
 **6,1 pontos percentuais** de vitória. São 5,1% dos pontos da mesa: pouco em economia, decisivo
 em quantas mesas viram no último clique.
 
