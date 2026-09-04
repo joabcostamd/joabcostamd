@@ -41,7 +41,7 @@ const LISTA := [
 	{"cod": "es-419",  "nome": "Español (LatAm)",      "steam": "latam",      "dec": ".", "mil": ",", "pronto": true},
 	{"cod": "nl",      "nome": "Nederlands",           "steam": "dutch",      "dec": ",", "mil": ".", "pronto": true},
 	{"cod": "hu",      "nome": "Magyar",               "steam": "hungarian",  "dec": ",", "mil": " ", "pronto": true},
-	{"cod": "vi",      "nome": "Tiếng Việt",           "steam": "vietnamese", "dec": ",", "mil": ".", "pronto": false},
+	{"cod": "vi",      "nome": "Tiếng Việt",           "steam": "vietnamese", "dec": ",", "mil": ".", "pronto": true},
 ]
 
 ## UM IDIOMA SÓ APARECE PARA O JOGADOR QUANDO ESTÁ INTEIRO.
