@@ -95,7 +95,7 @@ func rodar(cena: SceneTree) -> void:
 	var minimo_por_grupo := {
 		"Acessibilidade": 22, "Alcancavel": 8, "Big": 12,
 		"Chaves dinamicas": 3, "Combate": 9, "Defesa": 27,
-		"Dicas": 5, "Economia": 9, "Cepas": 40, "Formas": 18, "Editos": 26, "Repouso": 13, "Marca": 8, "Versao": 17, "Tipografia": 15, "Idiomas": 28, "Sem fim": 26, "Steam": 20, "Exportacao": 16,
+		"Dicas": 5, "Economia": 9, "Cepas": 40, "Formas": 18, "Editos": 26, "Repouso": 13, "Marca": 8, "Versao": 17, "Tipografia": 15, "Idiomas": 33, "Sem fim": 26, "Steam": 20, "Exportacao": 16,
 		"Eventos": 12, "Feedback": 2, "Ferramentas": 3, "Daltonismo": 9, "Tempo": 5, "Conteudo lido": 21, "Fmt": 6,
 		"Habilidades": 17, "Icones": 2, "Integridade": 9,
 		"Longo prazo": 7, "Mecânicas": 69, "Mira": 6,
@@ -2299,6 +2299,22 @@ func t_idiomas() -> void:
 	var codigo_i := _ler("res://scripts/core/idiomas.gd")
 	ok("a deteccao separa os dois chineses",
 		codigo_i.contains("hant") and codigo_i.contains("tw"))
+
+	# UM IDIOMA PELA METADE NÃO PODE APARECER PARA O JOGADOR. Ele escolhe alemão,
+	# vê metade da tela em alemão e metade em inglês, e conclui que o jogo é
+	# malfeito — quando ele só não terminou aquele idioma ainda.
+	var prontos := Idiomas.prontos()
+	ok("existe pelo menos um idioma pronto", prontos.size() >= 1, str(prontos))
+	ok("a fonte esta pronta", Idiomas.esta_pronto(Idiomas.FONTE))
+	ok("a ponte esta pronta", Idiomas.esta_pronto(Idiomas.PONTE))
+	var sem_bandeira: Array = []
+	for d3 in Idiomas.LISTA:
+		if not (d3 as Dictionary).has("pronto"):
+			sem_bandeira.append(str((d3 as Dictionary)["cod"]))
+	ok("todo idioma declara se esta pronto", sem_bandeira.is_empty(), str(sem_bandeira))
+	var codigo_pc := _ler("res://scripts/ui/panel_config.gd")
+	ok("o seletor de idioma so oferece o que esta pronto",
+		codigo_pc.contains('di.get("pronto", false)'))
 
 	# ------------------------------------------------ resolucao de texto
 	var antes := Txt.idioma

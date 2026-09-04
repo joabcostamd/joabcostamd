@@ -22,27 +22,45 @@ extends RefCounted
 ## Brasil é `brazilian` e espanhol da América Latina é `latam`. Escrever `zh-CN`
 ## ali faz a loja ignorar o idioma em silêncio.
 const LISTA := [
-	{"cod": "en",      "nome": "English",              "steam": "english",    "dec": ".", "mil": ","},
-	{"cod": "zh-Hans", "nome": "简体中文",               "steam": "schinese",   "dec": ".", "mil": ","},
-	{"cod": "ru",      "nome": "Русский",              "steam": "russian",    "dec": ",", "mil": " "},
-	{"cod": "es-ES",   "nome": "Español (España)",     "steam": "spanish",    "dec": ",", "mil": "."},
-	{"cod": "pt-BR",   "nome": "Português (Brasil)",   "steam": "brazilian",  "dec": ",", "mil": "."},
-	{"cod": "de",      "nome": "Deutsch",              "steam": "german",     "dec": ",", "mil": "."},
-	{"cod": "fr",      "nome": "Français",             "steam": "french",     "dec": ",", "mil": " "},
-	{"cod": "ja",      "nome": "日本語",                 "steam": "japanese",   "dec": ".", "mil": ","},
-	{"cod": "ko",      "nome": "한국어",                 "steam": "koreana",    "dec": ".", "mil": ","},
-	{"cod": "pl",      "nome": "Polski",               "steam": "polish",     "dec": ",", "mil": " "},
-	{"cod": "tr",      "nome": "Türkçe",               "steam": "turkish",    "dec": ",", "mil": "."},
-	{"cod": "zh-Hant", "nome": "繁體中文",               "steam": "tchinese",   "dec": ".", "mil": ","},
-	{"cod": "it",      "nome": "Italiano",             "steam": "italian",    "dec": ",", "mil": "."},
-	{"cod": "uk",      "nome": "Українська",           "steam": "ukrainian",  "dec": ",", "mil": " "},
-	{"cod": "cs",      "nome": "Čeština",              "steam": "czech",      "dec": ",", "mil": " "},
-	{"cod": "th",      "nome": "ไทย",                   "steam": "thai",       "dec": ".", "mil": ","},
-	{"cod": "es-419",  "nome": "Español (LatAm)",      "steam": "latam",      "dec": ".", "mil": ","},
-	{"cod": "nl",      "nome": "Nederlands",           "steam": "dutch",      "dec": ",", "mil": "."},
-	{"cod": "hu",      "nome": "Magyar",               "steam": "hungarian",  "dec": ",", "mil": " "},
-	{"cod": "vi",      "nome": "Tiếng Việt",           "steam": "vietnamese", "dec": ",", "mil": "."},
+	{"cod": "en",      "nome": "English",              "steam": "english",    "dec": ".", "mil": ",", "pronto": true},
+	{"cod": "zh-Hans", "nome": "简体中文",               "steam": "schinese",   "dec": ".", "mil": ",", "pronto": false},
+	{"cod": "ru",      "nome": "Русский",              "steam": "russian",    "dec": ",", "mil": " ", "pronto": false},
+	{"cod": "es-ES",   "nome": "Español (España)",     "steam": "spanish",    "dec": ",", "mil": ".", "pronto": false},
+	{"cod": "pt-BR",   "nome": "Português (Brasil)",   "steam": "brazilian",  "dec": ",", "mil": ".", "pronto": true},
+	{"cod": "de",      "nome": "Deutsch",              "steam": "german",     "dec": ",", "mil": ".", "pronto": false},
+	{"cod": "fr",      "nome": "Français",             "steam": "french",     "dec": ",", "mil": " ", "pronto": false},
+	{"cod": "ja",      "nome": "日本語",                 "steam": "japanese",   "dec": ".", "mil": ",", "pronto": false},
+	{"cod": "ko",      "nome": "한국어",                 "steam": "koreana",    "dec": ".", "mil": ",", "pronto": false},
+	{"cod": "pl",      "nome": "Polski",               "steam": "polish",     "dec": ",", "mil": " ", "pronto": false},
+	{"cod": "tr",      "nome": "Türkçe",               "steam": "turkish",    "dec": ",", "mil": ".", "pronto": false},
+	{"cod": "zh-Hant", "nome": "繁體中文",               "steam": "tchinese",   "dec": ".", "mil": ",", "pronto": false},
+	{"cod": "it",      "nome": "Italiano",             "steam": "italian",    "dec": ",", "mil": ".", "pronto": false},
+	{"cod": "uk",      "nome": "Українська",           "steam": "ukrainian",  "dec": ",", "mil": " ", "pronto": false},
+	{"cod": "cs",      "nome": "Čeština",              "steam": "czech",      "dec": ",", "mil": " ", "pronto": false},
+	{"cod": "th",      "nome": "ไทย",                   "steam": "thai",       "dec": ".", "mil": ",", "pronto": false},
+	{"cod": "es-419",  "nome": "Español (LatAm)",      "steam": "latam",      "dec": ".", "mil": ",", "pronto": false},
+	{"cod": "nl",      "nome": "Nederlands",           "steam": "dutch",      "dec": ",", "mil": ".", "pronto": false},
+	{"cod": "hu",      "nome": "Magyar",               "steam": "hungarian",  "dec": ",", "mil": " ", "pronto": false},
+	{"cod": "vi",      "nome": "Tiếng Việt",           "steam": "vietnamese", "dec": ",", "mil": ".", "pronto": false},
 ]
+
+## UM IDIOMA SÓ APARECE PARA O JOGADOR QUANDO ESTÁ INTEIRO.
+##
+## `pronto: false` quer dizer "a tradução existe e ainda não está completa". Esse
+## idioma NÃO entra no seletor, e o portão de tradução o trata como aviso em vez
+## de erro. Os dois lados importam:
+##
+## Mostrar um idioma pela metade é pior do que não mostrar. A pessoa escolhe
+## alemão, vê metade da tela em alemão e metade em inglês, e conclui que o jogo
+## é malfeito — quando na verdade ele só não terminou aquele idioma ainda.
+##
+## E do lado do portão: enquanto uma tradução está em andamento, cobrar
+## completude a cada execução bloquearia o próprio trabalho que o portão existe
+## para proteger. O que continua sendo ERRO em qualquer idioma, pronto ou não, é
+## tradução ERRADA: marcador trocado, texto vazio, colchete desbalanceado.
+##
+## Virar `pronto: true` é uma DECISÃO, e não um cálculo automático: significa que
+## alguém olhou o idioma e o considerou publicável.
 
 ## O idioma em que o jogo é ESCRITO. Todo texto nasce aqui e é traduzido a partir
 ## daqui — e é para cá que a busca volta quando uma tradução falta.
@@ -50,6 +68,17 @@ const FONTE := "pt-BR"
 ## A ponte. Nem todo tradutor lê português; o inglês é a segunda rede de
 ## segurança antes de a chave crua aparecer na tela.
 const PONTE := "en"
+
+## Só os idiomas que o jogador pode escolher.
+static func prontos() -> PackedStringArray:
+	var v := PackedStringArray()
+	for d in LISTA:
+		if bool((d as Dictionary).get("pronto", false)):
+			v.append(str((d as Dictionary)["cod"]))
+	return v
+
+static func esta_pronto(cod: String) -> bool:
+	return bool(por_cod(cod).get("pronto", false))
 
 static func codigos() -> PackedStringArray:
 	var v := PackedStringArray()

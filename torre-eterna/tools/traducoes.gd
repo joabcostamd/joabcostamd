@@ -175,9 +175,27 @@ func _conferir_idioma(cod: String, chaves_ui: Array, fonte_conteudo: Dictionary)
 	# Idioma ainda não traduzido é AVISO, não erro: o portão precisa passar
 	# enquanto a tradução está em andamento, senão ele bloqueia o próprio
 	# trabalho que existe para proteger. O que é erro é tradução ERRADA.
-	if ui.is_empty() and ct.is_empty():
-		avisos.append("%s: ainda não traduzido" % cod)
+	var tem_irmao := Idiomas.IRMAOS.has(cod) \
+		and (FileAccess.file_exists("%s/%s.json" % [PASTA_IDIOMAS, str(Idiomas.IRMAOS[cod])]))
+	if ui.is_empty() and ct.is_empty() and not tem_irmao:
+		if Idiomas.esta_pronto(cod):
+			erros.append("%s: declarado pronto e sem nenhuma tradução" % cod)
+		else:
+			avisos.append("%s: ainda não traduzido" % cod)
 		return
+
+	# O IRMÃO NA CADEIA NÃO É BURACO, É O DESENHO FUNCIONANDO.
+	#
+	# Espanhol da América Latina que caia no espanhol da Espanha está CERTO: são
+	# a mesma língua, e a frase da Espanha é melhor do que uma frase inglesa no
+	# meio da tela. Cobrar tradução própria para cada chave de `es-419` seria
+	# cobrar 2.357 textos que a cadeia já resolve — e o resultado seriam duas
+	# traduções quase idênticas mantidas em paralelo, divergindo com o tempo.
+	#
+	# O que continua sendo erro é a chave que não existe em NENHUM dos dois.
+	var irmao := str(Idiomas.IRMAOS.get(cod, ""))
+	var ui_irmao := _ler("%s/%s.json" % [PASTA_IDIOMAS, irmao]) if irmao != "" else {}
+	var ct_irmao := _ler("%s/%s.json" % [PASTA_CONTEUDO, irmao]) if irmao != "" else {}
 
 	var faltando := 0
 	for chave in chaves_ui:
@@ -186,11 +204,18 @@ func _conferir_idioma(cod: String, chaves_ui: Array, fonte_conteudo: Dictionary)
 		if pt.strip_edges() == "":
 			continue
 		if not ui.has(k):
-			faltando += 1
+			if not ui_irmao.has(k):
+				faltando += 1
 			continue
 		_conferir_texto(cod, "interface", k, pt, str(ui[k]))
+	# Completude só é ERRO em idioma declarado pronto. Ver `Idiomas.esta_pronto`.
+	var exigir := Idiomas.esta_pronto(cod)
 	if faltando > 0:
-		erros.append("%s: %d chaves de interface faltando" % [cod, faltando])
+		if exigir:
+			erros.append("%s: %d chaves de interface faltando" % [cod, faltando])
+		else:
+			avisos.append("%s: %d de %d chaves de interface traduzidas" % [
+				cod, chaves_ui.size() - faltando, chaves_ui.size()])
 
 	var faltando_ct := 0
 	for chave2 in fonte_conteudo.keys():
@@ -199,11 +224,16 @@ func _conferir_idioma(cod: String, chaves_ui: Array, fonte_conteudo: Dictionary)
 		if pt2.strip_edges() == "":
 			continue
 		if not ct.has(k2):
-			faltando_ct += 1
+			if not ct_irmao.has(k2):
+				faltando_ct += 1
 			continue
 		_conferir_texto(cod, "conteúdo", k2, pt2, str(ct[k2]))
 	if faltando_ct > 0:
-		erros.append("%s: %d textos de conteúdo faltando" % [cod, faltando_ct])
+		if exigir:
+			erros.append("%s: %d textos de conteúdo faltando" % [cod, faltando_ct])
+		else:
+			avisos.append("%s: %d de %d textos de conteúdo traduzidos" % [
+				cod, fonte_conteudo.size() - faltando_ct, fonte_conteudo.size()])
 
 	# SOBRA TAMBÉM É DEFEITO: chave que não existe mais na fonte é tradução de
 	# texto apagado, e ela esconde o fato de que o idioma está desatualizado.

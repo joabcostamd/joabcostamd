@@ -185,8 +185,13 @@ func _aba_jogo() -> void:
 	# ficaria escondido atrás de "Čeština".
 	var nomes: Array = []
 	var codigos: Array = []
+	# SÓ OS IDIOMAS PRONTOS. Meia tradução na tela não é meia ajuda: a pessoa
+	# escolhe alemão, vê metade em alemão e metade em inglês, e conclui que o
+	# jogo é malfeito. Ver `Idiomas.esta_pronto`.
 	for d in Idiomas.LISTA:
 		var di: Dictionary = d
+		if not bool(di.get("pronto", false)):
+			continue
 		nomes.append(str(di["nome"]))
 		codigos.append(str(di["cod"]))
 	l["direita"].add_child(_menu("idioma", nomes, codigos, Txt.t("cfg_idioma_dica")))
