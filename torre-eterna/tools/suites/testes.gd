@@ -52,6 +52,7 @@ func rodar(cena: SceneTree) -> void:
 	t_idiomas()
 	t_sem_fim()
 	t_steam()
+	t_exportacao()
 	t_mira()
 	t_fim_de_sessao()
 	t_celebracao()
@@ -94,7 +95,7 @@ func rodar(cena: SceneTree) -> void:
 	var minimo_por_grupo := {
 		"Acessibilidade": 22, "Alcancavel": 8, "Big": 12,
 		"Chaves dinamicas": 3, "Combate": 9, "Defesa": 27,
-		"Dicas": 5, "Economia": 9, "Cepas": 40, "Formas": 18, "Editos": 26, "Repouso": 13, "Marca": 8, "Versao": 17, "Tipografia": 15, "Idiomas": 28, "Sem fim": 26, "Steam": 20,
+		"Dicas": 5, "Economia": 9, "Cepas": 40, "Formas": 18, "Editos": 26, "Repouso": 13, "Marca": 8, "Versao": 17, "Tipografia": 15, "Idiomas": 28, "Sem fim": 26, "Steam": 20, "Exportacao": 16,
 		"Eventos": 12, "Feedback": 2, "Ferramentas": 3, "Daltonismo": 9, "Tempo": 5, "Conteudo lido": 21, "Fmt": 6,
 		"Habilidades": 17, "Icones": 2, "Integridade": 9,
 		"Longo prazo": 7, "Mecânicas": 69, "Mira": 6,
@@ -2521,6 +2522,66 @@ func t_steam() -> void:
 		if not tem:
 			sem_controle.append(str(acao))
 	ok("toda acao principal responde a controle", sem_controle.is_empty(), str(sem_controle))
+
+
+## ------------------------------------------------------------- exportação
+## `export_presets.cfg` é o arquivo que a Godot preenche quando alguém mexe no
+## diálogo de exportação — e é o arquivo que MAIS vaza segredo em projeto de
+## jogo: a senha do keystore do Android e o caminho do certificado da Apple são
+## gravados nele, em texto puro, sem aviso nenhum. Quem configurar a assinatura
+## pela interface e der `git commit -a` publica a senha.
+func t_exportacao() -> void:
+	g("Exportacao")
+	var cfg := FileAccess.get_file_as_string("res://export_presets.cfg")
+	ok("os presets de exportacao existem", cfg.length() > 100)
+
+	# Os campos que a Godot usa para guardar credencial. Nenhum deles pode ter
+	# valor. A regra é sobre o VALOR e não sobre a presença: o campo vazio é
+	# normal e é assim que a Godot grava quando não há nada configurado.
+	var perigosos := [
+		"keystore/debug_password", "keystore/release_password",
+		"keystore/debug", "keystore/release",
+		"codesign/password", "codesign/certificate_file",
+		"notarization/api_key", "notarization/api_key_id",
+		"notarization/apple_id_password", "ssh_remote_deploy/extra_args_ssh",
+		"encryption_key",
+	]
+	var vazou: Array = []
+	for campo in perigosos:
+		var alvo := str(campo) + "="
+		var i := cfg.find(alvo)
+		while i >= 0:
+			var fim := cfg.find("\n", i)
+			var valor := cfg.substr(i + alvo.length(), maxi(0, fim - i - alvo.length())).strip_edges()
+			if valor != "" and valor != '""' and valor != "false" and valor != "0":
+				vazou.append("%s=%s" % [str(campo), valor])
+			i = cfg.find(alvo, i + 1)
+	ok("nenhuma credencial de assinatura no repositorio", vazou.is_empty(), str(vazou))
+
+	# As FONTES E AS LICENÇAS PRECISAM ENTRAR NA BUILD. As fontes não são
+	# versionadas e chegam depois do import: sem estarem no `include_filter`, a
+	# exportação as deixa de fora em silêncio, e o jogo publicado abre com a
+	# letra padrão e com quadradinhos em chinês, japonês, coreano e tailandês.
+	ok("as fontes entram na build", cfg.contains("fontes/*.ttf"))
+	ok("as licencas entram na build", cfg.contains("licencas/*.txt"))
+	# E as ferramentas NÃO entram: são centenas de kilobytes de portão que o
+	# jogador não roda.
+	ok("as ferramentas ficam de fora", cfg.contains("tools/*"))
+	ok("o arquivo fonte de traducao fica de fora", cfg.contains("_fonte.json"))
+
+	# Uma linha por plataforma que o jogo promete na loja.
+	for plataforma in ["Windows Desktop", "Linux", "macOS"]:
+		ok("existe preset de %s" % str(plataforma),
+			cfg.contains('name="%s"' % str(plataforma)))
+
+	# O SCRIPT DE BUILD RODA OS PORTÕES ANTES DE EXPORTAR. Uma build vermelha que
+	# vira loja é o pior desfecho possível deste projeto inteiro.
+	var sh := FileAccess.get_file_as_string("res://tools/build.sh")
+	ok("o script de build existe", sh.length() > 200)
+	ok("ele confere o contrato ===STATUS=== PASS", sh.contains("===STATUS=== PASS"))
+	for portao in ["verificar", "lint", "validar_dados", "traducoes", "testes"]:
+		ok("o build roda o portao %s" % str(portao), sh.contains(str(portao)))
+	ok("ele baixa as fontes antes de exportar", sh.contains("baixar_fontes"))
 
 ## ------------------------------------------------------------- mira
 ## `alvo_ids` é a busca mais quente do jogo (todo impacto de perfuração e todo
