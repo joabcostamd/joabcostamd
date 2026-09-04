@@ -6,6 +6,7 @@ cd "$(dirname "$0")"
 GODOT="${GODOT:-godot}"
 if ! command -v "$GODOT" >/dev/null 2>&1; then
   echo "MODO DEGRADADO — Godot não encontrado no PATH; rodando só os validadores"
+  python3 ferramentas/medir_layout.py
   python3 ferramentas/validar_contraste.py
   exit 0
 fi
@@ -18,6 +19,10 @@ if command -v xvfb-run >/dev/null 2>&1; then
 else
   echo "CAPTURAS — puladas — xvfb ausente"
 fi
+
+echo
+echo "── alvos de toque em todos os tamanhos ──"
+python3 ferramentas/medir_layout.py
 
 echo
 echo "── contraste WCAG AA em todos os temas ──"

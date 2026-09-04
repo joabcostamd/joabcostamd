@@ -25,8 +25,9 @@ func _ready() -> void:
     queue_redraw()
 
 func _draw() -> void:
-    # Fundo neutro escuro de propósito: uma folha de contato colorida
-    # contaminaria o julgamento dos temas claros.
+    # Exceção deliberada à regra "nenhuma cor literal fora dos tokens": a folha
+    # de contato é FERRAMENTA, não tela de jogo. Ela precisa de fundo neutro
+    # fixo — se usasse o tema vigente, contaminaria a comparação entre os oito.
     draw_rect(Rect2(Vector2.ZERO, size), Color("#15171c"))
     var fonte: FontFile = Temas.fonte(true)
     var fonte_fina: FontFile = Temas.fonte()

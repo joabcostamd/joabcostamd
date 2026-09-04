@@ -31,6 +31,20 @@ PARES = [
     ("paus", "carta", GRANDE, "naipe paus sobre a carta"),
     ("espadas", "carta", GRANDE, "naipe espadas sobre a carta"),
     ("borda", "fundo", 1.6, "borda visível contra o fundo"),
+    # O par que faltava quando 96 de 96 passavam e o tabuleiro sumia nos temas
+    # claros. Teste que aprova defeito conhecido é pior que teste nenhum.
+    #
+    # Só a BORDA é exigida, não o preenchimento: a borda é a afordância de
+    # "cabe carta aqui", e uma casa com borda forte não precisa de fundo
+    # diferente do resto. Exigir os dois reprovava temas escuros que se leem
+    # perfeitamente — teste rigoroso demais também é teste errado.
+    ("casa_borda", "fundo", GRANDE, "borda da casa: a afordância de cabe-carta-aqui"),
+]
+
+## Medidos, mas como aviso: um deles baixo não reprova, porque a borda já
+## carrega a informação. Os dois baixos ao mesmo tempo, sim.
+AVISOS = [
+    ("casa", "fundo", 1.5, "preenchimento da casa quase igual ao fundo"),
 ]
 
 
@@ -91,6 +105,10 @@ def main():
                 reprovas += 1
                 linhas.append("    REPROVA  %-34s %.2f  (mínimo %.1f)"
                               % (descricao, r, minimo))
+        for frente, fundo, minimo, descricao in AVISOS:
+            if razao(tema[frente], tema[fundo]) < minimo:
+                linhas.append("    aviso    %s (%.2f)"
+                              % (descricao, razao(tema[frente], tema[fundo])))
         for aviso in separacao_dos_naipes(tema):
             linhas.append("    aviso    " + aviso)
 

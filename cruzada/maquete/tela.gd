@@ -232,30 +232,45 @@ func _centro(r: Rect2) -> void:
 # viram pontinhos de progresso na margem estreita.
 
 func _retrato() -> void:
-    var m := 12.0
-    var util := size.x - m * 2.0
-    _barra(Rect2(m, 10, util, 40))
-
-    var y := 58.0
-    _faixa_estado(Rect2(m, y, util, 84.0))
-    y += 84.0 + 12.0
-
-    const ROT := 22.0
+    # Em 360 px não cabem a casa de 64, a faixa de rótulos em texto e a margem
+    # de 12. A regra decide quem cede: o elemento onde o dedo trabalha é o único
+    # que não cede tamanho. Então a margem encolhe, o rótulo de fileira vira uma
+    # barra de 8 px, e a tabela de mãos sai da tela para trás do botão REGRAS.
+    const MARGEM_R := 8.0
+    const BARRA_FILEIRA := 8.0
     const VAO_CELULA := 4.0
-    var celula := floorf((util - ROT - 6.0 - VAO_CELULA * 4.0) / 5.0)
+    const VAO_MAO := 4.0
+
+    var util := size.x - MARGEM_R * 2.0
+    _barra(Rect2(MARGEM_R, 10, util, 40))
+    _faixa_estado(Rect2(MARGEM_R, 58, util, 84.0))
+
+    var celula := floorf((util - BARRA_FILEIRA - VAO_CELULA * 4.0) / 5.0)
     var grade_larg := celula * 5.0 + VAO_CELULA * 4.0
     var grade_alt := celula * Carta.RAZAO * 5.0 + VAO_CELULA * 4.0
-    var grade := Rect2(m, y, grade_larg, grade_alt)
+    var grade := Rect2(MARGEM_R, 154, grade_larg, grade_alt)
     _grade(grade, celula, VAO_CELULA)
-    _rotulos_retrato(grade, celula, VAO_CELULA, ROT)
+    _barras_de_fileira(grade, celula, VAO_CELULA, BARRA_FILEIRA)
+    _rotulos_coluna(grade, celula, VAO_CELULA, 20.0)
 
-    var carta_mao := (util - 10.0 * 4.0) / 5.0
+    var carta_mao := floorf((util - VAO_MAO * 4.0) / 5.0)
     var alt_mao := carta_mao * Carta.RAZAO
-    var mao_y := size.y - alt_mao - m
-    _mao(Rect2(m, mao_y, util, alt_mao), carta_mao, 10.0)
+    var mao_y := size.y - alt_mao - MARGEM_R
+    _mao(Rect2(MARGEM_R, mao_y, util, alt_mao), carta_mao, VAO_MAO)
 
-    var vao_topo := grade.end.y + 26.0
-    _maos_compacto(Rect2(m, vao_topo, util, mao_y - vao_topo - 12.0))
+    # No vão que sobra entre a grade e a mão vai a informação mais quente que
+    # ainda não está na tela: qual é o modificador desta mesa.
+    var vao_topo := grade.end.y + 28.0
+    var vao_alt := mao_y - vao_topo - 10.0
+    if vao_alt >= 34.0:
+        var faixa := Rect2(MARGEM_R, vao_topo + (vao_alt - 40.0) * 0.5, util, minf(40.0, vao_alt))
+        _caixa(faixa, 10, 0.72)
+        var ff := Temas.fonte_do_tema(true)
+        draw_string(ff, Vector2(faixa.position.x + 14, faixa.position.y + faixa.size.y * 0.62),
+                    "MESA", HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Temas.TEXTO_SUAVE)
+        draw_string(Temas.fonte_do_tema(), Vector2(faixa.position.x + 62,
+                    faixa.position.y + faixa.size.y * 0.64), "Rachada · as quinas nascem lacradas",
+                    HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Temas.ALERTA)
 
 # ─────────────────────────────── as peças ───────────────────────────────
 
@@ -364,29 +379,6 @@ func _painel_referencia(r: Rect2) -> void:
     draw_string(f, Vector2(rodape.position.x + 12, rodape.position.y + 37), "Rachada",
                 HORIZONTAL_ALIGNMENT_LEFT, -1, 15, Temas.ALERTA)
 
-## A tabela de mãos em duas colunas, para o retrato.
-func _maos_compacto(r: Rect2) -> void:
-    if r.size.y < 56.0:
-        return
-    _caixa(r, 12, 0.72)
-    var f := Temas.fonte_do_tema()
-    var ff := Temas.fonte_do_tema(true)
-    var col := (r.size.x - 24.0) / 2.0
-    var linhas := 4
-    var passo := minf(24.0, (r.size.y - 34.0) / linhas)
-    var y0 := r.position.y + 30.0
-    for i in mini(8, MAOS.size()):
-        var b := Rect2(r.position.x + 12 + (i / linhas) * col, y0 + (i % linhas) * passo,
-                       col - 6, passo - 2)
-        var feita: bool = MAOS[i][3]
-        if feita:
-            _pilula(b, Color(Temas.DESTAQUE, 0.20), 5)
-        var cor: Color = Temas.DESTAQUE if feita else Temas.TEXTO
-        draw_string(f, Vector2(b.position.x + 6, b.position.y + b.size.y * 0.75),
-                    str(MAOS[i][0]), HORIZONTAL_ALIGNMENT_LEFT, -1, 12, cor)
-        draw_string(ff, Vector2(b.end.x - 32, b.position.y + b.size.y * 0.75),
-                    str(MAOS[i][2]), HORIZONTAL_ALIGNMENT_RIGHT, 28, 12, Temas.ACENTO)
-
 func _grade(r: Rect2, celula: float, vao: float) -> void:
     var alt := celula * Carta.RAZAO
     for linha in 5:
@@ -403,10 +395,11 @@ func _grade(r: Rect2, celula: float, vao: float) -> void:
 
 func _casa_vazia(c: Rect2, viva: bool) -> void:
     var caixa := StyleBoxFlat.new()
-    caixa.bg_color = Color(Temas.PAINEL, 0.55 if viva else 0.38)
-    caixa.border_color = Color(Temas.DESTAQUE if viva else Temas.BORDA,
-                               0.55 if viva else 0.7)
-    caixa.set_border_width_all(2)
+    # Token próprio, nunca PAINEL com alfa: derivar a cor da casa de outra cor
+    # funciona no tema escuro e faz o tabuleiro sumir no claro.
+    caixa.bg_color = Temas.CASA
+    caixa.border_color = Temas.DESTAQUE if viva else Temas.CASA_BORDA
+    caixa.set_border_width_all(3 if viva else 2)
     caixa.set_corner_radius_all(int(maxf(4.0, c.size.x * 0.09)))
     draw_style_box(caixa, c)
 
@@ -424,24 +417,28 @@ func _rotulos(g: Rect2, celula: float, vao: float, larg: float, alt_col: float) 
         _rotulo(f, Rect2(x, g.end.y + 8, celula, alt_col), ROTULO_COLUNA[i],
                 i == CHEIA_COLUNA, true)
 
-## Em retrato não há margem para texto ao lado da grade: a fileira vira cinco
-## pontinhos de progresso, e só a cheia ganha um chip.
-func _rotulos_retrato(g: Rect2, celula: float, vao: float, larg: float) -> void:
-    var f := Temas.fonte_do_tema(true)
+## Em retrato não há largura para texto ao lado da grade. O estado da fileira
+## vira uma barra de progresso de 8 px na borda externa: a mesma informação em
+## FORMA, que é o que sobrevive sem cor e sem espaço.
+func _barras_de_fileira(g: Rect2, celula: float, vao: float, larg: float) -> void:
     var alt := celula * Carta.RAZAO
     for i in 5:
-        var y := g.position.y + i * (alt + vao) + alt * 0.5
-        var cheios := int(ROTULO_FILEIRA[i].split("/")[0]) if "/" in ROTULO_FILEIRA[i] else 5
-        for p in 5:
-            var cx := g.end.x + 8.0 + (p % 3) * 7.0
-            var cy := y - 7.0 + (p / 3) * 8.0
-            var cheio := p < cheios
-            draw_circle(Vector2(cx, cy), 2.5,
-                        Temas.DESTAQUE if (cheio and cheios == 5) else
-                        (Temas.TEXTO_SUAVE if cheio else Color(Temas.BORDA, 0.7)))
+        var y := g.position.y + i * (alt + vao)
+        var trilho := Rect2(g.end.x + 2, y + alt * 0.12, larg - 2, alt * 0.76)
+        _pilula(trilho, Color(Temas.BORDA, 0.45), int(larg * 0.5))
+        var texto: String = ROTULO_FILEIRA[i]
+        var cheios := 5.0 if i == CHEIA_FILEIRA else float(texto.split("/")[0].to_int())
+        var fracao := cheios / 5.0
+        var cheio := Rect2(trilho.position.x, trilho.end.y - trilho.size.y * fracao,
+                           trilho.size.x, trilho.size.y * fracao)
+        _pilula(cheio, Temas.DESTAQUE if i == CHEIA_FILEIRA else Temas.TEXTO_SUAVE,
+                int(larg * 0.5))
+
+func _rotulos_coluna(g: Rect2, celula: float, vao: float, alt_rot: float) -> void:
+    var f := Temas.fonte_do_tema(true)
     for i in 5:
         var x := g.position.x + i * (celula + vao)
-        _rotulo(f, Rect2(x, g.end.y + 6, celula, 20), ROTULO_COLUNA[i],
+        _rotulo(f, Rect2(x, g.end.y + 6, celula, alt_rot), ROTULO_COLUNA[i],
                 i == CHEIA_COLUNA, true)
 
 func _rotulo(f: FontFile, r: Rect2, texto: String, cheia: bool, compacto: bool) -> void:

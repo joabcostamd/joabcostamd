@@ -79,16 +79,30 @@ Ordem de leitura desenhada de propósito, do que domina para o que recua:
 
 ## 6. Reflow para retrato (360×800)
 
-Três colunas não cabem em 360 de largura. A estratégia é **empilhar por prioridade**, não encolher:
+Três colunas não cabem em 360 de largura. A estratégia é **empilhar por prioridade**, não encolher.
+E a prioridade é uma regra, não gosto: **o elemento onde o dedo trabalha é o único que não cede
+tamanho.**
 
-- a coluna de estado vira faixa horizontal no topo, com pontos, meta e multiplicador em três colunetas
-- a coluna de referência vira tabela de duas colunas no vão entre a grade e a mão
-- o botão REGRAS sobe para a barra
-- os rótulos de fileira **não cabem como texto**: viram cinco pontinhos de progresso numa faixa de
-  22 px, e só a fileira cheia ganha um chip
+| Medida | Valor |
+|---|---|
+| Margem externa | 8 |
+| Barra de estado da fileira | 8 |
+| Vão entre casas / entre cartas | 4 |
+| **Casa da grade** | **64 × 90** |
+| **Carta da mão** | **65 × 91** |
 
-A grade continua com casa de 64 px de largura: em retrato ela é o único elemento que não pode
-encolher, porque é onde o dedo trabalha.
+- a coluna de estado vira faixa horizontal no topo, com pontos, meta e multiplicador em colunetas
+- os rótulos de fileira **não cabem como texto**: viram uma **barra de progresso de 8 px** na borda
+  externa da grade — a mesma informação em forma
+- a **tabela de mãos sai da tela** e vai para trás do botão REGRAS. É referência, e referência é a
+  primeira coisa a sair quando o dedo precisa de espaço
+- no vão entre a grade e a mão entra a informação mais quente que ainda não estava na tela: o
+  modificador desta mesa
+
+**A versão anterior reprovava e passou despercebida:** casa de 58 px e carta de 59 px, ambas abaixo
+do mínimo de 64. Os números de paisagem tinham sido conferidos por script; os de retrato foram
+presumidos porque a captura "parecia certa". Por isso `ferramentas/medir_layout.py` agora mede os
+dois e reprova o build — captura bonita não é medida.
 
 ## 7. O fundo é identidade, não matiz
 
@@ -102,6 +116,12 @@ Cada tema declara o seu **estilo de fundo**, não só a sua cor:
 | `papel` | manchas largas e fraquíssimas | Papel, Porcelana |
 | `vinheta` | fundo liso, só bordas escuras | Meia-noite |
 
+**A casa vazia é token próprio** (`casa` e `casa_borda`), nunca `painel` com alfa. Derivar a cor da
+casa de outra cor funciona no tema escuro e faz o tabuleiro **sumir** no claro — foi o que a escala
+de cinza mostrou no Papel e tinta, onde sobravam nove cartas boiando sem grade embaixo. O validador
+exige 3:1 entre a **borda** da casa e o fundo: a borda é a afordância de "cabe carta aqui", e é ela
+que carrega a informação, não o preenchimento.
+
 Enquanto os oito compartilhavam o mesmo brilho radial, vários pareciam o mesmo tema repintado —
 foi o que a folha de contato mostrou. Tema separado por matiz sozinho não se separa.
 
@@ -110,9 +130,11 @@ foi o que a folha de contato mostrou. Tema separado por matiz sozinho não se se
     ./testar.sh
 
 1. **24 capturas** — 8 temas × (1280×720 · 360×800 · escala de cinza) + folha de contato
-2. **Contraste WCAG AA** — 96 pares, reprova o build abaixo do mínimo
-3. **Escala de cinza** — não é filtro, é a paleta que um jogador com acromatopsia enxerga
-4. **Proporção** — nenhuma carta fora de 5:7, porque todas saem de `Carta.RAZAO`
+2. **Alvos de toque** — `medir_layout.py` mede casa e carta em 1280×720, 1920×1080, 360×800 e
+   390×844, e reprova abaixo de 64 px
+3. **Contraste WCAG AA** — 104 pares, reprova o build abaixo do mínimo
+4. **Escala de cinza** — não é filtro, é a paleta que um jogador com acromatopsia enxerga
+5. **Proporção** — nenhuma carta fora de 5:7, porque todas saem de `Carta.RAZAO`
 
 Inspeção que ainda é humana: o centro contém **só** grade e mão, e nada de status ou tabela
 invadindo. É a regra da seção 1, e é o que se olha primeiro em toda captura nova.
