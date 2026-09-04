@@ -5,7 +5,7 @@ class_name Jogo
 ## Nenhuma regra mora aqui: ela só decide QUAL tela está no ar e passa adiante o
 ## que a `Run` respondeu.
 
-enum { MENU, PARTIDA, TEMAS, DESAFIO, LOJA, FIM_DA_RUN }
+enum { MENU, PARTIDA, TEMAS, DESAFIO, LOJA, CONQUISTAS, FIM_DA_RUN }
 
 ## Onde o progresso é gravado. O teste de fluxo aponta para outro arquivo:
 ## rodar a suíte não pode apagar o que o jogador conquistou.
@@ -16,7 +16,8 @@ var run: Run
 var _onde := MENU
 var _tela: Control
 var _poeira: Array[Vector3] = []
-var _anuncios: Array[String] = []   ## temas destravados esperando anúncio
+var _anuncios: Array[String] = []      ## temas destravados esperando anúncio
+var _conquistas: Array[String] = []    ## conquistas recém-caídas, esperando anúncio
 
 func _ready() -> void:
     _poeira = Pintura.semear_poeira()
@@ -51,6 +52,10 @@ func _ir(onde: int) -> void:
             _tela = preload("res://cenas/loja.tscn").instantiate()
             _tela.set("run", run)
             _tela.connect("seguir", _sair_da_loja)
+        CONQUISTAS:
+            _tela = preload("res://cenas/conquistas.tscn").instantiate()
+            _tela.set("perfil", perfil)
+            _tela.connect("fechou", func(): _ir(MENU))
         DESAFIO:
             _tela = preload("res://cenas/desafio.tscn").instantiate()
             _tela.set("desafio", perfil.desafio.copia())
@@ -66,6 +71,7 @@ func _ir(onde: int) -> void:
             _tela.connect("jogar", _comecar_run)
             _tela.connect("temas", func(): _ir(TEMAS))
             _tela.connect("desafio", func(): _ir(DESAFIO))
+            _tela.connect("conquistas", func(): _ir(CONQUISTAS))
     _tela.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
     add_child(_tela)
     queue_redraw()
@@ -105,6 +111,9 @@ func _mesa_terminada(_venceu: bool) -> void:
         perfil.runs_vencidas += 1
     for id in perfil.conferir(run, _ultimo_relato()):
         _anuncios.append(id)
+    for id in perfil.conferir_conquistas(run):
+        if not _conquistas.has(id):
+            _conquistas.append(id)
     perfil.gravar(caminho_do_perfil)
 
     if run.acabou:
@@ -128,6 +137,7 @@ func _gui_input(evento: InputEvent) -> void:
     if evento is InputEventMouseButton and evento.pressed \
             and evento.button_index == MOUSE_BUTTON_LEFT:
         _anuncios.clear()
+        _conquistas.clear()
         _ir(MENU)
 
 func _draw() -> void:
@@ -143,7 +153,12 @@ func _fim_da_run() -> void:
     var ff := Temas.fonte_do_tema(true)
     var f := Temas.fonte_do_tema()
     var larg := minf(size.x - 64.0, 560.0)
-    var caixa := Rect2((size.x - larg) * 0.5, size.y * 0.5 - 200, larg, 400)
+    ## A caixa tem a altura do conteúdo: quatro linhas fixas, mais o que
+    ## conquistou e o que destravou.
+    var altura := 300.0 + float(mini(_conquistas.size(), 5)) * 24.0 \
+                  + float(_anuncios.size()) * 26.0
+    altura = minf(altura, size.y - 48.0)
+    var caixa := Rect2((size.x - larg) * 0.5, (size.y - altura) * 0.5, larg, altura)
     Pintura.caixa(self, caixa, 14, 0.95)
 
     var titulo := "RUN VENCIDA" if run.venceu else "RUN ENCERRADA"
@@ -167,6 +182,27 @@ func _fim_da_run() -> void:
                     HORIZONTAL_ALIGNMENT_RIGHT, caixa.size.x - 64, Temas.T_CORPO,
                     Temas.TEXTO)
         y += 34.0
+
+    if not _conquistas.is_empty():
+        y += 12.0
+        draw_rect(Rect2(caixa.position.x + 32, y - 14, caixa.size.x - 64, 1),
+                  Color(Temas.FILETE, 0.25))
+        draw_string(ff, Vector2(caixa.position.x + 32, y + 14),
+                    "CONQUISTA" if _conquistas.size() == 1 else "CONQUISTAS",
+                    HORIZONTAL_ALIGNMENT_LEFT, -1, Temas.T_ROTULO, Temas.SUCESSO)
+        y += 34.0
+        ## No máximo quatro na tela: uma lista de doze conquistas vira parede de
+        ## texto e o jogador não lê nenhuma. O resto está na tela de conquistas.
+        for i in mini(_conquistas.size(), 4):
+            var c := Conquistas.achar(_conquistas[i])
+            draw_string(f, Vector2(caixa.position.x + 32, y), str(c["nome"]),
+                        HORIZONTAL_ALIGNMENT_LEFT, -1, Temas.T_CORPO, Temas.TEXTO)
+            y += 24.0
+        if _conquistas.size() > 4:
+            draw_string(f, Vector2(caixa.position.x + 32, y),
+                        "e mais %d" % (_conquistas.size() - 4),
+                        HORIZONTAL_ALIGNMENT_LEFT, -1, Temas.T_ROTULO, Temas.TEXTO_SUAVE)
+            y += 24.0
 
     if not _anuncios.is_empty():
         y += 12.0

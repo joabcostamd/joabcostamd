@@ -81,19 +81,20 @@ const TABULEIROS: Array[Dictionary] = [
 ## escolha: quem decide quanto quer apanhar tem direito de saber o que está
 ## escolhendo, e "difícil" e "muito difícil" não informam nada.
 ##
-## Medido em 4 de setembro de 2026, com o comprador simulado. REMEDIR sempre que
+## Medido em 4 de setembro de 2026 nos nove graus, 14 runs por grau, com o
+## comprador simulado. REMEDIR sempre que
 ## uma regra do motor, um item ou a curva de metas mudarem — tabela de dificuldade
 ## desatualizada é pior que tabela nenhuma, porque ela é acreditada.
 const VITORIA_MEDIDA: Array[Dictionary] = [
-    {"run": 56, "mesas": 16.3},
-    {"run": 30, "mesas": 14.5},
-    {"run": 13, "mesas": 12.7},
-    {"run": 9, "mesas": 11.5},
-    {"run": 6, "mesas": 10.4},
-    {"run": 4, "mesas": 10.2},
-    {"run": 2, "mesas": 10.1},
-    {"run": 1, "mesas": 7.4},
-    {"run": 0, "mesas": 4.7},
+    {"run": 50, "mesas": 16.1},
+    {"run": 29, "mesas": 14.6},
+    {"run": 14, "mesas": 12.6},
+    {"run": 14, "mesas": 12.2},
+    {"run": 7, "mesas": 10.7},
+    {"run": 7, "mesas": 10.3},
+    {"run": 0, "mesas": 10.4},
+    {"run": 0, "mesas": 6.6},
+    {"run": 0, "mesas": 4.6},
 ]
 
 ## Uma frase honesta sobre o que esperar deste grau. Sem adjetivo: o número.

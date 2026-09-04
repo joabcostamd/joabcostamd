@@ -19,6 +19,8 @@ var maior_evento := 0
 ## A dificuldade escolhida fica no perfil, não na run: quem escolheu Estufa não
 ## quer reescolher a cada partida.
 var desafio: Desafio = Desafio.new()
+## id da conquista → true. Uma vez conquistada, nunca some.
+var conquistas := {}
 
 func _init() -> void:
     ## Os temas de saída entram sempre, mesmo num save antigo: fundo claro é
@@ -43,6 +45,21 @@ func destravar(id: String) -> bool:
 ## último porque é o mais impressionante nos primeiros dez segundos e o mais
 ## cansativo no minuto vinte. Tema que grita "uau" vale mais como prêmio que
 ## como padrão.
+## As conquistas que acabaram de cair. Junta as marcas da run com as do perfil —
+## algumas olham para uma partida, outras para tudo o que já foi jogado.
+func conferir_conquistas(run: Run) -> Array[String]:
+    var marcas := run.marcas.duplicate()
+    marcas["runs_vencidas"] = runs_vencidas
+    marcas["maior_evento"] = maxi(maior_evento, int(marcas.get("maior_evento", 0)))
+    marcas["mesas_jogadas"] = mesas_jogadas
+    var novas := Conquistas.conferir(marcas, conquistas)
+    for id in novas:
+        conquistas[id] = true
+    return novas
+
+func quantas_conquistas() -> int:
+    return conquistas.size()
+
 func conferir(run: Run, ultimo_relato := {}) -> Array[String]:
     var novos: Array[String] = []
     if run.venceu and destravar("casino"):
@@ -68,6 +85,7 @@ func para_dicionario() -> Dictionary:
         "escala_de_cinza": escala_de_cinza, "mesas_jogadas": mesas_jogadas,
         "runs_vencidas": runs_vencidas, "maior_evento": maior_evento,
         "destravados": destravados.keys(), "desafio": desafio.para_dicionario(),
+        "conquistas": conquistas.keys(),
     }
 
 func de_dicionario(d: Dictionary) -> void:
@@ -81,6 +99,8 @@ func de_dicionario(d: Dictionary) -> void:
         destravados[str(id)] = true
     if typeof(d.get("desafio")) == TYPE_DICTIONARY:
         desafio = Desafio.de_dicionario(d["desafio"])
+    for id: String in d.get("conquistas", []):
+        conquistas[str(id)] = true
 
 func gravar(caminho := CAMINHO) -> bool:
     var temporario := caminho + ".tmp"

@@ -38,8 +38,8 @@ var venceu := false
 var mesas_jogadas := 0
 var mesas_vencidas := 0
 var maior_evento := 0
-var categorias_feitas := {}   ## categoria -> quantas vezes
-var maior_cruzada := 0        ## quantas linhas no maior evento de linhas
+## Categorias que a run já colheu, para o desbloqueio de tema.
+var categorias_feitas := {}
 
 ## Cartas que a run já colheu e não devolve (geometria 4).
 var fora_do_baralho: Array[int] = []
@@ -49,6 +49,9 @@ var linhas_mortas: Array[int] = []
 var fianca := 0
 ## Quantas vezes o Quase lá segurou a run. Vira conquista.
 var quase_la := 0
+## As marcas que as conquistas leem. Um dicionário achatado: a conquista diz
+## qual chave olhar, e a conta é uma comparação — nunca um `if` por conquista.
+var marcas := {}
 
 func _init(p_semente: int, p_desafio: Desafio = null) -> void:
     semente = p_semente
@@ -94,6 +97,8 @@ func concluir_mesa() -> Dictionary:
         return {"pronto": false}
     mesas_jogadas += 1
     maior_evento = maxi(maior_evento, mesa.maior_evento)
+    _absorver(mesa)
+    _marcar_o_estado()
 
     fianca = mesa.fianca
     ## O pagamento acontece SEMPRE, vitória ou derrota. Sair de uma mesa perdida
@@ -144,6 +149,7 @@ func concluir_mesa() -> Dictionary:
     if rodada > Metas.RODADAS:
         acabou = true
         venceu = true
+        _marcar_o_estado()
         return {"pronto": true, "venceu_mesa": true, "fim_da_run": true,
                 "venceu_run": true}
     _abrir_loja()
@@ -162,14 +168,40 @@ func fechar_loja() -> void:
 
 ## Registra o que uma colheita produziu. É daqui que saem os desbloqueios de
 ## tema: a condição "faça uma Sequência de Cor" precisa de alguém contando.
-func anotar_colheita(relato: Dictionary) -> void:
-    if not bool(relato.get("colheita", false)):
-        return
-    var linhas: Array = relato["linhas"]
-    maior_cruzada = maxi(maior_cruzada, linhas.size())
-    for linha in linhas:
-        var cat := int(linha["categoria"])
-        categorias_feitas[cat] = int(categorias_feitas.get(cat, 0)) + 1
+## Absorve o que a mesa contou. A mesa conta sozinha — quem conta tem de ser quem
+## acontece — e a run só junta as marcas de todas elas.
+func _absorver(m: Mesa) -> void:
+    for chave in m.marcas:
+        _marcar(str(chave), int(m.marcas[chave]))
+    for chave in m.contas:
+        _somar(str(chave), int(m.contas[chave]))
+    for cat in Maos.CATEGORIAS:
+        if int(m.marcas.get("cat_%d" % cat, 0)) > 0:
+            categorias_feitas[cat] = int(categorias_feitas.get(cat, 0)) + 1
+
+## Uma marca guarda o MAIOR valor visto; um contador soma. A diferença importa:
+## "colheu 10.000 numa vez" é máximo, "colheu 12 vezes" é soma.
+func _marcar(chave: String, valor: int) -> void:
+    marcas[chave] = maxi(int(marcas.get(chave, 0)), valor)
+
+func _somar(chave: String, quanto: int) -> void:
+    marcas[chave] = int(marcas.get(chave, 0)) + quanto
+
+## As marcas que só existem no fim de uma mesa ou da run.
+func _marcar_o_estado() -> void:
+    _marcar("selos", poderes.quantos_selos())
+    _marcar("reliquias", poderes.reliquias.size())
+    var maior := 0
+    for cat in Maos.CATEGORIAS:
+        maior = maxi(maior, poderes.nivel(cat))
+    _marcar("nivel_maximo", maior)
+    _marcar("quase_la", quase_la)
+    if mesa != null and mesa.meta > 0:
+        _marcar("razao_maxima", 100 * mesa.pontos / mesa.meta)
+    if venceu:
+        _marcar("run_no_grau", maxi(0, desafio.grau_do_dial()))
+        if vidas >= VIDAS:
+            _marcar("run_limpa", 1)
 
 ## A CRUZADA DO CENTRO: um evento que colhe as quatro linhas que passam pela
 ## casa central. É o melhor jogo do CRUZADA e o desbloqueio mais difícil.

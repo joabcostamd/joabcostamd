@@ -167,8 +167,6 @@ func jogar(indice: int, casa: int) -> void:
     if not bool(r["valido"]):
         return
     _relato = r
-    if run != null:
-        run.anotar_colheita(r)
     if bool(r["colheita"]) or int(r["pontos_parcela"]) > 0:
         _realce = TEMPO_DO_REALCE
     _selecionada = mini(_selecionada, mesa.mao.size() - 1)

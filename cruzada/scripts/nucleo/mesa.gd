@@ -87,6 +87,16 @@ var cruzadas := 0
 var avessos_forjados := 0
 var maior_evento := 0
 
+## O que esta mesa viu, para as conquistas. Fica AQUI e não na Run porque quem
+## conta tem de ser quem acontece: na primeira versão a contagem dependia de a
+## tela chamar um método, e qualquer partida jogada sem tela — teste, simulação,
+## replay — não contava nada.
+##
+## `marcas` guarda o MAIOR valor visto; `contas` SOMA. "Colheu 10.000 numa vez" é
+## máximo; "colheu doze vezes" é soma, e confundir as duas quebra metade da lista.
+var marcas := {}
+var contas := {}
+
 var _rng: Aleatorio        ## o baralho
 var _rng_semeadura: Aleatorio  ## a grade inicial (R06c)
 
@@ -369,11 +379,18 @@ func posicionar(indice_na_mao: int, casa: int) -> Dictionary:
         tear += 1
         relato["tique_do_tear"] = true
 
+    _marcar("tear_maximo", tear)
     comprar_mao()
     relato["tear"] = tear
     relato["pontos_total"] = relato["pontos_evento"] + pontos_parcela
     _conferir_fim(relato)
     return relato
+
+func _marcar(chave: String, valor: int) -> void:
+    marcas[chave] = maxi(int(marcas.get(chave, 0)), valor)
+
+func _somar(chave: String, quanto: int) -> void:
+    contas[chave] = int(contas.get(chave, 0)) + quanto
 
 func _relato_vazio() -> Dictionary:
     return {
@@ -392,6 +409,18 @@ func _relato_vazio() -> Dictionary:
 # ──────────────────── R11/R12 — a conta da colheita ────────────────────
 
 const GRAUS: PackedStringArray = ["", "colheita", "DUPLA", "TRIPLA", "CRUZ TOTAL"]
+
+## A CRUZADA DO CENTRO: as quatro linhas que passam pela casa central colhidas de
+## uma vez. É o melhor jogo do CRUZADA, e a conquista mais difícil.
+func _pelo_centro(linhas: Array) -> bool:
+    if linhas.size() < 4:
+        return false
+    var centro := Geometria.CASAS / 2
+    var quantas := 0
+    for linha in linhas:
+        if Geometria.CELULAS[int(linha["linha"])].has(centro):
+            quantas += 1
+    return quantas >= 4
 
 ## A conta de um evento, SEM tocar em nada. A colheita usa para pagar e a
 ## assistência (§6) usa para responder "quanto eu ganho se puser aqui?" — a mesma
@@ -501,6 +530,14 @@ func _colher(alvo: Array, relato: Dictionary) -> void:
     colheitas += 1
     if total > maior_evento:
         maior_evento = total
+    _somar("colheitas", 1)
+    _marcar("linhas_no_evento", conta["linhas"].size())
+    _marcar("maior_evento", total)
+    for linha in conta["linhas"]:
+        _marcar("cat_%d" % int(linha["categoria"]), 1)
+    if _pelo_centro(conta["linhas"]):
+        _marcar("cruzada_do_centro", 1)
+
     relato["colheita"] = true
     relato["pontos_evento"] = total
     relato["fator"] = conta["fator"]
@@ -511,6 +548,7 @@ func _colher(alvo: Array, relato: Dictionary) -> void:
     relato["fianca_pagou"] = conta["fianca_pagou"]
     if bool(conta["fianca_pagou"]):
         fianca = 0
+        _marcar("fianca_pagou", 1)
     relato["grau"] = GRAUS[mini(alvo.size(), 4)]
     if alvo.size() >= 2:
         cruzadas += 1

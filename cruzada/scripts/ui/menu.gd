@@ -9,6 +9,7 @@ class_name Menu
 signal jogar
 signal temas
 signal desafio
+signal conquistas
 
 const FRASE := "Cada carta pontua em duas mãos de pôquer:\na fileira e a coluna onde você a colocar."
 
@@ -24,7 +25,7 @@ func _ready() -> void:
 func _itens() -> Array[String]:
     ## O DESAFIO fica ao lado de JOGAR, não escondido em configurações: escolher
     ## quanto se quer apanhar é parte de começar a partida.
-    var lista: Array[String] = ["JOGAR", "DESAFIO", "TEMAS"]
+    var lista: Array[String] = ["JOGAR", "DESAFIO", "TEMAS", "CONQUISTAS"]
     return lista
 
 func _gui_input(evento: InputEvent) -> void:
@@ -39,6 +40,7 @@ func _gui_input(evento: InputEvent) -> void:
             0: emit_signal("jogar")
             1: emit_signal("desafio")
             2: emit_signal("temas")
+            3: emit_signal("conquistas")
 
 func _em(ponto: Vector2) -> int:
     for i in _botoes.size():
@@ -84,14 +86,16 @@ func _draw() -> void:
                           FRASE, HORIZONTAL_ALIGNMENT_CENTER, 520, Temas.T_CORPO,
                           -1, Temas.TEXTO_SUAVE)
 
-    _leque(Rect2(0, size.y * 0.38, size.x, size.y * 0.20))
+    _leque(Rect2(0, size.y * 0.34, size.x, size.y * 0.19))
 
     var larg := minf(size.x - 64.0, 320.0)
-    var alt := 64.0            ## nunca abaixo de 64: é onde o dedo trabalha
-    var vao := 16.0
+    ## Nunca abaixo de 64: é onde o dedo trabalha. Com quatro botões o vão
+    ## encolhe antes do botão — quem cede altura é o espaço entre eles.
+    var alt := 64.0
+    var vao := 12.0
     var itens := _itens()
     _botoes.clear()
-    var y := size.y * 0.60
+    var y := size.y * 0.56
     for i in itens.size():
         var b := Rect2(centro.x - larg * 0.5, y + i * (alt + vao), larg, alt)
         _botoes.append(b)

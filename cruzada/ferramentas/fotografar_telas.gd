@@ -22,8 +22,14 @@ func _ready() -> void:
     match qual:
         "menu": tela = preload("res://cenas/menu.tscn").instantiate()
         "desafio", "estufa": tela = preload("res://cenas/desafio.tscn").instantiate()
+        "conquistas": tela = preload("res://cenas/conquistas.tscn").instantiate()
         _: tela = preload("res://cenas/temas.tscn").instantiate()
     tela.set("perfil", perfil)
+    if qual == "conquistas":
+        ## Metade conquistada, para a foto mostrar os dois estados.
+        for i in Conquistas.total():
+            if i % 2 == 0:
+                perfil.conquistas[str(Conquistas.LISTA[i]["id"])] = true
     if qual == "desafio":
         tela.set("desafio", Desafio.tabuleiro(4))
     elif qual == "estufa":
