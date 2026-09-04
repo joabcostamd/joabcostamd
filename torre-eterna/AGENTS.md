@@ -1,4 +1,4 @@
-# AGENTS.md — Torre Eterna (Godot 4.7+, GDScript)
+# AGENTS.md — Tower Zero (Godot 4.7+, GDScript)
 
 Este arquivo é o contrato de trabalho de quem (humano ou IA) mexe neste projeto.
 As regras genéricas do **KIT-GODOT-V1** valem aqui; abaixo estão as **regras deste projeto**.

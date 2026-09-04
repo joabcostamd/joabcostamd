@@ -1,4 +1,4 @@
-# TORRE ETERNA — o que o jogo é, e onde cada ideia mora
+# TOWER ZERO — o que o jogo é, e onde cada ideia mora
 
 Uma torre no centro. Inimigos vêm das bordas. Eles morrem, deixam ouro, o ouro
 compra melhoria, a melhoria mata mais rápido. Isso é o gênero inteiro, e não é

@@ -5,7 +5,7 @@
 > Leia `docs/projeto-original/LEIA-ANTES.md` antes de usar qualquer coisa
 > daqui.
 
-# TORRE ETERNA — Especificação de Áudio Procedural (WebAudio, zero assets)
+# TOWER ZERO — Especificação de Áudio Procedural (WebAudio, zero assets)
 
 **Documento normativo v1.0** · PT-BR · alvo: 60 fps com 400+ entidades, mobile incluído
 Nomes de eventos alinhados 1:1 com os sinais já declarados em `/home/user/joabcostamd/torre-eterna/scripts/core/event_bus.gd`.

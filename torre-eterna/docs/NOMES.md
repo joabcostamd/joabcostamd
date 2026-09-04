@@ -328,51 +328,21 @@ O campo `traduzir_nome` decide se o título ganha versão por idioma. Ele está 
 
 ---
 
-## 8. Decisão tomada
+## 8. Decisão anterior, superada (mantida como registro)
 
-**O nome do jogo é ETERNAL TOWER.** Gravado em `data/marca.json` em
-2026-09-04, por escolha do titular, depois de ver esta análise inteira e as
-alternativas limpas.
+Em 2026-09-04 o nome gravado foi **ETERNAL TOWER**, e este documento discordou
+por escrito: *Eternal Towers* (Steam 4036730) é defesa de torre com roguelite,
+mesmo gênero e mesma temática, com diferença de um `s`. Na tabela de risco
+ETERNAL TOWER marcou 13 contra 23 de TOWER ZERO e SELFSIEGE.
 
-Este documento recomendava outra coisa, e continua recomendando: pela pontuação
-medida, **TOWER ZERO** e **SELFSIEGE** empataram em 23 e ETERNAL TOWER ficou em
-13 na tabela de risco. A recomendação fica registrada aqui de propósito — um
-documento que se reescreve para concordar com a decisão não serve para nada
-depois.
-
-### O risco, dito com todas as letras
-
-Existe **Eternal Towers** na Steam (app 4036730): defesa de torre com roguelite,
-"segure ondas de máquinas hostis". Mesmo gênero, mesma temática, diferença de
-um `s` no final. Isso significa, na prática:
-
-- **Busca da Steam** — quem procurar pelo nosso jogo vai encontrar os dois, e o
-  que tiver mais avaliações aparece primeiro.
-- **Marca** — um pedido de registro em classe 9/41 pode ser indeferido por
-  colidência fonética, mesmo com a escrita diferente. Isso não impede vender o
-  jogo; impede registrar o nome.
-- **Notificação extrajudicial** — possível se o outro título tiver marca
-  registrada. O item 6 acima (busca no INPI/USPTO/EUIPO) deixa de ser
-  recomendação e passa a ser obrigatório **antes** de encomendar a arte final.
-
-### As mitigações que já estão no código
-
-1. **`traduzir_nome: false`** — uma marca só no mundo inteiro. Marca única é mais
-   fácil de defender juridicamente, gera uma logo só e um nome só para imprensa.
-2. **Subtítulo forte e traduzido** — *A torre que lembra* / *The tower that
-   remembers*. Na loja e na logo o par sempre aparece junto, e é o subtítulo que
-   separa nós deles em qualquer lista de resultados.
-3. **`id_curto` continua `torre_eterna`** — nomeia o arquivo de save e não segue
-   o nome comercial. Se o nome mudar amanhã, ninguém perde progresso.
-
-### Se um dia precisar trocar
-
-Trocar é editar `data/marca.json` e rodar os portões. Nenhum script escreve o
-nome à mão — existe um teste que reprova se algum voltar a escrever. O custo de
-renomear **antes** do lançamento é uma linha; **depois** do lançamento é a página
-da loja, o histórico de avaliações, os links de imprensa e o SEO acumulado.
+Depois vieram três rodadas de medição a mais (seções 3.0 a 3.6) e a decisão foi
+revista. **A seção 9 é a que vale.** Esta fica porque um estudo que apaga a
+decisão que não vingou perde a única coisa que o torna útil depois: o registro
+de que a recomendação foi feita antes, e não depois.
 
 ---
+
+
 
 # RODADA 3 — busca de setembro de 2026
 
@@ -673,4 +643,102 @@ Só se sai dessa forma de duas maneiras, e as duas já estão medidas e limpas:
 2. **Fundir numa palavra só** → **OUROTOWER** (23). Vira palavra inventada:
    marca defensável, uma logo em 20 idiomas, som próprio — e ainda carrega
    `tower` inteiro dentro, então a busca continua achando.
+
+---
+
+# 9. DECISÃO FINAL — TOWER ZERO
+
+**O nome do jogo é TOWER ZERO.** Gravado em `data/marca.json` em 2026-09-04,
+pelo titular, depois de seis nomes avaliados um a um e três rodadas de busca de
+colisão.
+
+É a recomendação do documento. Nota **23**, empatada no topo com SELFSIEGE e
+OUROTOWER, e a mais segura das três.
+
+## 9.1. Por que ele ganhou
+
+**A forma escapa da armadilha.** As cinco tentativas anteriores — ETERNAL,
+ENDLESS, SPACE, UNKNOWN, GRAVITY + TOWER — estavam todas na forma
+`ADJETIVO + TOWER`, que é a mais disputada da loja porque todo mundo do gênero
+tenta ela. TOWER ZERO **inverte a ordem**, e essa inversão faz `zero` deixar de
+ser descrição e virar **nome próprio**. Ninguém ocupou.
+
+**Continua achável.** A palavra `TOWER` está lá, inteira, no começo — que é onde
+a busca da Steam mais pesa. Foi por isso que ele ficou à frente de SELFSIEGE
+(que não tem `tower` nenhum) e de OUROTOWER (que tem, mas colado dentro de uma
+palavra inventada).
+
+**Diz o jogo sem mentir.** `zero` é a torre antes da primeira: a Ascensão zera o
+mundo e recomeça, e o Enxame são as versões anteriores da própria torre. E `zero`
+também é o nível de tudo no primeiro segundo de uma partida nova — a promessa do
+incremental inteiro cabe na palavra.
+
+**Diz "infinito" sem usar a palavra queimada.** Todo concorrente escreve
+"endless" ou "infinite" na descrição (medido em 3.5). Um jogo que se chama ZERO
+num gênero que só fala em INFINITO se destaca por contraste, não por competição.
+
+**Funciona nos 20 idiomas sem traduzir.** `tower` e `zero` são reconhecíveis em
+quase toda língua latina e germânica, e `zero` é praticamente universal. Por isso
+`traduzir_nome` é `false`: **uma marca só no mundo inteiro**, uma logo só, um
+nome só para imprensa, e um pedido de registro mais forte.
+
+**A logo se desenha sozinha.** O `0` é um anel — o mesmo anel de néon que já é a
+linguagem visual do jogo em `docs/IDENTIDADE.md`. A torre sobe por dentro do
+zero. Em *capsule* pequena (462×174) duas palavras curtas cabem em uma linha, em
+caixa alta, com folga.
+
+## 9.2. Colisão medida
+
+Nenhuma. Buscado em três rodadas: não existe jogo chamado *Tower Zero* na Steam.
+Os vizinhos são *[The] Tower* (310870), *TOWER* (1305470) e *Towers* (848840) —
+palavras isoladas, gêneros diferentes, nenhum deles ocupa o par.
+
+O único cuidado que fica é o de sempre, e vale para qualquer nome: **busca no
+INPI, USPTO e EUIPO antes de encomendar a arte final** (item 6 desta página).
+
+## 9.3. O que a troca mexeu no projeto
+
+Foi um `git grep` inteiro, e não só o JSON, porque o nome vazava para lugares que
+a fonte única não cobre:
+
+| Onde | O que era | O que é |
+|---|---|---|
+| `data/marca.json` | ETERNAL TOWER | **TOWER ZERO** |
+| `project.godot` → `config/name` | Torre Eterna | **Tower Zero** *(via `tools/bootstrap.gd`, nunca como texto)* |
+| `scripts/core/save_system.gd` | `user://torre_eterna.save` | `user://tower_zero.save` |
+| `scripts/core/marca.gd` | padrão `torre_eterna` | padrão `tower_zero` |
+| `export_presets.cfg` | `product_name=""` | `product_name="Tower Zero"` |
+| `docs/STEAM.md` | pasta do Steam Cloud `Torre Eterna` | `Tower Zero` |
+| 14 documentos | título "Torre Eterna" | "Tower Zero" |
+
+### Por que o `id_curto` mudou desta vez, se a regra diz que ele não muda
+
+A regra continua valendo, e o teste que a defende continua no lugar: `id_curto`
+nomeia o arquivo de save, então **depois do lançamento ele é congelado** — segui-lo
+ao nome comercial faria todo mundo perder o progresso na atualização que renomeia
+o jogo.
+
+Só que ainda **não existe ninguém jogando**. Esta é a última janela em que a
+pasta de save pode deixar de se chamar `torre_eterna`, e depois da primeira venda
+ela fica com esse nome para sempre. Trocar agora custa zero; não trocar custa uma
+pasta com o nome errado na máquina de todo comprador, para sempre.
+
+**A partir da primeira build pública, `tower_zero` está congelado.**
+
+### O que continua se chamando `torre-eterna`
+
+A **pasta do repositório**. Ela é caminho de código, não marca: nenhum jogador
+vê, e renomear pastas em Git troca o histórico de lugar sem ganhar nada. O
+`README.md` diz isso na terceira linha, para quem chegar depois não achar que é
+sobra esquecida.
+
+## 9.4. O subtítulo
+
+*A torre que lembra* / *The tower that remembers* — mantido, e agora ele encaixa
+melhor do que antes. É **a torre que lembra** justamente porque é a torre **zero**:
+a que veio antes de todas e guarda o que cada uma das seguintes esqueceu.
+
+Ele fica traduzido nos 20 idiomas enquanto o nome fica igual em todos. Essa
+divisão é de propósito: o nome é a marca, o subtítulo é a explicação, e só a
+explicação precisa falar a língua de quem lê.
 

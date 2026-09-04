@@ -1,13 +1,13 @@
 {
  "_nota": "FONTE ÚNICA DA MARCA. Nada no jogo escreve o nome do produto à mão: HUD, tela de título, créditos, save, exportação e página da loja leem daqui. Trocar o nome do jogo ou da desenvolvedora é editar este arquivo — e não caçar a palavra em 20 idiomas, 93 scripts e uma logo. Ver scripts/core/marca.gd.",
- "_estado": "DEFINIDO em 2026-09-04. Ver docs/NOMES.md para a analise de colisao e o risco declarado.",
+ "_estado": "DEFINIDO em 2026-09-04. Ver docs/NOMES.md, secao 9, para como se chegou aqui.",
  "jogo": {
-  "nome": "ETERNAL TOWER",
-  "nomeEn": "ETERNAL TOWER",
+  "nome": "TOWER ZERO",
+  "nomeEn": "TOWER ZERO",
   "subtitulo": "A torre que lembra",
   "subtituloEn": "The tower that remembers",
   "traduzir_nome": false,
-  "id_curto": "torre_eterna"
+  "id_curto": "tower_zero"
  },
  "estudio": {
   "nome": "Estrato Games",

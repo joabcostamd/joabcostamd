@@ -5,7 +5,7 @@
 > Leia `docs/projeto-original/LEIA-ANTES.md` antes de usar qualquer coisa
 > daqui.
 
-# TORRE ETERNA — Bíblia de Arte Procedural & Juice
+# TOWER ZERO — Bíblia de Arte Procedural & Juice
 ### Documento de Direção Técnica v1.0 — Canvas 2D puro, zero assets
 
 > **Contrato:** tudo aqui é numérico e vira código direto. Nenhum valor é "aproximado". Onde há tabela, ela é literalmente o `const` do módulo. Nomes de funções/variáveis em PT-BR conforme o restante do projeto (`scripts/` já usa `Ux`, `Fmt`, `Big`, `inimigo`, `coletavel`, `projetil`).

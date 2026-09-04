@@ -5,7 +5,7 @@
 > Leia `docs/projeto-original/LEIA-ANTES.md` antes de usar qualquer coisa
 > daqui.
 
-# ARQUITETURA DE INFORMAÇÃO E UX/UI — "TORRE ETERNA"
+# ARQUITETURA DE INFORMAÇÃO E UX/UI — "TOWER ZERO"
 
 > Documento de direção de UX/UI. Vocabulário alinhado ao `data/*.json` já existente no repositório (7 categorias de upgrade / 39 upgrades, 36 talentos em 3 ramos, 85 conquistas, 14 desafios, 10 habilidades, 10 eras, 6 raridades, 3 camadas de prestígio, 6 moedas). Todos os valores são normativos: se um número aparece aqui, é o número a codificar.
 

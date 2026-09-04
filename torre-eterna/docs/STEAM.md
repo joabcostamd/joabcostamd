@@ -3,7 +3,7 @@
 Tudo o que precisa ser preenchido antes de publicar, e a configuração do lado da
 Steamworks que o código já espera encontrar.
 
-> **O nome do jogo é ETERNAL TOWER** (decidido em 2026-09-04, ver
+> **O nome do jogo é TOWER ZERO** (decidido em 2026-09-04, ver
 > `docs/NOMES.md` seção 8 — inclusive o risco de colisão declarado). O nome da
 > **desenvolvedora ainda não foi escolhido**: onde este documento escreve
 > `{ESTÚDIO}`, entra o que for decidido. Tudo o mais aqui é definitivo.
@@ -243,12 +243,12 @@ A sincronização é por Auto-Cloud, **sem uma linha de código**. Configurar em
 
 | SO | Root path | Subdirectory | Pattern |
 |---|---|---|---|
-| Windows | `WinAppDataRoaming` | `Godot/app_userdata/Torre Eterna` | `*.save` |
-| Windows | `WinAppDataRoaming` | `Godot/app_userdata/Torre Eterna` | `*.json` |
-| macOS | `MacAppSupport` | `Godot/app_userdata/Torre Eterna` | `*.save` |
-| Linux | `LinuxHome` | `.local/share/godot/app_userdata/Torre Eterna` | `*.save` |
+| Windows | `WinAppDataRoaming` | `Godot/app_userdata/Tower Zero` | `*.save` |
+| Windows | `WinAppDataRoaming` | `Godot/app_userdata/Tower Zero` | `*.json` |
+| macOS | `MacAppSupport` | `Godot/app_userdata/Tower Zero` | `*.save` |
+| Linux | `LinuxHome` | `.local/share/godot/app_userdata/Tower Zero` | `*.save` |
 
-> **`Torre Eterna` na pasta não é erro de digitação.** A pasta do save vem de
+> **`Tower Zero` na pasta não é erro de digitação.** A pasta do save vem de
 > `application/config/name` no `project.godot`, não do nome comercial. Ela ficou
 > com o nome de projeto de propósito: se seguisse o nome da loja, qualquer
 > renomeação futura faria todo mundo que já joga perder o progresso. Copie a

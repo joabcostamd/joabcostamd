@@ -4,9 +4,9 @@ extends Node
 ## exportação em texto e migrações.
 
 const VERSAO := 2
-const CAMINHO := "user://torre_eterna.save"
-const CAMINHO_BACKUP := "user://torre_eterna.bak"
-const CAMINHO_CONFIG := "user://torre_eterna_config.json"
+const CAMINHO := "user://tower_zero.save"
+const CAMINHO_BACKUP := "user://tower_zero.bak"
+const CAMINHO_CONFIG := "user://tower_zero_config.json"
 const ASSINATURA := "TORRE1|"
 
 ## Prefixo dos arquivos. As ferramentas de linha de comando (testes, soak,
@@ -15,16 +15,16 @@ const ASSINATURA := "TORRE1|"
 static var prefixo := ""
 
 static func cam() -> String:
-	return CAMINHO.replace("torre_eterna.", prefixo + "torre_eterna.")
+	return CAMINHO.replace("tower_zero.", prefixo + "tower_zero.")
 
 static func cam_corrompido() -> String:
 	return cam() + ".corrompido"
 
 func cam_backup() -> String:
-	return CAMINHO_BACKUP.replace("torre_eterna.", prefixo + "torre_eterna.")
+	return CAMINHO_BACKUP.replace("tower_zero.", prefixo + "tower_zero.")
 
 static func cam_config() -> String:
-	return CAMINHO_CONFIG.replace("torre_eterna_", prefixo + "torre_eterna_")
+	return CAMINHO_CONFIG.replace("tower_zero_", prefixo + "tower_zero_")
 
 var ultimo_erro := ""
 

@@ -11,6 +11,10 @@ numeracao segue [SemVer](https://semver.org/lang/pt-BR/).
 
 **O jogo que não acaba**
 
+### Modificado
+
+- O jogo passou a se chamar TOWER ZERO. O nome vem de uma linha só em data/marca.json: tela de título, créditos, executável, pasta de save e página da loja leem de lá.
+
 ### Adicionado
 
 - As Cepas: 38 traços em três eixos compõem 58.282 formas de inimigo. A segunda cepa só aparece na onda 60 e a terceira na 200 — o Enxame da hora 200 é feito de coisas que não podiam existir na hora 2.

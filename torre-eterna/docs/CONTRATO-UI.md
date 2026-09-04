@@ -1,4 +1,4 @@
-# Contrato de UI e Áudio — Torre Eterna (Godot 4.4, GDScript)
+# Contrato de UI e Áudio — Tower Zero (Godot 4.4, GDScript)
 
 Projeto: `/home/user/joabcostamd/torre-eterna`. **Toda a interface é construída em código.**
 Nunca crie/edite `.tscn`, `.tres` ou `project.godot` — nem à mão nem por ferramenta.

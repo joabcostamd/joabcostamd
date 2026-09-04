@@ -1,10 +1,10 @@
-# 🗼 ETERNAL TOWER
+# 🗼 TOWER ZERO
 
 > Um idle/incremental de tower defense em **Godot 4**. Uma torre no centro, ondas
 > infinitas vindo de todos os lados, e três camadas de prestígio para você
 > recomeçar mais forte — de novo, e de novo, e de novo.
 
-> **`torre-eterna` é o nome do projeto, `ETERNAL TOWER` é o nome do produto.** A
+> **`torre-eterna` é o nome do projeto, `TOWER ZERO` é o nome do produto.** A
 > pasta, o `config/name` do `project.godot` e o arquivo de save continuam com o
 > nome de projeto de propósito: se seguissem o nome comercial, cada troca de nome
 > apagaria o progresso de quem já joga. O nome do produto vive num lugar só,

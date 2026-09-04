@@ -8,6 +8,11 @@
    "tituloEn": "The game that does not end",
    "itens": [
     {
+     "tipo": "melhoria",
+     "texto": "O jogo passou a se chamar TOWER ZERO. O nome vem de uma linha só em data/marca.json: tela de título, créditos, executável, pasta de save e página da loja leem de lá.",
+     "textoEn": "The game is now called TOWER ZERO. The name comes from a single line in data/marca.json: title screen, credits, executable, save folder and store page all read from there."
+    },
+    {
      "tipo": "novo",
      "texto": "As Cepas: 38 traços em três eixos compõem 58.282 formas de inimigo. A segunda cepa só aparece na onda 60 e a terceira na 200 — o Enxame da hora 200 é feito de coisas que não podiam existir na hora 2.",
      "textoEn": "The Strains: 38 traits across three axes compose 58,282 enemy forms. The second strain only appears at wave 60 and the third at 200 — the Swarm at hour 200 is made of things that could not exist at hour 2."

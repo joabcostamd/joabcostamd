@@ -1,4 +1,4 @@
-# CONCEITO — Torre Eterna
+# CONCEITO — Tower Zero
 
 ## Uma frase
 Um idle de tower defense onde a torre no centro atira sozinha, os inimigos

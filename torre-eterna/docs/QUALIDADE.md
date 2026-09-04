@@ -1,4 +1,4 @@
-# Rubrica de qualidade — Torre Eterna
+# Rubrica de qualidade — Tower Zero
 
 Nota-alvo do projeto: **≥ 95/100**.
 
@@ -285,7 +285,7 @@ $ godot --headless --path . -s res://tools/verificar.gd
 ===STATUS=== PASS
 
 $ godot --headless --path . -s res://tools/lint.gd
-===LINT=== arquivos=88 linhas=38054 erros=0 avisos=0
+===LINT=== arquivos=88 linhas=38105 erros=0 avisos=0
 ===STATUS=== PASS
 
 $ godot --headless --path . -s res://tools/validar_dados.gd
@@ -411,7 +411,7 @@ STATUS: PASS   (3418 ms)
 | | |
 |---|---:|
 | Scripts GDScript | 103 |
-| Linhas de código | 38.054 |
+| Linhas de código | 38.105 |
 | Testes da simulação | 1056 |
 | Chaves de interface PT/EN | 1.098 |
 | Textos de conteúdo PT/EN | 1.286 |

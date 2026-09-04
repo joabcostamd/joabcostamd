@@ -5,7 +5,7 @@
 > Leia `docs/projeto-original/LEIA-ANTES.md` antes de usar qualquer coisa
 > daqui.
 
-# TORRE ETERNA — Bíblia de Conteúdo (PT-BR) v2.0
+# TOWER ZERO — Bíblia de Conteúdo (PT-BR) v2.0
 ### Documento de Design de Conteúdo — pronto para virar `data/*.json`
 
 > **Contexto de integração:** o repositório já possui `/home/user/joabcostamd/torre-eterna/data/*.json` com conteúdo substancial. Este documento **reconcilia** o que existe e **especifica numericamente** o que falta. Cada bloco marca `[EXISTE]` (id já presente — não duplicar) ou `[NOVO]` (gerar). Todos os `stat` usados existem em `data/stats.json` (39 defs) salvo quando marcado `⚑ NOVO STAT`. Todos os `tipo` de efeito seguem o padrão do repo: `flat` (soma), `pct` (soma percentual à base), `mult` (multiplicativo composto), `passiva` (flag por `chave`).

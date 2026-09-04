@@ -1,7 +1,7 @@
 class_name Mecanicas
 extends RefCounted
 
-## As mecânicas-assinatura de Torre Eterna — o que este jogo tem e os outros não.
+## As mecânicas-assinatura de Tower Zero — o que este jogo tem e os outros não.
 ##
 ##  1. A PURGA          — a única ação que exige o jogador, e recompensa timing.
 ##  2. ÁLBUM DE ECOS    — ver uma carta já é progresso permanente. Descarte sem medo.

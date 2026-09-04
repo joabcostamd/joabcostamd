@@ -31,6 +31,41 @@ const ACOES := {
 	"debug_toggle": [KEY_F3],
 }
 
+## O CONTROLE MORA AQUI TAMBÉM, E ESSA É A CORREÇÃO DE UM BUG CARO.
+##
+## Antes, este arquivo só conhecia teclas. As ligações de controle tinham sido
+## postas direto no `project.godot` quando o Steam Input entrou — e como este
+## script SOBRESCREVE cada ação inteira (`set_setting` do mapa todo, não um
+## acréscimo), a primeira pessoa que rodasse o bootstrap por qualquer outro
+## motivo apagaria as doze ligações de controle de uma vez. Foi exatamente o que
+## aconteceu ao renomear o jogo: o nome mudou e o joystick parou.
+##
+## O silêncio é o que fazia doer: nada quebra, o jogo abre, o teclado funciona, e
+## o defeito só aparece para quem liga um controle. O teste `[Steam] toda acao
+## principal responde a controle` pegou porque ele confere o mapa, não a tela.
+##
+## A regra que sai daqui é a mesma da Marca: se um gerador escreve um arquivo,
+## ele precisa saber escrever o arquivo INTEIRO. Meia verdade num gerador não
+## avisa — ela apaga.
+const BOTOES := {
+	"purga": JOY_BUTTON_A,
+	"comprar_max": JOY_BUTTON_X,
+	"alternar_auto": JOY_BUTTON_Y,
+	"salvar_agora": JOY_BUTTON_BACK,
+	"ui_pausa": JOY_BUTTON_START,
+	"painel_upgrades": JOY_BUTTON_LEFT_SHOULDER,
+	"painel_talentos": JOY_BUTTON_RIGHT_SHOULDER,
+	"painel_cartas": JOY_BUTTON_DPAD_UP,
+	"painel_prestigio": JOY_BUTTON_DPAD_DOWN,
+	"painel_conquistas": JOY_BUTTON_DPAD_LEFT,
+	"painel_config": JOY_BUTTON_DPAD_RIGHT,
+}
+
+## Gatilho direito para o turbo: é analógico, então vira eixo e não botão.
+const EIXOS := {
+	"turbo": [JOY_AXIS_TRIGGER_RIGHT, 1.0],
+}
+
 func _initialize() -> void:
 	var mudou := 0
 
@@ -46,13 +81,29 @@ func _initialize() -> void:
 		var eventos: Array = []
 		for kc in ACOES[nome]:
 			var ev := InputEventKey.new()
+			# `device` explícito: a engine mudou o padrão entre versões, e um
+			# padrão novo reescreve as 17 ações a cada bootstrap — um diff de 76
+			# linhas que esconde a alteração de verdade no meio.
+			ev.device = 0
 			ev.physical_keycode = kc
 			eventos.append(ev)
+		if BOTOES.has(nome):
+			var eb := InputEventJoypadButton.new()
+			eb.device = -1  # -1 = qualquer controle conectado
+			eb.button_index = BOTOES[nome]
+			eventos.append(eb)
+		if EIXOS.has(nome):
+			var par: Array = EIXOS[nome]
+			var em := InputEventJoypadMotion.new()
+			em.device = -1
+			em.axis = par[0]
+			em.axis_value = par[1]
+			eventos.append(em)
 		ProjectSettings.set_setting(chave, {"deadzone": 0.5, "events": eventos})
 		mudou += 1
 
 	var cfg := {
-		"application/config/name": "Torre Eterna",
+		"application/config/name": "Tower Zero",
 		"application/config/description": "Idle/incremental de tower defense: uma torre, ondas infinitas e tres camadas de prestigio.",
 		"application/run/main_scene": "res://scenes/main.tscn",
 		"application/config/icon": "res://icon.svg",

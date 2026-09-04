@@ -68,7 +68,7 @@ static func completo(ingles: bool = false) -> String:
 ## de save e a pasta do usuário: se ele mudasse junto com o nome comercial, todo
 ## mundo que já joga perderia o progresso na atualização que renomeia o jogo.
 static func id_curto() -> String:
-	return str(_bloco("jogo").get("id_curto", "torre_eterna"))
+	return str(_bloco("jogo").get("id_curto", "tower_zero"))
 
 static func estudio() -> String:
 	return str(_bloco("estudio").get("nome", ""))

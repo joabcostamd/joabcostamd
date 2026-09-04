@@ -1,4 +1,4 @@
-# Pendências — Torre Eterna
+# Pendências — Tower Zero
 
 Lista consolidada do que falta, com a prova de cada item. Vem de três fontes,
 todas rodadas sobre o código de verdade:
@@ -157,3 +157,38 @@ Para não repetir trabalho — cada um com teste que reprova se voltar:
 - **Tentativa de otimização que PIOROU 2× e foi revertida**: separar os corpos grandes da caixa de busca de colisão parecia certo no papel (`raio_max_vivo` é global, um gigante alarga a caixa de todo projétil), mas com as Cepas inimigo grande deixou de ser raro — a "lista de exceções" ganhou dezenas de corpos e varrê-la por projétil custou 9.169 us contra 4.135. Medido, revertido, e o porquê está escrito no teste
 - **Os Éditos**: 24 leis em 10 eixos, dádiva e ônus sempre juntos, três na mesa a cada Ascensão, até seis ativas, zeradas na Singularidade — a Ascensão passa a mudar a física e não só a velocidade
 - **Modo Repouso**: com o jogo aberto e ninguém olhando, a tela cai para 6 quadros por segundo. Medido em duas execuções idênticas: **2,05× menos CPU** (1,06 núcleo contra 2,17). A simulação não diminui porque roda em `_physics_process`, num relógio separado do desenho — e há uma asserção que reprova se alguém mover `simular()` para `_process`
+
+---
+
+## 7. O que a escolha do nome deixou aberto — 🟡 EM ABERTO
+
+O nome do jogo fechou (**TOWER ZERO**, ver `docs/NOMES.md` seção 9) e a troca
+correu pelo projeto inteiro. Ficaram dois itens, e os dois esperam a **mesma
+decisão que falta: o nome da desenvolvedora**.
+
+| Item | Onde | O que falta |
+|---|---|---|
+| Identificador do pacote Android | `export_presets.cfg` → `package/unique_name` | Ainda é `com.example.jogo`, e a Play Store recusa `example`. O formato é domínio ao contrário: `com.<estudio>.towerzero`. |
+| Nome da empresa no executável | `export_presets.cfg` → `application/company_name` | Vazio. Aparece nas propriedades do arquivo no Windows. |
+
+O campo `estudio.nome` em `data/marca.json` está com **`Estrato Games`** como
+valor provisório, e os créditos já leem de lá. Os candidatos estão medidos na
+seção 5 de `docs/NOMES.md`.
+
+**Fechado junto com o nome:** `application/product_name` e `package/name`
+(ambos "Tower Zero"), `config/name` no `project.godot`, a pasta do save
+(`user://tower_zero.*`), a pasta do Steam Cloud e catorze documentos.
+
+### Um bug caro que a renomeação revelou
+
+`tools/bootstrap.gd` escreve o mapa de teclas com `set_setting` da **ação
+inteira**. Ele só conhecia teclado — as onze ligações de botão e o gatilho do
+turbo tinham entrado direto no `project.godot` quando o Steam Input foi
+construído. Renomear o jogo obrigou a rodar o bootstrap, e ele **apagou as doze
+ligações de controle** sem reclamar: o jogo abria, o teclado funcionava, e o
+defeito só existia para quem plugasse um controle.
+
+Corrigido na raiz — `BOTOES` e `EIXOS` agora moram no bootstrap, que voltou a
+ser dono do arquivo inteiro. Quem pegou foi o teste `[Steam] toda acao principal
+responde a controle`, que confere o mapa e não a tela.
+
