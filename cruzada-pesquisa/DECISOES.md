@@ -45,6 +45,7 @@ foi conserto de encanamento em volta de uma boa ideia.
 | **TIQUE DO TEAR** | +1 no Tear a cada 4 posicionamentos, além do +1 por colheita | Tear mediano **2 → 8**; razão pontos/meta **0,442 → 0,794** |
 | **TEAR MULTIPLICA** | o Tear multiplica em vez de somar | maior evento **2.394 → 10.260** (×4,3); explosão **7,2× → 15,8×**; teto passa a morder em 21,2% das mesas (era 0%); derrota decidida aos 2/3 cai **69,9% → 56,6%**; e o código encolhe |
 | **AVESSO** | carta de duas caras forjada pela própria colheita: uma cara vale na linha, a outra na coluna | **1,66/mesa**, 10,8% das jogadas, 37,8% dos pontos; **C3 recebe 28,6%** contra 4,0% do uniforme (**7×**, entropia 0,827); **+2,25 pp** de vitória |
+| **JANELA DA COLHEITA** | a linha cheia não colhe na hora: fica **madura** e colhe no próximo posicionamento, junto com tudo que completou no meio-tempo | **cruzada 0,000 → 0,831 por mesa** em jogo natural; mesas sem nenhuma **100% → 16,9%**; turnos pagos 65,7% → 75,8%; profundidade 58,8% → 68,2% (dentro da banda 45–75) |
 | **K = 1,25** na curva de metas | corrige a dificuldade | razão **0,990 → 0,793**; vitória **40,75% → 28,8%** |
 
 O número mais importante desta tabela é o **7× de concentração em C3**. Ele prova que *onde
@@ -62,6 +63,21 @@ colocar* é uma decisão de verdade, e não teatro — que era a dúvida existen
 | **Precificar a cruzada** (pagar muito mais por ela) | se o prêmio for enorme, o jogador persegue | preço ×4, ×20 e ×100: gulosa continuou em **0,0000**, 100% das mesas sem cruzada; a profunda **piorou** (0,0274 → 0,0174) |
 | **Avesso "dobra os outs" da cruzada** | argumento central da proposta | **0,088 com** contra **0,087 sem**. Nulo |
 | **AGULHA + AVESSO juntos** | dois coringas, mais opções | vitória **73,33%**, razão 1,159 — o jogo vira passeio, e ainda com **0,000 cruzada** |
+
+### RESOLVIDO pela Janela da Colheita (rodada 4)
+
+Os três candidatos que **nós** propusemos falharam, e o vencedor foi um quarto, desenhado
+pela aritmética depois de calcular que montar uma cruz custa 9 posicionamentos:
+
+| Candidato | Resultado |
+|---|---|
+| Só a cruzada levanta o Tear | dial de **zero bit**: 0,0000 nas 8 variantes; com a cruzada já acontecendo, 0,831 com e sem — **99,96% de jogadas idênticas** em 4.815 turnos |
+| Maturação do 4/5 | inerte até F=1,0; só 0,012 em F=1,5; somada à Janela **derruba** a cruzada para 0,672 |
+| Semear mais o tabuleiro | **0,000 a 0,017** para todo S de 3 a 12 com material conservado |
+| **Janela da Colheita** ✅ | **0,000 → 0,831** |
+
+Variantes que estouraram a guarda de profundidade e foram descartadas: `janela=2` (76,3%),
+`janela até o fim` (77,8%), combinações de 3 e 4 regras (80,3% e 80,5%).
 
 ### A descoberta que atravessa as três bancadas
 
@@ -164,7 +180,8 @@ Registrados de propósito. Errar de novo custa mais caro que admitir.
 
 | Questão | Situação |
 |---|---|
-| **Como fazer a cruzada acontecer** | 4 candidatos em medição: só a cruzada levanta o Tear · maturação do 4/5 · semear mais o tabuleiro · um 4º desenhado pela aritmética |
+| **Planejar deixou de pagar** | com a Janela, quem planeja a cruz cai de **62,7% para 30,7%** de vitória, enquanto quem joga no impulso sobe de 31,2% para **36,1%**. O gradiente de perícia inverteu. Alvo da próxima bancada: devolver retorno ao planejamento **sem** aumentar o prêmio da cruzada (já provado inerte em 4×, 20× e 100×) |
+| **A cruzada virou o comum** | **71% dos eventos** agora são cruzada (banda saudável 0,35–0,55 por evento); eventos por mesa 2,21 → 1,17; explosão 15,6× → 10,0×. Proposta: mover o clímax um degrau acima, para a escada **DUPLA (9 posic, 2×) · TRIPLA (13, 3×) · CRUZ TOTAL (17, 4×)** — a Tripla é 18,2% dos eventos e a Total 0,85%, e a Cruz Total cabe **exata** numa mesa Grande |
 | **Ergonomia do Avesso na tela** | não medido — desenhar uma carta de duas caras que se lê de relance é **condição de corte** do coringa |
 | **Ensinar a recusa** | nenhuma bancada achou mecanismo que ensine o jogador a *não* fechar uma linha. É a habilidade central e ninguém a ensina |
 | **AVESSO × PRODUTO** | combinação nunca rodada |
