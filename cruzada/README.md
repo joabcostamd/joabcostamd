@@ -47,8 +47,13 @@ estouro de `Control`. Em 3D, "ficou bonito" não tem teste.
 
 ## Os oito temas
 
-Um vira o padrão; os outros sete são desbloqueáveis, porque cosmético que se
-conquista vale mais que cosmético que se escolhe no menu.
+**O padrão é o Feltro e ouro** — o único dos oito em que uma pessoa que nunca ouviu falar do
+CRUZADA sabe que é um jogo de cartas antes de ler qualquer palavra.
+
+Os outros são desbloqueáveis, **exceto os dois de fundo claro**, que ficam liberados desde o
+início: fundo claro é afordância de acessibilidade e não cosmético de recompensa. O Neon arcade é
+o último a abrir, de propósito — é o mais impressionante nos primeiros dez segundos e o mais
+cansativo no minuto vinte, então vale mais como prêmio que como padrão.
 
 Seis de fundo escuro (Casino noturno · Feltro e ouro · Neon arcade ·
 Veludo e brasa · Meia-noite · Ameixa e ouro) e dois de fundo claro (Papel e tinta ·

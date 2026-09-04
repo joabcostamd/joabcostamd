@@ -174,6 +174,55 @@ testar com leitor cego, e pegou 10 erros que passariam para a versão final.
 
 ---
 
+## 3e. DIREÇÃO DE ARTE — decidida olhando, não lendo
+
+**2D vetorial**, desenhado por código. O 3D briga com a leitura do tabuleiro (perspectiva reduz
+cartas do fundo, inclinação esconde o índice do canto, luz e sombra criam ruído sobre a informação
+que precisa ser lida rápido) e, o que mais pesa: em 2D a qualidade **tem número** — contraste,
+alvo de toque, estouro de `Control` — enquanto em 3D "ficou bonito" não tem teste.
+
+**Tema padrão: Feltro e ouro.** Escolhido pelo Joab entre os oito renderizados de verdade, pelo
+argumento mais forte que ele tem: é o único em que uma pessoa que nunca ouviu falar do CRUZADA
+sabe que é um jogo de cartas **antes de ler qualquer palavra**. Meio segundo de compreensão que os
+outros sete gastam explicando — e para um indie que vive de miniatura em página de loja, isso vale
+mais que qualquer refinamento de paleta.
+
+Os outros sete são desbloqueáveis, **exceto os dois de fundo claro**: Papel e tinta e Porcelana
+ficam liberados desde o início, porque fundo claro é afordância de acessibilidade e não cosmético
+de recompensa — quem precisa dele não deve ter que merecê-lo.
+
+| Ordem | Tema | Como se obtém |
+|---|---|---|
+| — | **Feltro e ouro** | padrão |
+| — | Papel e tinta · Porcelana | desde o início (acessibilidade) |
+| 1 | Casino noturno | vença a primeira run |
+| 2 | Meia-noite | jogue 25 mesas |
+| 3 | Veludo e brasa | faça uma Sequência de Cor |
+| 4 | Ameixa e ouro | vença no Tabuleiro 3 |
+| 5 | Neon arcade | faça uma CRUZADA DO CENTRO |
+
+O Neon fica por último de propósito: é o mais impressionante nos primeiros dez segundos e o mais
+cansativo no minuto vinte. Tema que grita "uau" vale mais como prêmio que como padrão.
+
+---
+
+## 3f. QUATRO HIPÓTESES DE DESIGN QUE A MEDIÇÃO DERRUBOU
+
+Registradas porque cada uma teria virado uma decisão errada, e três delas eram "conhecimento"
+que todo mundo repete.
+
+| Hipótese | O que a medição disse |
+|---|---|
+| "As cartas saltam mais sobre verde — é por isso que mesa de baralho é verde" | **Falso na tela.** O feltro tinha a MENOR separação de carta entre os temas escuros (12,8 contra 16,9). A lógica vale para papel sob lâmpada, não para pixel |
+| "O vermelho perde contraste sobre verde saturado, então copas vira magenta" | **O naipe nunca toca o verde** — é desenhado sobre a carta, que é creme. O magenta resolvia um problema inexistente |
+| "As bordas de ciano do Neon fazem as casas vazias competirem com as cartas" | **Proporção idêntica nos três finalistas: 18%.** O incômodo é de croma, que o validador de luminância não mede — e isso é julgamento, não número |
+| "A casa vazia precisa de preenchimento E borda fortes" | **Rigor errado.** A exigência reprovava seis temas escuros que se liam perfeitamente. A borda é a afordância e sozinha carrega a informação |
+
+**A lição que fica:** teste rigoroso demais também é teste errado. Se eu tivesse obedecido ao
+número sem pensar, teria estragado seis temas para consertar dois.
+
+---
+
 ## 4. DIALS QUE SÃO CÓDIGO MORTO — não vire parâmetro nenhum destes
 
 Medidos, deram zero. Transformar isso em opção de balanceamento é dívida técnica gratuita.

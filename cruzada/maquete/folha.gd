@@ -50,5 +50,14 @@ func _draw() -> void:
         var largura := fonte.get_string_size(str(t["nome"]), HORIZONTAL_ALIGNMENT_LEFT,
                                              -1, 15).x
         draw_string(fonte_fina, Vector2(origem.x + 34 + largura, y),
-                    "· " + str(t["sensacao"]), HORIZONTAL_ALIGNMENT_LEFT, -1, 14,
+                    "· " + str(t["como"]), HORIZONTAL_ALIGNMENT_LEFT, -1, 14,
                     Color("#7f879a"))
+        if i == Temas.PADRAO:
+            var selo := Rect2(origem.x + celula.x - 76, origem.y + 10, 66, 22)
+            var caixa := StyleBoxFlat.new()
+            caixa.bg_color = Color("#e8c06a")
+            caixa.set_corner_radius_all(11)
+            draw_style_box(caixa, selo)
+            var med := fonte.get_string_size("PADRÃO", HORIZONTAL_ALIGNMENT_LEFT, -1, 12)
+            draw_string(fonte, selo.position + Vector2((selo.size.x - med.x) * 0.5, 16),
+                        "PADRÃO", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("#15171c"))
