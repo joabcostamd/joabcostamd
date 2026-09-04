@@ -8,31 +8,34 @@ O design foi medido antes de ser construído — a pesquisa está em
 [`../cruzada-pesquisa/`](../cruzada-pesquisa/), e `DECISOES.md` de lá é o livro-razão
 de tudo o que foi aprovado e reprovado, com o número atrás de cada decisão.
 
-## Estado: maquete de direção de arte
+## Estado: jogável, do menu ao fim da travessia
 
-Ainda não há jogo. O que existe é a maquete que decide o visual antes da primeira
-regra ser escrita — porque a direção de arte define a estrutura de cenas e o que dá
-para verificar automaticamente, e trocar depois custa reescrever a apresentação.
+O jogo existe inteiro. Abre, deixa escolher a dificuldade, joga 18 mesas, vende
+na loja, tira vida, dá conquista e volta ao menu.
 
-| Arquivo | O que é |
+| Pasta | O que é |
 |---|---|
-| `maquete/temas.gd` | os 8 temas como tokens de cor **e** parâmetros de juice |
-| `maquete/carta.gd` | a carta desenhada por código: pips, figuras, naipes, Avesso |
-| `maquete/tela.gd` | a tela de partida com um estado fixo e realista |
-| `maquete/capturas.gd` | renderiza 8 temas × 3 modos e monta a folha de contato |
-| `ferramentas/validar_contraste.py` | WCAG AA sobre todos os temas |
-| `HUD.md` | o estudo de HUD: as três zonas, a proporção 5:7 e os números que fecham |
+| `scripts/nucleo/` | o jogo **sem uma linha de interface** — mesa, mãos, geometria, metas, economia, loja, itens, conquistas, run. Roda no terminal |
+| `scripts/ui/` | as telas — menu, partida, loja, temas, conquistas, desafio — mais o som sintetizado e o juice |
+| `cenas/` | as 7 cenas do Godot |
+| `testes/` | 522 asserções em 8 arquivos |
+| `ferramentas/` | aferição contra a bancada, calibração do K, capturas, e os validadores de contraste, tipografia e layout |
+| `maquete/` | a maquete que decidiu o visual **antes** da primeira regra. Fica de pé: é o registro de por que a arte é essa |
+| `DESIGN.md` | as regras, R01 a R46. Regra antes de código |
+| `HUD.md` | as três zonas, a proporção 5:7 e os números que fecham |
+| `NOME.md` | por que o jogo se chama PLACARD, e os dezoito nomes que morreram antes |
 
 ## Rodar
 
+    godot --path . res://cenas/jogo.tscn
+
+Para verificar tudo:
+
     ./testar.sh
 
-Gera 24 capturas em `maquete/capturas/` mais a `FOLHA-DE-CONTATO.png`, e valida
-contraste. Sem Godot no PATH, roda em modo degradado só com o validador.
-
-Para ver a maquete ao vivo:
-
-    godot --path . res://maquete/maquete.tscn
+522 asserções, a aferição do motor contra a bancada, 25 capturas da maquete mais
+a folha de contato, e os validadores de tipografia, layout e contraste. Sem Godot
+no PATH, roda em modo degradado só com os validadores em Python.
 
 ## Por que 2D vetorial
 
