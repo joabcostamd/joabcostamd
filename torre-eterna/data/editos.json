@@ -1,0 +1,632 @@
+{
+ "_nota": "Leis dos Editos. Ver scripts/sim/editos.gd.",
+ "editos": [
+  {
+   "id": "gatilho_travado",
+   "nome": "O Gatilho Travado",
+   "nomeEn": "The Seized Trigger",
+   "eixo": "cadencia",
+   "icone": "🐌",
+   "cor": "#a16207",
+   "desc": "A torre atira um terço das vezes, e cada tiro pesa três vezes mais.",
+   "descEn": "The tower fires a third as often, and each shot weighs three times as much.",
+   "dadiva": [
+    {
+     "stat": "dano",
+     "tipo": "mult",
+     "valor": 3.1
+    }
+   ],
+   "onus": [
+    {
+     "stat": "cadencia",
+     "tipo": "mult",
+     "valor": 0.35
+    }
+   ]
+  },
+  {
+   "id": "vista_curta",
+   "nome": "Vista Curta",
+   "nomeEn": "Short Sight",
+   "eixo": "alcance",
+   "icone": "👁️",
+   "cor": "#f97316",
+   "desc": "Enxerga metade da arena. O que entra no alcance quase dobra de dano.",
+   "descEn": "Sees half the arena. What enters range takes nearly double.",
+   "dadiva": [
+    {
+     "stat": "dano",
+     "tipo": "mult",
+     "valor": 1.85
+    }
+   ],
+   "onus": [
+    {
+     "stat": "alcance",
+     "tipo": "mult",
+     "valor": 0.55
+    }
+   ]
+  },
+  {
+   "id": "certeza",
+   "nome": "A Certeza",
+   "nomeEn": "The Certainty",
+   "eixo": "critico",
+   "icone": "🎯",
+   "cor": "#94a3b8",
+   "desc": "Nenhum crítico jamais. Em troca, todo tiro é um pouco melhor.",
+   "descEn": "No criticals, ever. In exchange, every shot is a little better.",
+   "dadiva": [
+    {
+     "stat": "dano",
+     "tipo": "pct",
+     "valor": 0.55
+    },
+    {
+     "stat": "penetracao",
+     "tipo": "flat",
+     "valor": 0.18
+    }
+   ],
+   "onus": [
+    {
+     "stat": "critChance",
+     "tipo": "mult",
+     "valor": 0.0
+    }
+   ]
+  },
+  {
+   "id": "aposta",
+   "nome": "A Aposta",
+   "nomeEn": "The Wager",
+   "eixo": "critico",
+   "icone": "🎲",
+   "cor": "#a78bfa",
+   "desc": "Crítico raro, mas devastador.",
+   "descEn": "Rare criticals, but devastating ones.",
+   "dadiva": [
+    {
+     "stat": "critDano",
+     "tipo": "mult",
+     "valor": 3.4
+    }
+   ],
+   "onus": [
+    {
+     "stat": "critChance",
+     "tipo": "mult",
+     "valor": 0.28
+    }
+   ]
+  },
+  {
+   "id": "chuva",
+   "nome": "A Chuva",
+   "nomeEn": "The Rain",
+   "eixo": "projeteis",
+   "icone": "🌧️",
+   "cor": "#38bdf8",
+   "desc": "Três projéteis a mais, cada um bem mais fraco.",
+   "descEn": "Three more projectiles, each much weaker.",
+   "dadiva": [
+    {
+     "stat": "projeteis",
+     "tipo": "flat",
+     "valor": 3
+    }
+   ],
+   "onus": [
+    {
+     "stat": "dano",
+     "tipo": "mult",
+     "valor": 0.5
+    }
+   ]
+  },
+  {
+   "id": "lanca",
+   "nome": "A Lança",
+   "nomeEn": "The Lance",
+   "eixo": "projeteis",
+   "icone": "🏹",
+   "cor": "#fbbf24",
+   "desc": "Um único projétil, que atravessa tudo e dói muito.",
+   "descEn": "A single projectile that pierces everything and hurts.",
+   "dadiva": [
+    {
+     "stat": "dano",
+     "tipo": "mult",
+     "valor": 2.6
+    },
+    {
+     "stat": "perfuracao",
+     "tipo": "flat",
+     "valor": 6
+    }
+   ],
+   "onus": [
+    {
+     "stat": "projeteis",
+     "tipo": "mult",
+     "valor": 0.34
+    }
+   ]
+  },
+  {
+   "id": "estilhaco",
+   "nome": "O Estilhaço",
+   "nomeEn": "The Shrapnel",
+   "eixo": "area",
+   "icone": "💥",
+   "cor": "#fb923c",
+   "desc": "Tudo explode em área. O alvo direto sente menos.",
+   "descEn": "Everything bursts in an area. The direct target feels less.",
+   "dadiva": [
+    {
+     "stat": "area",
+     "tipo": "pct",
+     "valor": 1.5
+    },
+    {
+     "stat": "ricochete",
+     "tipo": "flat",
+     "valor": 2
+    }
+   ],
+   "onus": [
+    {
+     "stat": "dano",
+     "tipo": "mult",
+     "valor": 0.62
+    }
+   ]
+  },
+  {
+   "id": "casca_fina",
+   "nome": "Casca Fina",
+   "nomeEn": "Thin Shell",
+   "eixo": "defesa",
+   "icone": "🥚",
+   "cor": "#f472b6",
+   "desc": "A torre fica frágil e o Enxame paga muito melhor.",
+   "descEn": "The tower turns fragile and the Swarm pays much better.",
+   "dadiva": [
+    {
+     "stat": "ganhoOuro",
+     "tipo": "pct",
+     "valor": 1.2
+    }
+   ],
+   "onus": [
+    {
+     "stat": "vidaMax",
+     "tipo": "mult",
+     "valor": 0.38
+    }
+   ]
+  },
+  {
+   "id": "muralha",
+   "nome": "A Muralha",
+   "nomeEn": "The Bulwark",
+   "eixo": "defesa",
+   "icone": "🛡️",
+   "cor": "#60a5fa",
+   "desc": "Três vezes mais vida, e o ouro escorre entre os dedos.",
+   "descEn": "Triple the health, and gold slips through your fingers.",
+   "dadiva": [
+    {
+     "stat": "vidaMax",
+     "tipo": "mult",
+     "valor": 3.0
+    },
+    {
+     "stat": "armadura",
+     "tipo": "flat",
+     "valor": 40
+    }
+   ],
+   "onus": [
+    {
+     "stat": "ganhoOuro",
+     "tipo": "mult",
+     "valor": 0.55
+    }
+   ]
+  },
+  {
+   "id": "avareza",
+   "nome": "A Avareza",
+   "nomeEn": "The Avarice",
+   "eixo": "economia",
+   "icone": "🪙",
+   "cor": "#fcd34d",
+   "desc": "Ouro em dobro, experiência pela metade.",
+   "descEn": "Double gold, half the experience.",
+   "dadiva": [
+    {
+     "stat": "ganhoOuro",
+     "tipo": "mult",
+     "valor": 2.1
+    }
+   ],
+   "onus": [
+    {
+     "stat": "ganhoXP",
+     "tipo": "mult",
+     "valor": 0.45
+    }
+   ]
+  },
+  {
+   "id": "estudo",
+   "nome": "O Estudo",
+   "nomeEn": "The Study",
+   "eixo": "economia",
+   "icone": "📖",
+   "cor": "#c084fc",
+   "desc": "Sobe de nível muito mais rápido, e o ouro rende menos.",
+   "descEn": "Levels come much faster, and gold yields less.",
+   "dadiva": [
+    {
+     "stat": "ganhoXP",
+     "tipo": "mult",
+     "valor": 2.6
+    }
+   ],
+   "onus": [
+    {
+     "stat": "ganhoOuro",
+     "tipo": "mult",
+     "valor": 0.55
+    }
+   ]
+  },
+  {
+   "id": "mare",
+   "nome": "A Maré",
+   "nomeEn": "The Tide",
+   "eixo": "enxame",
+   "icone": "🌊",
+   "cor": "#22d3ee",
+   "desc": "O Enxame vem em dobro, e a tela cheia rende mais.",
+   "descEn": "The Swarm comes twice over, and a crowded field pays more.",
+   "dadiva": [],
+   "onus": [],
+   "mods": {
+    "densidade": 2.0,
+    "ouro": 1.45
+   }
+  },
+  {
+   "id": "vazio_frio",
+   "nome": "O Vazio Frio",
+   "nomeEn": "The Cold Void",
+   "eixo": "enxame",
+   "icone": "❄️",
+   "cor": "#7dd3fc",
+   "desc": "Poucos inimigos, cada um uma parede que paga bem.",
+   "descEn": "Few enemies, each a wall that pays well.",
+   "dadiva": [],
+   "onus": [],
+   "mods": {
+    "densidade": 0.45,
+    "hpInimigo": 2.4,
+    "ouro": 1.9
+   }
+  },
+  {
+   "id": "pressa",
+   "nome": "A Pressa",
+   "nomeEn": "The Haste",
+   "eixo": "enxame",
+   "icone": "💨",
+   "cor": "#f87171",
+   "desc": "Eles correm. Você é pago pelo susto.",
+   "descEn": "They run. You are paid for the fright.",
+   "dadiva": [],
+   "onus": [],
+   "mods": {
+    "velocidadeInimigo": 1.7,
+    "ouro": 1.4,
+    "xp": 1.3
+   }
+  },
+  {
+   "id": "peso_do_mundo",
+   "nome": "O Peso do Mundo",
+   "nomeEn": "The World's Weight",
+   "eixo": "enxame",
+   "icone": "⛰️",
+   "cor": "#78716c",
+   "desc": "Eles se arrastam, e aguentam muito mais.",
+   "descEn": "They crawl, and endure far more.",
+   "dadiva": [],
+   "onus": [],
+   "mods": {
+    "velocidadeInimigo": 0.5,
+    "hpInimigo": 1.9,
+    "ouro": 1.25
+   }
+  },
+  {
+   "id": "pureza_fogo",
+   "nome": "A Pureza do Fogo",
+   "nomeEn": "The Purity of Fire",
+   "eixo": "elemento",
+   "icone": "🔥",
+   "cor": "#ef4444",
+   "desc": "Fogo triplicado; os outros elementos emudecem.",
+   "descEn": "Fire tripled; the other elements fall silent.",
+   "dadiva": [
+    {
+     "stat": "danoFogo",
+     "tipo": "mult",
+     "valor": 3.0
+    }
+   ],
+   "onus": [
+    {
+     "stat": "danoGelo",
+     "tipo": "mult",
+     "valor": 0.25
+    },
+    {
+     "stat": "danoRaio",
+     "tipo": "mult",
+     "valor": 0.25
+    },
+    {
+     "stat": "danoVeneno",
+     "tipo": "mult",
+     "valor": 0.25
+    },
+    {
+     "stat": "danoVazio",
+     "tipo": "mult",
+     "valor": 0.25
+    }
+   ]
+  },
+  {
+   "id": "pureza_veneno",
+   "nome": "A Pureza do Veneno",
+   "nomeEn": "The Purity of Poison",
+   "eixo": "elemento",
+   "icone": "🧪",
+   "cor": "#84cc16",
+   "desc": "Veneno triplicado; os outros elementos emudecem.",
+   "descEn": "Poison tripled; the other elements fall silent.",
+   "dadiva": [
+    {
+     "stat": "danoVeneno",
+     "tipo": "mult",
+     "valor": 3.0
+    }
+   ],
+   "onus": [
+    {
+     "stat": "danoFogo",
+     "tipo": "mult",
+     "valor": 0.25
+    },
+    {
+     "stat": "danoGelo",
+     "tipo": "mult",
+     "valor": 0.25
+    },
+    {
+     "stat": "danoRaio",
+     "tipo": "mult",
+     "valor": 0.25
+    },
+    {
+     "stat": "danoVazio",
+     "tipo": "mult",
+     "valor": 0.25
+    }
+   ]
+  },
+  {
+   "id": "pureza_raio",
+   "nome": "A Pureza do Raio",
+   "nomeEn": "The Purity of Lightning",
+   "eixo": "elemento",
+   "icone": "⚡",
+   "cor": "#facc15",
+   "desc": "Raio triplicado; os outros elementos emudecem.",
+   "descEn": "Lightning tripled; the other elements fall silent.",
+   "dadiva": [
+    {
+     "stat": "danoRaio",
+     "tipo": "mult",
+     "valor": 3.0
+    }
+   ],
+   "onus": [
+    {
+     "stat": "danoFogo",
+     "tipo": "mult",
+     "valor": 0.25
+    },
+    {
+     "stat": "danoGelo",
+     "tipo": "mult",
+     "valor": 0.25
+    },
+    {
+     "stat": "danoVeneno",
+     "tipo": "mult",
+     "valor": 0.25
+    },
+    {
+     "stat": "danoVazio",
+     "tipo": "mult",
+     "valor": 0.25
+    }
+   ]
+  },
+  {
+   "id": "orbita",
+   "nome": "A Órbita",
+   "nomeEn": "The Orbit",
+   "eixo": "orbes",
+   "icone": "🔮",
+   "cor": "#818cf8",
+   "desc": "Dois orbes a mais, girando muito mais forte. A torre atira pouco.",
+   "descEn": "Two more orbs, spinning far harder. The tower barely fires.",
+   "dadiva": [
+    {
+     "stat": "orbes",
+     "tipo": "flat",
+     "valor": 2
+    },
+    {
+     "stat": "danoOrbe",
+     "tipo": "mult",
+     "valor": 2.4
+    }
+   ],
+   "onus": [
+    {
+     "stat": "cadencia",
+     "tipo": "mult",
+     "valor": 0.5
+    }
+   ]
+  },
+  {
+   "id": "mao_firme",
+   "nome": "A Mão Firme",
+   "nomeEn": "The Steady Hand",
+   "eixo": "cadencia",
+   "icone": "🤲",
+   "cor": "#2dd4bf",
+   "desc": "Dispara muito mais rápido, e cada tiro pesa menos.",
+   "descEn": "Fires far faster, and each shot weighs less.",
+   "dadiva": [
+    {
+     "stat": "cadencia",
+     "tipo": "mult",
+     "valor": 2.5
+    }
+   ],
+   "onus": [
+    {
+     "stat": "dano",
+     "tipo": "mult",
+     "valor": 0.48
+    }
+   ]
+  },
+  {
+   "id": "sangria",
+   "nome": "A Sangria",
+   "nomeEn": "The Bleeding",
+   "eixo": "defesa",
+   "icone": "🩸",
+   "cor": "#be123c",
+   "desc": "Rouba vida a cada golpe, e não regenera mais sozinha.",
+   "descEn": "Steals life with every hit, and no longer regenerates on its own.",
+   "dadiva": [
+    {
+     "stat": "roubodeVida",
+     "tipo": "flat",
+     "valor": 0.05
+    }
+   ],
+   "onus": [
+    {
+     "stat": "regen",
+     "tipo": "mult",
+     "valor": 0.0
+    }
+   ]
+  },
+  {
+   "id": "colheita",
+   "nome": "A Colheita",
+   "nomeEn": "The Harvest",
+   "eixo": "economia",
+   "icone": "🌾",
+   "cor": "#a3e635",
+   "desc": "Muito mais sorte e coleta; a torre bate mais fraco.",
+   "descEn": "Much more luck and pickup; the tower hits weaker.",
+   "dadiva": [
+    {
+     "stat": "sorte",
+     "tipo": "pct",
+     "valor": 1.4
+    },
+    {
+     "stat": "coleta",
+     "tipo": "pct",
+     "valor": 1.2
+    },
+    {
+     "stat": "chanceDrop",
+     "tipo": "pct",
+     "valor": 0.9
+    }
+   ],
+   "onus": [
+    {
+     "stat": "dano",
+     "tipo": "mult",
+     "valor": 0.72
+    }
+   ]
+  },
+  {
+   "id": "execucao",
+   "nome": "A Execução",
+   "nomeEn": "The Execution",
+   "eixo": "critico",
+   "icone": "🗡️",
+   "cor": "#dc2626",
+   "desc": "Executa quem está quase caindo; contra chefe, nada disso ajuda.",
+   "descEn": "Executes what is nearly down; against a boss, none of it helps.",
+   "dadiva": [
+    {
+     "stat": "execucao",
+     "tipo": "pct",
+     "valor": 1.6
+    }
+   ],
+   "onus": [
+    {
+     "stat": "danoChefe",
+     "tipo": "mult",
+     "valor": 0.55
+    }
+   ]
+  },
+  {
+   "id": "o_relogio",
+   "nome": "O Relógio",
+   "nomeEn": "The Clock",
+   "eixo": "cadencia",
+   "icone": "⏳",
+   "cor": "#e879f9",
+   "desc": "Habilidades recarregam quase no dobro da velocidade, e duram menos.",
+   "descEn": "Abilities recharge at nearly double speed, and last less.",
+   "dadiva": [
+    {
+     "stat": "cdr",
+     "tipo": "pct",
+     "valor": 0.85
+    }
+   ],
+   "onus": [
+    {
+     "stat": "duracaoHab",
+     "tipo": "mult",
+     "valor": 0.55
+    }
+   ]
+  }
+ ]
+}

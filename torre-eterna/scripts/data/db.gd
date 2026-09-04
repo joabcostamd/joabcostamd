@@ -69,6 +69,10 @@ static var capitulos_lore: Array = []
 static var entradas_lore: Array = []
 static var dicas: Array = []
 
+## Ver `scripts/sim/editos.gd`.
+static var editos: Array = []
+static var edito_por_id: Dictionary = {}
+
 ## Ver `scripts/sim/cepas.gd`.
 static var cepas: Array = []
 static var cepas_por_eixo: Dictionary = {}
@@ -101,6 +105,10 @@ static func carregar(forcar: bool = false) -> void:
 		if not cepas_por_eixo.has(eixo):
 			cepas_por_eixo[eixo] = []
 		cepas_por_eixo[eixo].append(c)
+
+	var ed := _json("editos")
+	editos = ed.get("editos", [])
+	edito_por_id = _indexar(editos)
 
 	var u := _json("upgrades")
 	upgrades = u.get("upgrades", [])

@@ -46,6 +46,7 @@ func _ready() -> void:
 	# existe por um bom motivo (gravar por cima apagaria o que talvez de para
 	# recuperar), mas trancar sem oferecer a chave nao e proteger, e prender.
 	Bus.save_ilegivel.connect(_ao_save_ilegivel)
+	Bus.editos_oferecidos.connect(_ao_editos_oferecidos)
 	# Trocar o idioma com um painel aberto deixava título, abas e botões na
 	# língua velha — eles nascem em `montar()` e ninguém os reconstruía. Reabrir
 	# resolve, e tem que ser DIFERIDO: o pedido vem de dentro do callback do
@@ -96,6 +97,7 @@ func _escoar_fila_inicial() -> void:
 			"toast": _toast(str(e[1]), str(e[2]), str(e[3]))
 			"offline": _relatorio_offline(e[1])
 			"save_ilegivel": _ao_save_ilegivel("")
+			"editos": abrir_editos()
 
 func _montar_overlay() -> void:
 	fundo_escuro = ColorRect.new()
@@ -275,6 +277,37 @@ func abrir_evento(def: Dictionary) -> void:
 	# O aviso NÃO volta para a frente aqui. Ele vinha, e por isso passava por
 	# cima da escolha que o jogador precisa ler. Com a caixa fugindo para o
 	# rodapé, o aviso continua visível e deixa de disputar espaço com o texto.
+	_posicionar_toasts()
+
+## A MESA DAS LEIS depois de uma Ascensao. Ver `scripts/ui/dialogo_editos.gd`.
+##
+## Usa o mesmo lugar da janela de evento (`dialogo`) de proposito: as duas sao
+## janelas modais sobre a arena, e deixar as duas subirem juntas empilharia dois
+## scrims e duas caixas disputando o mesmo clique. Se um evento estiver aberto,
+## a mesa espera — a oferta fica gravada no save e o painel de Prestigio tem o
+## botao para chama-la de volta.
+func _ao_editos_oferecidos() -> void:
+	if not _pronto_para_desenhar():
+		_fila_inicial.append(["editos", "", "", ""])
+		return
+	abrir_editos()
+
+func abrir_editos() -> void:
+	if dialogo != null and is_instance_valid(dialogo):
+		return
+	if jogo == null or not Editos.tem_oferta(jogo.s):
+		return
+	var script := load("res://scripts/ui/dialogo_editos.gd")
+	if script == null:
+		return
+	dialogo = Control.new()
+	dialogo.name = "DialogoEditos"
+	dialogo.set_script(script)
+	raiz.add_child(dialogo)
+	dialogo.tree_exited.connect(func():
+		dialogo = null
+		_posicionar_toasts())
+	dialogo.move_to_front()
 	_posicionar_toasts()
 
 ## O save do boot nao pode ser lido: avisa e oferece religar o salvamento.

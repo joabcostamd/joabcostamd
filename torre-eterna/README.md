@@ -8,7 +8,7 @@
 ![GDScript](https://img.shields.io/badge/GDScript-2.0-478CBF)
 ![Arte](https://img.shields.io/badge/Arte-100%25%20procedural-a855f7)
 ![Áudio](https://img.shields.io/badge/Áudio-sintetizado-f472b6)
-![Testes](https://img.shields.io/badge/Testes-848%2F848-4ade80)
+![Testes](https://img.shields.io/badge/Testes-889%2F889-4ade80)
 ![Idiomas](https://img.shields.io/badge/Idiomas-PT--BR%20%C2%B7%20EN-38bdf8)
 
 ---
@@ -44,7 +44,7 @@ cd torre-eterna
 # Verificação estrutural (todo script compila? dados presentes?)
 godot --headless --path . -s res://tools/verificar.gd
 
-# Suíte de testes da simulação — 848 testes, sem mocks
+# Suíte de testes da simulação — 889 testes, sem mocks
 godot --headless --path . -s res://tools/testes.gd
 
 # Convenções do projeto (emoji na interface, print solto, painel órfão, mídia)
@@ -72,6 +72,14 @@ for r in 1280x720 900x1600 1600x720; do
     --resolution $r -- --auditar-ui
 done
 
+# Modo Repouso: quanto ele economiza de verdade. Duas execucoes identicas, uma
+# com a bandeira e uma sem, e a diferenca de CPU entre dois pontos (5 s e 35 s)
+# tira o custo do arranque da conta.
+for m in "" "--repouso"; do for t in 5 35; do
+  { time xvfb-run -a --server-args="-screen 0 1280x720x24" godot --path . \
+      --resolution 1280x720 -- --shot=$t --onda=60 $m --saida=/tmp/r.png ; } 2>&1 | grep -E "^user|^real"
+done; done
+
 # Captura de tela automatizada (precisa de xvfb num servidor sem monitor)
 xvfb-run -a --server-args="-screen 0 1280x720x24" godot --path . --resolution 1280x720 \
   -- --shot=6 --onda=45 --saida=/tmp/tela.png
@@ -93,7 +101,7 @@ xvfb-run -a --server-args="-screen 0 1280x720x24" godot --path . --resolution 12
 | **Habilidades** | 10 ativas com recarga, melhoráveis com gemas, uso automático opcional |
 | **Meta** | 85 conquistas, 36 missões, passe de temporada de 40 níveis, 14 desafios, 20 eventos com escolha |
 | **Mundo** | 10 eras com paleta, céu, chão, música e regra próprias |
-| **Conforto** | Progresso offline, autosave, exportar/importar save, compra automática, aceleração do jogo |
+| **Conforto** | Progresso offline, autosave, exportar/importar save, compra automática, aceleração do jogo, Modo Repouso |
 
 ### As mecânicas que dão a cara do jogo
 
@@ -137,6 +145,25 @@ hora 200 é feito de coisas que não podiam existir na hora 2. O jogo conta quan
 formas você já viu — e **nunca mostra um denominador**, de propósito: um
 "347/58.282" transformaria descoberta em tarefa.
 
+**Os Éditos.** Ascender deixava o jogo idêntico, só mais rápido — depois de dez
+ascensões a pessoa não estava aprendendo nada, estava repetindo. Agora cada
+Ascensão põe três **leis** na mesa, e cada lei é uma dádiva e um ônus, sempre os
+dois: *"a torre atira um terço das vezes, e cada tiro pesa três vezes mais"*.
+Você escolhe uma, ou recusa as três. Elas se acumulam até seis e valem até a
+próxima Singularidade. São 24 leis em 10 eixos, e nenhuma é bônus puro — é isso
+que impede o acúmulo de virar escada de poder: seis leis são seis trocas, e a
+build que funcionava na ascensão passada pode não sobreviver à última que você
+aceitou.
+
+**O Modo Repouso.** Um idle é feito para ficar aberto, e este ficava aberto
+desenhando 60 quadros por segundo de arte procedural para quem saiu para
+almoçar. Depois de alguns minutos parado — ou assim que a janela perde o foco —
+a tela passa a desenhar 6 quadros por segundo. **Medido: 2,05× menos CPU**
+(1,06 núcleo contra 2,17, em duas execuções idênticas do jogo de verdade).
+A simulação **não** diminui: ela roda em `_physics_process`, cujo relógio o
+Godot mantém em 60 Hz independente do desenho, então o combate, o ouro e as
+ondas seguem no mesmo ritmo. Qualquer toque, tecla ou clique acorda na hora.
+
 **Adaptação do Enxame.** O mundo cria resistência ao elemento que você mais usa
 (até 62%) e esquece o que você abandona. A build ótima muda sozinha; você nunca
 chega ao "já resolvi, agora é só esperar".
@@ -164,8 +191,8 @@ em que você está apanhando. Isso é bom, mas é o contrário de perseguir o li
 - **58.282** formas nomeadas de inimigo, compostas por gramática a partir de 38 traços escritos à mão
 - **40** entradas de lore em 8 capítulos · **30** dicas
 - **6** moedas · **6** raridades · **39** atributos de torre
-- **1.064** chaves de interface e **1.286** textos de conteúdo, em português e inglês
-- **848** testes da simulação · **0** arquivo de som · a única imagem do repositório é `icon.svg`, o ícone do projeto
+- **1.086** chaves de interface e **1.286** textos de conteúdo, em português e inglês
+- **889** testes da simulação · **0** arquivo de som · a única imagem do repositório é `icon.svg`, o ícone do projeto
 
 ---
 

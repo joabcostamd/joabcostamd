@@ -318,6 +318,12 @@ func _aba_graficos() -> void:
 	l3["direita"].add_child(_menu("limite_fps", [Txt.t("cfg_sem_limite"), "30", "60", "120", "144"], [0, 30, 60, 120, 144],
 		Txt.t("cfg_limite_fps_dica")))
 
+	# O MODO REPOUSO. Ver `scripts/core/repouso.gd`.
+	var lr := _opcao(b, "ampulheta", UI.ACENTO, Txt.t("cfg_repouso"), Txt.t("cfg_repouso_desc"))
+	lr["direita"].add_child(_menu("repouso_min",
+		[Txt.t("cfg_repouso_nunca"), "1", "3", "5", "10", "30"],
+		[0.0, 1.0, 3.0, 5.0, 10.0, 30.0], Txt.t("cfg_repouso_dica")))
+
 	var l4 := _opcao(b, "stats", UI.ACENTO, Txt.t("c_mostrar_fps"),
 		Txt.f("cfg_mostrar_fps_desc", {"t": _tecla("debug_toggle")}))
 	l4["direita"].add_child(_check("mostrar_fps", Txt.t("cfg_mostrar_fps_dica")))

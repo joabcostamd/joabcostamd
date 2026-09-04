@@ -20,6 +20,12 @@ func _ready() -> void:
 func _aplicar_config() -> void:
 	particulas.densidade = Cfg.densidade_particulas()
 	numeros.densidade = particulas.densidade
+	# A densidade e lida uma vez, na montagem. Entrar no repouso muda o valor e
+	# ninguem reperguntaria: sem esta ligacao, o corte de particulas so valeria
+	# na proxima vez que a pessoa reabrisse o painel de configuracoes.
+	Bus.repouso_mudou.connect(func(_a: bool):
+		particulas.densidade = Cfg.densidade_particulas()
+		numeros.densidade = particulas.densidade)
 	numeros.modo = int(Cfg.get_v("numeros_dano", 0))
 
 func _conectar() -> void:

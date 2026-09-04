@@ -13,6 +13,9 @@ var rng := RngX.new()
 ## continue produzindo a mesma onda, a mesma torre e a mesma medida no portao
 ## de desempenho.
 var rng_cepas := RngX.new(20260904)
+## E o gerador so dos Editos, pelo mesmo motivo — e separado do das Cepas para
+## que mexer numa nao mude a mesa da outra.
+var rng_editos := RngX.new(20260905)
 var arena := Arena.new()
 var torre: TorreSim
 var diretor: Diretor
@@ -189,6 +192,15 @@ func _aplicar_mods_desafio() -> void:
 		"hpInimigo": float(esp.get("hpInimigo", 1.0)), "velocidadeInimigo": 1.0,
 		"ouro": 1.0, "danoTorre": 1.0, "xp": 1.0, "densidade": 1.0, "ondaAuto": 0.0,
 	}
+	# As leis do mundo entram ANTES do desafio, e multiplicam: um desafio que
+	# dobra a vida do inimigo em cima de um Édito que ja dobrou da quatro vezes,
+	# que e exatamente o que as duas telas prometem.
+	var me := Editos.mods(s)
+	for k in me.keys():
+		var chave := str(k)
+		if mods_dif.has(chave):
+			mods_dif[chave] = float(mods_dif[chave]) * float(me[k])
+
 	var id := str(s["desafios"]["ativo"])
 	if id == "":
 		return
@@ -1010,6 +1022,10 @@ func ascender(auto: bool = false) -> bool:
 	s["prestigio"]["ultima_onda_asc"] = int(s["onda_maxima"])
 	s["prestigio"]["melhor_ascensao"] = maxi(int(s["prestigio"]["melhor_ascensao"]), int(s["onda_maxima"]))
 	_resetar_run()
+	# A MESA DAS LEIS. Depois do reset, para que o painel abra sobre o jogo ja
+	# recomecado, e depois do sinal seria tarde: a tela de prestigio some antes.
+	if Editos.gerar_oferta(s, rng_editos):
+		Bus.editos_oferecidos.emit()
 	Bus.prestigio_feito.emit("ascensao", ganho)
 	return true
 
@@ -1024,6 +1040,10 @@ func colapsar() -> bool:
 	s["prestigio"]["ascensoes"] = 0
 	s["talentos"] = {}
 	s["pontos_talento_gastos"] = 0
+	# A Singularidade devolve o jogo as regras de fabrica. As leis acumuladas
+	# valiam para a era de ascensoes que acabou de fechar; a proxima constroi
+	# outro conjunto, e e isso que impede o acumulo de virar escada de poder.
+	Editos.limpar(s)
 	_resetar_run()
 	Bus.prestigio_feito.emit("singularidade", ganho)
 	return true

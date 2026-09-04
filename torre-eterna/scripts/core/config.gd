@@ -28,12 +28,22 @@ const PADRAO := {
 	"escala_ui": 1.0,
 	"tela_cheia": false,
 	"limite_fps": 0,
+	# Minutos parados ate o Modo Repouso entrar sozinho. 0 desliga.
+	# Ver `scripts/core/repouso.gd`.
+	"repouso_min": 5.0,
 }
 
 var v: Dictionary = PADRAO.duplicate(true)
+## Espelho do estado do Modo Repouso, para que `aplicar()` nao o cancele sem
+## querer. Ver `scripts/core/repouso.gd`.
+var _repousando := false
 var _filtro: CanvasLayer = null
 
+func repousando() -> bool:
+	return _repousando
+
 func _ready() -> void:
+	Bus.repouso_mudou.connect(func(ativo: bool): _repousando = ativo)
 	var salvo := SaveSys.carregar_config()
 	# PRIMEIRA execucao: abre no idioma do sistema. Depois disso quem manda e a
 	# escolha salva, mesmo que o jogador tenha escolhido o mesmo que o sistema.
@@ -91,7 +101,11 @@ func aplicar() -> void:
 		var alvo := DisplayServer.WINDOW_MODE_FULLSCREEN if bool(v["tela_cheia"]) else DisplayServer.WINDOW_MODE_WINDOWED
 		if DisplayServer.window_get_mode() != alvo:
 			DisplayServer.window_set_mode(alvo)
-	Engine.max_fps = int(v["limite_fps"])
+	# So mexe no limite quando NAO esta repousando: aplicar a configuracao no
+	# meio do repouso o cancelaria em silencio, e o jogo voltaria a 60 quadros
+	# com a pessoa longe da maquina.
+	if not repousando():
+		Engine.max_fps = int(v["limite_fps"])
 	_aplicar_escala()
 	_aplicar_filtro()
 
@@ -143,6 +157,15 @@ func _vol_bus(nome: String, linear: float) -> void:
 
 ## Multiplicador de partículas conforme qualidade + preferência.
 func densidade_particulas() -> float:
+	# NO REPOUSO, PARTICULA E DESPERDICIO PURO.
+	#
+	# A tela desenha 6 quadros por segundo: uma faisca que vive 0,3 s aparece em
+	# um quadro e meio, ou seja, ninguem a ve — mas o custo de criar, mover e
+	# desenhar cada uma continua sendo pago. Cortar a densidade a um decimo tira
+	# trabalho que nao produz imagem nenhuma. Nao vai a zero porque a explosao
+	# de um chefe ainda tem que aparecer para quem estiver de olho na tela.
+	if _repousando:
+		return 0.1
 	var q: float = [0.35, 0.65, 1.0, 1.45][clampi(int(v["qualidade"]), 0, 3)]
 	return q * float(v["particulas"]) * (0.4 if bool(v["movimento_reduzido"]) else 1.0)
 

@@ -76,6 +76,19 @@ func rodar(cena: SceneTree) -> void:
 	Bus.prestigio_feito.connect(func(_camada, _ganho):
 		var atual := int(jogo.s["prestigio"]["auto_ascender_onda"])
 		jogo.s["prestigio"]["auto_ascender_onda"] = int(round(float(atual) * ASCENDER_PASSO)))
+	# O SOAK ACEITA AS LEIS, senao elas nunca sao exercitadas por horas.
+	#
+	# `gerar_oferta` roda em toda Ascensao, mas quem escolhe e a janela — e nao
+	# existe janela num teste sem tela. Sem estas tres linhas, os Editos ficariam
+	# eternamente na mesa: o unico portao longo com veredito passaria horas
+	# medindo um jogo SEM leis, e a divisao por zero, o atributo negativo ou o
+	# estado que so aparece com seis leis empilhadas nunca seriam alcancados.
+	# Escolhe sempre a primeira, que e o suficiente para o caminho existir.
+	Bus.editos_oferecidos.connect(func():
+		var mesa: Array = jogo.s["editos"]["oferta"]
+		if not mesa.is_empty():
+			Editos.aceitar(jogo.s, str(mesa[0]))
+			jogo.marcar_sujo())
 	jogo.marcar_sujo()
 	jogo.recalcular()
 

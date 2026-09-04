@@ -1,209 +1,790 @@
 {
-  "cfg_rodape_opcoes": {"pt": "As opções ficam fora do save — sobrevivem até a um apagar tudo.", "en": "Settings live outside the save — they survive even an erase-everything."},
-  "cfg_restaurar_dica": {"pt": "Devolve TODAS as opções ao estado de fábrica. Não toca no seu progresso.", "en": "Resets EVERY option to its factory default. It does not touch your progress."},
-  "cfg_confirmar_padroes": {"pt": "Confirmar padrões", "en": "Confirm defaults"},
-  "cfg_restaurado": {"pt": "Configurações de fábrica restauradas", "en": "Factory settings restored"},
-
-  "cfg_idioma_sub": {"pt": "Vale para o jogo inteiro: menus, rótulos, nomes e descrições.", "en": "Applies to the whole game: menus, labels, names and descriptions."},
-  "cfg_idioma_textos": {"pt": "Idioma dos textos", "en": "Text language"},
-  "cfg_idioma_desc": {"pt": "Português do Brasil ou inglês. Vale para a interface e para o conteúdo.", "en": "Brazilian Portuguese or English. Covers the interface and the content."},
-  "cfg_idioma_dica": {"pt": "Troca o idioma de menus, melhorias, cartas, conquistas e lore.", "en": "Switches the language of menus, upgrades, cards, achievements and lore."},
-  "cfg_idioma_alterado": {"pt": "Idioma alterado", "en": "Language changed"},
-
-  "cfg_numeros": {"pt": "Números", "en": "Numbers"},
-  "cfg_numeros_sub": {"pt": "Você vai passar de 1e100 mais cedo do que imagina. Escolha como quer ler isso.", "en": "You will pass 1e100 sooner than you think. Pick how you want to read it."},
-  "cfg_notacao_desc": {"pt": "Como os valores gigantes aparecem no HUD e nos painéis.", "en": "How the huge values show up in the HUD and the panels."},
-  "cfg_notacao_dica": {"pt": "Clique também numa linha da prévia abaixo para escolher.", "en": "You can also click a row in the preview below to choose."},
-  "cfg_previa": {"pt": "Prévia", "en": "Preview"},
-  "cfg_previa_titulo": {"pt": "Prévia do mesmo número ({n}) — clique para escolher", "en": "The same number ({n}) in every notation — click to choose"},
-
-  "cfg_not_mista": {"pt": "Mista", "en": "Mixed"},
-  "cfg_not_mista_d": {"pt": "Letras até Vg, depois científica. O padrão sensato.", "en": "Letters up to Vg, then scientific. The sensible default."},
-  "cfg_not_letras": {"pt": "Letras", "en": "Letters"},
-  "cfg_not_letras_d": {"pt": "1,23 K · 4,56 M · 7,89 Qa — e segue o alfabeto quando acabam os nomes.", "en": "1.23 K · 4.56 M · 7.89 Qa — then straight down the alphabet when the names run out."},
-  "cfg_not_cientifica": {"pt": "Científica", "en": "Scientific"},
-  "cfg_not_cientifica_d": {"pt": "1,23e15. Compacta e fria.", "en": "1.23e15. Compact and cold."},
-  "cfg_not_engenharia": {"pt": "Engenharia", "en": "Engineering"},
-  "cfg_not_engenharia_d": {"pt": "Expoentes múltiplos de 3: 1,23e15, 45,6e18.", "en": "Exponents in multiples of 3: 1.23e15, 45.6e18."},
-  "cfg_not_extenso": {"pt": "Por extenso", "en": "Spelled out"},
-  "cfg_not_extenso_d": {"pt": "1,23 quatrilhões. Ocupa espaço, mas se lê alto.", "en": "1.23 quadrillion. Takes up room, but you can read it out loud."},
-  "cfg_not_log": {"pt": "Logarítmica", "en": "Logarithmic"},
-  "cfg_not_log_d": {"pt": "e15,092. Para quem já pensa em log10.", "en": "e15.092. For people who already think in log10."},
-
-  "cfg_casas_desc": {"pt": "Quantos dígitos depois da vírgula. Menos casas, HUD mais limpo.", "en": "How many digits after the decimal point. Fewer digits, cleaner HUD."},
-  "cfg_casas_dica": {"pt": "De 0 a 4 casas. A prévia acima muda junto.", "en": "From 0 to 4 digits. The preview above follows along."},
-
-  "cfg_comportamento": {"pt": "Comportamento", "en": "Behavior"},
-  "cfg_comportamento_sub": {"pt": "Pequenas manias do jogo.", "en": "The game's little habits."},
-  "cfg_confirmar_prestigio": {"pt": "Confirmar prestígio", "en": "Confirm prestige"},
-  "cfg_confirmar_prestigio_desc": {"pt": "Pede confirmação antes de ascender, colapsar ou transcender. Desligue só se você já sabe o que está fazendo.", "en": "Asks before you ascend, collapse or transcend. Turn it off only if you already know what you are doing."},
-  "cfg_confirmar_prestigio_dica": {"pt": "Janela de confirmação antes de zerar a run.", "en": "A confirmation window before you wipe the run."},
-  "cfg_dicas": {"pt": "Dicas flutuantes", "en": "Floating tips"},
-  "cfg_dicas_desc": {"pt": "Mostra dicas curtas de mecânica na tela de título e nos cantos ociosos da interface.", "en": "Shows short mechanic tips on the title screen and in the idle corners of the interface."},
-  "cfg_dicas_dica": {"pt": "Ligue para receber dicas; desligue se já decorou tudo.", "en": "On for tips; off if you already know it all by heart."},
-  "cfg_autosave": {"pt": "Intervalo de autosave", "en": "Autosave interval"},
-  "cfg_autosave_desc": {"pt": "De quanto em quanto tempo o jogo grava sozinho. O jogo também salva ao fechar a janela.", "en": "How often the game writes by itself. It also saves when you close the window."},
-  "cfg_autosave_dica": {"pt": "Entre 5 e 120 segundos.", "en": "Between 5 and 120 seconds."},
-
-  "cfg_volumes": {"pt": "Volumes", "en": "Volumes"},
-  "cfg_volumes_sub": {"pt": "Tudo passa pelo volume geral. Os outros dois são proporções dele.", "en": "Everything runs through the master volume. The other two are fractions of it."},
-  "cfg_vol_master_desc": {"pt": "Controla o barramento Master — afeta absolutamente todo o som.", "en": "Controls the Master bus — it affects absolutely every sound."},
-  "cfg_vol_sfx_desc": {"pt": "Tiros, explosões, moedas, chefes. O barulho do combate.", "en": "Shots, explosions, coins, bosses. The noise of combat."},
-  "cfg_vol_musica_desc": {"pt": "A trilha de fundo. Baixe sem culpa se estiver ouvindo outra coisa.", "en": "The background track. Drop it guilt-free if you are listening to something else."},
-  "cfg_silencio": {"pt": "Silêncio", "en": "Silence"},
-  "cfg_silencio_sub": {"pt": "Para quando alguém entra na sala.", "en": "For when someone walks into the room."},
-  "cfg_mudo_desc": {"pt": "Silencia o barramento Master inteiro sem perder os volumes que você ajustou.", "en": "Mutes the entire Master bus without losing the volumes you set."},
-  "cfg_mudo_dica": {"pt": "Corta todo o som. Os sliders acima ficam guardados.", "en": "Cuts all sound. The sliders above keep their values."},
-  "cfg_som_titulo": {"pt": "Como o som funciona aqui", "en": "How sound works here"},
-  "cfg_som_texto": {"pt": "Não há arquivos de áudio: cada tiro, moeda e rugido de chefe é sintetizado em tempo de execução, do mesmo jeito que os ícones são desenhados. Por isso os volumes agem sobre barramentos (Master, SFX e Música) e valem imediatamente, sem recarregar nada.", "en": "There are no audio files: every shot, coin and boss roar is synthesized at runtime, the same way the icons are drawn. That is why the volumes act on buses (Master, SFX and Music) and take effect immediately, with nothing to reload."},
-  "cfg_som_dica": {"pt": "Dica: em sessões longas, música em 20–30% e efeitos em 80% costuma ser a mistura que não cansa.", "en": "Tip: on long sessions, music at 20–30% and effects at 80% is usually the mix that does not wear you out."},
-
-  "cfg_desempenho": {"pt": "Desempenho", "en": "Performance"},
-  "cfg_desempenho_sub": {"pt": "Se o jogo engasgar na onda 400 com meio milhão de partículas, é aqui que se resolve.", "en": "If the game chokes on wave 400 with half a million particles, this is where you fix it."},
-  "cfg_qualidade_desc": {"pt": "Preset que multiplica a densidade de partículas: baixa ×0,35 · média ×0,65 · alta ×1,0 · ultra ×1,45.", "en": "A preset that multiplies particle density: low ×0.35 · medium ×0.65 · high ×1.0 · ultra ×1.45."},
-  "cfg_qualidade_dica": {"pt": "Comece em alta. Caia para média ou baixa se os FPS derreterem.", "en": "Start on high. Drop to medium or low if the FPS melt."},
-  "cfg_q_baixa": {"pt": "Baixa", "en": "Low"},
-  "cfg_q_media": {"pt": "Média", "en": "Medium"},
-  "cfg_q_alta": {"pt": "Alta", "en": "High"},
-  "cfg_q_ultra": {"pt": "Ultra", "en": "Ultra"},
-  "cfg_densidade_desc": {"pt": "Multiplicador fino por cima da qualidade. Em 0% o jogo fica silencioso visualmente, mas roda em qualquer coisa.", "en": "A fine multiplier on top of quality. At 0% the game goes visually quiet, but it runs on anything."},
-  "cfg_densidade_dica": {"pt": "De 0% a 200% das partículas normais.", "en": "From 0% to 200% of the normal particles."},
-  "cfg_densidade_resultado": {"pt": "Resultado final: {p} das partículas base{extra}", "en": "Final result: {p} of the base particles{extra}"},
-  "cfg_densidade_corte": {"pt": "  ·  movimento reduzido está cortando isto em 60%", "en": "  ·  reduced motion is cutting this by 60%"},
-  "cfg_limite_fps": {"pt": "Limite de FPS", "en": "FPS limit"},
-  "cfg_limite_fps_desc": {"pt": "Trava a taxa de quadros. Útil em notebook: menos calor, mesma torre.", "en": "Caps the frame rate. Handy on a laptop: less heat, same tower."},
-  "cfg_limite_fps_dica": {"pt": "0 = sem limite (usa o V-Sync do sistema).", "en": "0 = no limit (uses the system V-Sync)."},
-  "cfg_sem_limite": {"pt": "Sem limite", "en": "No limit"},
-  "cfg_mostrar_fps_desc": {"pt": "Exibe quadros por segundo e a contagem de inimigos vivos no canto do HUD. Atalho: {t}.", "en": "Shows frames per second and the live enemy count in the corner of the HUD. Shortcut: {t}."},
-  "cfg_mostrar_fps_dica": {"pt": "Contador de desempenho no HUD.", "en": "Performance counter on the HUD."},
-  "cfg_impacto": {"pt": "Impacto", "en": "Impact"},
-  "cfg_impacto_sub": {"pt": "O quanto o jogo reage quando algo grande morre.", "en": "How hard the game reacts when something big dies."},
-  "cfg_tremor_desc": {"pt": "Intensidade do chacoalhar em explosões, chefes e golpes críticos. Em 0% a câmera fica imóvel.", "en": "How hard the screen shakes on explosions, bosses and critical hits. At 0% the camera holds still."},
-  "cfg_tremor_dica": {"pt": "Movimento reduzido, na aba Acessibilidade, zera isto de vez.", "en": "Reduced motion, on the Accessibility tab, zeroes this out for good."},
-  "cfg_flashes_desc": {"pt": "Clarões de tela cheia em chefes, purgas e mortes. Desligue se incomodar os olhos.", "en": "Full-screen flashes on bosses, purges and deaths. Turn it off if it bothers your eyes."},
-  "cfg_flashes_dica": {"pt": "Clarões e vinhetas de perigo.", "en": "Flashes and danger vignettes."},
-  "cfg_numeros_dano_desc": {"pt": "Os números que sobem dos inimigos. Em ondas cheias, filtrar por críticos deixa a tela legível.", "en": "The numbers floating off the enemies. On crowded waves, filtering to crits keeps the screen readable."},
-  "cfg_numeros_dano_dica": {"pt": "Aplica na hora, sem reiniciar a onda.", "en": "Applies right away, no wave restart."},
-  "cfg_dano_todos": {"pt": "Todos", "en": "All"},
-  "cfg_dano_criticos": {"pt": "Só críticos", "en": "Crits only"},
-  "cfg_janela": {"pt": "Janela", "en": "Window"},
-  "cfg_janela_sub": {"pt": "Onde o jogo mora.", "en": "Where the game lives."},
-  "cfg_tela_cheia_desc": {"pt": "Ocupa o monitor inteiro. Atalho: {t}.", "en": "Takes over the whole monitor. Shortcut: {t}."},
-  "cfg_tela_cheia_dica": {"pt": "Alterna entre janela e tela cheia.", "en": "Toggles between windowed and fullscreen."},
-  "cfg_escala_ui": {"pt": "Escala da interface", "en": "Interface scale"},
-  "cfg_escala_ui_desc": {"pt": "Aumenta ou reduz todo o jogo proporcionalmente. Acima de 115% os painéis grandes ficam apertados em 1280×720.", "en": "Scales the whole game up or down. Above 115% the big panels get cramped at 1280×720."},
-  "cfg_escala_ui_dica": {"pt": "Vale na hora, para a interface e para o campo de batalha.", "en": "Takes effect immediately, for the interface and the battlefield."},
-
-  "cfg_conforto": {"pt": "Conforto", "en": "Comfort"},
-  "cfg_conforto_sub": {"pt": "Nada aqui altera a dificuldade — só como o jogo chega até você.", "en": "Nothing here changes the difficulty — only how the game reaches you."},
-  "cfg_mov_reduzido_desc": {"pt": "Zera o tremor de tela e corta as partículas para 40% do valor escolhido, por cima da qualidade. Os efeitos continuam existindo, só param de sacudir.", "en": "Zeroes the screen shake and cuts particles to 40% of your chosen value, on top of quality. The effects still happen, they just stop shaking."},
-  "cfg_mov_reduzido_dica": {"pt": "Anula o tremor e reduz partículas — recomendado para enjoo de movimento.", "en": "Kills the shake and reduces particles — recommended for motion sickness."},
-  "cfg_daltonismo_desc": {"pt": "Redistribui os canais de cor da tela inteira para separar tons que se confundem. Elementos, raridades e barras de vida ficam distinguíveis.", "en": "Redistributes the color channels of the whole screen to pull apart shades that blur together. Elements, rarities and health bars stay distinguishable."},
-  "cfg_daltonismo_dica": {"pt": "Protanopia e deuteranopia: vermelho/verde. Tritanopia: azul/amarelo.", "en": "Protanopia and deuteranopia: red/green. Tritanopia: blue/yellow."},
-  "cfg_alto_contraste_desc": {"pt": "Aumenta o contraste e a saturação da imagem final. O fundo escuro afunda, o que importa salta.", "en": "Raises the contrast and saturation of the final image. The dark background sinks, what matters pops."},
-  "cfg_alto_contraste_dica": {"pt": "Separa melhor inimigo, projétil e cenário.", "en": "Separates enemy, projectile and scenery better."},
-  "cfg_fonte_grande_desc": {"pt": "Amplia todo o texto em 12% junto com a interface. Combina com a escala da UI na aba Gráficos, então não exagere nas duas.", "en": "Enlarges all text by 12% along with the interface. It stacks with the UI scale on the Graphics tab, so do not overdo both."},
-  "cfg_fonte_grande_dica": {"pt": "Texto 12% maior em todo o jogo.", "en": "Text 12% larger across the whole game."},
-  "cfg_vibracao": {"pt": "Vibração", "en": "Vibration"},
-  "cfg_vibracao_desc": {"pt": "Vibra o controle (ou o aparelho, no celular) em impactos fortes e na morte da torre. Sem efeito em teclado e mouse.", "en": "Rumbles the controller (or the phone, on mobile) on heavy hits and when the tower dies. No effect on keyboard and mouse."},
-  "cfg_vibracao_dica": {"pt": "Retorno tátil em impactos — só em dispositivos que suportam.", "en": "Haptic feedback on impacts — only on devices that support it."},
-  "cfg_filtro_titulo": {"pt": "Sobre o filtro de cor", "en": "About the color filter"},
-  "cfg_filtro_texto": {"pt": "O modo daltônico e o alto contraste são aplicados como uma camada sobre a imagem final, inclusive sobre este painel. Se algo parecer estranho, é porque está funcionando — volte para \"Nenhum\" para comparar.", "en": "Color-blind mode and high contrast are applied as a layer over the final image, this panel included. If something looks strange, that means it is working — switch back to \"None\" to compare."},
-
-  "cfg_este_save": {"pt": "Este save", "en": "This save"},
-  "cfg_este_save_sub": {"pt": "Um arquivo JSON em user://. Há sempre um backup da gravação anterior ao lado.", "en": "A JSON file in user://. There is always a backup of the previous write next to it."},
-  "cfg_tamanho": {"pt": "Tamanho", "en": "Size"},
-  "cfg_ultimo_salvamento": {"pt": "Último salvamento", "en": "Last save"},
-  "cfg_proximo_autosave": {"pt": "Próximo autosave", "en": "Next autosave"},
-  "cfg_formato": {"pt": "Formato", "en": "Format"},
-  "cfg_versao_n": {"pt": "versão {n}", "en": "version {n}"},
-  "cfg_salvar_dica": {"pt": "Grava o progresso imediatamente. Atalho: {t}.", "en": "Writes your progress right now. Shortcut: {t}."},
-  "cfg_falha_salvar": {"pt": "Falha ao salvar", "en": "Save failed"},
-  "cfg_exportar_dica": {"pt": "Gera um código de texto com todo o seu progresso — cole num arquivo e guarde.", "en": "Generates a text code with all your progress — paste it into a file and keep it."},
-  "cfg_importar_dica": {"pt": "Cola um código de save e substitui o progresso atual.", "en": "Pastes a save code and replaces your current progress."},
-  "cfg_apagar_dica": {"pt": "Destrói o save e recomeça do zero. Duas confirmações — e você vai precisar delas.", "en": "Destroys the save and starts over from zero. Two confirmations — and you will need them."},
-  "cfg_apagar_dica2": {"pt": "Destrói o save e recomeça do zero. Duas confirmações.", "en": "Destroys the save and starts over from zero. Two confirmations."},
-  "cfg_export_aviso": {"pt": "Código do save — selecione tudo e guarde em lugar seguro.", "en": "Save code — select all of it and keep it somewhere safe."},
-  "cfg_copiar_dica": {"pt": "Copia o código inteiro.", "en": "Copies the whole code."},
-  "cfg_copiado": {"pt": "Código copiado para a área de transferência", "en": "Code copied to the clipboard"},
-  "cfg_selecionar_tudo": {"pt": "Selecionar tudo", "en": "Select all"},
-  "cfg_selecionar_dica": {"pt": "Marca o texto para copiar à mão (Ctrl+C).", "en": "Highlights the text so you can copy it by hand (Ctrl+C)."},
-  "cfg_ocultar": {"pt": "Ocultar", "en": "Hide"},
-  "cfg_import_aviso": {"pt": "Cole aqui um código começando com TORRE1|. Isto SUBSTITUI o progresso atual.", "en": "Paste a code starting with TORRE1| here. This REPLACES your current progress."},
-  "cfg_importar_substituir": {"pt": "Importar e substituir", "en": "Import and replace"},
-  "cfg_importar_ok_dica": {"pt": "Valida a assinatura e o checksum antes de aplicar.", "en": "Validates the signature and the checksum before applying."},
-  "cfg_colar": {"pt": "Colar", "en": "Paste"},
-  "cfg_colar_dica": {"pt": "Cola o que estiver na área de transferência.", "en": "Pastes whatever is on the clipboard."},
-  "cfg_codigo_gerado": {"pt": "Código gerado — copie e guarde", "en": "Code generated — copy it and keep it"},
-  "cfg_cole_antes": {"pt": "Cole um código antes de importar.", "en": "Paste a code before importing."},
-  "cfg_apagar_titulo": {"pt": "Isto apaga o save e o backup. Você perde, para sempre:", "en": "This erases the save and the backup. You lose, forever:"},
-  "cfg_apagar_config_nota": {"pt": "As configurações desta janela NÃO são apagadas.", "en": "The settings in this window are NOT erased."},
-  "cfg_exportar_antes": {"pt": "Exportar antes", "en": "Export first"},
-  "cfg_exportar_antes_dica": {"pt": "Gera o código de backup agora — é a última chance.", "en": "Generates the backup code now — this is the last chance."},
-  "cfg_sim_apagar": {"pt": "Sim, apagar", "en": "Yes, erase"},
-  "cfg_apagar_conf1": {"pt": "Primeira confirmação. Ainda dá para cancelar.", "en": "First confirmation. You can still cancel."},
-  "cfg_apagar_conf2": {"pt": "Segunda e última confirmação. Não há desfazer.", "en": "Second and final confirmation. There is no undo."},
-  "cfg_tudo_apagado": {"pt": "Tudo apagado. A torre recomeça do pó.", "en": "All erased. The tower starts again from dust."},
-
-  "cfg_perda_onda": {"pt": "Onda máxima {n} (melhor de todas: {g})", "en": "Highest wave {n} (best ever: {g})"},
-  "cfg_perda_nivel": {"pt": "Nível {n} e {p} pontos de talento", "en": "Level {n} and {p} talent points"},
-  "cfg_perda_prestigio": {"pt": "{a} ascensões, {s} singularidades, {t} transcendências", "en": "{a} ascensions, {s} singularities, {t} transcendences"},
-  "cfg_perda_arvores": {"pt": "As três árvores permanentes (fragmentos, núcleos e éter)", "en": "All three permanent trees (shards, cores and ether)"},
-  "cfg_perda_cartas": {"pt": "{c} cartas no inventário e {q} conquistas desbloqueadas", "en": "{c} cards in the inventory and {q} achievements unlocked"},
-  "cfg_perda_moedas": {"pt": "Todo o ouro, gemas e moedas de prestígio acumulados", "en": "Every bit of gold, gems and prestige currency you piled up"},
-
-  "cfg_atalhos_sub": {"pt": "Tudo que dá para fazer sem tirar a mão do teclado.", "en": "Everything you can do without taking your hands off the keyboard."},
-  "cfg_at_pausa": {"pt": "Pausar o jogo / fechar o painel aberto", "en": "Pause the game / close the open panel"},
-  "cfg_at_upgrades": {"pt": "Abrir Melhorias", "en": "Open Upgrades"},
-  "cfg_at_talentos": {"pt": "Abrir Talentos", "en": "Open Talents"},
-  "cfg_at_cartas": {"pt": "Abrir Cartas", "en": "Open Cards"},
-  "cfg_at_prestigio": {"pt": "Abrir Prestígio", "en": "Open Prestige"},
-  "cfg_at_conquistas": {"pt": "Abrir Conquistas", "en": "Open Achievements"},
-  "cfg_at_config": {"pt": "Abrir Configurações (este painel)", "en": "Open Settings (this panel)"},
-  "cfg_at_comprar_max": {"pt": "Comprar o máximo da melhoria em foco", "en": "Buy max on the focused upgrade"},
-  "cfg_at_auto": {"pt": "Ligar/desligar a compra automática", "en": "Toggle auto-buy"},
-  "cfg_at_turbo": {"pt": "Alternar a velocidade do jogo", "en": "Cycle the game speed"},
-  "cfg_at_purga": {"pt": "Purga — limpa a tela quando a coisa aperta", "en": "Purge — clears the screen when things get tight"},
-  "cfg_at_tela_cheia": {"pt": "Alternar tela cheia", "en": "Toggle fullscreen"},
-  "cfg_at_fps": {"pt": "Mostrar/ocultar o contador de FPS", "en": "Show/hide the FPS counter"},
-  "cfg_at_slots": {"pt": "Usar as habilidades equipadas nos slots", "en": "Use the abilities equipped in the slots"},
-  "cfg_at_clique": {"pt": "Fora da janela fecha o painel aberto", "en": "Outside the window closes the open panel"},
-
-  "cfg_tecla_esc": {"pt": "Esc", "en": "Esc"},
-  "cfg_tecla_espaco": {"pt": "Espaço", "en": "Space"},
-  "cfg_tecla_enter": {"pt": "Enter", "en": "Enter"},
-  "cfg_tecla_enter_num": {"pt": "Enter (num)", "en": "Enter (num)"},
-  "cfg_tecla_backspace": {"pt": "Backspace", "en": "Backspace"},
-  "cfg_tecla_tab": {"pt": "Tab", "en": "Tab"},
-  "cfg_tecla_shift": {"pt": "Shift", "en": "Shift"},
-  "cfg_tecla_ctrl": {"pt": "Ctrl", "en": "Ctrl"},
-  "cfg_tecla_clique": {"pt": "Clique", "en": "Click"},
-
-  "cfg_sem_arquivo": {"pt": "sem arquivo ainda", "en": "no file yet"},
-  "cfg_nunca": {"pt": "nunca", "en": "never"},
-  "cfg_data_ha": {"pt": "{d}  (há {t})", "en": "{d}  ({t} ago)"},
-  "cfg_proximo_em": {"pt": "em {t} (a cada {s} s)", "en": "in {t} (every {s} s)"},
-  "cfg_data_hora": {"pt": "{d}/{m}/{a} às {h}:{min}", "en": "{m}/{d}/{a} at {h}:{min}"},
-
-  "cfg_subtitulo": {"pt": "Uma torre. Ondas infinitas. Três camadas de prestígio.", "en": "One tower. Endless waves. Three layers of prestige."},
-  "cfg_sobre_texto": {"pt": "Um idle de tower defense feito inteiramente em código: nenhuma imagem, nenhuma cena montada à mão, nenhum emoji. Cada ícone é geometria desenhada em tempo real e cada número gigante mora em log10, porque em algum momento o ouro passa de 1e300 e o ponto flutuante desiste antes de você.", "en": "An idle tower defense built entirely in code: no images, no hand-assembled scenes, no emoji. Every icon is geometry drawn in real time and every huge number lives in log10, because at some point the gold passes 1e300 and floating point gives up before you do."},
-  "cfg_versao": {"pt": "Versão", "en": "Version"},
-  "cfg_versao_sub": {"pt": "Para quando algo quebrar e alguém perguntar qual build era.", "en": "For when something breaks and someone asks which build it was."},
-  "cfg_formato_save": {"pt": "Formato do save", "en": "Save format"},
-  "cfg_motor": {"pt": "Motor", "en": "Engine"},
-  "cfg_plataforma": {"pt": "Plataforma", "en": "Platform"},
-  "cfg_sua_torre": {"pt": "Sua torre", "en": "Your tower"},
-  "cfg_sua_torre_sub": {"pt": "O que este save já viveu.", "en": "What this save has lived through."},
-  "cfg_tempo_total": {"pt": "Tempo total", "en": "Total time"},
-  "cfg_onda_maxima": {"pt": "Onda máxima", "en": "Highest wave"},
-  "cfg_criado_em": {"pt": "Torre erguida em", "en": "Tower raised on"},
-  "cfg_creditos": {"pt": "Créditos", "en": "Credits"},
-  "cfg_creditos_sub": {"pt": "Poucos nomes, muitas linhas.", "en": "Few names, many lines."},
-  "cfg_cred_projeto": {"pt": "Projeto, código e balanceamento", "en": "Design, code and balancing"},
-  "cfg_arte": {"pt": "Arte", "en": "Art"},
-  "cfg_cred_arte_v": {"pt": "Vetorial, gerada em código (scripts/ui/icone.gd)", "en": "Vector, generated in code (scripts/ui/icone.gd)"},
-  "cfg_cred_audio_v": {"pt": "Sintetizado em tempo de execução", "en": "Synthesized at runtime"},
-  "cfg_agradecimentos": {"pt": "Agradecimentos", "en": "Thanks"},
-  "cfg_cred_obrigado_v": {"pt": "A quem testou até a onda 500 e reclamou do tremor de tela", "en": "To whoever tested all the way to wave 500 and complained about the screen shake"},
-  "cfg_rodape_sobre": {"pt": "A torre é eterna. Você, não — mas o save fica.", "en": "The tower is eternal. You are not — but the save stays."}
+ "cfg_rodape_opcoes": {
+  "pt": "As opções ficam fora do save — sobrevivem até a um apagar tudo.",
+  "en": "Settings live outside the save — they survive even an erase-everything."
+ },
+ "cfg_restaurar_dica": {
+  "pt": "Devolve TODAS as opções ao estado de fábrica. Não toca no seu progresso.",
+  "en": "Resets EVERY option to its factory default. It does not touch your progress."
+ },
+ "cfg_confirmar_padroes": {
+  "pt": "Confirmar padrões",
+  "en": "Confirm defaults"
+ },
+ "cfg_restaurado": {
+  "pt": "Configurações de fábrica restauradas",
+  "en": "Factory settings restored"
+ },
+ "cfg_idioma_sub": {
+  "pt": "Vale para o jogo inteiro: menus, rótulos, nomes e descrições.",
+  "en": "Applies to the whole game: menus, labels, names and descriptions."
+ },
+ "cfg_idioma_textos": {
+  "pt": "Idioma dos textos",
+  "en": "Text language"
+ },
+ "cfg_idioma_desc": {
+  "pt": "Português do Brasil ou inglês. Vale para a interface e para o conteúdo.",
+  "en": "Brazilian Portuguese or English. Covers the interface and the content."
+ },
+ "cfg_idioma_dica": {
+  "pt": "Troca o idioma de menus, melhorias, cartas, conquistas e lore.",
+  "en": "Switches the language of menus, upgrades, cards, achievements and lore."
+ },
+ "cfg_idioma_alterado": {
+  "pt": "Idioma alterado",
+  "en": "Language changed"
+ },
+ "cfg_numeros": {
+  "pt": "Números",
+  "en": "Numbers"
+ },
+ "cfg_numeros_sub": {
+  "pt": "Você vai passar de 1e100 mais cedo do que imagina. Escolha como quer ler isso.",
+  "en": "You will pass 1e100 sooner than you think. Pick how you want to read it."
+ },
+ "cfg_notacao_desc": {
+  "pt": "Como os valores gigantes aparecem no HUD e nos painéis.",
+  "en": "How the huge values show up in the HUD and the panels."
+ },
+ "cfg_notacao_dica": {
+  "pt": "Clique também numa linha da prévia abaixo para escolher.",
+  "en": "You can also click a row in the preview below to choose."
+ },
+ "cfg_previa": {
+  "pt": "Prévia",
+  "en": "Preview"
+ },
+ "cfg_previa_titulo": {
+  "pt": "Prévia do mesmo número ({n}) — clique para escolher",
+  "en": "The same number ({n}) in every notation — click to choose"
+ },
+ "cfg_not_mista": {
+  "pt": "Mista",
+  "en": "Mixed"
+ },
+ "cfg_not_mista_d": {
+  "pt": "Letras até Vg, depois científica. O padrão sensato.",
+  "en": "Letters up to Vg, then scientific. The sensible default."
+ },
+ "cfg_not_letras": {
+  "pt": "Letras",
+  "en": "Letters"
+ },
+ "cfg_not_letras_d": {
+  "pt": "1,23 K · 4,56 M · 7,89 Qa — e segue o alfabeto quando acabam os nomes.",
+  "en": "1.23 K · 4.56 M · 7.89 Qa — then straight down the alphabet when the names run out."
+ },
+ "cfg_not_cientifica": {
+  "pt": "Científica",
+  "en": "Scientific"
+ },
+ "cfg_not_cientifica_d": {
+  "pt": "1,23e15. Compacta e fria.",
+  "en": "1.23e15. Compact and cold."
+ },
+ "cfg_not_engenharia": {
+  "pt": "Engenharia",
+  "en": "Engineering"
+ },
+ "cfg_not_engenharia_d": {
+  "pt": "Expoentes múltiplos de 3: 1,23e15, 45,6e18.",
+  "en": "Exponents in multiples of 3: 1.23e15, 45.6e18."
+ },
+ "cfg_not_extenso": {
+  "pt": "Por extenso",
+  "en": "Spelled out"
+ },
+ "cfg_not_extenso_d": {
+  "pt": "1,23 quatrilhões. Ocupa espaço, mas se lê alto.",
+  "en": "1.23 quadrillion. Takes up room, but you can read it out loud."
+ },
+ "cfg_not_log": {
+  "pt": "Logarítmica",
+  "en": "Logarithmic"
+ },
+ "cfg_not_log_d": {
+  "pt": "e15,092. Para quem já pensa em log10.",
+  "en": "e15.092. For people who already think in log10."
+ },
+ "cfg_casas_desc": {
+  "pt": "Quantos dígitos depois da vírgula. Menos casas, HUD mais limpo.",
+  "en": "How many digits after the decimal point. Fewer digits, cleaner HUD."
+ },
+ "cfg_casas_dica": {
+  "pt": "De 0 a 4 casas. A prévia acima muda junto.",
+  "en": "From 0 to 4 digits. The preview above follows along."
+ },
+ "cfg_comportamento": {
+  "pt": "Comportamento",
+  "en": "Behavior"
+ },
+ "cfg_comportamento_sub": {
+  "pt": "Pequenas manias do jogo.",
+  "en": "The game's little habits."
+ },
+ "cfg_confirmar_prestigio": {
+  "pt": "Confirmar prestígio",
+  "en": "Confirm prestige"
+ },
+ "cfg_confirmar_prestigio_desc": {
+  "pt": "Pede confirmação antes de ascender, colapsar ou transcender. Desligue só se você já sabe o que está fazendo.",
+  "en": "Asks before you ascend, collapse or transcend. Turn it off only if you already know what you are doing."
+ },
+ "cfg_confirmar_prestigio_dica": {
+  "pt": "Janela de confirmação antes de zerar a run.",
+  "en": "A confirmation window before you wipe the run."
+ },
+ "cfg_dicas": {
+  "pt": "Dicas flutuantes",
+  "en": "Floating tips"
+ },
+ "cfg_dicas_desc": {
+  "pt": "Mostra dicas curtas de mecânica na tela de título e nos cantos ociosos da interface.",
+  "en": "Shows short mechanic tips on the title screen and in the idle corners of the interface."
+ },
+ "cfg_dicas_dica": {
+  "pt": "Ligue para receber dicas; desligue se já decorou tudo.",
+  "en": "On for tips; off if you already know it all by heart."
+ },
+ "cfg_autosave": {
+  "pt": "Intervalo de autosave",
+  "en": "Autosave interval"
+ },
+ "cfg_autosave_desc": {
+  "pt": "De quanto em quanto tempo o jogo grava sozinho. O jogo também salva ao fechar a janela.",
+  "en": "How often the game writes by itself. It also saves when you close the window."
+ },
+ "cfg_autosave_dica": {
+  "pt": "Entre 5 e 120 segundos.",
+  "en": "Between 5 and 120 seconds."
+ },
+ "cfg_volumes": {
+  "pt": "Volumes",
+  "en": "Volumes"
+ },
+ "cfg_volumes_sub": {
+  "pt": "Tudo passa pelo volume geral. Os outros dois são proporções dele.",
+  "en": "Everything runs through the master volume. The other two are fractions of it."
+ },
+ "cfg_vol_master_desc": {
+  "pt": "Controla o barramento Master — afeta absolutamente todo o som.",
+  "en": "Controls the Master bus — it affects absolutely every sound."
+ },
+ "cfg_vol_sfx_desc": {
+  "pt": "Tiros, explosões, moedas, chefes. O barulho do combate.",
+  "en": "Shots, explosions, coins, bosses. The noise of combat."
+ },
+ "cfg_vol_musica_desc": {
+  "pt": "A trilha de fundo. Baixe sem culpa se estiver ouvindo outra coisa.",
+  "en": "The background track. Drop it guilt-free if you are listening to something else."
+ },
+ "cfg_silencio": {
+  "pt": "Silêncio",
+  "en": "Silence"
+ },
+ "cfg_silencio_sub": {
+  "pt": "Para quando alguém entra na sala.",
+  "en": "For when someone walks into the room."
+ },
+ "cfg_mudo_desc": {
+  "pt": "Silencia o barramento Master inteiro sem perder os volumes que você ajustou.",
+  "en": "Mutes the entire Master bus without losing the volumes you set."
+ },
+ "cfg_mudo_dica": {
+  "pt": "Corta todo o som. Os sliders acima ficam guardados.",
+  "en": "Cuts all sound. The sliders above keep their values."
+ },
+ "cfg_som_titulo": {
+  "pt": "Como o som funciona aqui",
+  "en": "How sound works here"
+ },
+ "cfg_som_texto": {
+  "pt": "Não há arquivos de áudio: cada tiro, moeda e rugido de chefe é sintetizado em tempo de execução, do mesmo jeito que os ícones são desenhados. Por isso os volumes agem sobre barramentos (Master, SFX e Música) e valem imediatamente, sem recarregar nada.",
+  "en": "There are no audio files: every shot, coin and boss roar is synthesized at runtime, the same way the icons are drawn. That is why the volumes act on buses (Master, SFX and Music) and take effect immediately, with nothing to reload."
+ },
+ "cfg_som_dica": {
+  "pt": "Dica: em sessões longas, música em 20–30% e efeitos em 80% costuma ser a mistura que não cansa.",
+  "en": "Tip: on long sessions, music at 20–30% and effects at 80% is usually the mix that does not wear you out."
+ },
+ "cfg_desempenho": {
+  "pt": "Desempenho",
+  "en": "Performance"
+ },
+ "cfg_desempenho_sub": {
+  "pt": "Se o jogo engasgar na onda 400 com meio milhão de partículas, é aqui que se resolve.",
+  "en": "If the game chokes on wave 400 with half a million particles, this is where you fix it."
+ },
+ "cfg_qualidade_desc": {
+  "pt": "Preset que multiplica a densidade de partículas: baixa ×0,35 · média ×0,65 · alta ×1,0 · ultra ×1,45.",
+  "en": "A preset that multiplies particle density: low ×0.35 · medium ×0.65 · high ×1.0 · ultra ×1.45."
+ },
+ "cfg_qualidade_dica": {
+  "pt": "Comece em alta. Caia para média ou baixa se os FPS derreterem.",
+  "en": "Start on high. Drop to medium or low if the FPS melt."
+ },
+ "cfg_q_baixa": {
+  "pt": "Baixa",
+  "en": "Low"
+ },
+ "cfg_q_media": {
+  "pt": "Média",
+  "en": "Medium"
+ },
+ "cfg_q_alta": {
+  "pt": "Alta",
+  "en": "High"
+ },
+ "cfg_q_ultra": {
+  "pt": "Ultra",
+  "en": "Ultra"
+ },
+ "cfg_densidade_desc": {
+  "pt": "Multiplicador fino por cima da qualidade. Em 0% o jogo fica silencioso visualmente, mas roda em qualquer coisa.",
+  "en": "A fine multiplier on top of quality. At 0% the game goes visually quiet, but it runs on anything."
+ },
+ "cfg_densidade_dica": {
+  "pt": "De 0% a 200% das partículas normais.",
+  "en": "From 0% to 200% of the normal particles."
+ },
+ "cfg_densidade_resultado": {
+  "pt": "Resultado final: {p} das partículas base{extra}",
+  "en": "Final result: {p} of the base particles{extra}"
+ },
+ "cfg_densidade_corte": {
+  "pt": "  ·  movimento reduzido está cortando isto em 60%",
+  "en": "  ·  reduced motion is cutting this by 60%"
+ },
+ "cfg_limite_fps": {
+  "pt": "Limite de FPS",
+  "en": "FPS limit"
+ },
+ "cfg_limite_fps_desc": {
+  "pt": "Trava a taxa de quadros. Útil em notebook: menos calor, mesma torre.",
+  "en": "Caps the frame rate. Handy on a laptop: less heat, same tower."
+ },
+ "cfg_limite_fps_dica": {
+  "pt": "0 = sem limite (usa o V-Sync do sistema).",
+  "en": "0 = no limit (uses the system V-Sync)."
+ },
+ "cfg_sem_limite": {
+  "pt": "Sem limite",
+  "en": "No limit"
+ },
+ "cfg_mostrar_fps_desc": {
+  "pt": "Exibe quadros por segundo e a contagem de inimigos vivos no canto do HUD. Atalho: {t}.",
+  "en": "Shows frames per second and the live enemy count in the corner of the HUD. Shortcut: {t}."
+ },
+ "cfg_mostrar_fps_dica": {
+  "pt": "Contador de desempenho no HUD.",
+  "en": "Performance counter on the HUD."
+ },
+ "cfg_impacto": {
+  "pt": "Impacto",
+  "en": "Impact"
+ },
+ "cfg_impacto_sub": {
+  "pt": "O quanto o jogo reage quando algo grande morre.",
+  "en": "How hard the game reacts when something big dies."
+ },
+ "cfg_tremor_desc": {
+  "pt": "Intensidade do chacoalhar em explosões, chefes e golpes críticos. Em 0% a câmera fica imóvel.",
+  "en": "How hard the screen shakes on explosions, bosses and critical hits. At 0% the camera holds still."
+ },
+ "cfg_tremor_dica": {
+  "pt": "Movimento reduzido, na aba Acessibilidade, zera isto de vez.",
+  "en": "Reduced motion, on the Accessibility tab, zeroes this out for good."
+ },
+ "cfg_flashes_desc": {
+  "pt": "Clarões de tela cheia em chefes, purgas e mortes. Desligue se incomodar os olhos.",
+  "en": "Full-screen flashes on bosses, purges and deaths. Turn it off if it bothers your eyes."
+ },
+ "cfg_flashes_dica": {
+  "pt": "Clarões e vinhetas de perigo.",
+  "en": "Flashes and danger vignettes."
+ },
+ "cfg_numeros_dano_desc": {
+  "pt": "Os números que sobem dos inimigos. Em ondas cheias, filtrar por críticos deixa a tela legível.",
+  "en": "The numbers floating off the enemies. On crowded waves, filtering to crits keeps the screen readable."
+ },
+ "cfg_numeros_dano_dica": {
+  "pt": "Aplica na hora, sem reiniciar a onda.",
+  "en": "Applies right away, no wave restart."
+ },
+ "cfg_dano_todos": {
+  "pt": "Todos",
+  "en": "All"
+ },
+ "cfg_dano_criticos": {
+  "pt": "Só críticos",
+  "en": "Crits only"
+ },
+ "cfg_janela": {
+  "pt": "Janela",
+  "en": "Window"
+ },
+ "cfg_janela_sub": {
+  "pt": "Onde o jogo mora.",
+  "en": "Where the game lives."
+ },
+ "cfg_tela_cheia_desc": {
+  "pt": "Ocupa o monitor inteiro. Atalho: {t}.",
+  "en": "Takes over the whole monitor. Shortcut: {t}."
+ },
+ "cfg_tela_cheia_dica": {
+  "pt": "Alterna entre janela e tela cheia.",
+  "en": "Toggles between windowed and fullscreen."
+ },
+ "cfg_escala_ui": {
+  "pt": "Escala da interface",
+  "en": "Interface scale"
+ },
+ "cfg_escala_ui_desc": {
+  "pt": "Aumenta ou reduz todo o jogo proporcionalmente. Acima de 115% os painéis grandes ficam apertados em 1280×720.",
+  "en": "Scales the whole game up or down. Above 115% the big panels get cramped at 1280×720."
+ },
+ "cfg_escala_ui_dica": {
+  "pt": "Vale na hora, para a interface e para o campo de batalha.",
+  "en": "Takes effect immediately, for the interface and the battlefield."
+ },
+ "cfg_conforto": {
+  "pt": "Conforto",
+  "en": "Comfort"
+ },
+ "cfg_conforto_sub": {
+  "pt": "Nada aqui altera a dificuldade — só como o jogo chega até você.",
+  "en": "Nothing here changes the difficulty — only how the game reaches you."
+ },
+ "cfg_mov_reduzido_desc": {
+  "pt": "Zera o tremor de tela e corta as partículas para 40% do valor escolhido, por cima da qualidade. Os efeitos continuam existindo, só param de sacudir.",
+  "en": "Zeroes the screen shake and cuts particles to 40% of your chosen value, on top of quality. The effects still happen, they just stop shaking."
+ },
+ "cfg_mov_reduzido_dica": {
+  "pt": "Anula o tremor e reduz partículas — recomendado para enjoo de movimento.",
+  "en": "Kills the shake and reduces particles — recommended for motion sickness."
+ },
+ "cfg_daltonismo_desc": {
+  "pt": "Redistribui os canais de cor da tela inteira para separar tons que se confundem. Elementos, raridades e barras de vida ficam distinguíveis.",
+  "en": "Redistributes the color channels of the whole screen to pull apart shades that blur together. Elements, rarities and health bars stay distinguishable."
+ },
+ "cfg_daltonismo_dica": {
+  "pt": "Protanopia e deuteranopia: vermelho/verde. Tritanopia: azul/amarelo.",
+  "en": "Protanopia and deuteranopia: red/green. Tritanopia: blue/yellow."
+ },
+ "cfg_alto_contraste_desc": {
+  "pt": "Aumenta o contraste e a saturação da imagem final. O fundo escuro afunda, o que importa salta.",
+  "en": "Raises the contrast and saturation of the final image. The dark background sinks, what matters pops."
+ },
+ "cfg_alto_contraste_dica": {
+  "pt": "Separa melhor inimigo, projétil e cenário.",
+  "en": "Separates enemy, projectile and scenery better."
+ },
+ "cfg_fonte_grande_desc": {
+  "pt": "Amplia todo o texto em 12% junto com a interface. Combina com a escala da UI na aba Gráficos, então não exagere nas duas.",
+  "en": "Enlarges all text by 12% along with the interface. It stacks with the UI scale on the Graphics tab, so do not overdo both."
+ },
+ "cfg_fonte_grande_dica": {
+  "pt": "Texto 12% maior em todo o jogo.",
+  "en": "Text 12% larger across the whole game."
+ },
+ "cfg_vibracao": {
+  "pt": "Vibração",
+  "en": "Vibration"
+ },
+ "cfg_vibracao_desc": {
+  "pt": "Vibra o controle (ou o aparelho, no celular) em impactos fortes e na morte da torre. Sem efeito em teclado e mouse.",
+  "en": "Rumbles the controller (or the phone, on mobile) on heavy hits and when the tower dies. No effect on keyboard and mouse."
+ },
+ "cfg_vibracao_dica": {
+  "pt": "Retorno tátil em impactos — só em dispositivos que suportam.",
+  "en": "Haptic feedback on impacts — only on devices that support it."
+ },
+ "cfg_filtro_titulo": {
+  "pt": "Sobre o filtro de cor",
+  "en": "About the color filter"
+ },
+ "cfg_filtro_texto": {
+  "pt": "O modo daltônico e o alto contraste são aplicados como uma camada sobre a imagem final, inclusive sobre este painel. Se algo parecer estranho, é porque está funcionando — volte para \"Nenhum\" para comparar.",
+  "en": "Color-blind mode and high contrast are applied as a layer over the final image, this panel included. If something looks strange, that means it is working — switch back to \"None\" to compare."
+ },
+ "cfg_este_save": {
+  "pt": "Este save",
+  "en": "This save"
+ },
+ "cfg_este_save_sub": {
+  "pt": "Um arquivo JSON em user://. Há sempre um backup da gravação anterior ao lado.",
+  "en": "A JSON file in user://. There is always a backup of the previous write next to it."
+ },
+ "cfg_tamanho": {
+  "pt": "Tamanho",
+  "en": "Size"
+ },
+ "cfg_ultimo_salvamento": {
+  "pt": "Último salvamento",
+  "en": "Last save"
+ },
+ "cfg_proximo_autosave": {
+  "pt": "Próximo autosave",
+  "en": "Next autosave"
+ },
+ "cfg_formato": {
+  "pt": "Formato",
+  "en": "Format"
+ },
+ "cfg_versao_n": {
+  "pt": "versão {n}",
+  "en": "version {n}"
+ },
+ "cfg_salvar_dica": {
+  "pt": "Grava o progresso imediatamente. Atalho: {t}.",
+  "en": "Writes your progress right now. Shortcut: {t}."
+ },
+ "cfg_falha_salvar": {
+  "pt": "Falha ao salvar",
+  "en": "Save failed"
+ },
+ "cfg_exportar_dica": {
+  "pt": "Gera um código de texto com todo o seu progresso — cole num arquivo e guarde.",
+  "en": "Generates a text code with all your progress — paste it into a file and keep it."
+ },
+ "cfg_importar_dica": {
+  "pt": "Cola um código de save e substitui o progresso atual.",
+  "en": "Pastes a save code and replaces your current progress."
+ },
+ "cfg_apagar_dica": {
+  "pt": "Destrói o save e recomeça do zero. Duas confirmações — e você vai precisar delas.",
+  "en": "Destroys the save and starts over from zero. Two confirmations — and you will need them."
+ },
+ "cfg_apagar_dica2": {
+  "pt": "Destrói o save e recomeça do zero. Duas confirmações.",
+  "en": "Destroys the save and starts over from zero. Two confirmations."
+ },
+ "cfg_export_aviso": {
+  "pt": "Código do save — selecione tudo e guarde em lugar seguro.",
+  "en": "Save code — select all of it and keep it somewhere safe."
+ },
+ "cfg_copiar_dica": {
+  "pt": "Copia o código inteiro.",
+  "en": "Copies the whole code."
+ },
+ "cfg_copiado": {
+  "pt": "Código copiado para a área de transferência",
+  "en": "Code copied to the clipboard"
+ },
+ "cfg_selecionar_tudo": {
+  "pt": "Selecionar tudo",
+  "en": "Select all"
+ },
+ "cfg_selecionar_dica": {
+  "pt": "Marca o texto para copiar à mão (Ctrl+C).",
+  "en": "Highlights the text so you can copy it by hand (Ctrl+C)."
+ },
+ "cfg_ocultar": {
+  "pt": "Ocultar",
+  "en": "Hide"
+ },
+ "cfg_import_aviso": {
+  "pt": "Cole aqui um código começando com TORRE1|. Isto SUBSTITUI o progresso atual.",
+  "en": "Paste a code starting with TORRE1| here. This REPLACES your current progress."
+ },
+ "cfg_importar_substituir": {
+  "pt": "Importar e substituir",
+  "en": "Import and replace"
+ },
+ "cfg_importar_ok_dica": {
+  "pt": "Valida a assinatura e o checksum antes de aplicar.",
+  "en": "Validates the signature and the checksum before applying."
+ },
+ "cfg_colar": {
+  "pt": "Colar",
+  "en": "Paste"
+ },
+ "cfg_colar_dica": {
+  "pt": "Cola o que estiver na área de transferência.",
+  "en": "Pastes whatever is on the clipboard."
+ },
+ "cfg_codigo_gerado": {
+  "pt": "Código gerado — copie e guarde",
+  "en": "Code generated — copy it and keep it"
+ },
+ "cfg_cole_antes": {
+  "pt": "Cole um código antes de importar.",
+  "en": "Paste a code before importing."
+ },
+ "cfg_apagar_titulo": {
+  "pt": "Isto apaga o save e o backup. Você perde, para sempre:",
+  "en": "This erases the save and the backup. You lose, forever:"
+ },
+ "cfg_apagar_config_nota": {
+  "pt": "As configurações desta janela NÃO são apagadas.",
+  "en": "The settings in this window are NOT erased."
+ },
+ "cfg_exportar_antes": {
+  "pt": "Exportar antes",
+  "en": "Export first"
+ },
+ "cfg_exportar_antes_dica": {
+  "pt": "Gera o código de backup agora — é a última chance.",
+  "en": "Generates the backup code now — this is the last chance."
+ },
+ "cfg_sim_apagar": {
+  "pt": "Sim, apagar",
+  "en": "Yes, erase"
+ },
+ "cfg_apagar_conf1": {
+  "pt": "Primeira confirmação. Ainda dá para cancelar.",
+  "en": "First confirmation. You can still cancel."
+ },
+ "cfg_apagar_conf2": {
+  "pt": "Segunda e última confirmação. Não há desfazer.",
+  "en": "Second and final confirmation. There is no undo."
+ },
+ "cfg_tudo_apagado": {
+  "pt": "Tudo apagado. A torre recomeça do pó.",
+  "en": "All erased. The tower starts again from dust."
+ },
+ "cfg_perda_onda": {
+  "pt": "Onda máxima {n} (melhor de todas: {g})",
+  "en": "Highest wave {n} (best ever: {g})"
+ },
+ "cfg_perda_nivel": {
+  "pt": "Nível {n} e {p} pontos de talento",
+  "en": "Level {n} and {p} talent points"
+ },
+ "cfg_perda_prestigio": {
+  "pt": "{a} ascensões, {s} singularidades, {t} transcendências",
+  "en": "{a} ascensions, {s} singularities, {t} transcendences"
+ },
+ "cfg_perda_arvores": {
+  "pt": "As três árvores permanentes (fragmentos, núcleos e éter)",
+  "en": "All three permanent trees (shards, cores and ether)"
+ },
+ "cfg_perda_cartas": {
+  "pt": "{c} cartas no inventário e {q} conquistas desbloqueadas",
+  "en": "{c} cards in the inventory and {q} achievements unlocked"
+ },
+ "cfg_perda_moedas": {
+  "pt": "Todo o ouro, gemas e moedas de prestígio acumulados",
+  "en": "Every bit of gold, gems and prestige currency you piled up"
+ },
+ "cfg_atalhos_sub": {
+  "pt": "Tudo que dá para fazer sem tirar a mão do teclado.",
+  "en": "Everything you can do without taking your hands off the keyboard."
+ },
+ "cfg_at_pausa": {
+  "pt": "Pausar o jogo / fechar o painel aberto",
+  "en": "Pause the game / close the open panel"
+ },
+ "cfg_at_upgrades": {
+  "pt": "Abrir Melhorias",
+  "en": "Open Upgrades"
+ },
+ "cfg_at_talentos": {
+  "pt": "Abrir Talentos",
+  "en": "Open Talents"
+ },
+ "cfg_at_cartas": {
+  "pt": "Abrir Cartas",
+  "en": "Open Cards"
+ },
+ "cfg_at_prestigio": {
+  "pt": "Abrir Prestígio",
+  "en": "Open Prestige"
+ },
+ "cfg_at_conquistas": {
+  "pt": "Abrir Conquistas",
+  "en": "Open Achievements"
+ },
+ "cfg_at_config": {
+  "pt": "Abrir Configurações (este painel)",
+  "en": "Open Settings (this panel)"
+ },
+ "cfg_at_comprar_max": {
+  "pt": "Comprar o máximo da melhoria em foco",
+  "en": "Buy max on the focused upgrade"
+ },
+ "cfg_at_auto": {
+  "pt": "Ligar/desligar a compra automática",
+  "en": "Toggle auto-buy"
+ },
+ "cfg_at_turbo": {
+  "pt": "Alternar a velocidade do jogo",
+  "en": "Cycle the game speed"
+ },
+ "cfg_at_purga": {
+  "pt": "Purga — limpa a tela quando a coisa aperta",
+  "en": "Purge — clears the screen when things get tight"
+ },
+ "cfg_at_tela_cheia": {
+  "pt": "Alternar tela cheia",
+  "en": "Toggle fullscreen"
+ },
+ "cfg_at_fps": {
+  "pt": "Mostrar/ocultar o contador de FPS",
+  "en": "Show/hide the FPS counter"
+ },
+ "cfg_at_slots": {
+  "pt": "Usar as habilidades equipadas nos slots",
+  "en": "Use the abilities equipped in the slots"
+ },
+ "cfg_at_clique": {
+  "pt": "Fora da janela fecha o painel aberto",
+  "en": "Outside the window closes the open panel"
+ },
+ "cfg_tecla_esc": {
+  "pt": "Esc",
+  "en": "Esc"
+ },
+ "cfg_tecla_espaco": {
+  "pt": "Espaço",
+  "en": "Space"
+ },
+ "cfg_tecla_enter": {
+  "pt": "Enter",
+  "en": "Enter"
+ },
+ "cfg_tecla_enter_num": {
+  "pt": "Enter (num)",
+  "en": "Enter (num)"
+ },
+ "cfg_tecla_backspace": {
+  "pt": "Backspace",
+  "en": "Backspace"
+ },
+ "cfg_tecla_tab": {
+  "pt": "Tab",
+  "en": "Tab"
+ },
+ "cfg_tecla_shift": {
+  "pt": "Shift",
+  "en": "Shift"
+ },
+ "cfg_tecla_ctrl": {
+  "pt": "Ctrl",
+  "en": "Ctrl"
+ },
+ "cfg_tecla_clique": {
+  "pt": "Clique",
+  "en": "Click"
+ },
+ "cfg_sem_arquivo": {
+  "pt": "sem arquivo ainda",
+  "en": "no file yet"
+ },
+ "cfg_nunca": {
+  "pt": "nunca",
+  "en": "never"
+ },
+ "cfg_data_ha": {
+  "pt": "{d}  (há {t})",
+  "en": "{d}  ({t} ago)"
+ },
+ "cfg_proximo_em": {
+  "pt": "em {t} (a cada {s} s)",
+  "en": "in {t} (every {s} s)"
+ },
+ "cfg_data_hora": {
+  "pt": "{d}/{m}/{a} às {h}:{min}",
+  "en": "{m}/{d}/{a} at {h}:{min}"
+ },
+ "cfg_subtitulo": {
+  "pt": "Uma torre. Ondas infinitas. Três camadas de prestígio.",
+  "en": "One tower. Endless waves. Three layers of prestige."
+ },
+ "cfg_sobre_texto": {
+  "pt": "Um idle de tower defense feito inteiramente em código: nenhuma imagem, nenhuma cena montada à mão, nenhum emoji. Cada ícone é geometria desenhada em tempo real e cada número gigante mora em log10, porque em algum momento o ouro passa de 1e300 e o ponto flutuante desiste antes de você.",
+  "en": "An idle tower defense built entirely in code: no images, no hand-assembled scenes, no emoji. Every icon is geometry drawn in real time and every huge number lives in log10, because at some point the gold passes 1e300 and floating point gives up before you do."
+ },
+ "cfg_versao": {
+  "pt": "Versão",
+  "en": "Version"
+ },
+ "cfg_versao_sub": {
+  "pt": "Para quando algo quebrar e alguém perguntar qual build era.",
+  "en": "For when something breaks and someone asks which build it was."
+ },
+ "cfg_formato_save": {
+  "pt": "Formato do save",
+  "en": "Save format"
+ },
+ "cfg_motor": {
+  "pt": "Motor",
+  "en": "Engine"
+ },
+ "cfg_plataforma": {
+  "pt": "Plataforma",
+  "en": "Platform"
+ },
+ "cfg_sua_torre": {
+  "pt": "Sua torre",
+  "en": "Your tower"
+ },
+ "cfg_sua_torre_sub": {
+  "pt": "O que este save já viveu.",
+  "en": "What this save has lived through."
+ },
+ "cfg_tempo_total": {
+  "pt": "Tempo total",
+  "en": "Total time"
+ },
+ "cfg_onda_maxima": {
+  "pt": "Onda máxima",
+  "en": "Highest wave"
+ },
+ "cfg_criado_em": {
+  "pt": "Torre erguida em",
+  "en": "Tower raised on"
+ },
+ "cfg_creditos": {
+  "pt": "Créditos",
+  "en": "Credits"
+ },
+ "cfg_creditos_sub": {
+  "pt": "Poucos nomes, muitas linhas.",
+  "en": "Few names, many lines."
+ },
+ "cfg_cred_projeto": {
+  "pt": "Projeto, código e balanceamento",
+  "en": "Design, code and balancing"
+ },
+ "cfg_arte": {
+  "pt": "Arte",
+  "en": "Art"
+ },
+ "cfg_cred_arte_v": {
+  "pt": "Vetorial, gerada em código (scripts/ui/icone.gd)",
+  "en": "Vector, generated in code (scripts/ui/icone.gd)"
+ },
+ "cfg_cred_audio_v": {
+  "pt": "Sintetizado em tempo de execução",
+  "en": "Synthesized at runtime"
+ },
+ "cfg_agradecimentos": {
+  "pt": "Agradecimentos",
+  "en": "Thanks"
+ },
+ "cfg_cred_obrigado_v": {
+  "pt": "A quem testou até a onda 500 e reclamou do tremor de tela",
+  "en": "To whoever tested all the way to wave 500 and complained about the screen shake"
+ },
+ "cfg_rodape_sobre": {
+  "pt": "A torre é eterna. Você, não — mas o save fica.",
+  "en": "The tower is eternal. You are not — but the save stays."
+ },
+ "cfg_repouso": {
+  "pt": "Modo Repouso",
+  "en": "Rest Mode"
+ },
+ "cfg_repouso_desc": {
+  "pt": "Depois de tanto tempo parado, a tela passa a desenhar 6 quadros por segundo.",
+  "en": "After this long idle, the screen drops to 6 frames per second."
+ },
+ "cfg_repouso_dica": {
+  "pt": "Serve para deixar o jogo aberto sem gastar bateria. A simulação NÃO diminui — o combate, o ouro e as ondas seguem no mesmo ritmo, porque ela roda num relógio separado do desenho. Qualquer toque, tecla ou clique acorda na hora, e trocar de janela entra no repouso sozinho.",
+  "en": "For leaving the game open without draining the battery. The simulation does NOT slow down — combat, gold and waves keep the same pace, because it runs on a clock separate from drawing. Any tap, key or click wakes it instantly, and switching windows enters rest on its own."
+ },
+ "cfg_repouso_nunca": {
+  "pt": "Nunca",
+  "en": "Never"
+ }
 }

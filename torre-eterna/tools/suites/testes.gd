@@ -44,6 +44,8 @@ func rodar(cena: SceneTree) -> void:
 	t_nada_mudo()
 	t_cepas()
 	t_formas()
+	t_editos()
+	t_repouso()
 	t_mira()
 	t_fim_de_sessao()
 	t_celebracao()
@@ -86,7 +88,7 @@ func rodar(cena: SceneTree) -> void:
 	var minimo_por_grupo := {
 		"Acessibilidade": 22, "Alcancavel": 8, "Big": 12,
 		"Chaves dinamicas": 3, "Combate": 9, "Defesa": 27,
-		"Dicas": 5, "Economia": 9, "Cepas": 40, "Formas": 18,
+		"Dicas": 5, "Economia": 9, "Cepas": 40, "Formas": 18, "Editos": 26, "Repouso": 13,
 		"Eventos": 12, "Feedback": 2, "Ferramentas": 3, "Daltonismo": 9, "Tempo": 5, "Conteudo lido": 21, "Fmt": 6,
 		"Habilidades": 17, "Icones": 2, "Integridade": 9,
 		"Longo prazo": 7, "Mecânicas": 69, "Mira": 6,
@@ -1766,14 +1768,20 @@ func t_formas() -> void:
 	# andam. Sem remapear, o contador mudaria sozinho e formas que a pessoa
 	# nunca viu apareceriam marcadas. Aqui simulo o lexico ANTIGO tirando uma
 	# cepa do eixo, gravo nele, e carrego no lexico de hoje.
-	var mapa_velho := Formas.mapa_atual()
-	var corpo_velho := PackedStringArray(mapa_velho["corpo"])
+	var corpo_velho := PackedStringArray(mapa["corpo"])
 	if corpo_velho.size() > 2:
 		var sem_um := PackedStringArray()
 		for id in corpo_velho:
 			if str(id) != "cascudo":
 				sem_um.append(str(id))
-		mapa_velho["corpo"] = sem_um
+		# Monta pelo MESMO caminho que a producao usa. Mexer na lista de um mapa
+		# ja montado deixaria o indice e o tamanho daquele eixo desatualizados —
+		# e foi exatamente isso que este teste pegou quando o endereco passou a
+		# ler tamanho e posicao de lugares diferentes.
+		var mapa_velho := Formas.mapa_de({
+			"bases": mapa["bases"], "corpo": sem_um,
+			"andar": mapa["andar"], "marca": mapa["marca"],
+		})
 		var bits_velho := Formas.novo(mapa_velho)
 		var e_velho := Formas.endereco(g1, [Dados.cepa_por_id["blindado"], Dados.cepa_por_id["veloz"]], mapa_velho)
 		Formas.marcar(bits_velho, e_velho)
@@ -1795,6 +1803,243 @@ func t_formas() -> void:
 		ok("o total do jogo andou", jogo.formas_vistas() == antes + 1)
 	jogo.arena.limpar_inimigos()
 
+
+
+## ------------------------------------------------------------- éditos
+## Uma lei muda a física da partida e vive até a Singularidade. Se ela vazar
+## para onde não devia — para o save de outra pessoa, para depois da limpeza,
+## para uma dádiva sem ônus — o jogo passa a mentir sobre as próprias regras.
+func t_editos() -> void:
+	g("Editos")
+	ok("o lexico de leis existe", Dados.editos.size() >= 12,
+		"leis=%d" % Dados.editos.size())
+
+	# TODA LEI PRECISA DAR E COBRAR. Uma lei só com dádiva é melhoria disfarçada,
+	# e acumular seis delas seria escada de poder — exatamente o que este sistema
+	# existe para não ser.
+	var sem_onus: Array = []
+	var sem_dadiva: Array = []
+	for d in Dados.editos:
+		var dd: Dictionary = d
+		var mods_l = dd.get("mods", {})
+		var tem_mod_bom := false
+		var tem_mod_ruim := false
+		if mods_l is Dictionary:
+			for k in (mods_l as Dictionary).keys():
+				var v := float((mods_l as Dictionary)[k])
+				# ouro e xp para cima são dádiva; inimigo mais forte é ônus
+				if str(k) in ["ouro", "xp"]:
+					if v > 1.0: tem_mod_bom = true
+					elif v < 1.0: tem_mod_ruim = true
+				else:
+					if v > 1.0: tem_mod_ruim = true
+					elif v < 1.0: tem_mod_bom = true
+		var da: Array = dd.get("dadiva", [])
+		var on: Array = dd.get("onus", [])
+		if da.is_empty() and not tem_mod_bom:
+			sem_dadiva.append(str(dd.get("id", "")))
+		if on.is_empty() and not tem_mod_ruim:
+			sem_onus.append(str(dd.get("id", "")))
+	ok("toda lei cobra alguma coisa", sem_onus.is_empty(), str(sem_onus))
+	ok("toda lei da alguma coisa", sem_dadiva.is_empty(), str(sem_dadiva))
+
+	# Toda lei é bilíngue e aponta para atributos que existem.
+	var sem_en: Array = []
+	var stat_torto: Array = []
+	for d2 in Dados.editos:
+		var dd2: Dictionary = d2
+		if str(dd2.get("nomeEn", "")) == "" or str(dd2.get("descEn", "")) == "":
+			sem_en.append(str(dd2.get("id", "")))
+		for chave in ["dadiva", "onus"]:
+			for it in dd2.get(chave, []):
+				var st := str((it as Dictionary).get("stat", ""))
+				if st != "" and not Dados.stat_defs.has(st):
+					stat_torto.append("%s/%s" % [str(dd2.get("id", "")), st])
+	ok("toda lei fala as duas linguas", sem_en.is_empty(), str(sem_en))
+	ok("toda lei aponta para atributo existente", stat_torto.is_empty(), str(stat_torto))
+
+	# ---------------------------------------------------- mesa e escolha
+	var st: Dictionary = {"prestigio": {"ascensoes": 0}, "editos": Editos.estado_padrao()}
+	ok("cedo demais nao oferece nada", not Editos.gerar_oferta(st, jogo.rng_editos))
+	st["prestigio"]["ascensoes"] = Editos.ASCENSAO_MINIMA
+	ok("na ascensao certa a mesa abre", Editos.gerar_oferta(st, jogo.rng_editos))
+	var mesa := Editos.oferta(st)
+	ok("a mesa tem tres leis", mesa.size() == Editos.OFERTA, "mesa=%d" % mesa.size())
+	# TRÊS VARIAÇÕES DE CADÊNCIA NÃO SÃO UMA ESCOLHA, são a mesma escolha três
+	# vezes. Um eixo por lei na mesa.
+	var eixos_mesa: Dictionary = {}
+	var repetiu := ""
+	for d3 in mesa:
+		var e3 := str((d3 as Dictionary).get("eixo", ""))
+		if eixos_mesa.has(e3):
+			repetiu = e3
+		eixos_mesa[e3] = true
+	ok("a mesa nao repete eixo", repetiu == "", repetiu)
+	ok("com mesa aberta nao abre outra", not Editos.gerar_oferta(st, jogo.rng_editos))
+
+	# QUEM EDITAR O SAVE NÃO ESCOLHE O QUE NÃO ESTÁ NA MESA. Sem esta guarda, a
+	# pessoa (ou um save adulterado) levaria as seis dádivas e nenhum ônus.
+	var fora := ""
+	for d4 in Dados.editos:
+		var id4 := str((d4 as Dictionary).get("id", ""))
+		if not st["editos"]["oferta"].has(id4):
+			fora = id4
+			break
+	ok("lei fora da mesa e recusada", not Editos.aceitar(st, fora), fora)
+	ok("id inventado e recusado", not Editos.aceitar(st, "nao_existe"))
+
+	var escolhida := str((mesa[0] as Dictionary).get("id", ""))
+	ok("a lei escolhida entra em vigor", Editos.aceitar(st, escolhida))
+	ok("a mesa some depois da escolha", not Editos.tem_oferta(st))
+	ok("a lei aparece na lista", Editos.ativos(st).size() == 1)
+	ok("a mesma lei nao entra duas vezes",
+		not Editos.aceitar(st, escolhida))
+
+	# A mesa seguinte nunca oferece o que já está em vigor.
+	Editos.gerar_oferta(st, jogo.rng_editos)
+	ok("a mesa nao repete lei ja aceita",
+		not st["editos"]["oferta"].has(escolhida))
+	Editos.recusar(st)
+	ok("recusar limpa a mesa e nao aceita nada",
+		not Editos.tem_oferta(st) and Editos.ativos(st).size() == 1)
+
+	# ---------------------------------------------------- teto e limpeza
+	var st2: Dictionary = {"prestigio": {"ascensoes": 99}, "editos": Editos.estado_padrao()}
+	var voltas := 0
+	while not Editos.cheio(st2) and voltas < 40:
+		voltas += 1
+		if not Editos.gerar_oferta(st2, jogo.rng_editos):
+			break
+		var of2: Array = st2["editos"]["oferta"]
+		if of2.is_empty():
+			break
+		Editos.aceitar(st2, str(of2[0]))
+	ok("a mesa enche e para no teto",
+		Editos.ativos(st2).size() == Editos.TETO, "ativos=%d" % Editos.ativos(st2).size())
+	ok("cheia, a mesa nao abre mais", not Editos.gerar_oferta(st2, jogo.rng_editos))
+	# A SINGULARIDADE DEVOLVE AS REGRAS DE FÁBRICA. Sem isto, as leis virariam
+	# permanentes e o acúmulo seria escada de poder para sempre.
+	Editos.limpar(st2)
+	ok("a Singularidade apaga as leis", Editos.ativos(st2).is_empty())
+
+	# ---------------------------------------------------- efeito de verdade
+	# Uma lei que não muda número nenhum é texto na tela. Aqui a suíte prova que
+	# a dádiva e o ônus chegam ao atributo.
+	jogo.s["editos"] = Editos.estado_padrao()
+	jogo.marcar_sujo()
+	jogo.recalcular()
+	var dano_antes: float = jogo.stats.n("dano")
+	var cad_antes: float = jogo.stats.n("cadencia")
+	jogo.s["editos"]["ativos"] = ["gatilho_travado"]
+	jogo.marcar_sujo()
+	jogo.recalcular()
+	ok("a dadiva chega ao atributo", jogo.stats.n("dano") > dano_antes,
+		"%.2f -> %.2f" % [dano_antes, jogo.stats.n("dano")])
+	ok("o onus tambem chega", jogo.stats.n("cadencia") < cad_antes,
+		"%.2f -> %.2f" % [cad_antes, jogo.stats.n("cadencia")])
+
+	# Leis de mundo entram em `mods_dif`, que é o que `EnemyAI.criar` lê.
+	jogo.s["editos"]["ativos"] = ["mare"]
+	jogo.marcar_sujo()
+	jogo.recalcular()
+	ok("lei de mundo muda a densidade",
+		float(jogo.mods_dif.get("densidade", 1.0)) > 1.5,
+		"densidade=%.2f" % float(jogo.mods_dif.get("densidade", 1.0)))
+	ok("lei de mundo muda o ouro",
+		float(jogo.mods_dif.get("ouro", 1.0)) > 1.0)
+	# Duas leis de mundo MULTIPLICAM: e isso que as duas telas prometem.
+	jogo.s["editos"]["ativos"] = ["mare", "pressa"]
+	jogo.marcar_sujo()
+	jogo.recalcular()
+	ok("duas leis de mundo se multiplicam",
+		float(jogo.mods_dif.get("ouro", 1.0)) > 1.9,
+		"ouro=%.2f" % float(jogo.mods_dif.get("ouro", 1.0)))
+	jogo.s["editos"] = Editos.estado_padrao()
+	jogo.marcar_sujo()
+	jogo.recalcular()
+
+
+## ------------------------------------------------------------- repouso
+## O Modo Repouso mexe em `Engine.max_fps`, que é global. Se ele esquecer de
+## devolver o valor, o jogo fica a 6 quadros para sempre e a pessoa acha que
+## quebrou. E se ele encostasse na simulação, o projétil andaria 40 px por passo
+## e atravessaria inimigos de 15 px de raio — bug silencioso, o pior tipo.
+func t_repouso() -> void:
+	g("Repouso")
+	var fps_antes := Engine.max_fps
+	Engine.max_fps = 60
+
+	var r := Repouso.new()
+	r.configurar(1.0)
+	ok("nasce acordado", not r.ativo)
+
+	# Parado o bastante: entra sozinho.
+	r.atualizar(59.0, false)
+	ok("59 s parado ainda nao dorme", not r.ativo)
+	r.atualizar(2.0, false)
+	ok("passado o minuto, dorme", r.ativo)
+	ok("dormindo, desenha menos", Engine.max_fps == Repouso.FPS,
+		"max_fps=%d" % Engine.max_fps)
+
+	# QUALQUER ENTRADA ACORDA, e devolve o limite QUE A PESSOA ESCOLHEU — nao um
+	# numero fixo. Quem joga com 30 fps por bateria nao pode acordar em 60.
+	r.atualizar(0.016, true)
+	ok("qualquer entrada acorda", not r.ativo)
+	ok("acordar devolve o limite de antes", Engine.max_fps == 60,
+		"max_fps=%d" % Engine.max_fps)
+
+	# O relogio de ociosidade zera com a entrada: sem isso, mexer no jogo por um
+	# segundo e parar de novo dormiria na hora.
+	r.atualizar(59.0, false)
+	r.atualizar(0.016, true)
+	r.atualizar(2.0, false)
+	ok("a entrada zera o relogio", not r.ativo)
+
+	# Desligado na configuracao, nunca entra.
+	var r2 := Repouso.new()
+	r2.configurar(0.0)
+	r2.atualizar(9999.0, false)
+	ok("com a opcao desligada nunca dorme", not r2.ativo)
+	r2.ao_perder_foco()
+	ok("desligado, perder o foco tambem nao dorme", not r2.ativo)
+
+	# Perder o foco entra na hora: ninguem esta olhando para gastar quadro.
+	var r3 := Repouso.new()
+	r3.configurar(30.0)
+	r3.ao_perder_foco()
+	ok("perder o foco dorme na hora", r3.ativo)
+	r3.sair()
+	ok("sair e idempotente", not r3.ativo)
+	r3.sair()
+	ok("sair duas vezes nao estraga o limite", Engine.max_fps == 60,
+		"max_fps=%d" % Engine.max_fps)
+	# Entrar duas vezes nao pode guardar 6 como "o limite de antes": se
+	# guardasse, sair devolveria 6 e o jogo ficaria lento para sempre.
+	var r4 := Repouso.new()
+	r4.configurar(30.0)
+	r4.entrar()
+	r4.entrar()
+	r4.sair()
+	ok("entrar duas vezes nao perde o limite original", Engine.max_fps == 60,
+		"max_fps=%d" % Engine.max_fps)
+
+	# A SIMULACAO NAO PODE DEPENDER DO DESENHO.
+	#
+	# Esta e a asserção que segura a arquitetura inteira: `simular` e chamado de
+	# `_physics_process`, cujo relogio o Godot mantem em 60 Hz independente de
+	# quantos quadros a tela desenha. Se alguem mover a simulacao para
+	# `_process`, o Modo Repouso passa a rodar o jogo a 6 passos por segundo e
+	# tudo — colisao, dano, onda — sai errado sem uma mensagem de erro.
+	var fonte := FileAccess.get_file_as_string("res://scripts/sim/game.gd")
+	ok("a simulacao roda no relogio da fisica",
+		fonte.contains("func _physics_process(dt: float) -> void:")
+		and fonte.contains("\tsimular(dt)"))
+	var i_proc := fonte.find("func _process(")
+	var i_fis := fonte.find("func _physics_process(")
+	var trecho_proc := fonte.substr(i_proc, maxi(0, i_fis - i_proc)) if i_proc >= 0 and i_fis > i_proc else ""
+	ok("e o _process nao simula nada", not trecho_proc.contains("simular("))
+
+	Engine.max_fps = fps_antes
 
 ## ------------------------------------------------------------- mira
 ## `alvo_ids` é a busca mais quente do jogo (todo impacto de perfuração e todo

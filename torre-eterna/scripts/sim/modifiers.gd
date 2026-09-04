@@ -124,6 +124,16 @@ static func recalcular(s: Dictionary, m: StatEngine) -> Dictionary:
 			if not def.is_empty() and n > 0:
 				aplicar_efeitos(m, def.get("efeito", []), n, str(def.get("nome", id)), esp, pas)
 
+	# ------------------------------------------------------------- éditos
+	# As leis que a pessoa aceitou nas Ascensões. Dádiva e ônus são arrays de
+	# efeito no mesmo formato de melhoria, talento e carta — entram pelo mesmo
+	# `aplicar_efeitos`, sem caminho novo. Ver `scripts/sim/editos.gd`.
+	for item_ed in Editos.ativos(s):
+		var ded: Dictionary = item_ed
+		var nome_ed := str(ded.get("nome", ""))
+		aplicar_efeitos(m, ded.get("dadiva", []), 1, nome_ed, esp, pas)
+		aplicar_efeitos(m, ded.get("onus", []), 1, nome_ed, esp, pas)
+
 	# ------------------------------------------- bônus permanentes ganhos
 	# Recompensas do tipo "stat" de missões, conquistas e desafios. Ficam no
 	# estado (ver GameState) e entram aqui como qualquer outro modificador.

@@ -115,6 +115,33 @@ func rodar(main: Node, gerente, jogo) -> void:
 					_medir_no(main, gerente.painel_atual, rotulo, falhas)
 				gerente.fechar()
 				await main.get_tree().process_frame
+
+			# A MESA DAS LEIS TAMBEM E TELA.
+			#
+			# Ela nao esta em `PAINEIS` — e uma janela modal, criada a mao pelo
+			# gerente — e por isso escaparia da varredura inteira. Justamente
+			# ela: tres fichas com duas linhas de texto cada, numa janela
+			# centrada, e o texto em portugues bem mais longo que o ingles. Se
+			# alguma tela do jogo vai transbordar, comeca por aqui.
+			jogo.s["prestigio"]["ascensoes"] = maxi(
+				int(jogo.s["prestigio"]["ascensoes"]), Editos.ASCENSAO_MINIMA)
+			Editos.recusar(jogo.s)
+			if Editos.gerar_oferta(jogo.s, jogo.rng_editos):
+				gerente.abrir_editos()
+				await main.get_tree().process_frame
+				await main.get_tree().process_frame
+				await main.get_tree().process_frame
+				conferidos += 1
+				var rot_ed := "editos/%s/%.2fx" % [str(idioma), float(escala)]
+				if gerente.dialogo == null or not is_instance_valid(gerente.dialogo):
+					falhas.append("%s: a mesa das leis nao abriu" % rot_ed)
+				elif gerente.dialogo.get_child_count() == 0:
+					falhas.append("%s: a mesa abriu VAZIA (o script dela compila?)" % rot_ed)
+				else:
+					_medir_no(main, gerente.dialogo, rot_ed, falhas)
+					gerente.dialogo.queue_free()
+				await main.get_tree().process_frame
+			Editos.recusar(jogo.s)
 	Cfg.set_v("idioma", "pt")
 	Cfg.set_v("escala_ui", 1.0)
 	print("paineis conferidos: %d" % conferidos)

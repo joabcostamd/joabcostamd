@@ -146,5 +146,13 @@
  "hud_forma_nova": {
   "pt": "Forma inédita: {n}",
   "en": "Unseen form: {n}"
+ },
+ "hud_repouso": {
+  "pt": "Repouso · o jogo continua",
+  "en": "Rest · the game goes on"
+ },
+ "hud_repouso_dica": {
+  "pt": "A tela desenha menos para poupar bateria. A simulação NÃO diminui: o combate, o ouro e as ondas continuam no mesmo ritmo. Qualquer toque acorda.",
+  "en": "The screen draws less to save battery. The simulation does NOT slow down: combat, gold and waves continue at the same pace. Any input wakes it."
  }
 }

@@ -50,28 +50,58 @@ static func _ids_eixo(eixo: String) -> PackedStringArray:
 ## comparacoes de texto. E `endereco` roda a cada morte de inimigo com cepa,
 ## que numa onda cheia sao dezenas por segundo. O indice e montado uma vez em
 ## `mapa_atual()` e a busca vira uma consulta.
+## Roda a cada morte de inimigo com cepa — dezenas por segundo numa onda cheia.
+## A primeira versao montava a chave do indice com `"i_" + eixo`, ou seja, tres
+## concatenacoes de texto (tres alocacoes) por corpo que cai, para consultar um
+## Dicionario. `mapa["indices"]` e `mapa["tamanhos"]` sao os mesmos dados ja
+## ordenados por eixo, lidos por posicao.
 static func endereco(tipo: String, lista: Array, mapa: Dictionary) -> int:
 	var idx_bases: Dictionary = mapa["i_bases"]
 	if not idx_bases.has(tipo):
 		return -1
 	var idx: int = idx_bases[tipo]
-	for eixo in EIXOS:
-		var ids: PackedStringArray = mapa[eixo]
-		var indice: Dictionary = mapa["i_" + eixo]
+	var indices: Array = mapa["indices"]
+	var tamanhos: PackedInt32Array = mapa["tamanhos"]
+	for k in EIXOS.size():
+		var eixo: String = EIXOS[k]
+		var indice: Dictionary = indices[k]
 		var pos := 0
 		for c in lista:
 			if c is Dictionary and str(c.get("eixo", "")) == eixo:
 				pos = int(indice.get(str(c.get("id", "")), -1)) + 1
 				break
-		idx = idx * (ids.size() + 1) + pos
+		idx = idx * tamanhos[k] + pos
 	return idx
 
 static func mapa_atual() -> Dictionary:
-	var m := {"bases": _ids_bases()}
+	var cru := {"bases": _ids_bases()}
 	for eixo in EIXOS:
-		m[eixo] = _ids_eixo(eixo)
-	for k in m.keys():
-		m["i_" + str(k)] = _indice(m[k])
+		cru[eixo] = _ids_eixo(eixo)
+	return mapa_de(cru)
+
+## UM UNICO LUGAR MONTA UM MAPA, e por um motivo que um teste ja pegou.
+##
+## Um mapa e feito de quatro listas de ids MAIS os dados derivados delas: o
+## indice id -> posicao e o tamanho de cada eixo. Quem montasse um mapa mexendo
+## nas listas direto ficaria com derivado velho — enderecos calculados com o
+## tamanho de uma lista e a posicao de outra, silenciosamente errados. Todo mapa
+## do projeto (o de hoje, o gravado no save, o do teste de remapeamento) passa
+## por aqui.
+static func mapa_de(listas: Dictionary) -> Dictionary:
+	var m := {}
+	m["bases"] = PackedStringArray(listas.get("bases", []))
+	for eixo in EIXOS:
+		m[eixo] = PackedStringArray(listas.get(eixo, []))
+	m["i_bases"] = _indice(m["bases"])
+	var indices: Array = []
+	var tamanhos := PackedInt32Array()
+	for eixo in EIXOS:
+		var idx := _indice(m[eixo])
+		m["i_" + str(eixo)] = idx
+		indices.append(idx)
+		tamanhos.append(PackedStringArray(m[eixo]).size() + 1)
+	m["indices"] = indices
+	m["tamanhos"] = tamanhos
 	return m
 
 static func _indice(ids: PackedStringArray) -> Dictionary:
@@ -149,11 +179,7 @@ static func carregar(d, mapa: Dictionary) -> PackedByteArray:
 	if velhos.is_empty():
 		return novos
 
-	var antigo := {"bases": PackedStringArray(dd.get("bases", []))}
-	for eixo in EIXOS:
-		antigo[eixo] = PackedStringArray(dd.get(eixo, []))
-	for k in antigo.keys():
-		antigo["i_" + str(k)] = _indice(antigo[k])
+	var antigo := Formas.mapa_de(dd)
 
 	var igual := true
 	for k in ["bases", "corpo", "andar", "marca"]:

@@ -28,6 +28,7 @@ var lbl_combo: Label
 var lbl_dps: Label
 var lbl_ouro_mult: Label
 var lbl_fps: Label
+var lbl_repouso: Label
 var caixa_hab: HBoxContainer
 var botoes_hab := {}
 var caixa_buffs: HBoxContainer
@@ -266,6 +267,18 @@ func _construir() -> void:
 	lbl_fps = UI.rotulo("", 12, UI.TEXTO3)
 	lbl_fps.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	dir.add_child(lbl_fps)
+	# O AVISO DO REPOUSO.
+	#
+	# Sem ele, a tela simplesmente fica lenta e a pessoa conclui que o jogo
+	# travou — foi por isso que a auditoria de interface deste projeto cobrou
+	# resposta visivel para TODA mudanca de estado. A frase diz as duas coisas
+	# que importam: a maquina esta descansando E o jogo continua andando.
+	lbl_repouso = UI.rotulo("", 12, UI.ACENTO2)
+	lbl_repouso.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	lbl_repouso.tooltip_text = Txt.t("hud_repouso_dica")
+	lbl_repouso.visible = false
+	dir.add_child(lbl_repouso)
+	Bus.repouso_mudou.connect(_ao_repouso)
 
 	# ---------- rodapé: habilidades ----------
 	caixa_hab = UI.hbox(8)
@@ -531,6 +544,13 @@ func _process(delta: float) -> void:
 		return
 	_acc = 0.0
 	_atualizar_lento()
+
+## Ver `scripts/core/repouso.gd`.
+func _ao_repouso(ativo: bool) -> void:
+	if lbl_repouso == null or not is_instance_valid(lbl_repouso):
+		return
+	lbl_repouso.visible = ativo
+	lbl_repouso.text = Txt.t("hud_repouso") if ativo else ""
 
 func _atualizar_rapido() -> void:
 	if jogo == null or not jogo.iniciado:

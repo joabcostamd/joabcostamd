@@ -127,6 +127,12 @@ func _talvez_capturar() -> void:
 			Cfg.set_v("escala_ui", float(a.substr(9)))
 		elif a == "--fonte-grande":
 			Cfg.set_v("fonte_grande", true)
+		elif a == "--repouso":
+			# Forca o Modo Repouso desde a abertura. Serve para MEDIR a economia
+			# com o jogo de verdade: duas execucoes identicas, uma com e uma sem
+			# a bandeira, e o relogio de CPU do sistema decide. Uma opcao que
+			# promete "poupa bateria" sem numero e propaganda.
+			_repouso_forcado = true
 	if _auditar_ui:
 		# A varredura mora em `tools/` porque e ferramenta, nao jogo: ela imprime
 		# relatorio em portugues, e o linter — com razao — proibe texto solto
@@ -368,7 +374,40 @@ func _usar_hab_por_tecla(tecla: String) -> void:
 			jogo.usar_habilidade(str(def.get("id", "")))
 			return
 
+## O MODO REPOUSO. Ver `scripts/core/repouso.gd`.
+##
+## `_input` e nao `_unhandled_input`: aqui a unica coisa que interessa e SE
+## houve entrada, e um clique consumido por um botao de painel conta tanto
+## quanto uma tecla que ninguem tratou. Pelo caminho do nao-tratado, mexer na
+## interface nao acordaria o jogo — a pessoa clicaria numa melhoria e a tela
+## continuaria a seis quadros.
+var repouso := Repouso.new()
+var _teve_entrada := false
+var _repouso_forcado := false
+
+## A configuracao manda no repouso, e muda no meio da partida: quem abrir o
+## painel e mover o controle tem que ver o efeito sem reiniciar o jogo.
+func _sincronizar_repouso() -> void:
+	repouso.configurar(float(Cfg.v.get("repouso_min", Repouso.MINUTOS_PADRAO)))
+
+func _input(_e: InputEvent) -> void:
+	_teve_entrada = true
+
+func _process(delta: float) -> void:
+	if _repouso_forcado:
+		repouso.entrar()
+		return
+	_sincronizar_repouso()
+	repouso.atualizar(delta, _teve_entrada)
+	_teve_entrada = false
+
 func _notification(what: int) -> void:
+	# A janela saiu de foco: nao ha ninguem olhando para gastar quadro. Volta
+	# sozinho no primeiro toque quando a pessoa voltar.
+	if what == NOTIFICATION_APPLICATION_FOCUS_OUT or what == NOTIFICATION_WM_WINDOW_FOCUS_OUT:
+		repouso.ao_perder_foco()
+	elif what == NOTIFICATION_APPLICATION_FOCUS_IN or what == NOTIFICATION_WM_WINDOW_FOCUS_IN:
+		repouso.sair()
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:
 		if jogo and jogo.iniciado:
 			jogo.salvar()

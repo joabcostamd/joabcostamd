@@ -15,6 +15,10 @@ signal inimigo_morreu(e, ouro_log)
 ## Uma combinacao de base e cepas que este save nunca tinha visto. Ver
 ## `scripts/sim/formas.gd`.
 signal forma_nova(e)
+## Tres leis na mesa depois de uma Ascensao. Ver `scripts/sim/editos.gd`.
+signal editos_oferecidos()
+## O jogo entrou (ou saiu) do Modo Repouso. Ver `scripts/core/repouso.gd`.
+signal repouso_mudou(ativo: bool)
 ## Um banner cinematografico ocupou o meio da tela por N segundos.
 signal banner_cinematico(segundos: float)
 ## Mais um dia seguido de sequencia diaria, com a etapa alcancada.

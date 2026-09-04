@@ -73,6 +73,8 @@ static func novo() -> Dictionary:
 		"conquistas": {},        # id -> timestamp
 		"conquistas_vistas": [],
 		"codex": {"inimigos": {}, "chefes": {}, "lore": {}},
+		# Ver `scripts/sim/editos.gd`. Vive ate a Singularidade.
+		"editos": {"ativos": [], "oferta": [], "vistos": 0},
 		"missoes": {
 			"diarias": [], "semanais": [],
 			"reset_diario": 0, "reset_semanal": 0, "sequencia": 0, "ultimo_dia": 0,

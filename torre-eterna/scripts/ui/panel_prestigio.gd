@@ -127,6 +127,7 @@ func _reconstruir() -> void:
 	conteudo.add_child(_destaque(cam))
 	if str(cam.get("id", "")) == "ascensao":
 		conteudo.add_child(_auto_ascensao())
+		conteudo.add_child(_leis())
 	conteudo.add_child(_cabecalho_arvore(cam))
 
 	var rol := UI.scroll()
@@ -139,6 +140,67 @@ func _reconstruir() -> void:
 		tw.tween_property(aura, "modulate:a", 0.45, 1.1).set_trans(Tween.TRANS_SINE)
 		tw.tween_property(aura, "modulate:a", 1.0, 1.1).set_trans(Tween.TRANS_SINE)
 	atualizar()
+
+## AS LEIS EM VIGOR.
+##
+## Fica na aba da Ascensao porque e ela que oferece e e nela que a pessoa decide
+## quando resetar — a conta "quanto ganho se ascender agora" e "com que regras
+## vou jogar depois" e a mesma decisao, e separa-las em duas telas obrigaria a
+## pessoa a decorar uma para pensar na outra.
+##
+## Se houver uma mesa aberta que a pessoa nao respondeu, o bloco vira um botao
+## para chama-la de volta: a oferta mora no save, entao fechar o jogo no meio
+## dela nao perde nada.
+func _leis() -> PanelContainer:
+	var cx := UI.painel(UI.PAINEL2.darkened(0.18), 12)
+	var v := UI.vbox(6)
+	cx.add_child(v)
+	var ativos := Editos.ativos(jogo.s)
+	var h := UI.hbox(8)
+	h.add_child(UI.icone("prestigio", UI.ACENTO2, 16))
+	h.add_child(UI.rotulo(Txt.t("edt_em_vigor"), 14, UI.TEXTO))
+	var n := UI.rotulo("%d / %d" % [ativos.size(), Editos.TETO], 13, UI.TEXTO3)
+	n.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	n.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	h.add_child(n)
+	v.add_child(h)
+
+	if Editos.tem_oferta(jogo.s):
+		var b := UI.botao(Txt.t("edt_titulo"), func():
+			var pm := get_node_or_null("/root/Main/UI")
+			if pm != null and pm.has_method("abrir_editos"):
+				pm.abrir_editos())
+		v.add_child(b)
+
+	if ativos.is_empty():
+		v.add_child(UI.rotulo(Txt.t("edt_vazio"), 12, UI.TEXTO3))
+	else:
+		# DUAS COLUNAS, e nao tres: o nome de uma lei em portugues ("O Peso do
+		# Mundo") e bem mais largo que em ingles, e tres fichas estouravam a
+		# largura util do painel na tela estreita — o mesmo defeito que a
+		# varredura de layout ja pegou no bestiario.
+		var g := GridContainer.new()
+		g.columns = UI.colunas(UI.larg_util_painel(self), 210.0, 6.0, 3)
+		g.add_theme_constant_override("h_separation", 6)
+		g.add_theme_constant_override("v_separation", 6)
+		v.add_child(g)
+		for d in ativos:
+			g.add_child(_chip_lei(d))
+	v.add_child(UI.rotulo(Txt.t("edt_ate_singularidade"), 11, UI.TEXTO3))
+	return cx
+
+func _chip_lei(d: Dictionary) -> Control:
+	var cor := Color.html(str(d.get("cor", "#a78bfa")))
+	var cx := UI.painel(UI.PAINEL.darkened(0.2), 8)
+	cx.tooltip_text = Ux.txt(d, "desc", Cfg.ingles())
+	var h := UI.hbox(6)
+	cx.add_child(h)
+	h.add_child(UI.icone("orbe", cor, 13))
+	var l := UI.rotulo(Ux.txt(d, "nome", Cfg.ingles()), 12, cor)
+	l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	h.add_child(l)
+	return cx
 
 # =================================================================== destaque
 
