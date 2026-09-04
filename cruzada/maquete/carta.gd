@@ -11,6 +11,22 @@ class_name Carta
 
 enum { NORMAL, HOVER, NA_GRADE, MADURA, AVESSO, APAGADA }
 
+## Carta de baralho francês é 63×88 mm — 5:7, altura = largura × 1,4. Vale para
+## a mão E para a casa da grade: casa quadrada faz a grade parar de ler como
+## baralho, que foi o defeito da primeira maquete. Toda medida de carta no jogo
+## sai daqui, e ninguém escreve outro número.
+const RAZAO := 1.4
+
+## O retângulo da carta a partir da largura, ancorado no canto superior esquerdo.
+static func retangulo(canto: Vector2, largura: float) -> Rect2:
+    return Rect2(canto, Vector2(largura, largura * RAZAO))
+
+## A maior carta 5:7 que cabe numa caixa, centralizada nela.
+static func caber_em(caixa: Rect2) -> Rect2:
+    var largura := minf(caixa.size.x, caixa.size.y / RAZAO)
+    var tam := Vector2(largura, largura * RAZAO)
+    return Rect2(caixa.position + (caixa.size - tam) * 0.5, tam)
+
 const NOMES: PackedStringArray = ["", "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]
 
 ## Posições dos pips em coordenadas normalizadas dentro da área central.

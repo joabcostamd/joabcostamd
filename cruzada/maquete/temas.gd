@@ -16,7 +16,7 @@ static var escala_de_cinza := false
 
 const TEMAS: Array[Dictionary] = [
 {
-    "id": "casino", "nome": "Casino noturno", "claro": false,
+    "id": "casino", "nome": "Casino noturno", "claro": false, "fundo_estilo": "brilho",
     "sensacao": "frio, sóbrio, elegante",
     "fundo": "#0d1322", "fundo_alto": "#16203a", "painel": "#1a2544", "borda": "#33436f",
     "texto": "#eef2fb", "texto_suave": "#9aa8c8",
@@ -28,7 +28,7 @@ const TEMAS: Array[Dictionary] = [
     "sombra": 0.45, "fonte_forte": false, "espaco": 0.0,
 },
 {
-    "id": "feltro", "nome": "Feltro e madeira", "claro": false,
+    "id": "feltro", "nome": "Feltro e madeira", "claro": false, "fundo_estilo": "tecido",
     "sensacao": "físico, reconhecível como jogo de cartas",
     "fundo": "#12331f", "fundo_alto": "#17402a", "painel": "#1b4830", "borda": "#6b4423",
     "texto": "#eef5ee", "texto_suave": "#a6bfae",
@@ -38,65 +38,71 @@ const TEMAS: Array[Dictionary] = [
     # perde contraste e os naipes vermelhos somem. Achado da pesquisa.
     "copas": "#e02a63", "ouros": "#b0651a", "paus": "#1f7a58", "espadas": "#14251a",
     "vermelho": "#e02a63", "preto": "#14251a",
-    "brilho": 0.8, "particula": 0.13, "glow": 0.9, "contorno": 0.0,
+    "brilho": 0.35, "particula": 0.05, "glow": 0.9, "contorno": 0.0,
     "sombra": 0.5, "fonte_forte": false, "espaco": 0.0,
 },
 {
-    "id": "neon", "nome": "Neon arcade", "claro": false,
+    "id": "neon", "nome": "Neon arcade", "claro": false, "fundo_estilo": "grade",
     "sensacao": "vívido, anos 80",
-    "fundo": "#07070d", "fundo_alto": "#0f0f1c", "painel": "#12122a", "borda": "#2f2f66",
-    "texto": "#f2f2ff", "texto_suave": "#9a9ac4",
+    # O brilho radial lavava a tela de verde-piscina: ciano interpolado com
+    # amarelo dá verde. Neon não tem luz ambiente difusa — tem preto duro e
+    # linha acesa. Por isso brilho quase zero e a identidade na grade de fundo.
+    "fundo": "#050509", "fundo_alto": "#0b0b16", "painel": "#0e0e1f", "borda": "#22e0ff",
+    "texto": "#f2f2ff", "texto_suave": "#8f8fc0",
     "carta": "#fbfbff", "carta_borda": "#c9c9e8", "carta_texto": "#0b0b14",
     "destaque": "#ffd400", "acento": "#22e0ff", "alerta": "#ff4d7d", "sucesso": "#4dffb0",
-    # O neon vive no fundo e na interface. Sobre a carta, que é uma superfície
-    # clara, a tinta precisa ser escura ou o naipe some — o validador reprovou
-    # a versão saturada em quatro pares de uma vez.
+    # O neon vive no fundo e na moldura. Sobre a carta, que é superfície clara,
+    # a tinta precisa ser escura ou o naipe some — o validador reprovou a versão
+    # saturada em quatro pares de uma vez.
     "copas": "#d1005a", "ouros": "#c47000", "paus": "#0d7d9e", "espadas": "#5a2fb8",
-    "vermelho": "#ff2d78", "preto": "#3b3b7a",
+    "vermelho": "#d1005a", "preto": "#3b3b7a",
     # Fonte forte e mais espaçamento contra halation: texto claro sobre
     # quase-preto "brilha" e borra. Achado da pesquisa.
-    "brilho": 1.4, "particula": 0.22, "glow": 1.7, "contorno": 0.0,
-    "sombra": 0.55, "fonte_forte": true, "espaco": 1.0,
+    "brilho": 0.12, "particula": 0.10, "glow": 2.0, "contorno": 0.0,
+    "sombra": 0.6, "fonte_forte": true, "espaco": 1.0,
 },
 {
-    "id": "veludo", "nome": "Veludo e brasa", "claro": false,
+    "id": "veludo", "nome": "Veludo e brasa", "claro": false, "fundo_estilo": "brilho",
     "sensacao": "quente, saturado, cassino clássico",
     "fundo": "#1e0d12", "fundo_alto": "#2c1219", "painel": "#33161f", "borda": "#5c2b33",
     "texto": "#fbeee9", "texto_suave": "#c9a49c",
     "carta": "#f9f0e4", "carta_borda": "#dbc9b2", "carta_texto": "#22131a",
     "destaque": "#e8953c", "acento": "#d97b5a", "alerta": "#ff6b5e", "sucesso": "#8fc99a",
     "copas": "#c22a45", "ouros": "#a86a12", "paus": "#2a7255", "espadas": "#2b1a20",
-    "vermelho": "#e0455e", "preto": "#2b1a20",
+    "vermelho": "#c22a45", "preto": "#2b1a20",
     "brilho": 1.1, "particula": 0.18, "glow": 1.1, "contorno": 0.0,
     "sombra": 0.5, "fonte_forte": false, "espaco": 0.0,
 },
 {
-    "id": "meianoite", "nome": "Meia-noite", "claro": false,
+    "id": "meianoite", "nome": "Meia-noite", "claro": false, "fundo_estilo": "vinheta",
     "sensacao": "dessaturado, minimalista",
     "fundo": "#131417", "fundo_alto": "#1b1d21", "painel": "#1f2126", "borda": "#3a3d45",
     "texto": "#eceef2", "texto_suave": "#9498a1",
     "carta": "#f4f5f7", "carta_borda": "#cfd2d8", "carta_texto": "#16171a",
     "destaque": "#cfd6e0", "acento": "#8fb3d9", "alerta": "#c96a62", "sucesso": "#7fae92",
     "copas": "#b03a54", "ouros": "#8a6220", "paus": "#35705f", "espadas": "#23252a",
-    "vermelho": "#cc5a70", "preto": "#23252a",
-    "brilho": 0.5, "particula": 0.10, "glow": 0.6, "contorno": 0.0,
+    "vermelho": "#b03a54", "preto": "#23252a",
+    "brilho": 0.0, "particula": 0.07, "glow": 0.6, "contorno": 0.0,
     "sombra": 0.4, "fonte_forte": false, "espaco": 0.0,
 },
 {
-    "id": "mata", "nome": "Mata funda", "claro": false,
-    "sensacao": "calmo, baixo estímulo, para sessão longa",
-    "fundo": "#0d1a14", "fundo_alto": "#13251c", "painel": "#162a20", "borda": "#2d4a38",
-    "texto": "#eaf3ec", "texto_suave": "#9bb5a5",
-    "carta": "#f7f4e9", "carta_borda": "#d3cdb8", "carta_texto": "#14201a",
-    "destaque": "#dda63f", "acento": "#7fbf9a", "alerta": "#d9705f", "sucesso": "#79c99a",
-    "copas": "#c33a58", "ouros": "#a06a12", "paus": "#2f7a5c", "espadas": "#1c2b22",
-    "vermelho": "#d44a66", "preto": "#1c2b22",
-    "brilho": 0.7, "particula": 0.12, "glow": 0.7, "contorno": 0.0,
-    "sombra": 0.45, "fonte_forte": false, "espaco": 0.0,
+    # Substituiu o "Mata funda", que era um segundo verde escuro com acento
+    # quente e ficava indistinguível do Feltro na folha de contato. Roxo é a
+    # única família de matiz que faltava no conjunto.
+    "id": "ameixa", "nome": "Ameixa e ouro", "claro": false, "fundo_estilo": "brilho",
+    "sensacao": "quente, encorpado, noturno",
+    "fundo": "#1a0f22", "fundo_alto": "#241533", "painel": "#2a1a3b", "borda": "#4d2f66",
+    "texto": "#f3ecf8", "texto_suave": "#b49dc6",
+    "carta": "#f8f4ec", "carta_borda": "#d9cfc0", "carta_texto": "#1c1420",
+    "destaque": "#d9a441", "acento": "#c9a0e0", "alerta": "#d9615f", "sucesso": "#79c99a",
+    "copas": "#c2305c", "ouros": "#a06a12", "paus": "#2f7a62", "espadas": "#241a2c",
+    "vermelho": "#c2305c", "preto": "#241a2c",
+    "brilho": 0.9, "particula": 0.14, "glow": 1.0, "contorno": 0.0,
+    "sombra": 0.5, "fonte_forte": false, "espaco": 0.0,
 },
 # ── fundo claro: o juice inverte, então os parâmetros mudam de verdade ──
 {
-    "id": "papel", "nome": "Papel e tinta", "claro": true,
+    "id": "papel", "nome": "Papel e tinta", "claro": true, "fundo_estilo": "papel",
     "sensacao": "editorial, tipográfico",
     "fundo": "#efe9dc", "fundo_alto": "#e6dfd0", "painel": "#faf6ec", "borda": "#b0a68f",
     "texto": "#1a1814", "texto_suave": "#5f5849",
@@ -106,11 +112,11 @@ const TEMAS: Array[Dictionary] = [
     "vermelho": "#a82a24", "preto": "#1a1814",
     # Sem glow: sobre creme ele vira borrão. O destaque vem de contorno e de
     # sombra projetada, não de luz.
-    "brilho": 0.35, "particula": 0.09, "glow": 0.0, "contorno": 1.0,
+    "brilho": 0.0, "particula": 0.09, "glow": 0.0, "contorno": 1.0,
     "sombra": 0.18, "fonte_forte": true, "espaco": 0.0,
 },
 {
-    "id": "porcelana", "nome": "Porcelana", "claro": true,
+    "id": "porcelana", "nome": "Porcelana", "claro": true, "fundo_estilo": "papel",
     "sensacao": "limpo, board-game premium",
     "fundo": "#f4f6f9", "fundo_alto": "#e9edf3", "painel": "#ffffff", "borda": "#a9b6c9",
     "texto": "#1c2330", "texto_suave": "#5c6779",
@@ -118,7 +124,7 @@ const TEMAS: Array[Dictionary] = [
     "destaque": "#a8730f", "acento": "#37699c", "alerta": "#b0392f", "sucesso": "#1f7a55",
     "copas": "#b03050", "ouros": "#a35f14", "paus": "#1f7a5f", "espadas": "#2a3446",
     "vermelho": "#b03050", "preto": "#2a3446",
-    "brilho": 0.30, "particula": 0.07, "glow": 0.0, "contorno": 0.6,
+    "brilho": 0.0, "particula": 0.06, "glow": 0.0, "contorno": 0.6,
     "sombra": 0.16, "fonte_forte": false, "espaco": 0.0,
 },
 ]
@@ -151,6 +157,10 @@ static var CONTORNO := 0.0   ## traço em volta dos naipes (temas claros)
 static var SOMBRA := 0.45    ## opacidade da sombra projetada da carta
 static var FONTE_FORTE := false
 static var ESPACO := 0.0     ## espaçamento extra entre letras
+## Estilo do fundo: "brilho", "grade", "tecido", "papel" ou "vinheta". Todos os
+## temas compartilhavam o mesmo brilho radial, e era por isso que vários
+## pareciam o mesmo tema pintado de outra cor. Fundo é identidade, não matiz.
+static var FUNDO_ESTILO := "brilho"
 
 ## Quatro cores de naipe em vez de duas. Padrão ligado: é redundância a mais
 ## para daltônicos, e a forma do naipe continua sendo a informação principal.
@@ -199,6 +209,7 @@ static func usar(indice: int, cinza := false) -> void:
     SOMBRA = float(t["sombra"])
     FONTE_FORTE = bool(t["fonte_forte"])
     ESPACO = float(t["espaco"])
+    FUNDO_ESTILO = str(t["fundo_estilo"])
 
 ## Cor do naipe, por índice: 0 copas, 1 ouros, 2 paus, 3 espadas.
 static func cor_do_naipe(naipe: int) -> Color:

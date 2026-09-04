@@ -21,6 +21,7 @@ para verificar automaticamente, e trocar depois custa reescrever a apresentaçã
 | `maquete/tela.gd` | a tela de partida com um estado fixo e realista |
 | `maquete/capturas.gd` | renderiza 8 temas × 3 modos e monta a folha de contato |
 | `ferramentas/validar_contraste.py` | WCAG AA sobre todos os temas |
+| `HUD.md` | o estudo de HUD: as três zonas, a proporção 5:7 e os números que fecham |
 
 ## Rodar
 
@@ -50,13 +51,24 @@ Um vira o padrão; os outros sete são desbloqueáveis, porque cosmético que se
 conquista vale mais que cosmético que se escolhe no menu.
 
 Seis de fundo escuro (Casino noturno · Feltro e madeira · Neon arcade ·
-Veludo e brasa · Meia-noite · Mata funda) e dois de fundo claro (Papel e tinta ·
-Porcelana). Os claros carregam parâmetros de juice próprios: partícula que brilha
+Veludo e brasa · Meia-noite · Ameixa e ouro) e dois de fundo claro (Papel e tinta ·
+Porcelana). Cada um declara o **próprio tratamento de fundo** — brilho radial, grade de
+linhas, trama, grão ou vinheta — porque tema separado só por matiz não se separa. Os claros carregam parâmetros de juice próprios: partícula que brilha
 sobre quase-preto some sobre creme, e glow vira borrão.
 
 **A carta é sempre a superfície clara.** Texto escuro sobre claro onde se lê,
 fundo escuro onde o juice acontece — é o que o baralho físico faz há 400 anos, e
 resolve a contradição entre legibilidade e dopamina.
+
+## Layout
+
+Três zonas, divididas por tipo de interação e não por estética: **esquerda é estado**
+(consulta), **centro é jogo** (tudo clicável), **direita é referência**. A regra é que o
+centro só contém o que o jogador toca — quando entrar arraste de carta, a área de soltura
+já é exatamente a coluna do meio.
+
+Carta é **5:7** em todo lugar, da mão à casa da grade, a partir de `Carta.RAZAO`. Casa
+quadrada faz a grade parar de ler como baralho. Detalhes e a conta em `HUD.md`.
 
 ## Acessibilidade
 
