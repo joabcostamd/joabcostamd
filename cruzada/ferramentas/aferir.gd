@@ -95,6 +95,22 @@ func _init() -> void:
     falhas += banda("Tear no fim da mesa", mediana(tears), 4.0, 8.0, "", 7.0)
     falhas += banda("Avessos por mesa", float(avessos) / float(mesas), 1.0, 2.5, "", 1.66)
     falhas += banda("conservação quebrada", float(conservacao_quebrou), 0.0, 0.0, "", 0.0)
+
+    ## A promessa ao jogador: existe um lugar onde o jogo TERMINA. Se a Estufa
+    ## deixar de fechar a run, o CRUZADA passou a ser um jogo que ninguém acaba —
+    ## e isso é regressão, não dificuldade.
+    var estufa := Desafio.estufa()
+    var completadas := 0.0
+    for s2 in mini(sementes, 10):
+        var r := Run.new(SEMENTE_BASE + s2 * PASSO, estufa)
+        var voltas := 0
+        while not r.acabou and voltas < 90:
+            voltas += 1
+            Politica.jogar(r.mesa)
+            r.concluir_mesa()
+        completadas += float(r.mesas_vencidas)
+    completadas /= float(maxi(1, mini(sementes, 10)))
+    falhas += banda("Estufa: mesas vencidas", completadas, 15.0, 18.0, " de 18", 18.0)
     print("")
     print("  colheitas por mesa    %.2f" % (float(colheitas) / float(mesas)))
     print("  maior evento único    %d" % maior_evento)

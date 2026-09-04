@@ -8,6 +8,7 @@ class_name Menu
 
 signal jogar
 signal temas
+signal desafio
 
 const FRASE := "Cada carta pontua em duas mãos de pôquer:\na fileira e a coluna onde você a colocar."
 
@@ -21,7 +22,9 @@ func _ready() -> void:
     set_process_input(false)
 
 func _itens() -> Array[String]:
-    var lista: Array[String] = ["JOGAR", "TEMAS"]
+    ## O DESAFIO fica ao lado de JOGAR, não escondido em configurações: escolher
+    ## quanto se quer apanhar é parte de começar a partida.
+    var lista: Array[String] = ["JOGAR", "DESAFIO", "TEMAS"]
     return lista
 
 func _gui_input(evento: InputEvent) -> void:
@@ -34,7 +37,8 @@ func _gui_input(evento: InputEvent) -> void:
             and evento.button_index == MOUSE_BUTTON_LEFT:
         match _em(evento.position):
             0: emit_signal("jogar")
-            1: emit_signal("temas")
+            1: emit_signal("desafio")
+            2: emit_signal("temas")
 
 func _em(ponto: Vector2) -> int:
     for i in _botoes.size():
@@ -87,7 +91,7 @@ func _draw() -> void:
     var vao := 16.0
     var itens := _itens()
     _botoes.clear()
-    var y := size.y * 0.63
+    var y := size.y * 0.60
     for i in itens.size():
         var b := Rect2(centro.x - larg * 0.5, y + i * (alt + vao), larg, alt)
         _botoes.append(b)
@@ -103,6 +107,13 @@ func _draw() -> void:
             cor = Temas.CARTA if Temas.e_claro() else Temas.FUNDO
         Pintura.centrado(self, ff, b, itens[i], Temas.T_CORPO, cor)
 
+    if perfil != null:
+        ## A dificuldade em uso fica visível no menu. Escondê-la é como se
+        ## descobre, três mesas depois, que se está no grau errado.
+        Pintura.centrado(self, f, Rect2(0, y + itens.size() * (alt + vao) + 6,
+                                        size.x, 24),
+                         "desafio: " + perfil.desafio.nome(), Temas.T_ROTULO,
+                         Temas.DESTAQUE)
     if perfil != null and perfil.mesas_jogadas > 0:
         var placar := "%d mesas jogadas" % perfil.mesas_jogadas
         if perfil.runs_vencidas > 0:

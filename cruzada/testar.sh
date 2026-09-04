@@ -22,6 +22,10 @@ echo "── mesa: turno, janela, parcela, tear, avesso, fecho ──"
 "$GODOT" --headless --script res://testes/mesa.gd 2>&1 | limpar
 
 echo
+echo "── desafio: as três réguas, o dial, a geometria e a rede ──"
+"$GODOT" --headless --script res://testes/desafio.gd 2>&1 | limpar
+
+echo
 echo "── run: as 18 mesas, as 3 vidas, o perfil e os desbloqueios ──"
 "$GODOT" --headless --script res://testes/run.gd 2>&1 | limpar
 

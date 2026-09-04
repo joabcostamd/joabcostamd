@@ -5,7 +5,7 @@ class_name Jogo
 ## Nenhuma regra mora aqui: ela só decide QUAL tela está no ar e passa adiante o
 ## que a `Run` respondeu.
 
-enum { MENU, PARTIDA, TEMAS, FIM_DA_RUN }
+enum { MENU, PARTIDA, TEMAS, DESAFIO, FIM_DA_RUN }
 
 ## Onde o progresso é gravado. O teste de fluxo aponta para outro arquivo:
 ## rodar a suíte não pode apagar o que o jogador conquistou.
@@ -47,6 +47,10 @@ func _ir(onde: int) -> void:
             _tela = preload("res://cenas/temas.tscn").instantiate()
             _tela.set("perfil", perfil)
             _tela.connect("fechou", _voltar_ao_menu)
+        DESAFIO:
+            _tela = preload("res://cenas/desafio.tscn").instantiate()
+            _tela.set("desafio", perfil.desafio.copia())
+            _tela.connect("fechou", _guardar_desafio)
         FIM_DA_RUN:
             ## Sem tela filha: o fim da run é uma folha de papel com o resultado
             ## e os temas que abriram. Quem sai daqui volta ao menu.
@@ -57,9 +61,15 @@ func _ir(onde: int) -> void:
             _tela.set("perfil", perfil)
             _tela.connect("jogar", _comecar_run)
             _tela.connect("temas", func(): _ir(TEMAS))
+            _tela.connect("desafio", func(): _ir(DESAFIO))
     _tela.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
     add_child(_tela)
     queue_redraw()
+
+func _guardar_desafio() -> void:
+    perfil.desafio = (_tela.get("desafio") as Desafio).copia()
+    perfil.gravar(caminho_do_perfil)
+    _ir(MENU)
 
 func _voltar_ao_menu() -> void:
     perfil.tema = Temas.atual
@@ -71,7 +81,8 @@ func _voltar_ao_menu() -> void:
 func _comecar_run() -> void:
     ## Semente da run tirada do relógio: é o único sorteio do jogo inteiro que
     ## não é derivado, e ele acontece uma vez por partida.
-    run = Run.new(int(Time.get_unix_time_from_system()) & 0x7FFFFFFF)
+    run = Run.new(int(Time.get_unix_time_from_system()) & 0x7FFFFFFF,
+                  perfil.desafio.copia())
     _ir(PARTIDA)
 
 ## A mesa acabou e a tela pediu para seguir. Quem decide o que vem é a Run.

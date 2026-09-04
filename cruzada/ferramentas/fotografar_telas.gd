@@ -18,9 +18,16 @@ func _ready() -> void:
     if qual == "temas-abertos":
         for i in Temas.total():
             perfil.destravar(str(Temas.dados(i)["id"]))
-    var tela: Control = preload("res://cenas/menu.tscn").instantiate() if qual == "menu" \
-        else preload("res://cenas/temas.tscn").instantiate()
+    var tela: Control
+    match qual:
+        "menu": tela = preload("res://cenas/menu.tscn").instantiate()
+        "desafio", "estufa": tela = preload("res://cenas/desafio.tscn").instantiate()
+        _: tela = preload("res://cenas/temas.tscn").instantiate()
     tela.set("perfil", perfil)
+    if qual == "desafio":
+        tela.set("desafio", Desafio.tabuleiro(4))
+    elif qual == "estufa":
+        tela.set("desafio", Desafio.estufa())
     sub.add_child(tela)
     tela.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
     tela.queue_redraw()

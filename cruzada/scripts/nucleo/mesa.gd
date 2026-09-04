@@ -46,6 +46,33 @@ var tamanho_da_mao := Metas.MAO_INICIAL
 var acabou := false
 var venceu := false
 
+## A dificuldade desta mesa. Nunca nula: sem desafio declarado, o padrão é o
+## Tabuleiro 0, que é a linha de base contra a qual todo número foi medido.
+var desafio: Desafio
+
+## Casas que nascem lacradas (geometria 2). Não recebem carta a mesa inteira, e
+## por isso as linhas que passam por elas nunca fecham.
+var lacradas := PackedInt32Array()
+
+## Linhas mortas (geometria 7). Continuam colhendo — senão a grade travaria —
+## mas pagam zero. A pressão é ter de gastar cinco cartas por nada, ou desviar.
+var linhas_mortas := PackedInt32Array()
+
+## Quantas cartas esta mesa recebeu. Nem sempre 52: a geometria 4 tira da run o
+## que já foi colhido, e a identidade de conservação é sobre este número.
+var cartas_da_mesa := Cartas.TAMANHO
+
+## A FIANÇA: três luzes que a mesa acende quando o jogador perde alguma coisa que
+## não escolheu perder. Com as três acesas, a colheita seguinte paga o dobro.
+##
+## Ela só acende no que o jogador NÃO escolheu porque a Janela da Colheita demole
+## 4/5 por design: premiar a demolição escolhida faria da autossabotagem a
+## estratégia ótima. No máximo uma luz por mesa.
+var fianca := 0
+var fianca_desta_mesa := false
+var _casa_do_turno := -1
+const FIANCA_LUZES := 3
+
 ## Números que a tela e a autópsia usam. Não influenciam regra nenhuma.
 var turno := 0
 var colheitas := 0
@@ -88,12 +115,16 @@ static func quantas_cartas(carta: int) -> int:
 
 # ──────────────────────────── nascer ────────────────────────────
 
-func _init(p_tipo: int, p_rodada: int, semente_run: int, tentativa := 1) -> void:
+func _init(p_tipo: int, p_rodada: int, semente_run: int, tentativa := 1,
+           p_desafio: Desafio = null, catraca := 0, p_fianca := 0,
+           fora_do_baralho: Array = [], p_linhas_mortas: Array = []) -> void:
     tipo = p_tipo
     rodada = p_rodada
-    meta = Metas.meta(p_tipo, p_rodada)
-    posicionamentos_max = Metas.posicionamentos(p_tipo)
-    descartes_restantes = Metas.descartes(p_tipo)
+    desafio = p_desafio if p_desafio != null else Desafio.new()
+    fianca = clampi(p_fianca, 0, FIANCA_LUZES)
+    meta = desafio.meta(p_tipo, p_rodada)
+    posicionamentos_max = desafio.posicionamentos(p_tipo, catraca)
+    descartes_restantes = desafio.quantos_descartes(p_tipo)
 
     grade.resize(Geometria.CASAS)
     grade.fill(VAZIA)
@@ -103,20 +134,45 @@ func _init(p_tipo: int, p_rodada: int, semente_run: int, tentativa := 1) -> void
     madura.fill(0)
     parcelas_dadas.resize(Geometria.LINHAS)
     parcelas_dadas.fill(0)
+    linhas_mortas.resize(Geometria.LINHAS)
+    linhas_mortas.fill(0)
 
     ## R06c — dois fluxos, ambos derivados da semente da mesa (R20).
     var semente := Aleatorio.misturar(semente_run, p_rodada * 10 + p_tipo, tentativa)
     _rng = Aleatorio.new(Aleatorio.misturar(semente, 1, 0))
     _rng_semeadura = Aleatorio.new(Aleatorio.misturar(semente, 77, 0))
 
+    ## Geometria 4 — o que a run já colheu não volta. O baralho encolhe de mesa
+    ## em mesa, e a conta de conservação passa a ser sobre o que sobrou.
     baralho = Cartas.baralho()
+    for carta: int in fora_do_baralho:
+        var i := baralho.find(carta)
+        if i >= 0:
+            baralho.remove_at(i)
+    cartas_da_mesa = baralho.size()
+    for l: int in p_linhas_mortas:
+        if l >= 0 and l < Geometria.LINHAS:
+            linhas_mortas[l] = 1
     _rng.embaralhar(baralho)
+
+    ## Geometria 2 — casas lacradas. Sorteadas antes de qualquer carta, e nunca
+    ## no centro: lacrar C3 tira quatro das doze linhas de uma vez, e o grau 2
+    ## não é para ser o grau 7.
+    lacradas.resize(0)
+    for i in desafio.casas_lacradas():
+        var livres: Array[int] = []
+        for casa in Geometria.CASAS:
+            if casa != Geometria.CASAS / 2 and not lacradas.has(casa):
+                livres.append(casa)
+        lacradas.append(livres[_rng_semeadura.inteiro(livres.size())])
 
     ## R06b — a Pequena nasce com 3 cartas postas, para o turno 1 não ser uma
     ## escolha entre 25 casas equivalentes por simetria.
     if tipo == Metas.PEQUENA:
         for i in 3:
             var vazias := casas_vazias()
+            if vazias.is_empty():
+                break
             _pousar(vazias[_rng_semeadura.inteiro(vazias.size())], baralho.pop_back())
 
     comprar_mao()
@@ -175,13 +231,16 @@ func _levantar(casa: int) -> void:
 func casas_vazias() -> Array[int]:
     var v: Array[int] = []
     for casa in Geometria.CASAS:
-        if grade[casa] == VAZIA:
+        if grade[casa] == VAZIA and not lacradas.has(casa):
             v.append(casa)
     return v
 
+func lacrada(casa: int) -> bool:
+    return lacradas.has(casa)
+
 func pode_posicionar(casa: int) -> bool:
     return not acabou and casa >= 0 and casa < Geometria.CASAS \
-        and grade[casa] == VAZIA
+        and grade[casa] == VAZIA and not lacradas.has(casa)
 
 ## As cartas presentes numa linha, com a cara do Avesso já resolvida.
 ## `casa_hipotetica` e `carta_hipotetica` permitem perguntar "e se eu pusesse
@@ -261,6 +320,7 @@ func posicionar(indice_na_mao: int, casa: int) -> Dictionary:
 
     ## Aplica o posicionamento.
     mao.remove_at(indice_na_mao)
+    _casa_do_turno = casa
     _pousar(casa, carta)
     posicionamentos_usados += 1
     turno += 1
@@ -311,7 +371,8 @@ func _relato_vazio() -> Dictionary:
         "parcelas": [], "pontos_parcela": 0,
         "avessos": [], "troco": {},
         "tique_do_tear": false, "tear": tear, "tear_do_evento": tear,
-        "soma_dos_mults": 0,
+        "soma_dos_mults": 0, "fianca_pagou": false, "fianca_acendeu": false,
+        "demolidas": [] as Array[int],
         "pontos_total": 0, "acabou": false, "venceu": false,
     }
 
@@ -338,15 +399,51 @@ func conta_do_evento(alvo: Array, casa := -1, carta := VAZIA) -> Dictionary:
             "fichas": Maos.fichas_da_linha(cartas), "pontos": 0,
             "diagonal": Geometria.diagonal(l), "cartas": cartas,
         })
-    var fator := Maos.fator_do_evento(categorias, tear)
+    var soma := _soma_dos_mults(categorias, linhas)
+    var fator := soma * tear
     var total := 0
     for linha in linhas:
         var p := Maos.pontos_da_linha(int(linha["fichas"]), fator,
                                       bool(linha["diagonal"]))
+        if linhas_mortas[int(linha["linha"])] == 1:
+            p = 0
+            linha["morta"] = true
         linha["pontos"] = p
         total += p
+    ## A FIANÇA acesa nas três luzes dobra a colheita e apaga. É a única regra do
+    ## jogo que paga por ter perdido, e por isso ela é rara e visível.
+    var fiado := fianca >= FIANCA_LUZES
+    if fiado:
+        total *= 2
     return {"linhas": linhas, "fator": fator, "total": total,
-            "soma_dos_mults": fator / maxi(1, tear), "tear": tear}
+            "soma_dos_mults": soma, "tear": tear, "fianca_pagou": fiado}
+
+## A soma dos multiplicadores do evento, já com a geometria aplicada.
+func _soma_dos_mults(categorias: Array, linhas: Array) -> int:
+    var vistas := {}
+    var soma := 0
+    for i in categorias.size():
+        var l0 := int(linhas[i]["linha"])
+        ## Linha morta não empresta o multiplicador dela às outras: se emprestasse,
+        ## fechar linha morta viraria jogada boa, que é o contrário da regra.
+        if linhas_mortas[l0] == 1:
+            continue
+        var cat: int = categorias[i]
+        var m := Maos.MULTIPLICADOR[cat]
+        ## Geometria 3 — a coluna paga um mult a menos. Piso em 1: mult zero
+        ## faria a linha valer nada, e "nada vale zero" é regra do jogo.
+        if desafio.tem(Desafio.GEO_COLUNA_PAGA_MENOS):
+            var l := int(linhas[i]["linha"])
+            if l >= Geometria.COLUNA_0 and l < Geometria.DIAGONAL_0:
+                m = maxi(1, m - 1)
+        ## Geometria 6 — a cruzada só soma mults de categorias DIFERENTES. Duas
+        ## trincas juntas deixam de valer o dobro; o jogo passa a pedir variedade
+        ## de mão, não repetição da mesma.
+        if desafio.tem(Desafio.GEO_CRUZADA_SO_DIFERENTES) and vistas.has(cat):
+            continue
+        vistas[cat] = true
+        soma += m
+    return maxi(1, soma)
 
 func _colher(alvo: Array, relato: Dictionary) -> void:
     ## Primeiro a conta, com a grade ainda intacta.
@@ -375,6 +472,9 @@ func _colher(alvo: Array, relato: Dictionary) -> void:
     ## que a tela mostra na animação — o de depois seria uma promessa, não a conta.
     relato["tear_do_evento"] = tear
     relato["soma_dos_mults"] = conta["soma_dos_mults"]
+    relato["fianca_pagou"] = conta["fianca_pagou"]
+    if bool(conta["fianca_pagou"]):
+        fianca = 0
     relato["grau"] = GRAUS[mini(alvo.size(), 4)]
     if alvo.size() >= 2:
         cruzadas += 1
@@ -393,6 +493,12 @@ func _colher(alvo: Array, relato: Dictionary) -> void:
     for l: int in alvo:
         for casa: int in Geometria.CELULAS[l]:
             remover[casa] = true
+    ## Quem estava em 4/5 ANTES da colheita, para saber depois o que ela derrubou.
+    var em_quatro := {}
+    for l in Geometria.LINHAS:
+        if contagem[l] == Geometria.LADO - 1:
+            em_quatro[l] = true
+
     for casa: int in remover:
         var carta: int = grade[casa]
         if carta == VAZIA:
@@ -423,6 +529,20 @@ func _colher(alvo: Array, relato: Dictionary) -> void:
     for l in Geometria.LINHAS:
         if madura[l] == 1 and contagem[l] < Geometria.LADO:
             madura[l] = 0
+
+    ## A FIANÇA acende quando a colheita derruba uma linha que estava em 4/5 e
+    ## que a carta do jogador nem tocou. É a perda que ele não escolheu — a que
+    ## vem de uma linha madura expirando, não do posicionamento dele.
+    var derrubadas: Array[int] = []
+    for l: int in em_quatro:
+        if contagem[l] < Geometria.LADO - 1 and not alvo.has(l) \
+                and not Geometria.linhas_da_casa(_casa_do_turno).has(l):
+            derrubadas.append(l)
+    relato["demolidas"] = derrubadas
+    if not derrubadas.is_empty() and not fianca_desta_mesa and fianca < FIANCA_LUZES:
+        fianca += 1
+        fianca_desta_mesa = true
+        relato["fianca_acendeu"] = true
 
     if troco_tear > 0 or troco_descartes > 0 or troco_mao > 0:
         tear = mini(Metas.TEAR_TETO, tear + troco_tear)
@@ -582,6 +702,8 @@ func maior_ganho_agora() -> Array:
 # ──────────────────────── R13 — o valor da parcela ────────────────────────
 
 func _valor_da_parcela(linha: int, casa: int, carta: int) -> int:
+    if linhas_mortas[linha] == 1:
+        return 0
     var cartas := cartas_da_linha(linha, casa, carta)
     return Maos.pontos_parciais(cartas, Geometria.diagonal(linha), tear,
                                 Metas.PARCELA)
@@ -618,7 +740,7 @@ func colheita_final() -> Dictionary:
 
     var fecho := 0
     for l in Geometria.LINHAS:
-        if contagem[l] < 3:
+        if contagem[l] < 3 or linhas_mortas[l] == 1:
             continue
         var cartas := cartas_da_linha(l)
         var p := Maos.pontos_parciais(cartas, Geometria.diagonal(l), tear,
@@ -647,4 +769,4 @@ func cartas_em_jogo() -> int:
     return total
 
 func conservacao() -> bool:
-    return cartas_em_jogo() == Cartas.TAMANHO
+    return cartas_em_jogo() == cartas_da_mesa

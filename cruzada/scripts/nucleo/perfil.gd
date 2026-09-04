@@ -16,6 +16,9 @@ var mesas_jogadas := 0
 var runs_vencidas := 0
 var destravados := {}          ## id do tema -> true
 var maior_evento := 0
+## A dificuldade escolhida fica no perfil, não na run: quem escolheu Estufa não
+## quer reescolher a cada partida.
+var desafio: Desafio = Desafio.new()
 
 func _init() -> void:
     ## Os temas de saída entram sempre, mesmo num save antigo: fundo claro é
@@ -64,7 +67,7 @@ func para_dicionario() -> Dictionary:
         "versao": VERSAO, "tema": tema, "quatro_cores": quatro_cores,
         "escala_de_cinza": escala_de_cinza, "mesas_jogadas": mesas_jogadas,
         "runs_vencidas": runs_vencidas, "maior_evento": maior_evento,
-        "destravados": destravados.keys(),
+        "destravados": destravados.keys(), "desafio": desafio.para_dicionario(),
     }
 
 func de_dicionario(d: Dictionary) -> void:
@@ -76,6 +79,8 @@ func de_dicionario(d: Dictionary) -> void:
     maior_evento = int(d.get("maior_evento", 0))
     for id: String in d.get("destravados", []):
         destravados[str(id)] = true
+    if typeof(d.get("desafio")) == TYPE_DICTIONARY:
+        desafio = Desafio.de_dicionario(d["desafio"])
 
 func gravar(caminho := CAMINHO) -> bool:
     var temporario := caminho + ".tmp"
