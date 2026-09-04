@@ -128,7 +128,12 @@ const TEMAS: Array[Dictionary] = [
     "fundo": "#1a0f22", "fundo_alto": "#241533", "painel": "#2a1a3b", "borda": "#4d2f66",
     "casa": "#241533", "casa_borda": "#794ea6",
     "filete": "#d9a441",
-    "desbloqueio": 4, "como": "vença no Tabuleiro 3",
+    # A condição original era "vença no Tabuleiro 3", e o Tabuleiro é o dial de
+    # dificuldade, que ainda não existe. Prêmio inalcançável é pior que prêmio
+    # fácil, e texto que promete uma condição que o código não confere é mentira
+    # — então a condição foi remarcada para o mesmo nicho ("prova que já sabe
+    # jogar") sem inventar um sistema para justificá-la.
+    "desbloqueio": 4, "como": "chegue à rodada 6",
     "texto": "#f3ecf8", "texto_suave": "#b49dc6",
     "carta": "#f8f4ec", "carta_borda": "#d9cfc0", "carta_texto": "#1c1420",
     "destaque": "#d9a441", "acento": "#c9a0e0", "alerta": "#d9615f", "sucesso": "#79c99a",
@@ -284,6 +289,11 @@ static func cor_do_naipe(naipe: int) -> Color:
         1: return OUROS
         2: return PAUS
         _: return ESPADAS
+
+## A cor de UM tema, sem trocar o tema vigente. O seletor precisa pintar os oito
+## cartões com as paletas deles, não com a de quem está em uso.
+static func cor_de(hex: Variant) -> Color:
+    return _cor(str(hex))
 
 static func _cor(hex: String) -> Color:
     var c := Color(hex)

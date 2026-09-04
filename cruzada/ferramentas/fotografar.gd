@@ -30,7 +30,7 @@ func _ready() -> void:
     var tela: Partida = preload("res://cenas/partida.tscn").instantiate()
     tela.semente = semente
     sub.add_child(tela)
-    tela.size = Vector2(sub.size)
+    tela.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
     for i in turnos:
         if tela.mesa.acabou:

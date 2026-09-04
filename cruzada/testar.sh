@@ -22,6 +22,16 @@ echo "── mesa: turno, janela, parcela, tear, avesso, fecho ──"
 "$GODOT" --headless --script res://testes/mesa.gd 2>&1 | limpar
 
 echo
+echo "── run: as 18 mesas, as 3 vidas, o perfil e os desbloqueios ──"
+"$GODOT" --headless --script res://testes/run.gd 2>&1 | limpar
+
+echo
+echo "── fluxo: menu, partida, run inteira, fecho ──"
+# Roda como cena: o `_ready` das telas só acontece depois que o laço principal
+# começa, e sob `--script` o teste mediria um jogo que ainda não nasceu.
+"$GODOT" --headless res://testes/fluxo.tscn 2>&1 | limpar
+
+echo
 echo "── aferição contra as bandas da bancada ──"
 # O motor precisa REPRODUZIR o protótipo que produziu os números do DESIGN §9.
 # Sem isto, "portamos o núcleo" seria uma afirmação sem prova.

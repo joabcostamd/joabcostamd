@@ -20,9 +20,8 @@ const VIDAS_POR_RUN := 3
 const TEMPO_DO_REALCE := 1.6
 
 var mesa: Mesa
+var run: Run          ## quando existe, é dela que saem rodada, vidas e progresso
 var semente := 20260904
-var vidas := VIDAS_POR_RUN
-var rodada := 1
 
 var _selecionada := -1        ## índice na mão, -1 = nenhuma
 var _casa_sob_o_dedo := -1
@@ -53,19 +52,29 @@ func _ready() -> void:
     if mesa == null:
         comecar(Metas.PEQUENA, 1)
 
+## Preencher pela âncora, não atribuindo `size`: atribuir tamanho a um Control
+## ancorado é ignorado no quadro seguinte e o Godot avisa em log a cada troca de
+## tela — barulho que esconde aviso de verdade.
 func _acompanhar() -> void:
-    position = Vector2.ZERO
-    size = get_viewport_rect().size
+    set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
     queue_redraw()
 
+## Abre uma mesa avulsa, sem Run. Serve às capturas e ao teste.
 func comecar(tipo: int, p_rodada: int, tentativa := 1) -> void:
-    rodada = p_rodada
     mesa = Mesa.new(tipo, p_rodada, semente, tentativa)
     _selecionada = -1
     _relato = {}
     _realce = 0.0
     _pontos_mostrados = 0.0
     queue_redraw()
+
+## Rodada, vidas e o nome da mesa saem da Run quando há uma. Sem Run — que é o
+## caso das capturas e dos testes — a tela mostra a mesa avulsa como rodada 1.
+func rodada() -> int:
+    return run.rodada if run != null else 1
+
+func vidas() -> int:
+    return run.vidas if run != null else VIDAS_POR_RUN
 
 func _process(delta: float) -> void:
     var mudou := false
@@ -158,6 +167,8 @@ func jogar(indice: int, casa: int) -> void:
     if not bool(r["valido"]):
         return
     _relato = r
+    if run != null:
+        run.anotar_colheita(r)
     if bool(r["colheita"]) or int(r["pontos_parcela"]) > 0:
         _realce = TEMPO_DO_REALCE
     _selecionada = mini(_selecionada, mesa.mao.size() - 1)
@@ -307,7 +318,8 @@ func _barra(r: Rect2) -> void:
     if r.size.x > 420:
         draw_string(Temas.fonte_do_tema(),
                     Vector2(r.position.x + largura + 16, r.position.y + r.size.y * 0.68),
-                    "rodada %d · mesa %s" % [rodada, Metas.NOMES[mesa.tipo]],
+                    "rodada %d de %d · mesa %s" % [rodada(), Metas.RODADAS,
+                                                   Metas.NOMES[mesa.tipo]],
                     HORIZONTAL_ALIGNMENT_LEFT, -1, Temas.T_CORPO, Temas.TEXTO_SUAVE)
 
     ## REGRAS: âncora fixa no alto à direita, 44 px de altura mínima para o dedo.
@@ -361,8 +373,8 @@ func _painel_estado(r: Rect2) -> void:
                 HORIZONTAL_ALIGNMENT_LEFT, -1, Temas.T_ROTULO, Temas.TEXTO_SUAVE)
     for i in Metas.RODADAS:
         var c := Vector2(x + 92 + i * 19, r.position.y + 317)
-        if i < rodada:
-            draw_circle(c, 5.5, Temas.DESTAQUE if i == rodada - 1 else Temas.TEXTO_SUAVE)
+        if i < rodada():
+            draw_circle(c, 5.5, Temas.DESTAQUE if i == rodada() - 1 else Temas.TEXTO_SUAVE)
         else:
             draw_circle(c, 5.5, Color(Temas.BORDA, 0.9))
 
@@ -371,7 +383,7 @@ func _painel_estado(r: Rect2) -> void:
     for i in VIDAS_POR_RUN:
         var c := Vector2(x + 92 + i * 26, r.position.y + 351)
         ## Vida gasta vira contorno, não some: quem olha precisa ver que tinha três.
-        if i < vidas:
+        if i < vidas():
             Carta.simbolo(self, c, 17.0, 0)
         else:
             draw_arc(c, 7.0, 0.0, TAU, 20, Color(Temas.TEXTO_SUAVE, 0.5), 1.5)
@@ -776,4 +788,17 @@ func _fim_de_mesa() -> void:
                      Temas.T_HEROI, Temas.TEXTO)
     Pintura.centrado(self, Temas.fonte_do_tema(),
                      Rect2(caixa.position.x, caixa.end.y - 44, caixa.size.x, 30),
-                     "toque para seguir", Temas.T_CORPO, Temas.TEXTO_SUAVE)
+                     _o_que_vem(), Temas.T_CORPO, Temas.TEXTO_SUAVE)
+
+## O jogador precisa saber o que custou a derrota antes de tocar. "Toque para
+## seguir" esconde a informação mais importante da tela.
+func _o_que_vem() -> String:
+    if run == null:
+        return "toque para seguir"
+    if mesa.venceu:
+        if run.rodada >= Metas.RODADAS and run.indice_da_mesa >= Run.MESAS_POR_RODADA - 1:
+            return "toque para fechar a run"
+        return "toque para a próxima mesa"
+    if run.vidas <= 1:
+        return "era a última vida — toque para encerrar a run"
+    return "custa uma vida: sobram %d — toque para repetir a mesa" % (run.vidas - 1)
