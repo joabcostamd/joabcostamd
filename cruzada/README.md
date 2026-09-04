@@ -1,0 +1,67 @@
+# CRUZADA
+
+Roguelike de pôquer em grade 5×5. Godot 4.7.2, GDScript, arte 100% por código.
+
+> **Cada carta pontua em duas mãos de pôquer: a linha e a coluna onde você a colocar.**
+
+O design foi medido antes de ser construído — a pesquisa está em
+[`../cruzada-pesquisa/`](../cruzada-pesquisa/), e `DECISOES.md` de lá é o livro-razão
+de tudo o que foi aprovado e reprovado, com o número atrás de cada decisão.
+
+## Estado: maquete de direção de arte
+
+Ainda não há jogo. O que existe é a maquete que decide o visual antes da primeira
+regra ser escrita — porque a direção de arte define a estrutura de cenas e o que dá
+para verificar automaticamente, e trocar depois custa reescrever a apresentação.
+
+| Arquivo | O que é |
+|---|---|
+| `maquete/temas.gd` | os 8 temas como tokens de cor **e** parâmetros de juice |
+| `maquete/carta.gd` | a carta desenhada por código: pips, figuras, naipes, Avesso |
+| `maquete/tela.gd` | a tela de partida com um estado fixo e realista |
+| `maquete/capturas.gd` | renderiza 8 temas × 3 modos e monta a folha de contato |
+| `ferramentas/validar_contraste.py` | WCAG AA sobre todos os temas |
+
+## Rodar
+
+    ./testar.sh
+
+Gera 24 capturas em `maquete/capturas/` mais a `FOLHA-DE-CONTATO.png`, e valida
+contraste. Sem Godot no PATH, roda em modo degradado só com o validador.
+
+Para ver a maquete ao vivo:
+
+    godot --path . res://maquete/maquete.tscn
+
+## Por que 2D vetorial
+
+O 3D briga com a leitura do tabuleiro: perspectiva reduz as cartas do fundo,
+inclinação esconde o índice do canto, e luz e sombra criam ruído de contraste
+exatamente sobre a informação que precisa ser lida rápido. Balatro é 2D;
+Hearthstone e Runeterra usam 3D só no espetáculo em volta, mantendo as cartas
+planas e de frente.
+
+E há a razão prática: em 2D a qualidade tem número — contraste, alvo de toque,
+estouro de `Control`. Em 3D, "ficou bonito" não tem teste.
+
+## Os oito temas
+
+Um vira o padrão; os outros sete são desbloqueáveis, porque cosmético que se
+conquista vale mais que cosmético que se escolhe no menu.
+
+Seis de fundo escuro (Casino noturno · Feltro e madeira · Neon arcade ·
+Veludo e brasa · Meia-noite · Mata funda) e dois de fundo claro (Papel e tinta ·
+Porcelana). Os claros carregam parâmetros de juice próprios: partícula que brilha
+sobre quase-preto some sobre creme, e glow vira borrão.
+
+**A carta é sempre a superfície clara.** Texto escuro sobre claro onde se lê,
+fundo escuro onde o juice acontece — é o que o baralho físico faz há 400 anos, e
+resolve a contradição entre legibilidade e dopamina.
+
+## Acessibilidade
+
+Naipe tem **cor e forma**, sempre, e a forma é a informação principal. O modo de
+4 cores é o padrão; o clássico de 2 cores é opção. Toda captura tem uma passada
+em escala de cinza — não é filtro, é a paleta que um jogador com acromatopsia
+enxerga. Foi ela que reprovou a primeira versão do estado "linha cheia", que
+dependia só da borda dourada e sumia sem cor.

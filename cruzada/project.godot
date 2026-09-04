@@ -1,0 +1,19 @@
+; CRUZADA — roguelike de pôquer em grade 5×5. Godot 4.7
+config_version=5
+
+[application]
+
+config/name="CRUZADA"
+config/description="Cada carta pontua em duas mãos de pôquer: a linha e a coluna onde você a colocar."
+run/main_scene="res://maquete/maquete.tscn"
+config/features=PackedStringArray("4.7", "GL Compatibility")
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="canvas_items"
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"

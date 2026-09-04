@@ -1,0 +1,239 @@
+extends RefCounted
+class_name Temas
+## Os oito temas do CRUZADA. Um tema é uma linha de dados, nunca um caminho de
+## código: toda cor e todo parâmetro de brilho que a tela desenha sai daqui.
+##
+## Além das cores, cada tema carrega os seus parâmetros de juice. É esse segundo
+## bloco que permite ter temas de fundo claro sem ramificar o desenho: partícula
+## que brilha sobre quase-preto some sobre creme, e glow vira borrão — então o
+## tema declara a força de cada efeito em vez de o código decidir por tema.
+
+## `escala_de_cinza` transforma a paleta em cinza no momento em que ela é
+## aplicada. Não é um filtro por cima: é a paleta que um jogador com
+## acromatopsia enxerga. Se a grade continuar legível assim, a forma está
+## fazendo o trabalho e não a cor.
+static var escala_de_cinza := false
+
+const TEMAS: Array[Dictionary] = [
+{
+    "id": "casino", "nome": "Casino noturno", "claro": false,
+    "sensacao": "frio, sóbrio, elegante",
+    "fundo": "#0d1322", "fundo_alto": "#16203a", "painel": "#1a2544", "borda": "#33436f",
+    "texto": "#eef2fb", "texto_suave": "#9aa8c8",
+    "carta": "#f7f3e9", "carta_borda": "#d8d0bd", "carta_texto": "#171b26",
+    "destaque": "#f2c45c", "acento": "#6ab0d6", "alerta": "#e0655f", "sucesso": "#6fc48c",
+    "copas": "#d6335e", "ouros": "#b06216", "paus": "#2f9e78", "espadas": "#2a3350",
+    "vermelho": "#d6335e", "preto": "#232a3d",
+    "brilho": 1.0, "particula": 0.16, "glow": 1.0, "contorno": 0.0,
+    "sombra": 0.45, "fonte_forte": false, "espaco": 0.0,
+},
+{
+    "id": "feltro", "nome": "Feltro e madeira", "claro": false,
+    "sensacao": "físico, reconhecível como jogo de cartas",
+    "fundo": "#12331f", "fundo_alto": "#17402a", "painel": "#1b4830", "borda": "#6b4423",
+    "texto": "#eef5ee", "texto_suave": "#a6bfae",
+    "carta": "#faf6ec", "carta_borda": "#d5cbb4", "carta_texto": "#1a1f1a",
+    "destaque": "#d9a441", "acento": "#86c5a0", "alerta": "#e0655f", "sucesso": "#7fd6a0",
+    # Vermelho puxado para magenta: sobre verde saturado o vermelho tradicional
+    # perde contraste e os naipes vermelhos somem. Achado da pesquisa.
+    "copas": "#e02a63", "ouros": "#b0651a", "paus": "#1f7a58", "espadas": "#14251a",
+    "vermelho": "#e02a63", "preto": "#14251a",
+    "brilho": 0.8, "particula": 0.13, "glow": 0.9, "contorno": 0.0,
+    "sombra": 0.5, "fonte_forte": false, "espaco": 0.0,
+},
+{
+    "id": "neon", "nome": "Neon arcade", "claro": false,
+    "sensacao": "vívido, anos 80",
+    "fundo": "#07070d", "fundo_alto": "#0f0f1c", "painel": "#12122a", "borda": "#2f2f66",
+    "texto": "#f2f2ff", "texto_suave": "#9a9ac4",
+    "carta": "#fbfbff", "carta_borda": "#c9c9e8", "carta_texto": "#0b0b14",
+    "destaque": "#ffd400", "acento": "#22e0ff", "alerta": "#ff4d7d", "sucesso": "#4dffb0",
+    # O neon vive no fundo e na interface. Sobre a carta, que é uma superfície
+    # clara, a tinta precisa ser escura ou o naipe some — o validador reprovou
+    # a versão saturada em quatro pares de uma vez.
+    "copas": "#d1005a", "ouros": "#c47000", "paus": "#0d7d9e", "espadas": "#5a2fb8",
+    "vermelho": "#ff2d78", "preto": "#3b3b7a",
+    # Fonte forte e mais espaçamento contra halation: texto claro sobre
+    # quase-preto "brilha" e borra. Achado da pesquisa.
+    "brilho": 1.4, "particula": 0.22, "glow": 1.7, "contorno": 0.0,
+    "sombra": 0.55, "fonte_forte": true, "espaco": 1.0,
+},
+{
+    "id": "veludo", "nome": "Veludo e brasa", "claro": false,
+    "sensacao": "quente, saturado, cassino clássico",
+    "fundo": "#1e0d12", "fundo_alto": "#2c1219", "painel": "#33161f", "borda": "#5c2b33",
+    "texto": "#fbeee9", "texto_suave": "#c9a49c",
+    "carta": "#f9f0e4", "carta_borda": "#dbc9b2", "carta_texto": "#22131a",
+    "destaque": "#e8953c", "acento": "#d97b5a", "alerta": "#ff6b5e", "sucesso": "#8fc99a",
+    "copas": "#c22a45", "ouros": "#a86a12", "paus": "#2a7255", "espadas": "#2b1a20",
+    "vermelho": "#e0455e", "preto": "#2b1a20",
+    "brilho": 1.1, "particula": 0.18, "glow": 1.1, "contorno": 0.0,
+    "sombra": 0.5, "fonte_forte": false, "espaco": 0.0,
+},
+{
+    "id": "meianoite", "nome": "Meia-noite", "claro": false,
+    "sensacao": "dessaturado, minimalista",
+    "fundo": "#131417", "fundo_alto": "#1b1d21", "painel": "#1f2126", "borda": "#3a3d45",
+    "texto": "#eceef2", "texto_suave": "#9498a1",
+    "carta": "#f4f5f7", "carta_borda": "#cfd2d8", "carta_texto": "#16171a",
+    "destaque": "#cfd6e0", "acento": "#8fb3d9", "alerta": "#c96a62", "sucesso": "#7fae92",
+    "copas": "#b03a54", "ouros": "#8a6220", "paus": "#35705f", "espadas": "#23252a",
+    "vermelho": "#cc5a70", "preto": "#23252a",
+    "brilho": 0.5, "particula": 0.10, "glow": 0.6, "contorno": 0.0,
+    "sombra": 0.4, "fonte_forte": false, "espaco": 0.0,
+},
+{
+    "id": "mata", "nome": "Mata funda", "claro": false,
+    "sensacao": "calmo, baixo estímulo, para sessão longa",
+    "fundo": "#0d1a14", "fundo_alto": "#13251c", "painel": "#162a20", "borda": "#2d4a38",
+    "texto": "#eaf3ec", "texto_suave": "#9bb5a5",
+    "carta": "#f7f4e9", "carta_borda": "#d3cdb8", "carta_texto": "#14201a",
+    "destaque": "#dda63f", "acento": "#7fbf9a", "alerta": "#d9705f", "sucesso": "#79c99a",
+    "copas": "#c33a58", "ouros": "#a06a12", "paus": "#2f7a5c", "espadas": "#1c2b22",
+    "vermelho": "#d44a66", "preto": "#1c2b22",
+    "brilho": 0.7, "particula": 0.12, "glow": 0.7, "contorno": 0.0,
+    "sombra": 0.45, "fonte_forte": false, "espaco": 0.0,
+},
+# ── fundo claro: o juice inverte, então os parâmetros mudam de verdade ──
+{
+    "id": "papel", "nome": "Papel e tinta", "claro": true,
+    "sensacao": "editorial, tipográfico",
+    "fundo": "#efe9dc", "fundo_alto": "#e6dfd0", "painel": "#faf6ec", "borda": "#b0a68f",
+    "texto": "#1a1814", "texto_suave": "#5f5849",
+    "carta": "#ffffff", "carta_borda": "#1a1814", "carta_texto": "#1a1814",
+    "destaque": "#9a6b10", "acento": "#2f6f8f", "alerta": "#a82a24", "sucesso": "#1f6b4a",
+    "copas": "#a82a24", "ouros": "#8f5410", "paus": "#1a5c46", "espadas": "#1a1814",
+    "vermelho": "#a82a24", "preto": "#1a1814",
+    # Sem glow: sobre creme ele vira borrão. O destaque vem de contorno e de
+    # sombra projetada, não de luz.
+    "brilho": 0.35, "particula": 0.09, "glow": 0.0, "contorno": 1.0,
+    "sombra": 0.18, "fonte_forte": true, "espaco": 0.0,
+},
+{
+    "id": "porcelana", "nome": "Porcelana", "claro": true,
+    "sensacao": "limpo, board-game premium",
+    "fundo": "#f4f6f9", "fundo_alto": "#e9edf3", "painel": "#ffffff", "borda": "#a9b6c9",
+    "texto": "#1c2330", "texto_suave": "#5c6779",
+    "carta": "#ffffff", "carta_borda": "#c9d2e0", "carta_texto": "#1c2330",
+    "destaque": "#a8730f", "acento": "#37699c", "alerta": "#b0392f", "sucesso": "#1f7a55",
+    "copas": "#b03050", "ouros": "#a35f14", "paus": "#1f7a5f", "espadas": "#2a3446",
+    "vermelho": "#b03050", "preto": "#2a3446",
+    "brilho": 0.30, "particula": 0.07, "glow": 0.0, "contorno": 0.6,
+    "sombra": 0.16, "fonte_forte": false, "espaco": 0.0,
+},
+]
+
+static var atual := 0
+
+static var FUNDO := Color("#0d1322")
+static var FUNDO_ALTO := Color("#16203a")
+static var PAINEL := Color("#1a2544")
+static var BORDA := Color("#33436f")
+static var TEXTO := Color("#eef2fb")
+static var TEXTO_SUAVE := Color("#9aa8c8")
+static var CARTA := Color("#f7f3e9")
+static var CARTA_BORDA := Color("#d8d0bd")
+static var CARTA_TEXTO := Color("#171b26")
+static var DESTAQUE := Color("#f2c45c")
+static var ACENTO := Color("#6ab0d6")
+static var ALERTA := Color("#e0655f")
+static var SUCESSO := Color("#6fc48c")
+static var COPAS := Color("#d6335e")
+static var OUROS := Color("#e08a2e")
+static var PAUS := Color("#2f9e78")
+static var ESPADAS := Color("#2a3350")
+
+## Parâmetros de juice do tema vigente.
+static var BRILHO := 1.0     ## força do brilho central do fundo
+static var PARTICULA := 0.16 ## opacidade da poeira flutuante
+static var GLOW := 1.0       ## halo em volta de número e carta madura
+static var CONTORNO := 0.0   ## traço em volta dos naipes (temas claros)
+static var SOMBRA := 0.45    ## opacidade da sombra projetada da carta
+static var FONTE_FORTE := false
+static var ESPACO := 0.0     ## espaçamento extra entre letras
+
+## Quatro cores de naipe em vez de duas. Padrão ligado: é redundância a mais
+## para daltônicos, e a forma do naipe continua sendo a informação principal.
+static var quatro_cores := true
+
+static func total() -> int:
+    return TEMAS.size()
+
+static func dados(indice: int) -> Dictionary:
+    return TEMAS[clampi(indice, 0, TEMAS.size() - 1)]
+
+static func e_claro() -> bool:
+    return bool(dados(atual)["claro"])
+
+static func usar(indice: int, cinza := false) -> void:
+    atual = clampi(indice, 0, TEMAS.size() - 1)
+    escala_de_cinza = cinza
+    var t := TEMAS[atual]
+    FUNDO = _cor(t["fundo"])
+    FUNDO_ALTO = _cor(t["fundo_alto"])
+    PAINEL = _cor(t["painel"])
+    BORDA = _cor(t["borda"])
+    TEXTO = _cor(t["texto"])
+    TEXTO_SUAVE = _cor(t["texto_suave"])
+    CARTA = _cor(t["carta"])
+    CARTA_BORDA = _cor(t["carta_borda"])
+    CARTA_TEXTO = _cor(t["carta_texto"])
+    DESTAQUE = _cor(t["destaque"])
+    ACENTO = _cor(t["acento"])
+    ALERTA = _cor(t["alerta"])
+    SUCESSO = _cor(t["sucesso"])
+    if quatro_cores:
+        COPAS = _cor(t["copas"])
+        OUROS = _cor(t["ouros"])
+        PAUS = _cor(t["paus"])
+        ESPADAS = _cor(t["espadas"])
+    else:
+        COPAS = _cor(t["vermelho"])
+        OUROS = _cor(t["vermelho"])
+        PAUS = _cor(t["preto"])
+        ESPADAS = _cor(t["preto"])
+    BRILHO = float(t["brilho"])
+    PARTICULA = float(t["particula"])
+    GLOW = float(t["glow"])
+    CONTORNO = float(t["contorno"])
+    SOMBRA = float(t["sombra"])
+    FONTE_FORTE = bool(t["fonte_forte"])
+    ESPACO = float(t["espaco"])
+
+## Cor do naipe, por índice: 0 copas, 1 ouros, 2 paus, 3 espadas.
+static func cor_do_naipe(naipe: int) -> Color:
+    match naipe:
+        0: return COPAS
+        1: return OUROS
+        2: return PAUS
+        _: return ESPADAS
+
+static func _cor(hex: String) -> Color:
+    var c := Color(hex)
+    if not escala_de_cinza:
+        return c
+    # Luminância perceptual (Rec. 709), a mesma conta do teste de contraste.
+    var l := 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b
+    return Color(l, l, l, c.a)
+
+# ── fontes ──
+
+const FONTE_BASE := "res://recursos/fontes/Nunito-Regular.ttf"
+const FONTE_FORTE_ARQ := "res://recursos/fontes/Nunito-Bold.ttf"
+
+static var _fonte: FontFile = null
+static var _fonte_forte: FontFile = null
+
+static func fonte(forte := false) -> FontFile:
+    if forte:
+        if _fonte_forte == null:
+            _fonte_forte = load(FONTE_FORTE_ARQ)
+        return _fonte_forte
+    if _fonte == null:
+        _fonte = load(FONTE_BASE)
+    return _fonte
+
+## A fonte que o tema pede para o texto de interface: o Neon precisa de peso
+## maior para o texto não borrar sobre o fundo quase preto.
+static func fonte_do_tema(forte := false) -> FontFile:
+    return fonte(forte or FONTE_FORTE)
