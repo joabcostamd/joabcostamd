@@ -301,6 +301,71 @@ porquê escrito.
 
 ---
 
+## 3h. A SEGUNDA CONSTRUÇÃO — dificuldade, loja, conquistas, juice
+
+### O jogo era impossível, e agora tem número dos dois lados
+
+| | sem loja | com loja |
+|---|---|---|
+| vitória na rodada 6 (Tabuleiro 0) | **0,0%** | **69–74%** |
+| mesas da run vencidas | 9,5 de 18 | **16,3 de 18** |
+| runs fechadas por inteiro | — | **50–60%** |
+
+A loja não é conteúdo: é a única razão de a curva `1,42^n` ser escalável. Sem crescimento de
+poder entre as mesas, a rodada 6 é aritmética fechada.
+
+### A curva dos nove graus, medida
+
+| grau | runs fechadas | mesas de 18 | | grau | runs | mesas |
+|---|---|---|---|---|---|---|
+| 0 | 50% | 16,1 | | 5 | 7% | 10,3 |
+| 1 | 29% | 14,6 | | 6 | 0% | 10,4 |
+| 2 | 14% | 12,6 | | 7 | 0% | 6,6 |
+| 3 | 14% | 12,2 | | 8 | 0% | 4,6 |
+| 4 | 7% | 10,7 | | **Estufa** | **100%** | **18,0** |
+
+Os números vão para a **tela de escolha**. Quem decide quanto quer apanhar tem direito de saber o
+que está escolhendo, e "difícil" não informa nada.
+
+### A travessia: o teto é a build, não o código
+
+Depois da rodada 6 a run continua enquanto o jogador aguentar. Medido no Tabuleiro 0, com o
+simulado seguindo até cair: rodada mais funda **mediana 8, máxima 18**, maior colheita
+**4.334.400**. O jogo tem fim de conteúdo, mas não tem teto de sistema.
+
+### Quatro defeitos que a medição achou, e todos fechavam portas
+
+1. **A geometria 4 comia o baralho inteiro.** "Cartas colhidas não voltam" tirava ~9 cartas por
+   mesa; na rodada 4 sobravam 15 e a mão zerava. → piso de **32 cartas**.
+2. **A mesa não terminava com a mão vazia — ela parava de responder.** A run repetia o mesmo
+   estado para sempre, sem nem gastar uma vida. → a mesa termina quando não há jogada legal,
+   fazendo o fecho. *Congelamento não aparece como bug: aparece como jogo quebrado.*
+3. **A geometria 7 matava as doze linhas** numa travessia longa. → nunca abaixo de quatro vivas.
+4. **As marcas das conquistas dependiam de a TELA chamar um método.** Toda partida jogada por
+   teste, simulação ou replay contava zero. → quem conta é quem acontece: a **Mesa** acumula, a
+   Run absorve.
+
+### O que os testes de tela pegaram, e nenhum teste de regra pegaria
+
+- O fantasma da carta virava retângulo cinza (véu escuro por cima do desenho).
+- O rótulo `SEQUÊNCIA DE COR` media 138 px num espaço de 108 e invadia o painel.
+- As duas **diagonais não tinham estado nenhum na tela** — o jogador só descobria que uma estava
+  cheia quando ela colhia.
+- As cartas voando caíam **sobre o número da pontuação**, cobrindo-o justamente enquanto ele
+  contava.
+- O saldo `$` da loja era desenhado **fora da tela** (alinhamento à direita desenha *dentro* de
+  `[x, x+largura]`, não à esquerda de `x`).
+- O botão do fecho da run **só tinha alvo de toque depois do primeiro desenho**.
+
+### Regras novas que a medição impôs ao enfeite
+
+O juice tem teto medido: tremor **9 px** (acima, a tela deixa de ser legível justamente quando
+mudou) e pausa **0,14 s** (meio segundo é peso; um segundo é travamento). O peso escala com o
+evento, e **essa escala é a informação**: uma linha treme de leve, uma cruz total sacode. O que
+acontece a todo turno quase não treme — efeito constante vira irritação em dez minutos.
+
+---
+
 ## 4. DIALS QUE SÃO CÓDIGO MORTO — não vire parâmetro nenhum destes
 
 Medidos, deram zero. Transformar isso em opção de balanceamento é dívida técnica gratuita.

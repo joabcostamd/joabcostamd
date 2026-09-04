@@ -401,8 +401,7 @@ func _barra(r: Rect2) -> void:
     if r.size.x > 420:
         draw_string(Temas.fonte_do_tema(),
                     Vector2(r.position.x + largura + 16, r.position.y + r.size.y * 0.68),
-                    "rodada %d de %d · mesa %s" % [rodada(), Metas.RODADAS,
-                                                   Metas.NOMES[mesa.tipo]],
+                    _o_lugar(),
                     HORIZONTAL_ALIGNMENT_LEFT, -1, Temas.T_CORPO, Temas.TEXTO_SUAVE)
 
     ## REGRAS: âncora fixa no alto à direita, 44 px de altura mínima para o dedo.
@@ -412,6 +411,14 @@ func _barra(r: Rect2) -> void:
                      Temas.T_CORPO, Temas.TEXTO)
 
 ## Coluna esquerda: o ESTADO. O jogador consulta, não toca.
+## Onde o jogador está. Depois da rodada 6 o "de 6" perde sentido: ali a run
+## deixou de ter fim, e a tela precisa dizer isso.
+func _o_lugar() -> String:
+    if run != null and run.travessia:
+        return "TRAVESSIA · rodada %d · mesa %s" % [rodada(), Metas.NOMES[mesa.tipo]]
+    return "rodada %d de %d · mesa %s" % [rodada(), Metas.RODADAS,
+                                          Metas.NOMES[mesa.tipo]]
+
 func _painel_estado(r: Rect2) -> void:
     Pintura.caixa(self, r, 12, 0.72)
     var f := Temas.fonte_do_tema()
@@ -458,7 +465,12 @@ func _painel_estado(r: Rect2) -> void:
     ## quanto lhe resta sem ler nada.
     draw_string(ff, Vector2(x, r.position.y + 322), "RODADA",
                 HORIZONTAL_ALIGNMENT_LEFT, -1, Temas.T_ROTULO, Temas.TEXTO_SUAVE)
-    for i in Metas.RODADAS:
+    ## Na travessia os pontinhos não cabem — e não fazem sentido, porque não há
+    ## um total. O número toma o lugar deles.
+    if run != null and run.travessia:
+        draw_string(ff, Vector2(x + 92, r.position.y + 322), "%d ª" % rodada(),
+                    HORIZONTAL_ALIGNMENT_LEFT, -1, Temas.T_CORPO, Temas.DESTAQUE)
+    for i in (0 if (run != null and run.travessia) else Metas.RODADAS):
         var c := Vector2(x + 92 + i * 19, r.position.y + 317)
         if i < rodada():
             draw_circle(c, 5.5, Temas.DESTAQUE if i == rodada() - 1 else Temas.TEXTO_SUAVE)

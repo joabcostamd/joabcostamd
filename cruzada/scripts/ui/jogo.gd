@@ -19,6 +19,10 @@ var _poeira: Array[Vector3] = []
 var som: Som
 var _anuncios: Array[String] = []      ## temas destravados esperando anúncio
 var _conquistas: Array[String] = []    ## conquistas recém-caídas, esperando anúncio
+## Quando a rodada 6 fecha, o fecho oferece seguir. Guarda os dois botões.
+var _pode_continuar := false
+var _r_continuar := Rect2()
+var _r_encerrar := Rect2()
 
 func _ready() -> void:
     _poeira = Pintura.semear_poeira()
@@ -69,6 +73,10 @@ func _ir(onde: int) -> void:
         FIM_DA_RUN:
             ## Sem tela filha: o fim da run é uma folha de papel com o resultado
             ## e os temas que abriram. Quem sai daqui volta ao menu.
+            ##
+            ## O traçado é calculado ao ENTRAR, não ao desenhar: botão que só
+            ## existe depois do primeiro quadro é botão que não responde nele.
+            _layout_do_fecho()
             queue_redraw()
             return
         _:
@@ -124,7 +132,8 @@ func _mesa_terminada(_venceu: bool) -> void:
             som.conquista()
     perfil.gravar(caminho_do_perfil)
 
-    if run.acabou:
+    _pode_continuar = bool(passo.get("pode_continuar", false))
+    if run.acabou or _pode_continuar:
         _ir(FIM_DA_RUN)
         return
     ## A loja só abre depois de uma mesa vencida. Perder repete a mesa na hora:
@@ -142,11 +151,31 @@ func _ultimo_relato() -> Dictionary:
 func _gui_input(evento: InputEvent) -> void:
     if _onde != FIM_DA_RUN:
         return
-    if evento is InputEventMouseButton and evento.pressed \
-            and evento.button_index == MOUSE_BUTTON_LEFT:
+    if not (evento is InputEventMouseButton and evento.pressed
+            and evento.button_index == MOUSE_BUTTON_LEFT):
+        return
+    ## Botão cujo alvo de toque só existe depois de um desenho é botão que não
+    ## responde no primeiro quadro. O traçado do fecho é calculado aqui também.
+    _layout_do_fecho()
+    ## Fechar a rodada 6 é uma escolha, não um fim: parar com a vitória na mão,
+    ## ou seguir e ver até onde vai. Quem segue não arrisca a vitória — ela já
+    ## está registrada.
+    if _pode_continuar and _r_continuar.has_point(evento.position):
+        _pode_continuar = false
         _anuncios.clear()
         _conquistas.clear()
-        _ir(MENU)
+        run.continuar()
+        perfil.gravar(caminho_do_perfil)
+        _ir(LOJA if run.loja != null else PARTIDA)
+        return
+    if _pode_continuar and not _r_encerrar.has_point(evento.position):
+        return
+    if _pode_continuar:
+        run.encerrar()
+        _pode_continuar = false
+    _anuncios.clear()
+    _conquistas.clear()
+    _ir(MENU)
 
 func _draw() -> void:
     if _tela != null:
@@ -157,25 +186,38 @@ func _draw() -> void:
 
 ## O fecho da run. Existe porque voltar direto ao menu apaga a única coisa que o
 ## jogador quer ver depois de 18 mesas — o que ele conseguiu, e o que ganhou.
-func _fim_da_run() -> void:
-    var ff := Temas.fonte_do_tema(true)
-    var f := Temas.fonte_do_tema()
+## O traçado do fecho, sem desenhar nada. Chamado pelo desenho E pelo toque,
+## para os dois concordarem sobre onde estão os botões.
+func _layout_do_fecho() -> Rect2:
     var larg := minf(size.x - 64.0, 560.0)
     ## A caixa tem a altura do conteúdo: quatro linhas fixas, mais o que
     ## conquistou e o que destravou.
     var altura := 300.0 + float(mini(_conquistas.size(), 5)) * 24.0 \
-                  + float(_anuncios.size()) * 26.0
+                  + float(_anuncios.size()) * 26.0 + (60.0 if _pode_continuar else 0.0)
     altura = minf(altura, size.y - 48.0)
     var caixa := Rect2((size.x - larg) * 0.5, (size.y - altura) * 0.5, larg, altura)
+    if _pode_continuar:
+        var larg_b := (caixa.size.x - 76.0) * 0.5
+        _r_encerrar = Rect2(caixa.position.x + 24, caixa.end.y - 74, larg_b, 50)
+        _r_continuar = Rect2(_r_encerrar.end.x + 28, caixa.end.y - 74, larg_b, 50)
+    return caixa
+
+func _fim_da_run() -> void:
+    var ff := Temas.fonte_do_tema(true)
+    var f := Temas.fonte_do_tema()
+    var caixa := _layout_do_fecho()
     Pintura.caixa(self, caixa, 14, 0.95)
 
     var titulo := "RUN VENCIDA" if run.venceu else "RUN ENCERRADA"
+    if run.travessia and run.acabou:
+        titulo = "TRAVESSIA: RODADA %d" % run.rodada_mais_funda
     Pintura.centrado(self, ff, Rect2(caixa.position.x, caixa.position.y + 24,
                                      caixa.size.x, 44), titulo, Temas.T_TITULO,
                      Temas.SUCESSO if run.venceu else Temas.ALERTA)
 
     var linhas := [
-        ["mesas vencidas", "%d de %d" % [run.mesas_vencidas, run.total_de_mesas()]],
+        ["mesas vencidas", "%d de %d" % [run.mesas_vencidas, run.total_de_mesas()]
+            if not run.travessia else str(run.mesas_vencidas)],
         ["chegou até", "rodada %d · mesa %s" % [mini(run.rodada, Metas.RODADAS),
                                                 Metas.NOMES[run.indice_da_mesa]]],
         ["maior colheita", Pintura.milhar(run.maior_evento)],
@@ -228,6 +270,22 @@ func _fim_da_run() -> void:
                                 -1, Temas.T_CORPO, Temas.TEXTO)
                     y += 26.0
 
+    if _pode_continuar:
+        ## Dois botões, e o de seguir é o destacado: quem acabou de vencer a
+        ## rodada 6 quer saber o que vem depois, e a resposta é "mais".
+        Pintura.caixa(self, _r_encerrar, 10, 0.9)
+        Pintura.centrado(self, ff, _r_encerrar, "ENCERRAR", Temas.T_CORPO, Temas.TEXTO)
+        var b := StyleBoxFlat.new()
+        b.bg_color = Temas.DESTAQUE
+        b.set_corner_radius_all(10)
+        draw_style_box(b, _r_continuar)
+        Pintura.centrado(self, ff, _r_continuar, "A TRAVESSIA", Temas.T_CORPO,
+                         Temas.CARTA if Temas.e_claro() else Temas.FUNDO)
+        Pintura.centrado(self, f, Rect2(caixa.position.x, caixa.end.y - 100,
+                                        caixa.size.x, 24),
+                         "a vitória já está guardada — a travessia não a arrisca",
+                         Temas.T_ROTULO, Temas.TEXTO_SUAVE)
+        return
     Pintura.centrado(self, f, Rect2(caixa.position.x, caixa.end.y - 44,
                                     caixa.size.x, 28), "toque para voltar ao menu",
                      Temas.T_ROTULO, Temas.TEXTO_SUAVE)

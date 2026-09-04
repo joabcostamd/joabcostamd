@@ -341,6 +341,32 @@ Tear inicial?".
 
 ---
 
+## 4d. A TRAVESSIA — depois da rodada 6 não existe teto
+
+**R44 — FECHAR A RODADA 6 É UMA ESCOLHA, NÃO UM FIM.** A vitória fica registrada na hora, e o
+jogador decide: parar com ela na mão, ou **seguir**. Quem segue não arrisca nada — a vitória já
+está guardada.
+
+**R45 — A CURVA NÃO TEM FIM PORQUE ELA É UMA FÓRMULA.** `pequena(n) = arredonda(2178 × 1,42^(n-1))`
+vale para qualquer `n`. A rodada 15 pede 295 mil na Pequena e 679 mil no Chefe; a rodada 20 pede
+1,7 milhão e 3,9 milhões. O que acaba não é o jogo: são as três vidas.
+
+**Medido**, com o jogador simulado seguindo até cair, no Tabuleiro 0:
+
+| | valor |
+|---|---|
+| rodada mais funda, mediana | **8** |
+| rodada mais funda, máxima | **18** |
+| maior colheita vista | **4.334.400** |
+| mesas vencidas por run | 22,8 |
+
+**R46 — DOIS CUIDADOS QUE A TRAVESSIA EXIGE**, e os dois são correções de coisa que quebraria:
+a geometria 7 nunca deixa menos de **quatro linhas vivas** (numa travessia longa ela mataria as
+doze, e tabuleiro sem linha viva não é difícil, é encerrado); e a tela troca os seis pontinhos de
+rodada por um número, porque "rodada 12 de 6" não quer dizer nada.
+
+---
+
 ## 5. O AVESSO — o coringa
 
 **R21 — A FORJA.** Toda colheita prensa as **duas cartas de maior valor** daquela linha num

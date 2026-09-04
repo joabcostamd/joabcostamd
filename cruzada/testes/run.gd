@@ -9,6 +9,7 @@ var _falhou := 0
 
 func _init() -> void:
     _encadeamento()
+    _a_travessia()
     _vidas()
     _contagens()
     _perfil()
@@ -69,14 +70,75 @@ func _encadeamento() -> void:
     igual(r.mesas_concluidas(), 3, "três mesas concluídas")
     igual(r.mesa.meta, Metas.meta(Metas.PEQUENA, 2), "a meta subiu com a rodada")
 
-    ## Vencer as 15 restantes fecha a run.
+    ## Vencer as 15 restantes vence a run — e ABRE a escolha de seguir.
     var voltas := 0
-    while not r.acabou and voltas < 40:
+    var passo := {}
+    while voltas < 40 and not bool(passo.get("pode_continuar", false)):
         voltas += 1
-        encerrar(r, true)
-    ok(r.acabou and r.venceu, "vencer as 18 mesas vence a run")
+        passo = encerrar(r, true)
+    ok(r.venceu, "vencer as 18 mesas vence a run")
     igual(r.mesas_vencidas, 18, "com 18 mesas vencidas")
     igual(r.vidas, 3, "e sem gastar vida nenhuma")
+    ok(bool(passo["pode_continuar"]), "e a travessia fica oferecida")
+    ok(not r.acabou, "a run não acaba sozinha: parar é escolha do jogador")
+
+func _a_travessia() -> void:
+    secao("a travessia — depois da rodada 6 não há teto")
+    var r := Run.new(31337)
+    var voltas := 0
+    while voltas < 40 and r.rodada <= Metas.RODADAS:
+        voltas += 1
+        encerrar(r, true)
+    ok(r.venceu, "a rodada 6 fechou")
+
+    ## Parar guarda a vitória.
+    var parou := Run.new(31337)
+    var v := 0
+    while v < 40 and parou.rodada <= Metas.RODADAS:
+        v += 1
+        encerrar(parou, true)
+    parou.encerrar()
+    ok(parou.acabou and parou.venceu, "encerrar guarda a vitória")
+    ok(not parou.travessia, "e não conta como travessia")
+
+    ## Seguir continua com a MESMA build, as MESMAS vidas e a curva subindo.
+    var poder_antes := r.poderes.dinheiro
+    r.poderes.subir_nivel(Maos.FULL)
+    var vidas_antes := r.vidas
+    r.continuar()
+    ok(r.travessia, "seguir liga a travessia")
+    ok(not r.acabou, "e a run continua de pé")
+    igual(r.rodada, Metas.RODADAS + 1, "na rodada 7")
+    igual(r.vidas, vidas_antes, "com as mesmas vidas")
+    igual(r.poderes.nivel(Maos.FULL), 1, "e a mesma build")
+    ok(r.venceu, "a vitória continua registrada — a travessia não a arrisca")
+    ok(r.mesa.meta > Metas.meta(Metas.PEQUENA, Metas.RODADAS),
+       "a meta da rodada 7 é maior que a da 6")
+
+    ## A curva não tem fim: ela é uma fórmula.
+    ok(Metas.meta(Metas.CHEFE, 15) > 500000,
+       "na rodada 15 o Chefe já passa de meio milhão")
+    ok(Metas.meta(Metas.PEQUENA, 20) > Metas.meta(Metas.PEQUENA, 15),
+       "e continua subindo depois disso")
+
+    ## O que acaba são as vidas.
+    for i in 3:
+        r.mesa.acabou = true
+        r.mesa.venceu = false
+        r.mesa.pontos = 0
+        r.concluir_mesa()
+    ok(r.acabou, "três derrotas encerram a travessia")
+    ok(r.venceu, "e a vitória da rodada 6 continua lá")
+    ok(r.rodada_mais_funda >= Metas.RODADAS + 1, "com a rodada mais funda guardada")
+
+    ## Geometria 7 numa travessia longa não pode matar todas as linhas.
+    var g7 := Run.new(9, Desafio.tabuleiro(7))
+    for i in 30:
+        g7.rodada += 1
+        g7._matar_linha_da_rodada()
+    ok(g7.linhas_mortas.size() <= Geometria.LINHAS - 4,
+       "sobram ao menos quatro linhas vivas, sempre (%d mortas)"
+       % g7.linhas_mortas.size())
 
 # ─────────────────────────── R20 — as vidas ───────────────────────────
 

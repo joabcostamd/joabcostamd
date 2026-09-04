@@ -23,6 +23,7 @@ func _ready() -> void:
     Jogo.caminho_do_perfil = PERFIL_DO_TESTE
     DirAccess.remove_absolute(ProjectSettings.globalize_path(PERFIL_DO_TESTE))
     await _uma_run_inteira()
+    await _a_travessia_pela_tela()
     await _derrota_gasta_as_vidas()
 
     print("")
@@ -83,6 +84,42 @@ func jogar_a_mesa(jogo: Jogo) -> void:
         tela.jogar(int(j[0]), int(j[1]))
     tela.emit_signal("mesa_terminada", tela.mesa.venceu)
 
+func _a_travessia_pela_tela() -> void:
+    print("── a travessia, do fecho da rodada 6 em diante")
+    var jogo: Jogo = await abrir()
+    jogo._comecar_run()
+    ## Força o fecho da rodada 6 sem jogar 18 mesas: o que se testa aqui é a
+    ## FIAÇÃO da escolha, não o motor, que a suíte da run já cobre.
+    var voltas := 0
+    while not jogo._pode_continuar and voltas < 40:
+        voltas += 1
+        var tela: Partida = jogo._tela as Partida
+        if tela == null:
+            passar_pela_loja(jogo)
+            continue
+        tela.mesa.acabou = true
+        tela.mesa.venceu = true
+        tela.emit_signal("mesa_terminada", true)
+    ok(jogo._pode_continuar, "a tela oferece a travessia ao fechar a rodada 6")
+    ok(jogo._r_continuar.size.x > 0.0,
+       "e o botão tem alvo de toque antes do primeiro desenho")
+    ok(jogo._r_continuar.size.y >= 44.0, "com 44 px de altura, onde o dedo trabalha")
+    igual(jogo._onde, Jogo.FIM_DA_RUN, "no fecho da run")
+    ok(jogo.run.venceu, "com a run já vencida")
+
+    ## Tocar em A TRAVESSIA segue; a vitória fica.
+    var clique := InputEventMouseButton.new()
+    clique.button_index = MOUSE_BUTTON_LEFT
+    clique.pressed = true
+    clique.position = jogo._r_continuar.get_center()
+    jogo._gui_input(clique)
+    ok(jogo.run.travessia, "seguir liga a travessia")
+    ok(not jogo.run.acabou, "e a run continua")
+    ok(jogo._onde == Jogo.LOJA or jogo._onde == Jogo.PARTIDA,
+       "a tela volta para a loja ou para a mesa")
+    igual(jogo.run.rodada, Metas.RODADAS + 1, "na rodada 7")
+    jogo.free()
+
 func _uma_run_inteira() -> void:
     print("── uma run inteira, do menu ao fecho")
     var jogo: Jogo = await abrir()
@@ -99,11 +136,14 @@ func _uma_run_inteira() -> void:
     igual(tela.rodada(), 1, "rodada 1")
     igual(tela.vidas(), 3, "três vidas")
 
+    ## A run termina quando as vidas acabam OU quando a rodada 6 fecha e a tela
+    ## passa a oferecer a travessia.
     var mesas := 0
-    while not jogo.run.acabou and mesas < 90:
+    while not jogo.run.acabou and not jogo._pode_continuar and mesas < 90:
         mesas += 1
         jogar_a_mesa(jogo)
-    ok(jogo.run.acabou, "a run termina sozinha (%d mesas jogadas)" % mesas)
+    ok(jogo.run.acabou or jogo._pode_continuar,
+       "a run chega a um fim (%d passos)" % mesas)
     igual(jogo._onde, Jogo.FIM_DA_RUN, "e a tela vira o fecho da run")
     ok(jogo._tela == null, "o fecho é desenhado pelo próprio Jogo")
     igual(jogo.perfil.mesas_jogadas, jogo.run.mesas_jogadas,
@@ -115,6 +155,7 @@ func _uma_run_inteira() -> void:
 
     ## A conservação continua valendo depois de uma run inteira.
     ok(jogo.run.mesa.conservacao(), "a conta das cartas fecha no fim da run")
+    jogo._pode_continuar = false
 
     jogo.free()
 

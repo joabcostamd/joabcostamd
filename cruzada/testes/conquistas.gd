@@ -126,7 +126,10 @@ func _numa_run() -> void:
         while not run.acabou and voltas < 90:
             voltas += 1
             Politica.jogar(run.mesa)
-            run.concluir_mesa()
+            var passo := run.concluir_mesa()
+            if bool(passo.get("pode_continuar", false)):
+                run.encerrar()
+                break
             if run.loja != null:
                 Politica.comprar(run.loja, run.poderes)
                 run.fechar_loja()

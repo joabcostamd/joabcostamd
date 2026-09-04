@@ -102,12 +102,7 @@ func _init() -> void:
     var estufa := Desafio.estufa()
     var completadas := 0.0
     for s2 in mini(sementes, 10):
-        var r := Run.new(SEMENTE_BASE + s2 * PASSO, estufa)
-        var voltas := 0
-        while not r.acabou and voltas < 90:
-            voltas += 1
-            Politica.jogar(r.mesa)
-            r.concluir_mesa()
+        var r := Politica.jogar_run(Run.new(SEMENTE_BASE + s2 * PASSO, estufa))
         completadas += float(r.mesas_vencidas)
     completadas /= float(maxi(1, mini(sementes, 10)))
     falhas += banda("Estufa: mesas vencidas", completadas, 15.0, 18.0, " de 18", 18.0)

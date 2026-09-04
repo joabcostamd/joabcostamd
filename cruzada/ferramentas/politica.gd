@@ -197,12 +197,23 @@ static func _onde_colar(loja: Loja, i: int, poderes: Poderes) -> int:
     return -1
 
 ## Uma run inteira com loja: joga a mesa, compra o que der, segue.
-static func jogar_run(run: Run, limite := 90) -> Run:
+##
+## `travessia` decide o que fazer quando a rodada 6 fecha: o padrão é PARAR, que
+## é o que o jogador mediano faz com a vitória na mão. Medir a travessia é outra
+## pergunta, e ela tem o seu próprio parâmetro.
+static func jogar_run(run: Run, limite := 90, travessia := false,
+                      ate_a_rodada := 0) -> Run:
     var voltas := 0
     while not run.acabou and voltas < limite:
         voltas += 1
         jogar(run.mesa)
-        run.concluir_mesa()
+        var passo := run.concluir_mesa()
+        if bool(passo.get("pode_continuar", false)):
+            if travessia and (ate_a_rodada <= 0 or run.rodada <= ate_a_rodada):
+                run.continuar()
+            else:
+                run.encerrar()
+                break
         if run.loja != null:
             comprar(run.loja, run.poderes)
             run.fechar_loja()

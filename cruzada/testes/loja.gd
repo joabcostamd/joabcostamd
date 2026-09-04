@@ -372,7 +372,10 @@ func _a_promessa() -> void:
                 chegou_na_6 += 1
                 if run.mesa.venceu:
                     venceu_na_6 += 1
-            run.concluir_mesa()
+            var passo := run.concluir_mesa()
+            if bool(passo.get("pode_continuar", false)):
+                run.encerrar()
+                break
             if run.loja != null:
                 Politica.comprar(run.loja, run.poderes)
                 run.fechar_loja()
@@ -390,7 +393,10 @@ func _a_promessa() -> void:
         voltas += 1
         menor = mini(menor, run4.mesa.cartas_da_mesa)
         Politica.jogar(run4.mesa)
-        run4.concluir_mesa()
+        var p4 := run4.concluir_mesa()
+        if bool(p4.get("pode_continuar", false)):
+            run4.encerrar()
+            break
         if run4.loja != null:
             Politica.comprar(run4.loja, run4.poderes)
             run4.fechar_loja()

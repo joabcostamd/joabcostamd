@@ -76,6 +76,17 @@ const LISTA: Array[Dictionary] = [
     {"id": "fianca", "nome": "A dívida paga", "onde": RUN,
      "como": "receba uma colheita dobrada pela Fiança", "chave": "fianca_pagou",
      "alvo": 1},
+    # ── a travessia: depois da rodada 6 o jogo não acaba ──
+    {"id": "travessia", "nome": "A travessia", "onde": RUN,
+     "como": "siga depois da rodada 6 e vença a rodada 7",
+     "chave": "rodada_mais_funda", "alvo": 7},
+    {"id": "travessia_10", "nome": "Rodada 10", "onde": RUN,
+     "como": "chegue à rodada 10 da travessia", "chave": "rodada_mais_funda",
+     "alvo": 10},
+    {"id": "travessia_15", "nome": "Rodada 15", "onde": RUN,
+     "como": "chegue à rodada 15 — a meta já passou de um milhão",
+     "chave": "rodada_mais_funda", "alvo": 15},
+
     {"id": "tabuleiro_4", "nome": "Tabuleiro 4", "onde": RUN,
      "como": "vença uma run no Tabuleiro 4 ou acima", "chave": "run_no_grau",
      "alvo": 4},

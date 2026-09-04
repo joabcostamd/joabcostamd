@@ -67,7 +67,12 @@ func medir(sementes: int, d: Desafio, com_loja := false) -> Dictionary:
             tentadas[rodada - 1] += 1
             if run.mesa.venceu:
                 vitorias[rodada - 1] += 1
-            run.concluir_mesa()
+            var passo := run.concluir_mesa()
+            ## O simulado para na rodada 6, com a vitória na mão. A travessia é
+            ## outra medição.
+            if bool(passo.get("pode_continuar", false)):
+                run.encerrar()
+                break
             if com_loja and run.loja != null:
                 Politica.comprar(run.loja, run.poderes)
             run.fechar_loja()

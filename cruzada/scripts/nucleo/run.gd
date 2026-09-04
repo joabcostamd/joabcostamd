@@ -49,6 +49,12 @@ var linhas_mortas: Array[int] = []
 var fianca := 0
 ## Quantas vezes o Quase lá segurou a run. Vira conquista.
 var quase_la := 0
+## A TRAVESSIA: depois da rodada 6 o jogo não acaba — ele continua enquanto o
+## jogador aguentar. A curva de metas é uma fórmula, então ela não tem fim; o
+## que tem fim são as três vidas.
+var travessia := false
+## A rodada mais funda alcançada. É o placar da travessia.
+var rodada_mais_funda := 1
 ## As marcas que as conquistas leem. Um dicionário achatado: a conquista diz
 ## qual chave olhar, e a conta é uma comparação — nunca um `if` por conquista.
 var marcas := {}
@@ -76,6 +82,10 @@ func _matar_linha_da_rodada() -> void:
     for l in linhas_mortas:
         if Geometria.diagonal(l):
             diagonais_mortas += 1
+    ## Nunca abaixo de quatro linhas vivas: numa travessia longa a regra mataria
+    ## as doze, e um tabuleiro sem linha viva não é difícil, é encerrado.
+    if linhas_mortas.size() >= Geometria.LINHAS - 4:
+        return
     for l in Geometria.LINHAS:
         if linhas_mortas.has(l):
             continue
@@ -146,12 +156,16 @@ func concluir_mesa() -> Dictionary:
         indice_da_mesa = 0
         rodada += 1
         _matar_linha_da_rodada()
-    if rodada > Metas.RODADAS:
-        acabou = true
+    rodada_mais_funda = maxi(rodada_mais_funda, rodada)
+    _marcar("rodada_mais_funda", rodada_mais_funda)
+    ## Fechar a rodada 6 vence a run — uma vez só, e a vitória não se perde
+    ## depois. O que vem a seguir é a TRAVESSIA, e ela é escolha do jogador:
+    ## parar aqui com a vitória na mão, ou seguir e ver até onde vai.
+    if rodada > Metas.RODADAS and not travessia:
         venceu = true
         _marcar_o_estado()
         return {"pronto": true, "venceu_mesa": true, "fim_da_run": true,
-                "venceu_run": true}
+                "venceu_run": true, "pode_continuar": true}
     _abrir_loja()
     _abrir_mesa()
     return {"pronto": true, "venceu_mesa": true, "fim_da_run": false,
@@ -165,6 +179,20 @@ func _abrir_loja() -> void:
 
 func fechar_loja() -> void:
     loja = null
+
+## O jogador escolheu seguir depois da rodada 6. A run continua com a mesma
+## build, as mesmas vidas e a curva subindo — não há teto, só as três vidas.
+func continuar() -> void:
+    if acabou:
+        return
+    travessia = true
+    _matar_linha_da_rodada()
+    _abrir_loja()
+    _abrir_mesa()
+
+## O jogador escolheu parar. A vitória fica registrada.
+func encerrar() -> void:
+    acabou = true
 
 ## Registra o que uma colheita produziu. É daqui que saem os desbloqueios de
 ## tema: a condição "faça uma Sequência de Cor" precisa de alguém contando.
