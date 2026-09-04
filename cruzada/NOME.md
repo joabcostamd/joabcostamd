@@ -164,8 +164,34 @@ Não sugira estes. Use os motivos como calibragem.
 | **CARDS FIVE** | não é inglês (a ordem é *Five Cards*), e lê como numeração de sequência |
 | **5×5** | universal de verdade, mas some na busca e parece especificação técnica |
 | **MATRIX, NEXUS, VERTEX, PLEX** | pronunciáveis, mas gastos em tecnologia |
+| **WEAVE** | *Woven*, *Weaving*, *Weaving Tides*, *Weaver* — e **Weave: Storytelling Redefined**, que é jogo de cartas |
+| **DUALIS** | jogo na Steam desde 2024 (terror isométrico) |
+| **CARDINAL** | *Cardinal Descent* e *Cardinal Sequence*, os dois roguelikes de baralho — o gênero exato deste jogo |
+| **ORTHO** | *ORTHOISO*, *Ortho Blaze*, *Ortho Robot* |
+| **LATTICE** | *Within Lattice*, *Space Lattice*, *Lattice Dancer*, *The Lattice Grimoire* |
+| **TESSERA, CONFLUX** | já ocupados na Steam |
 
 ---
+
+### O território da tecelagem está esgotado
+
+A última rodada voltou com doze sugestões e **dez eram tecelagem** — weave, warp, weft,
+twill, interlace, crossweave, quilt. É território natural (o multiplicador do jogo se
+chama Tear), mas duas coisas o fecham:
+
+1. **Colisão.** Tecelagem é a metáfora favorita do indie contemplativo. *Woven*,
+   *Weaving*, *Weaving Tides*, *Weaver*, *Weave: Storytelling Redefined* — e esse
+   último é jogo de cartas.
+2. **Não diz carta.** Um nome de tecelagem descreve a imagem do jogo e não a coisa que
+   o jogador segura na mão. Já rejeitei *URDA* exatamente por isso.
+
+Sobrou **TWILL** (limpo, e é justamente o tecido de padrão diagonal — as duas diagonais
+do tabuleiro pontuam). Se você for para tecelagem, vá além de TWILL ou não vá.
+
+**O território que ninguém explorou ainda é o do PERTENCIMENTO DUPLO** — uma coisa que
+pertence a duas estruturas ao mesmo tempo. Cruzamento, interseção, junção, confluência,
+sobreposição, casa marcada. É de lá que sai a palavra-cruzada, e é lá que está a
+mecânica.
 
 ## 6. Uma instrução sobre a FORMA da sua resposta
 
