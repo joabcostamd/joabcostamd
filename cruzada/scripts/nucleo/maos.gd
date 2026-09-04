@@ -26,6 +26,14 @@ const NOMES: PackedStringArray = [
     "Full House", "Quadra", "Sequência de Cor", "Sequência Real", "Quina",
 ]
 
+## Os mesmos nomes para o rótulo colado na linha, onde só cabem 108 px em caixa
+## alta. "SEQUÊNCIA DE COR" mede 138 e invadia o painel da direita. Abreviar é
+## melhor que reduzir o corpo da fonte: 14 px é o piso da escala.
+const CURTOS: PackedStringArray = [
+    "ALTA", "PAR", "2 PARES", "TRINCA", "SEQUÊNCIA", "FLUSH",
+    "FULL", "QUADRA", "SEQ. DE COR", "SEQ. REAL", "QUINA",
+]
+
 ## DESIGN R10. Fichas base e multiplicador de cada categoria.
 const FICHAS_BASE: PackedInt32Array = [5, 10, 20, 30, 30, 35, 40, 60, 100, 120, 140]
 const MULTIPLICADOR: PackedInt32Array = [1, 2, 2, 3, 4, 4, 4, 7, 8, 10, 12]

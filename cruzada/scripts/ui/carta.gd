@@ -174,8 +174,20 @@ static func _figura(alvo: CanvasItem, m: Rect2, valor: int, naipe: int, cor: Col
 ## vale na fileira, metade de baixo vale na coluna. Duas cartas num objeto só,
 ## e o jogador entende olhando.
 static func _avesso(alvo: CanvasItem, r: Rect2, valor: int, naipe: int) -> void:
-    var outro_valor := 11 if valor <= 10 else 7
-    var outro_naipe := (naipe + 2) % 4
+    ## Sem a segunda cara declarada, inventa uma. Só a maquete cai aqui — no
+    ## jogo o Avesso tem duas caras de verdade e entra por `desenhar_avesso`.
+    _avesso_faces(alvo, r, valor, naipe, 11 if valor <= 10 else 7, (naipe + 2) % 4)
+
+## O AVESSO com as duas caras que a colheita prensou. A de cima vale na fileira,
+## a de baixo vale na coluna e nas diagonais — a diagonal do desenho é a mesma
+## divisão que a regra faz, e é por isso que ela pode ser lida sem legenda.
+static func desenhar_avesso(alvo: CanvasItem, r: Rect2, valor_a: int, naipe_a: int,
+                            valor_b: int, naipe_b: int, estado := AVESSO) -> void:
+    _corpo(alvo, r, maxf(4.0, r.size.x * 0.09), estado)
+    _avesso_faces(alvo, r, valor_a, naipe_a, valor_b, naipe_b)
+
+static func _avesso_faces(alvo: CanvasItem, r: Rect2, valor: int, naipe: int,
+                          outro_valor: int, outro_naipe: int) -> void:
     var cor_a := Temas.cor_do_naipe(naipe)
     var cor_b := Temas.cor_do_naipe(outro_naipe)
 

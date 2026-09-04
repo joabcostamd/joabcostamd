@@ -5,7 +5,7 @@ config_version=5
 
 config/name="CRUZADA"
 config/description="Cada carta pontua em duas mãos de pôquer: a linha e a coluna onde você a colocar."
-run/main_scene="res://maquete/maquete.tscn"
+run/main_scene="res://cenas/partida.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 
 [display]
