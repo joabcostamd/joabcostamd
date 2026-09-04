@@ -46,6 +46,8 @@ foi conserto de encanamento em volta de uma boa ideia.
 | **TEAR MULTIPLICA** | o Tear multiplica em vez de somar | maior evento **2.394 → 10.260** (×4,3); explosão **7,2× → 15,8×**; teto passa a morder em 21,2% das mesas (era 0%); derrota decidida aos 2/3 cai **69,9% → 56,6%**; e o código encolhe |
 | **AVESSO** | carta de duas caras forjada pela própria colheita: uma cara vale na linha, a outra na coluna | **1,66/mesa**, 10,8% das jogadas, 37,8% dos pontos; **C3 recebe 28,6%** contra 4,0% do uniforme (**7×**, entropia 0,827); **+2,25 pp** de vitória |
 | **JANELA DA COLHEITA** | a linha cheia não colhe na hora: fica **madura** e colhe no próximo posicionamento, junto com tudo que completou no meio-tempo | **cruzada 0,000 → 0,831 por mesa** em jogo natural; mesas sem nenhuma **100% → 16,9%**; turnos pagos 65,7% → 75,8%; profundidade 58,8% → 68,2% (dentro da banda 45–75) |
+| **BC_rec** | a mão fraca paga melhor: piso de padrão parcial (+15 fichas em Alta/Par/Dois Pares) e troco não-numérico (+1 no multiplicador, +2 descartes, +1 na mão) | **resolve a dívida do estrategista**: gradiente planejadora−gulosa de **−5,4 → +5,4 pp**, repetido em 3 famílias de sementes (−7,5→+4,8 · −6,8→+5,6) |
+| **Fecho conta para a meta** | correção de motor: hoje a vitória é calculada **antes** da colheita final, então o fecho nunca vira a mesa | **+6,1 pp** de vitória, **zero conceito novo** — mas leva a 40,7%, fora da banda 20–40: exige recalibrar o K |
 | **K = 1,25** na curva de metas | corrige a dificuldade | razão **0,990 → 0,793**; vitória **40,75% → 28,8%** |
 
 O número mais importante desta tabela é o **7× de concentração em C3**. Ele prova que *onde
@@ -130,6 +132,48 @@ assistência não aparece lá (1,4 pp). A pergunta que reprova o build passa a s
 
 ---
 
+## 3c. POR QUE PAGAR A MÃO FRACA CONSERTA O ESTRATEGISTA
+
+O achado mais útil da rodada 5, e não era o que procurávamos.
+
+**Quem planeja colhe mão ruim.** A política planejadora colhe **49,8%** de mãos fracas contra
+**29,5%** da gulosa — porque montar a cruz obriga a encher a linha com o que couber, não com o
+que combina. A multa por planejar estava embutida na pontuação da mão fraca.
+
+Logo: pagar melhor a linha fraca **reembolsa exatamente quem planeja, e só ele**. Controle
+rodado: pagar mais em *toda* linha infla o K em 33% e move o gradiente só 2,3 pp.
+
+**E o teste de preço que mandamos refazer tinha razão pela metade.** Com a cruzada finalmente
+acontecendo, o preço passou a ter gradiente (−7,2 · −1,2 · +2,5 · +8,6 · +28,2) — o teste
+original de fato media um evento inexistente. Mas o beneficiário foi medido: os +8,6 pp vão para
+um bot que **só** joga a cruz; o jogador atencioso ganha **+1,5 pp** com o K subindo 42%.
+Por isso **não entra**: premia a monomania, não a atenção.
+
+---
+
+## 3d. NOMES — o exercício falhou, e a falha é o produto
+
+33 nomes propostos, **10 reprovados** (os dois leitores frios erraram sozinhos). Nota do
+conjunto: **4/10**. As correções que só um leitor frio acha:
+
+| Conceito | Nome testado | Por que falhou | Nome corrigido |
+|---|---|---|---|
+| a tabela dos degraus | ESCADA DA CRUZADA | **"escada" já é sequência no pôquer** | LINHAS DE UMA VEZ |
+| fechar 4 linhas no centro | CRUZADA DE 4 | os dois concluíram que uma carta não toca 4 linhas | CRUZADA DO CENTRO |
+| troco em 3/5 e 4/5 | ADIANTAMENTO | pior par da lista, confundido com "adiada" | PARCELA |
+| as 12 unidades que pontuam | LINHA | 12 > 10 num 5×5 travou os dois | só FILEIRA / COLUNA / DIAGONAL |
+| ajuda em 3 níveis | AJUDA | colide com REGRAS na mesma tela | DICAS |
+| o que ainda fecha a mesa | RECEITA DA META | o mais opaco de todos | COMO FECHAR |
+| 3 luzes, +100% | SEGURO | ninguém achou o +100% | REVANCHE |
+| cartas que nascem na grade | CARTAS INICIAIS | mesa ou mão? | GRADE INICIAL |
+| as 18 mesas | PARTIDA | nome diz partida, rótulo diz mesa | PARTIDA · mesa 7/18 |
+| limite do mult somado | TETO DO MULT | ninguém entendeu os dois números | CORTE DO MULT |
+
+**Lição registrada:** nome de mecânica não se valida por gosto. Custa 2 agentes e meia hora
+testar com leitor cego, e pegou 10 erros que passariam para a versão final.
+
+---
+
 ## 4. DIALS QUE SÃO CÓDIGO MORTO — não vire parâmetro nenhum destes
 
 Medidos, deram zero. Transformar isso em opção de balanceamento é dívida técnica gratuita.
@@ -180,7 +224,7 @@ Registrados de propósito. Errar de novo custa mais caro que admitir.
 
 | Questão | Situação |
 |---|---|
-| **Planejar deixou de pagar** | com a Janela, quem planeja a cruz cai de **62,7% para 30,7%** de vitória, enquanto quem joga no impulso sobe de 31,2% para **36,1%**. O gradiente de perícia inverteu. Alvo da próxima bancada: devolver retorno ao planejamento **sem** aumentar o prêmio da cruzada (já provado inerte em 4×, 20× e 100×) |
+| ~~**Planejar deixou de pagar**~~ ✅ RESOLVIDO pela BC_rec (§3c) | com a Janela, quem planeja a cruz cai de **62,7% para 30,7%** de vitória, enquanto quem joga no impulso sobe de 31,2% para **36,1%**. O gradiente de perícia inverteu. Alvo da próxima bancada: devolver retorno ao planejamento **sem** aumentar o prêmio da cruzada (já provado inerte em 4×, 20× e 100×) |
 | **A cruzada virou o comum** | **71% dos eventos** agora são cruzada (banda saudável 0,35–0,55 por evento); eventos por mesa 2,21 → 1,17; explosão 15,6× → 10,0×. Proposta: mover o clímax um degrau acima, para a escada **DUPLA (9 posic, 2×) · TRIPLA (13, 3×) · CRUZ TOTAL (17, 4×)** — a Tripla é 18,2% dos eventos e a Total 0,85%, e a Cruz Total cabe **exata** numa mesa Grande |
 | **Ergonomia do Avesso na tela** | não medido — desenhar uma carta de duas caras que se lê de relance é **condição de corte** do coringa |
 | **Ensinar a recusa** | nenhuma bancada achou mecanismo que ensine o jogador a *não* fechar uma linha. É a habilidade central e ninguém a ensina |
