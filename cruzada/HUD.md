@@ -113,6 +113,21 @@ Cada tema declara o seu **estilo de fundo**, não só a sua cor:
 | `brilho` | brilho radial em 18 camadas fracas | Casino, Veludo, Ameixa |
 | `grade` | linhas acesas ortogonais + horizonte | Neon |
 | `tecido` | trama cruzada de 4 px quase invisível | Feltro |
+
+## 9. Os quatro detalhes que separam premium de improvisado
+
+Nenhum deles é caro. Todos são um `draw_rect` ou dois.
+
+| Detalhe | O que é | Por que funciona |
+|---|---|---|
+| **Filete** | linha de 1 px do acento por dentro da borda do painel | borda grossa é a assinatura da interface improvisada; a linha fina é a da cara |
+| **Mesa embutida** | o tabuleiro afunda na mesa: fundo mais escuro, sombra interna só no topo, filete na borda | numa mesa de carteado o feltro é rebaixado na madeira, e é o degrau que faz o objeto parecer caro |
+| **Fio de luz** | 1 px claro na aresta de cima da casa vazia | a luz vem de cima, então só a aba superior a recebe: a casa lê como marcação rebaixada, não como buraco recortado |
+| **Painel do tamanho do conteúdo** | a moldura termina onde o conteúdo termina | vazio DENTRO de moldura lê como inacabado; vazio FORA dela lê como respiro |
+
+E uma regra de alinhamento que custou uma rodada para achar: **a mão alinha pelo centro da MESA**,
+não da grade nem da coluna. O eixo que o olho usa é a massa visual inteira — grade mais rótulos —,
+e centrar cada bloco na sua própria referência desalinha os dois por alguns pixels que se veem.
 | `papel` | manchas largas e fraquíssimas | Papel, Porcelana |
 | `vinheta` | fundo liso, só bordas escuras | Meia-noite |
 

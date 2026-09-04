@@ -50,7 +50,7 @@ estouro de `Control`. Em 3D, "ficou bonito" não tem teste.
 Um vira o padrão; os outros sete são desbloqueáveis, porque cosmético que se
 conquista vale mais que cosmético que se escolhe no menu.
 
-Seis de fundo escuro (Casino noturno · Feltro e madeira · Neon arcade ·
+Seis de fundo escuro (Casino noturno · Feltro e ouro · Neon arcade ·
 Veludo e brasa · Meia-noite · Ameixa e ouro) e dois de fundo claro (Papel e tinta ·
 Porcelana). Cada um declara o **próprio tratamento de fundo** — brilho radial, grade de
 linhas, trama, grão ou vinheta — porque tema separado só por matiz não se separa. Os claros carregam parâmetros de juice próprios: partícula que brilha

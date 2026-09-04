@@ -20,6 +20,7 @@ const TEMAS: Array[Dictionary] = [
     "sensacao": "frio, sóbrio, elegante",
     "fundo": "#0d1322", "fundo_alto": "#16203a", "painel": "#1a2544", "borda": "#33436f",
     "casa": "#16203a", "casa_borda": "#46609e",
+    "filete": "#f2c45c",
     "texto": "#eef2fb", "texto_suave": "#9aa8c8",
     "carta": "#f7f3e9", "carta_borda": "#d8d0bd", "carta_texto": "#171b26",
     "destaque": "#f2c45c", "acento": "#6ab0d6", "alerta": "#e0655f", "sucesso": "#6fc48c",
@@ -29,19 +30,25 @@ const TEMAS: Array[Dictionary] = [
     "sombra": 0.45, "fonte_forte": false, "espaco": 0.0,
 },
 {
-    "id": "feltro", "nome": "Feltro e madeira", "claro": false, "fundo_estilo": "tecido",
-    "sensacao": "físico, reconhecível como jogo de cartas",
-    "fundo": "#12331f", "fundo_alto": "#17402a", "painel": "#1b4830", "borda": "#6b4423",
-    "casa": "#17402a", "casa_borda": "#4a815b",
-    "texto": "#eef5ee", "texto_suave": "#a6bfae",
-    "carta": "#faf6ec", "carta_borda": "#d5cbb4", "carta_texto": "#1a1f1a",
-    "destaque": "#d9a441", "acento": "#86c5a0", "alerta": "#e0655f", "sucesso": "#7fd6a0",
-    # Vermelho puxado para magenta: sobre verde saturado o vermelho tradicional
-    # perde contraste e os naipes vermelhos somem. Achado da pesquisa.
-    "copas": "#e02a63", "ouros": "#b0651a", "paus": "#1f7a58", "espadas": "#14251a",
-    "vermelho": "#e02a63", "preto": "#14251a",
-    "brilho": 0.35, "particula": 0.05, "glow": 0.9, "contorno": 0.0,
-    "sombra": 0.5, "fonte_forte": false, "espaco": 0.0,
+    "id": "feltro", "nome": "Feltro e ouro", "claro": false, "fundo_estilo": "tecido",
+    "sensacao": "mesa de carteado à meia-luz",
+    # Feltro escurecido: o verde de mesa original era claro demais e a carta
+    # creme separava só 12,8 contra 16,9 dos outros escuros. A lógica do feltro
+    # físico — "carta salta sobre verde" — vale para papel sob lâmpada, não
+    # para pixel em tela.
+    "fundo": "#0b2116", "fundo_alto": "#0f2b1d", "painel": "#102a1c", "borda": "#2c5138",
+    "casa": "#0d2519", "casa_borda": "#437757",
+    "filete": "#c9a24a",
+    "texto": "#f1f6f0", "texto_suave": "#9cb7a5",
+    "carta": "#f9f5ea", "carta_borda": "#ddd2b8", "carta_texto": "#171d18",
+    "destaque": "#e8c06a", "acento": "#c9a24a", "alerta": "#e07a68", "sucesso": "#79c99a",
+    # O vermelho volta a ser vermelho de baralho. O magenta anterior resolvia um
+    # problema inexistente: o naipe é desenhado sobre a CARTA, que é creme, e
+    # nunca sobre o verde — o contraste medido é contra a carta.
+    "copas": "#c0202e", "ouros": "#a8620f", "paus": "#1c6b4a", "espadas": "#151f18",
+    "vermelho": "#c0202e", "preto": "#151f18",
+    "brilho": 0.0, "particula": 0.04, "glow": 1.0, "contorno": 0.0,
+    "sombra": 0.55, "fonte_forte": false, "espaco": 0.0,
 },
 {
     "id": "neon", "nome": "Neon arcade", "claro": false, "fundo_estilo": "grade",
@@ -51,6 +58,7 @@ const TEMAS: Array[Dictionary] = [
     # linha acesa. Por isso brilho quase zero e a identidade na grade de fundo.
     "fundo": "#050509", "fundo_alto": "#0b0b16", "painel": "#0e0e1f", "borda": "#22e0ff",
     "casa": "#0b0b1a", "casa_borda": "#1d6f88",
+    "filete": "#22e0ff",
     "texto": "#f2f2ff", "texto_suave": "#8f8fc0",
     "carta": "#fbfbff", "carta_borda": "#c9c9e8", "carta_texto": "#0b0b14",
     "destaque": "#ffd400", "acento": "#22e0ff", "alerta": "#ff4d7d", "sucesso": "#4dffb0",
@@ -69,6 +77,7 @@ const TEMAS: Array[Dictionary] = [
     "sensacao": "quente, saturado, cassino clássico",
     "fundo": "#1e0d12", "fundo_alto": "#2c1219", "painel": "#33161f", "borda": "#5c2b33",
     "casa": "#2a1119", "casa_borda": "#8d4e5d",
+    "filete": "#e8953c",
     "texto": "#fbeee9", "texto_suave": "#c9a49c",
     "carta": "#f9f0e4", "carta_borda": "#dbc9b2", "carta_texto": "#22131a",
     "destaque": "#e8953c", "acento": "#d97b5a", "alerta": "#ff6b5e", "sucesso": "#8fc99a",
@@ -82,6 +91,7 @@ const TEMAS: Array[Dictionary] = [
     "sensacao": "dessaturado, minimalista",
     "fundo": "#131417", "fundo_alto": "#1b1d21", "painel": "#1f2126", "borda": "#3a3d45",
     "casa": "#1c1e23", "casa_borda": "#5f6471",
+    "filete": "#cfd6e0",
     "texto": "#eceef2", "texto_suave": "#9498a1",
     "carta": "#f4f5f7", "carta_borda": "#cfd2d8", "carta_texto": "#16171a",
     "destaque": "#cfd6e0", "acento": "#8fb3d9", "alerta": "#c96a62", "sucesso": "#7fae92",
@@ -98,6 +108,7 @@ const TEMAS: Array[Dictionary] = [
     "sensacao": "quente, encorpado, noturno",
     "fundo": "#1a0f22", "fundo_alto": "#241533", "painel": "#2a1a3b", "borda": "#4d2f66",
     "casa": "#241533", "casa_borda": "#794ea6",
+    "filete": "#d9a441",
     "texto": "#f3ecf8", "texto_suave": "#b49dc6",
     "carta": "#f8f4ec", "carta_borda": "#d9cfc0", "carta_texto": "#1c1420",
     "destaque": "#d9a441", "acento": "#c9a0e0", "alerta": "#d9615f", "sucesso": "#79c99a",
@@ -112,6 +123,7 @@ const TEMAS: Array[Dictionary] = [
     "sensacao": "editorial, tipográfico",
     "fundo": "#efe9dc", "fundo_alto": "#e6dfd0", "painel": "#faf6ec", "borda": "#b0a68f",
     "casa": "#c6bba3", "casa_borda": "#8a7f66",
+    "filete": "#9a6b10",
     "texto": "#1a1814", "texto_suave": "#5f5849",
     "carta": "#ffffff", "carta_borda": "#1a1814", "carta_texto": "#1a1814",
     "destaque": "#9a6b10", "acento": "#2f6f8f", "alerta": "#a82a24", "sucesso": "#1f6b4a",
@@ -127,6 +139,7 @@ const TEMAS: Array[Dictionary] = [
     "sensacao": "limpo, board-game premium",
     "fundo": "#f4f6f9", "fundo_alto": "#e9edf3", "painel": "#ffffff", "borda": "#a9b6c9",
     "casa": "#c2cad8", "casa_borda": "#7b8899",
+    "filete": "#a8730f",
     "texto": "#1c2330", "texto_suave": "#5c6779",
     "carta": "#ffffff", "carta_borda": "#c9d2e0", "carta_texto": "#1c2330",
     "destaque": "#a8730f", "acento": "#37699c", "alerta": "#b0392f", "sucesso": "#1f7a55",
@@ -147,6 +160,10 @@ static var TEXTO := Color("#eef2fb")
 static var TEXTO_SUAVE := Color("#9aa8c8")
 ## A casa vazia da grade. Token próprio, nunca derivado de PAINEL com alfa:
 ## derivar cor de outra cor funciona no tema escuro e quebra no claro.
+## O filete: linha de 1 px do acento, desenhada por dentro da borda dos
+## painéis. É o detalhe mais barato que existe e o que mais separa interface
+## cara de interface improvisada — borda grossa é indie, filete é premium.
+static var FILETE := Color("#f2c45c")
 static var CASA := Color("#16203a")
 static var CASA_BORDA := Color("#354877")
 static var CARTA := Color("#f7f3e9")
@@ -197,6 +214,7 @@ static func usar(indice: int, cinza := false) -> void:
     BORDA = _cor(t["borda"])
     TEXTO = _cor(t["texto"])
     TEXTO_SUAVE = _cor(t["texto_suave"])
+    FILETE = _cor(t["filete"])
     CASA = _cor(t["casa"])
     CASA_BORDA = _cor(t["casa_borda"])
     CARTA = _cor(t["carta"])

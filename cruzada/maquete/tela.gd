@@ -191,9 +191,14 @@ func _paisagem() -> void:
 
     var y := topo + BARRA + 8.0
     var alt := size.y - y - MARGEM * 0.5
-    _painel_estado(Rect2(MARGEM, y, lateral, alt))
+    # Cada painel tem a altura do seu conteúdo, não a da coluna. Moldura com
+    # buraco dentro lê como inacabado; espaço vazio FORA da moldura lê como
+    # respiro. É a diferença mais barata entre interface cara e improvisada.
+    _painel_estado(Rect2(MARGEM, y, lateral, 446.0))
     _centro(Rect2(MARGEM + lateral + VAO, y, centro_larg, alt))
-    _painel_referencia(Rect2(MARGEM + lateral + VAO + centro_larg + VAO, y, lateral, alt))
+    var dir := MARGEM + lateral + VAO + centro_larg + VAO
+    _painel_referencia(Rect2(dir, y, lateral, 462.0))
+    _rodape_mesa(Rect2(dir, y + 462.0 + 14.0, lateral, 54.0))
 
 ## O centro: só grade e mão. Nada de status, nada de tabela.
 func _centro(r: Rect2) -> void:
@@ -222,9 +227,16 @@ func _centro(r: Rect2) -> void:
     var gx := r.position.x + (r.size.x - bloco) * 0.5
     var grade := Rect2(gx, r.position.y, grade_larg, grade_alt)
 
+    var mesa := Rect2(grade.position, Vector2(bloco, grade.size.y + ROT_COLUNA + 6.0))
+    _mesa_embutida(mesa)
     _grade(grade, celula, VAO_CELULA)
     _rotulos(grade, celula, VAO_CELULA, ROT_FILEIRA, ROT_COLUNA)
-    _mao(Rect2(r.position.x, r.end.y - alt_mao, r.size.x, alt_mao), carta_mao, VAO_MAO)
+    # A mão alinha pelo centro da MESA, não da grade nem da coluna. A massa
+    # visual que o olho usa como eixo é a mesa inteira — grade mais rótulos —,
+    # e centrar na grade sozinha joga a mão para a esquerda.
+    var mao_larg := carta_mao * 5.0 + VAO_MAO * 4.0
+    _mao(Rect2(mesa.get_center().x - mao_larg * 0.5, r.end.y - alt_mao, mao_larg, alt_mao),
+         carta_mao, VAO_MAO)
 
 # ─────────────────────────────── retrato ───────────────────────────────
 # Três colunas não cabem em 360 de largura. A esquerda vira faixa no topo, a
@@ -249,6 +261,7 @@ func _retrato() -> void:
     var grade_larg := celula * 5.0 + VAO_CELULA * 4.0
     var grade_alt := celula * Carta.RAZAO * 5.0 + VAO_CELULA * 4.0
     var grade := Rect2(MARGEM_R, 154, grade_larg, grade_alt)
+    _mesa_embutida(grade)
     _grade(grade, celula, VAO_CELULA)
     _barras_de_fileira(grade, celula, VAO_CELULA, BARRA_FILEIRA)
     _rotulos_coluna(grade, celula, VAO_CELULA, 20.0)
@@ -297,34 +310,53 @@ func _painel_estado(r: Rect2) -> void:
     var ff := Temas.fonte_do_tema(true)
     var x := r.position.x + 20.0
     var larg := r.size.x - 40.0
-    var y := r.position.y + 30.0
 
-    draw_string(ff, Vector2(x, y), "PONTOS", HORIZONTAL_ALIGNMENT_LEFT, -1, 13,
-                Temas.TEXTO_SUAVE)
-    y += 54
-    # O maior número da tela: é ele que precisa ser lido de relance enquanto sobe.
-    draw_string(ff, Vector2(x, y), _milhar(PONTOS), HORIZONTAL_ALIGNMENT_LEFT, -1, 50,
-                Temas.TEXTO)
-    y += 28
-    draw_string(f, Vector2(x, y), "de " + _milhar(META), HORIZONTAL_ALIGNMENT_LEFT, -1,
-                18, Temas.TEXTO_SUAVE)
-    y += 20
-    var trilho := Rect2(x, y, larg, 10)
+    draw_string(ff, Vector2(x, r.position.y + 30), "PONTOS",
+                HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Temas.TEXTO_SUAVE)
+    draw_string(ff, Vector2(x, r.position.y + 84), _milhar(PONTOS),
+                HORIZONTAL_ALIGNMENT_LEFT, -1, 50, Temas.TEXTO)
+    draw_string(f, Vector2(x, r.position.y + 112), "de " + _milhar(META),
+                HORIZONTAL_ALIGNMENT_LEFT, -1, 18, Temas.TEXTO_SUAVE)
+
+    var trilho := Rect2(x, r.position.y + 128, larg, 10)
     _pilula(trilho, Color(Temas.BORDA, 0.8))
     _pilula(trilho, Temas.SUCESSO)   # meta estourada: o verde diz "bateu" sem palavra
 
-    y += 60
-    draw_string(ff, Vector2(x, y), "MULTIPLICADOR", HORIZONTAL_ALIGNMENT_LEFT, -1, 13,
-                Temas.TEXTO_SUAVE)
-    y += 56
-    draw_string(ff, Vector2(x, y), "×%d" % MULT, HORIZONTAL_ALIGNMENT_LEFT, -1, 50,
-                Temas.DESTAQUE)
-    draw_string(f, Vector2(x + 86, y - 4), "sobe e", HORIZONTAL_ALIGNMENT_LEFT, -1, 14,
-                Temas.TEXTO_SUAVE)
-    draw_string(f, Vector2(x + 86, y + 14), "nunca desce", HORIZONTAL_ALIGNMENT_LEFT, -1,
-                14, Temas.TEXTO_SUAVE)
+    # Um filete separando os dois blocos de informação. Régua, não decoração:
+    # é ele que dá ritmo à coluna sem precisar de mais moldura.
+    draw_rect(Rect2(x, r.position.y + 164, larg, 1), Color(Temas.FILETE, 0.18))
 
-    _contadores(Rect2(x, r.end.y - 58, larg, 38))
+    draw_string(ff, Vector2(x, r.position.y + 196), "MULTIPLICADOR",
+                HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Temas.TEXTO_SUAVE)
+    draw_string(ff, Vector2(x, r.position.y + 252), "×%d" % MULT,
+                HORIZONTAL_ALIGNMENT_LEFT, -1, 50, Temas.DESTAQUE)
+    draw_string(f, Vector2(x + 88, r.position.y + 248), "sobe e nunca desce",
+                HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Temas.TEXTO_SUAVE)
+
+    draw_rect(Rect2(x, r.position.y + 286, larg, 1), Color(Temas.FILETE, 0.18))
+
+    # Rodada e vidas como contas, não como texto: o jogador vê onde está e
+    # quanto lhe resta sem ler nada.
+    draw_string(ff, Vector2(x, r.position.y + 322), "RODADA",
+                HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Temas.TEXTO_SUAVE)
+    for i in 6:
+        var c := Vector2(x + 92 + i * 19, r.position.y + 317)
+        if i < 4:
+            draw_circle(c, 5.5, Temas.DESTAQUE if i == 3 else Temas.TEXTO_SUAVE)
+        else:
+            draw_circle(c, 5.5, Color(Temas.BORDA, 0.9))
+
+    draw_string(ff, Vector2(x, r.position.y + 356), "VIDAS",
+                HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Temas.TEXTO_SUAVE)
+    for i in 3:
+        var c := Vector2(x + 92 + i * 26, r.position.y + 351)
+        # Vida gasta vira contorno, não some: quem olha precisa ver que tinha três.
+        if i < 2:
+            Carta.simbolo(self, c, 17.0, 0)
+        else:
+            draw_arc(c, 7.0, 0.0, TAU, 20, Color(Temas.TEXTO_SUAVE, 0.5), 1.5)
+
+    _contadores(Rect2(x, r.size.y + r.position.y - 58, larg, 38))
 
 func _contadores(r: Rect2) -> void:
     var f := Temas.fonte_do_tema(true)
@@ -355,7 +387,7 @@ func _painel_referencia(r: Rect2) -> void:
     draw_string(ff, Vector2(r.position.x + 20, r.position.y + 30), "MÃOS",
                 HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Temas.TEXTO_SUAVE)
 
-    var passo := minf(44.0, (r.size.y - 130.0) / MAOS.size())
+    var passo := minf(44.0, (r.size.y - 72.0) / MAOS.size())
     var y := r.position.y + 52.0
     for m in MAOS:
         var feita: bool = m[3]
@@ -372,12 +404,35 @@ func _painel_referencia(r: Rect2) -> void:
                     HORIZONTAL_ALIGNMENT_RIGHT, 44, 16, Temas.ACENTO)
         y += passo
 
-    var rodape := Rect2(r.position.x + 16, r.end.y - 62, r.size.x - 32, 46)
-    _caixa(rodape, 8, 0.5)
-    draw_string(ff, Vector2(rodape.position.x + 12, rodape.position.y + 19), "MESA",
+
+
+## O tabuleiro afundado na mesa. Numa mesa de carteado de verdade o feltro é
+## rebaixado na madeira, e é esse degrau que faz o objeto parecer caro. Aqui
+## são três desenhos: um retângulo mais escuro, uma sombra interna no topo e um
+## filete dourado na borda.
+func _mesa_embutida(g: Rect2) -> void:
+    var mesa := g.grow(14.0)
+    var caixa := StyleBoxFlat.new()
+    caixa.bg_color = Color(Temas.FUNDO, 0.55) if Temas.e_claro() else Color(0, 0, 0, 0.22)
+    caixa.set_corner_radius_all(16)
+    caixa.border_color = Color(Temas.FILETE, 0.16)
+    caixa.set_border_width_all(1)
+    draw_style_box(caixa, mesa)
+    # Sombra interna só no topo: a luz vem de cima, então o degrau só escurece
+    # a aba superior. Sombra nos quatro lados lê como buraco, não como encaixe.
+    for i in 6:
+        var t := float(i) / 5.0
+        draw_rect(Rect2(mesa.position.x + 2, mesa.position.y + 1 + i, mesa.size.x - 4, 1),
+                  Color(0, 0, 0, 0.10 * (1.0 - t)))
+
+func _rodape_mesa(r: Rect2) -> void:
+    _caixa(r, 10, 0.72)
+    var ff := Temas.fonte_do_tema(true)
+    draw_string(ff, Vector2(r.position.x + 18, r.position.y + 22), "MESA",
                 HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Temas.TEXTO_SUAVE)
-    draw_string(f, Vector2(rodape.position.x + 12, rodape.position.y + 37), "Rachada",
-                HORIZONTAL_ALIGNMENT_LEFT, -1, 15, Temas.ALERTA)
+    draw_string(Temas.fonte_do_tema(), Vector2(r.position.x + 18, r.position.y + 42),
+                "Rachada · as quinas nascem lacradas", HORIZONTAL_ALIGNMENT_LEFT, -1,
+                14, Temas.ALERTA)
 
 func _grade(r: Rect2, celula: float, vao: float) -> void:
     var alt := celula * Carta.RAZAO
@@ -402,6 +457,12 @@ func _casa_vazia(c: Rect2, viva: bool) -> void:
     caixa.set_border_width_all(3 if viva else 2)
     caixa.set_corner_radius_all(int(maxf(4.0, c.size.x * 0.09)))
     draw_style_box(caixa, c)
+    # Um fio de luz na aresta de cima. A luz da cena vem de cima, então só a
+    # aba superior a recebe — é o que faz a casa ler como marcação rebaixada no
+    # feltro em vez de buraco recortado nele. Um draw_rect.
+    if not viva:
+        draw_rect(Rect2(c.position.x + c.size.x * 0.12, c.position.y + 1.5,
+                        c.size.x * 0.76, 1.0), Color(Temas.TEXTO, 0.07))
 
 ## Os rótulos de linha: a fração e a categoria, colados na linha. É a informação
 ## que o jogador mais lê — painel distante obrigaria o olho a viajar.
@@ -477,9 +538,18 @@ func _caixa(r: Rect2, raio := 12, alfa := 0.72) -> void:
     var caixa := StyleBoxFlat.new()
     caixa.bg_color = Color(Temas.PAINEL, alfa)
     caixa.border_color = Temas.BORDA
-    caixa.set_border_width_all(2)
+    caixa.set_border_width_all(1)
     caixa.set_corner_radius_all(raio)
     draw_style_box(caixa, r)
+    # O filete: 1 px do acento por dentro da borda. Borda grossa é a assinatura
+    # da interface improvisada; a linha fina é a da interface cara. Custa um
+    # draw_rect e muda a leitura da tela inteira.
+    var dentro := StyleBoxFlat.new()
+    dentro.bg_color = Color(0, 0, 0, 0)
+    dentro.border_color = Color(Temas.FILETE, 0.22)
+    dentro.set_border_width_all(1)
+    dentro.set_corner_radius_all(maxi(raio - 2, 2))
+    draw_style_box(dentro, r.grow(-3.0))
 
 func _pilula(r: Rect2, cor: Color, raio := -1) -> void:
     var caixa := StyleBoxFlat.new()
