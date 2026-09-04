@@ -742,3 +742,152 @@ Ele fica traduzido nos 20 idiomas enquanto o nome fica igual em todos. Essa
 divisão é de propósito: o nome é a marca, o subtítulo é a explicação, e só a
 explicação precisa falar a língua de quem lê.
 
+---
+
+# 10. NOME DA DESENVOLVEDORA — rodada com medição
+
+A seção 5 recomendava **Estrato Games** e foi recusada. Esta rodada aplica ao
+estúdio o mesmo método que fechou o nome do jogo: gerar, medir colisão, pontuar.
+
+## 10.1. A coisa mais útil que descobri, e ela é contraintuitiva
+
+Pedido: *memorável, atemporal, lendário, indie, epic win*. **"Atemporal" e
+"épico" puxam para lados opostos**, e a lista dos estúdios que viraram lenda
+mostra qual dos dois ganha:
+
+| Estúdio | O nome, no dia em que foi escolhido |
+|---|---|
+| **Team Cherry** | "time cereja" |
+| **Playdead** | duas palavras coladas sem explicação |
+| **Mossmouth** | "boca de musgo" |
+| **ConcernedApe** | "macaco preocupado" |
+| **Local Thunk** | duas palavras que juntas não querem dizer nada |
+| **Naughty Dog** | "cachorro safado" |
+| **thatgamecompany** | recusa a ser um nome |
+
+**Nenhum deles soava lendário.** Todos são estranhos e concretos. O que os
+tornou lendários foi Hollow Knight, Limbo, Spelunky, Stardew Valley e Balatro —
+não a escolha do nome.
+
+O contrário também tem regra: nomes grandiosos (Epic Victory, Legendary,
+Infinity Studios) envelhecem em constrangimento, porque prometem antes de
+entregar. **Nome estranho e concreto amadurece; nome grandioso azeda.**
+
+Então o alvo mudou: não é achar um nome que já soe épico. É achar um nome
+**curto, estranho, concreto e fácil de dizer**, que o jogo possa tornar lendário
+depois.
+
+## 10.2. O que a busca queimou
+
+| Nome | O que existe |
+|---|---|
+| ~~Estrato Games~~ | *STRATA* na Steam, mesmo campo semântico — e recusado pelo titular |
+| ~~Blue Hour~~ | **Blue Hour Studios** já existe |
+| ~~Longplay~~ | **Longplay Games** (itch.io) |
+| ~~Slowburn~~ | **SLOWBURN**, jogo na Steam (2835080) |
+| ~~Final Form~~ | **Final Form Games**, Filadélfia, fez *Jamestown* |
+| ~~Crux~~ | **Crux Game Studios**, indie de terror narrativo |
+| ~~Canopus~~ | **Canopus Games**, faz jogos de tycoon |
+| ~~Vela~~ | **Vela Games**, Dublin, ex-Riot e ex-EA, fez *Evercore Heroes* |
+| ~~Lume~~ | *Lume*, jogo da State of Play |
+
+## 10.3. Os sete que sobraram limpos
+
+### ★★ NIGHTSMITH — a recomendação
+
+> *O que se forja de madrugada* / *Forged after hours*
+
+Uma palavra inventada, colada de duas antigas. `smith` é a palavra mais velha de
+ofício que o inglês tem — está em uso há mais de mil anos e **não existe ano em
+que ela soe datada**. É o padrão exato dos estúdios da tabela acima: estranho,
+concreto, e sem prometer nada.
+
+E diz o que a coisa é de verdade: alguém que forja depois do expediente. Essa é
+a história indie inteira, e no seu caso ela é literal.
+
+**A vantagem prática que nenhum outro tem:** é **uma palavra inventada**, então
+registra como marca de verdade. ONE CREDIT e TRUE ENDING são duas palavras
+comuns do inglês — quase impossíveis de defender, e qualquer um pode abrir uma
+empresa com o mesmo nome na semana seguinte.
+
+**O custo, dito na cara:** `gh` mudo seguido de `th` é difícil para quem fala
+português, espanhol, francês, russo ou japonês. Isso machuca o boca a boca, que
+é justamente o que faz um estúdio indie crescer. Contra-argumento honesto: nome
+de estúdio é **muito mais lido do que falado** — página da Steam, créditos,
+*capsule*, contrato — e o logotipo (martelo e bigorna, ou uma faísca) carrega o
+sentido sem depender do som.
+
+Colisão medida: **nenhuma**. O campo `Night___ Studio` é movimentado (Night
+School, Night Stroll, Nightglyph, Beer Night), mas *Nightsmith* está livre, e é
+uma palavra só — não é "Night" mais um substantivo.
+
+### ★ IRONBLOOM — se a pronúncia pesar
+
+> *O que sai do forno ainda em bruto* / *What leaves the forge still raw*
+
+Mesma família de NIGHTSMITH e **muito mais fácil de dizer**. Um `bloom` é o
+termo real da metalurgia para a massa de ferro que sai da forja antes de virar
+qualquer coisa — então o nome é, ao mesmo tempo, ferro bruto e flor. Duas
+imagens opostas em oito letras.
+
+Também é palavra inventada, também registra. Colisão: nenhuma.
+
+### ★ ONE CREDIT — se o nome tiver que dizer a ética
+
+> *Uma ficha basta* / *One credit is enough*
+
+No fliperama, terminar um jogo com **uma ficha só** (*1CC*) é o feito mais
+respeitado que existe. É "epic win" literal, e é de 1978 — não envelhece.
+
+E ele **declara a sua regra de negócio no próprio nome**: comprou uma vez, o
+jogo é seu para sempre. Num mercado de idle cheio de loja dentro do jogo, um
+estúdio chamado ONE CREDIT diz de que lado está antes de a pessoa ler qualquer
+coisa.
+
+Contra, e é sério: são duas palavras comuns, **fracas para registrar**. E em
+português `crédito` lê primeiro como financiamento — "One Credit" pode soar a
+banco no Brasil, que é onde a empresa vai existir.
+
+### Os outros quatro limpos
+
+| Nome | A ideia | Contra |
+|---|---|---|
+| **TRUE ENDING** | O final secreto que só aparece quando você fez tudo. Todo jogador sente na hora. | Duas palavras comuns, marca fraca. |
+| **IRONWAKE** | `wake` é velar, despertar e o rastro que algo deixa — os três servem. | O `w` trava na boca de quem fala português. |
+| **QUIET MACHINE** | É a frase da nossa identidade visual: *uma máquina antiga que ainda funciona, sozinha*. | Bonito e sem energia. Não é "epic win" de jeito nenhum. |
+| **AUSTRAL** | "do sul", em latim. Lê igual em 20 idiomas, elegante, e diz de onde o jogo vem sem nenhum clichê brasileiro. | Adjetivo comum: foi moeda argentina e é nome de companhia aérea. |
+
+## 10.4. Tabela
+
+| Nome | Memorável | Atemporal | Lendário | Indie | Epic win | 20 idiomas | Registrável | **Soma** |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **NIGHTSMITH** | 5 | 5 | 5 | 5 | 3 | 2 | 5 | **30** |
+| **IRONBLOOM** | 4 | 5 | 4 | 4 | 3 | 4 | 5 | **29** |
+| **ONE CREDIT** | 4 | 5 | 5 | 4 | 5 | 3 | 2 | **28** |
+| IRONWAKE | 4 | 5 | 4 | 4 | 3 | 3 | 5 | 28 |
+| TRUE ENDING | 5 | 4 | 4 | 4 | 5 | 3 | 2 | 27 |
+| QUIET MACHINE | 4 | 4 | 3 | 5 | 2 | 4 | 3 | 25 |
+| AUSTRAL | 3 | 5 | 3 | 3 | 2 | 5 | 3 | 24 |
+
+*(5 = melhor · máximo 35)*
+
+## 10.5. Duas regras que valem para qualquer escolha
+
+1. **O nome do estúdio nunca contém o nome do jogo.** "Tower Zero Studio" morre
+   no segundo jogo. O estúdio precisa sobreviver ao catálogo inteiro.
+2. **O sufixo é opcional e vem depois.** `Games`, `Studio` e `Interactive` são
+   decoração jurídica. Na Steam o que aparece é a primeira palavra, e é ela que
+   tem de aguentar sozinha.
+
+## 10.6. O que trava enquanto isto não fecha
+
+`export_presets.cfg` fica com dois campos vazios ou errados, e os dois esperam
+esta decisão — está registrado em `docs/PENDENCIAS.md`, seção 7:
+
+- `package/unique_name` ainda é `com.example.jogo`, e a Play Store recusa
+  `example`. O formato é `com.<estudio>.towerzero`.
+- `application/company_name` está vazio, e ele aparece nas propriedades do
+  arquivo no Windows.
+
+Fechar o nome resolve os dois de uma vez. Nada mais no jogo depende disto.
+
