@@ -91,3 +91,61 @@ que está em aberto, com número.
 
 `.mcp.json` aponta para o servidor de <https://github.com/joabcostamd/mcp-godot-desenvolvimento>.
 Clone-o ao lado deste repositório, ou aponte `MCP_GODOT_DIR` para onde ele estiver.
+
+---
+
+# IA dentro do editor: o Godot AI
+
+<https://github.com/hi-godot/godot-ai> — MIT, Godot 4.7+, compatível com o
+nosso 4.7.2. É um servidor MCP que liga o Claude Code a um **editor Godot
+vivo**. O que ele acrescenta a este projeto, em ordem de valor:
+
+| Ferramenta | Por que importa aqui |
+|---|---|
+| `editor_screenshot(source="game")` | captura o **framebuffer do jogo rodando**. Hoje nossas capturas saem de SubViewport com estado fixo: elas mostram uma pose, não uma partida. Isto vê o jogo de verdade, com animação e juice acontecendo |
+| `logs_read(source="editor")` | erros de parse do GDScript, `push_error`, avisos de recarga e as linhas vermelhas da aba Errors do Debugger. Hoje só enxergamos erro quando uma rodada headless imprime |
+| `project_run` | roda e detecta o erro de parse que **congela o jogo antes de qualquer log sair** — a classe de falha que nenhum teste nosso pega |
+
+As outras ~43 ferramentas editam nós, materiais, partículas e animação. **Para
+nós elas quase não servem**: o PLACARD tem 7 cenas praticamente vazias e desenha
+tudo em `_draw()`. Não force o uso delas aqui.
+
+## Isto NÃO viola a regra "nada de plugin"
+
+A regra de que não entra plugin vale para o **jogo**: nada de dependência que o
+jogador precise ter, nada de asset store no produto. O Godot AI é **ferramenta
+de desenvolvimento**, fica em `addons/` que está no `.gitignore`, e não é
+carregado por nenhuma cena do jogo. Não o remova achando que é sujeira.
+
+## Instalar
+
+1. `uv` instalado (o servidor roda por `uvx`)
+2. Baixe uma **release publicada** e ponha o add-on em `cruzada/addons/godot_ai/`,
+   com o `plugin.cfg` dentro dessa pasta. **Não copie um snapshot do código-fonte
+   do repositório** — a documentação deles é explícita nisso
+3. No Godot: *Project → Project Settings → Plugins → Godot AI*
+4. No dock do Godot AI, botão **Configure** ao lado de Claude Code
+
+**Não escreva a entrada do `.mcp.json` na mão.** A v4 fala `godot-ai attach` por
+stdio e o comando gerado pelo dock carrega versão, portas, resolvedor e domínios
+de ferramenta excluídos. Uma URL crua tipo `http://127.0.0.1:8000/mcp` não
+autentica — está na documentação deles.
+
+## O limite honesto
+
+Ele precisa de um **editor Godot vivo**. Na nuvem headless isso não existe de
+graça: o valor dele é na sua máquina, com o editor aberto. Nossa suíte
+(`./testar.sh`) continua sendo o que roda em qualquer lugar, sem editor e sem
+rede.
+
+## Duas lições que vieram de lá e valem aqui
+
+1. **Espere sinal determinístico, nunca tempo.** Eles têm `game_capture_ready`,
+   que vira verdadeiro só quando o jogo avisa que está pronto — em vez de dormir
+   e torcer. É a mesma armadilha da seção de Godot headless acima: quem espera
+   por tempo ou trava para sempre, ou mede cedo demais e mente.
+2. **Teste que finge o motor não verifica o motor.** A frase deles é "mocks de
+   Python não pegam bug de GDScript; um pytest verde não é uma mudança
+   verificada". A nossa versão: 522 asserções verdes não provam que a tela está
+   legível — por isso existem os validadores de contraste, tipografia e layout,
+   e por isso as capturas são olhadas.

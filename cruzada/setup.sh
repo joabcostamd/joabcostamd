@@ -41,9 +41,19 @@ fi
 
 command -v python3 >/dev/null 2>&1 || { echo "ERRO: python3 é obrigatório."; exit 1; }
 
+# uv: só o Godot AI precisa dele (o servidor MCP roda por uvx). Não é requisito
+# para jogar nem para rodar a suíte, então falha aqui não derruba o setup.
+if [ "${COM_GODOT_AI:-1}" = "1" ] && ! command -v uv >/dev/null 2>&1; then
+    msg "Instalando uv (para o Godot AI)"
+    curl -fsSL https://astral.sh/uv/install.sh | sh || \
+        echo "AVISO: uv não instalou. O jogo e a suíte funcionam sem ele; só o Godot AI não."
+fi
+
 msg "Pronto"
 godot --version
 python3 --version
 echo
 echo "  cd cruzada && ./testar.sh        # a suíte inteira"
 echo "  cd cruzada && godot --path . res://cenas/jogo.tscn   # jogar"
+echo
+echo "Godot AI (IA dentro do editor, opcional): ver a seção no CLAUDE.md."

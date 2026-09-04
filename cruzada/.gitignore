@@ -1,2 +1,6 @@
 .godot/
 capturas-do-jogo/*.import
+
+# O add-on do Godot AI vem de release publicada, nunca do repositório.
+# É ferramenta de desenvolvimento, não dependência do jogo — ver CLAUDE.md.
+addons/
