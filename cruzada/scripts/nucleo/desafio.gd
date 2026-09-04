@@ -27,6 +27,14 @@ const GEOMETRIA_MAX := 8
 const METAS_MIN := 0.70
 const METAS_MAX := 1.25
 
+## O piso do baralho da run. A geometria 4 tira de circulação o que foi colhido,
+## e uma mesa colhe umas nove cartas: sem piso, o baralho zera na rodada 4 e a
+## run congela com a mão vazia — medido, e é o oposto de dificuldade.
+##
+## Com 32 cartas a regra continua mordendo (menos naipes, menos outs, o Baralho
+## Aberto encolhendo à vista) sem nunca fechar a porta.
+const BARALHO_MINIMO := 32
+
 ## Os graus da geometria, cumulativos. Cada um é uma linha desta tabela e não
 ## um `if` espalhado pelo motor.
 const GEO_MENOS_UM_POSICIONAMENTO := 1
@@ -65,6 +73,41 @@ const TABULEIROS: Array[Dictionary] = [
     {"nome": "Tabuleiro 7", "orcamento": 0, "geometria": 7, "metas": 1.00},
     {"nome": "Tabuleiro 8", "orcamento": 0, "geometria": 8, "metas": 1.25},
 ]
+
+## O que cada grau produz, MEDIDO — não estimado.
+##
+## `ferramentas/curva.gd -- 16 loja` roda 16 runs inteiras por grau com o
+## jogador simulado e imprime esta tabela. Os números vão para a tela de
+## escolha: quem decide quanto quer apanhar tem direito de saber o que está
+## escolhendo, e "difícil" e "muito difícil" não informam nada.
+##
+## Medido em 4 de setembro de 2026, com o comprador simulado. REMEDIR sempre que
+## uma regra do motor, um item ou a curva de metas mudarem — tabela de dificuldade
+## desatualizada é pior que tabela nenhuma, porque ela é acreditada.
+const VITORIA_MEDIDA: Array[Dictionary] = [
+    {"run": 56, "mesas": 16.3},
+    {"run": 30, "mesas": 14.5},
+    {"run": 13, "mesas": 12.7},
+    {"run": 9, "mesas": 11.5},
+    {"run": 6, "mesas": 10.4},
+    {"run": 4, "mesas": 10.2},
+    {"run": 2, "mesas": 10.1},
+    {"run": 1, "mesas": 7.4},
+    {"run": 0, "mesas": 4.7},
+]
+
+## Uma frase honesta sobre o que esperar deste grau. Sem adjetivo: o número.
+func expectativa() -> String:
+    if sem_derrota:
+        return "a run sempre fecha — 18 de 18 mesas"
+    var g := grau_do_dial()
+    if g < 0:
+        return "configuração própria — não medida"
+    var m: Dictionary = VITORIA_MEDIDA[g]
+    if int(m["run"]) <= 0:
+        return "o simulado nunca fechou uma run — chega a %.1f das 18 mesas" % float(m["mesas"])
+    return "%d%% das runs fecham — o simulado chega a %.1f das 18 mesas" \
+        % [int(m["run"]), float(m["mesas"])]
 
 ## A ESTUFA. Não é versão de mentira: a coleção desbloqueia igual, e é onde o
 ## jogo se aprende. Quem nunca viu uma cruzada não decide nada sobre ela.

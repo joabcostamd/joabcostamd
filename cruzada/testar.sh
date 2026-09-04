@@ -26,6 +26,10 @@ echo "── desafio: as três réguas, o dial, a geometria e a rede ──"
 "$GODOT" --headless --script res://testes/desafio.gd 2>&1 | limpar
 
 echo
+echo "── loja: níveis, selos, relíquias, dinheiro e a rodada 6 ──"
+"$GODOT" --headless --script res://testes/loja.gd 2>&1 | limpar
+
+echo
 echo "── run: as 18 mesas, as 3 vidas, o perfil e os desbloqueios ──"
 "$GODOT" --headless --script res://testes/run.gd 2>&1 | limpar
 

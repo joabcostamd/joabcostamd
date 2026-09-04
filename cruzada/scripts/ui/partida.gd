@@ -388,6 +388,17 @@ func _painel_estado(r: Rect2) -> void:
         else:
             draw_arc(c, 7.0, 0.0, TAU, 20, Color(Temas.TEXTO_SUAVE, 0.5), 1.5)
 
+    ## O dinheiro fica ao lado das jogadas: é recurso de mesa como os outros, e
+    ## esconder o saldo faz o jogador chegar à loja sem plano.
+    if run != null:
+        draw_string(ff, Vector2(x, r.end.y - 76), "$%d" % run.poderes.dinheiro,
+                    HORIZONTAL_ALIGNMENT_LEFT, -1, Temas.T_CORPO, Temas.DESTAQUE)
+        var quantos := run.poderes.quantos_selos()
+        if quantos > 0:
+            draw_string(f, Vector2(x + 52, r.end.y - 76),
+                        "%d selo%s colado%s" % [quantos, "" if quantos == 1 else "s",
+                                                "" if quantos == 1 else "s"],
+                        HORIZONTAL_ALIGNMENT_LEFT, -1, Temas.T_ROTULO, Temas.TEXTO_SUAVE)
     _contadores(Rect2(x, r.end.y - 58, larg, 38))
 
 func _contadores(r: Rect2) -> void:
@@ -468,6 +479,7 @@ func _grade(r: Rect2, celula: float, vao: float) -> void:
             continue
         var madura := _casa_madura(casa)
         var estado := Carta.MADURA if madura else Carta.NA_GRADE
+        _marca_de_selo(c, casa)
         if Mesa.eh_avesso(carta):
             Carta.desenhar_avesso(self, c,
                 Cartas.figura(Mesa.face(carta, true)), Cartas.naipe(Mesa.face(carta, true)),
@@ -483,6 +495,15 @@ func _casa_madura(casa: int) -> bool:
             return true
     return false
 
+## Um pontinho na quina da casa que tem selo. Pequeno de propósito: ele lembra,
+## não compete com a carta — e a carta é a informação.
+func _marca_de_selo(c: Rect2, casa: int) -> void:
+    if run == null:
+        return
+    var quantos: int = run.poderes.selos_de_casa.get(casa, []).size()
+    for i in quantos:
+        draw_circle(Vector2(c.end.x - 8 - i * 9, c.position.y + 8), 3.5, Temas.ACENTO)
+
 func _casa_livre(c: Rect2, casa: int) -> void:
     ## "Viva" é a casa que fecha alguma linha: é a única informação que muda a
     ## decisão e ela precisa estar na casa, não num painel.
@@ -491,6 +512,7 @@ func _casa_livre(c: Rect2, casa: int) -> void:
         if mesa.contagem[l] == Geometria.LADO - 1:
             viva = true
     Pintura.casa_vazia(self, c, viva)
+    _marca_de_selo(c, casa)
     if _selecionada < 0 or _casa_sob_o_dedo != casa or mesa.acabou:
         return
     ## O fantasma da carta escolhida, e o que ela paga. A dica mais barata que

@@ -19,6 +19,12 @@ const QUASE_LA := 0.80
 
 var semente := 0
 var desafio: Desafio
+## Tudo o que a run comprou. É o que cresce junto com a curva de metas.
+var poderes := Poderes.new()
+## A loja aberta agora, ou nula entre mesas.
+var loja: Loja
+## O último pagamento, para a tela mostrar de onde veio cada moeda.
+var ultimo_pagamento := {}
 var rodada := 1               ## 1 a 6
 var indice_da_mesa := 0       ## 0 Pequena · 1 Grande · 2 Chefe
 var tentativa := 1            ## sobe a cada derrota; muda a semente da mesa
@@ -53,7 +59,7 @@ func _init(p_semente: int, p_desafio: Desafio = null) -> void:
 func _abrir_mesa() -> void:
     var catraca := mini(tentativa - 1, CATRACA_MAX)
     mesa = Mesa.new(indice_da_mesa, rodada, semente, tentativa, desafio, catraca,
-                    fianca, fora_do_baralho, linhas_mortas)
+                    fianca, fora_do_baralho, linhas_mortas, poderes)
 
 ## Geometria 7 — uma linha morre a cada rodada. Sorteada por fluxo próprio, e
 ## nunca as duas diagonais juntas: elas são as únicas que cruzam tudo, e matar as
@@ -90,6 +96,13 @@ func concluir_mesa() -> Dictionary:
     maior_evento = maxi(maior_evento, mesa.maior_evento)
 
     fianca = mesa.fianca
+    ## O pagamento acontece SEMPRE, vitória ou derrota. Sair de uma mesa perdida
+    ## com zero no bolso é o que transforma uma mesa perdida em duas.
+    ultimo_pagamento = Economia.pagamento(mesa, poderes)
+    poderes.dinheiro += int(ultimo_pagamento["total"]) + mesa.moedas_da_mesa
+    ultimo_pagamento["selos"] = mesa.moedas_da_mesa
+    ultimo_pagamento["total"] = int(ultimo_pagamento["total"]) + mesa.moedas_da_mesa
+
     if not mesa.venceu:
         ## A FIANÇA acende também na mesa perdida: é a perda que menos se escolhe.
         if fianca < Mesa.FIANCA_LUZES:
@@ -119,6 +132,10 @@ func concluir_mesa() -> Dictionary:
         for carta: int in mesa.colhida:
             if not fora_do_baralho.has(carta):
                 fora_do_baralho.append(carta)
+        ## O piso: as cartas mais antigas voltam quando o baralho encolheria
+        ## demais. A regra aperta a run inteira; ela não a mata na rodada 4.
+        while Cartas.TAMANHO - fora_do_baralho.size() < Desafio.BARALHO_MINIMO:
+            fora_do_baralho.pop_front()
     indice_da_mesa += 1
     if indice_da_mesa >= MESAS_POR_RODADA:
         indice_da_mesa = 0
@@ -129,8 +146,19 @@ func concluir_mesa() -> Dictionary:
         venceu = true
         return {"pronto": true, "venceu_mesa": true, "fim_da_run": true,
                 "venceu_run": true}
+    _abrir_loja()
     _abrir_mesa()
-    return {"pronto": true, "venceu_mesa": true, "fim_da_run": false}
+    return {"pronto": true, "venceu_mesa": true, "fim_da_run": false,
+            "loja": true}
+
+## A loja abre depois de toda mesa vencida. A semente é derivada da run e da
+## posição: a mesma run oferece a mesma loja, e um replay continua verificável.
+func _abrir_loja() -> void:
+    loja = Loja.new(rodada, Aleatorio.misturar(semente, 314, mesas_concluidas()),
+                    desafio)
+
+func fechar_loja() -> void:
+    loja = null
 
 ## Registra o que uma colheita produziu. É daqui que saem os desbloqueios de
 ## tema: a condição "faça uma Sequência de Cor" precisa de alguém contando.

@@ -235,6 +235,112 @@ posicionamentos sem bater gasta 1 vida das 3 e repete a mesa com semente **deriv
 
 ---
 
+## 4b. A DIFICULDADE — três réguas, e nenhuma porta fechada
+
+**R26 — A DIFICULDADE É UMA COISA SÓ.** Três números, e tudo o mais escreve neles:
+
+| Régua | Faixa | O que muda |
+|---|---|---|
+| **Orçamento** | −3 a +6 | posicionamentos por mesa |
+| **Geometria** | 0 a 8 | quanto o tabuleiro atrapalha, cumulativo |
+| **Metas** | ×0,70 a ×1,25 | a altura da meta |
+
+O dial **Tabuleiro 0–8** é um *preset* que **escreve** nas três réguas; ele não soma com elas.
+Um caminho de código por dificuldade é como se ganha um modo fácil que ninguém testou e um
+difícil que ninguém consegue.
+
+**R27 — OS GRAUS DA GEOMETRIA**, cumulativos:
+
+| Grau | O que entra |
+|---|---|
+| 1 | um posicionamento a menos em toda mesa |
+| 2 | duas casas nascem lacradas (nunca o centro: lacrar C3 tira 4 linhas de uma vez) |
+| 3 | colunas pagam um multiplicador a menos, com piso em 1 |
+| 4 | a pilha colhida não volta — com **piso de 32 cartas** no baralho da run |
+| 5 | a loja perde uma vaga |
+| 6 | a cruzada só soma mults de categorias **diferentes** |
+| 7 | uma linha morre por rodada: ela **colhe normalmente e paga zero** |
+| 8 | as metas sobem 25% |
+
+Duas dessas linhas são correções de defeito medido, não escolhas de design. **O piso de 32
+cartas** existe porque sem ele o grau 4 zerava o baralho na rodada 4 e a run congelava com a mão
+vazia. **A linha morta colhe** porque uma linha que enche e nunca limpa trava a grade — e ela não
+empresta o multiplicador às outras, senão fechar linha morta viraria jogada boa.
+
+**R28 — A ESTUFA.** Orçamento +4, cinco descartes, metas ×0,70 e **a derrota não existe**: a mesa
+perdida repete de graça. Não é versão de mentira — a coleção desbloqueia igual. É a promessa de
+que existe um lugar onde o jogo **termina**, e ela é banda da aferição: medido, a Estufa fecha
+**18 de 18 mesas**.
+
+**R29 — A REDE DE SEGURANÇA.** Três peças, e todas contra o mesmo abandono:
+
+- **SEGUNDA MÃO** — repetir a mesma mesa dá **+1 posicionamento por tentativa, teto +3**, e
+  **nunca** reduz a meta. Ferramenta ensina que dá para virar; desconto ensina que perder é o
+  caminho.
+- **QUASE LÁ** — derrota com **≥ 80%** da meta **devolve a vida**. A mesa em que se chega perto é
+  justamente a que dói perder, e é ali que se desinstala.
+- **FIANÇA** — três luzes. Acende ao perder uma mesa, ou quando uma colheita derruba uma linha em
+  4/5 que **a carta do jogador não tocou**. Com as três acesas, a colheita seguinte paga **o
+  dobro** e as luzes zeram. Máximo **uma luz por mesa**; as luzes atravessam mesas e zeram entre
+  runs. Ela **nunca** acende por demolição escolhida: a Janela demole 4/5 por design, e premiar
+  isso faria da autossabotagem a estratégia ótima.
+
+**R30 — NENHUMA MESA É IMPOSSÍVEL.** Piso duro de **7 posicionamentos** em qualquer configuração:
+com menos, nenhuma linha chega às 5 cartas e a mesa fica invencível por aritmética. E a mesa
+**termina** quando não há jogada legal — sem carta na mão ou sem casa vazia —, fazendo o fecho.
+Sem isso a run congelava repetindo o mesmo estado, sem nem gastar uma vida.
+
+---
+
+## 4c. A ECONOMIA E A LOJA — o que faz a rodada 6 existir
+
+Sem loja, a vitória da rodada 6 é **zero**. Medido, no jogo pronto, com o jogador simulado. A
+loja não é conteúdo: é a única razão de a curva de metas ser escalável.
+
+**R31 — O DINHEIRO.**
+
+| Fonte | Valor |
+|---|---|
+| Vitória Pequena / Grande / Chefe | $3 / $4 / $5 |
+| Posicionamento não usado | $1 cada, teto $4 |
+| Juros | $1 a cada $5 guardados, teto $4 |
+| **Derrota paga** | $1 por fatia inteira de 20% da meta atingida, teto $4 |
+
+A derrota paga porque sair de uma mesa perdida com zero no bolso transforma uma mesa perdida em
+duas: sem dinheiro não há loja, e sem loja não há como virar.
+
+**R32 — A LOJA.** Três vagas depois de toda mesa vencida, sorteadas por semente derivada da run.
+Rerrolar custa $1 e sobe $1 a cada vez na mesma loja. **SEGUIR sempre visível**: a loja nunca
+prende ninguém.
+
+**Divulgação progressiva:** rodada 1 vende só nível de mão; selo de casa entra na 2, selo de eixo
+na 3, relíquia na 4. Não é racionar poder — é um conceito por vez, e a rodada 1 é onde o jogador
+ainda está aprendendo o que é uma linha.
+
+**R33 — NÍVEL DE MÃO.** Cada compra soma `max(fichas_base_do_nível_0 × 0,35 ; 8)` às fichas base
+e **+1** ao multiplicador daquela categoria. O passo usa **sempre** as fichas do nível zero: não
+é composto, senão a Sequência Real dobraria sozinha em quatro compras e a tabela perderia a
+hierarquia. Full House sobe de 14 em 14, Sequência de Cor de 35 em 35, Par de 8 em 8.
+
+**R34 — SELOS E RELÍQUIAS.** Selo de casa cola numa das 25 casas; selo de eixo numa das 12
+linhas; relíquia é global. **Onde colar é o jogo:** a casa central participa de 4 linhas, os
+cantos de 3, o resto de 2 — o mesmo selo em duas casas é uma build diferente. Efeitos iguais
+**empilham**, e é assim que build extrema existe.
+
+O catálogo é **dado**, não código: um item novo é uma linha de tabela e, no máximo, um gancho a
+mais em `Poderes`. O motor nunca pergunta "tenho a relíquia Novelo?" — ele pergunta "qual é o
+Tear inicial?".
+
+**R35 — O QUE A LOJA ENTREGA, MEDIDO.** No Tabuleiro 0, com o jogador simulado:
+
+| | sem loja | com loja |
+|---|---|---|
+| vitória na rodada 6 | **0,0%** | **69%** |
+| mesas da run vencidas | 9,5 de 18 | **16,3 de 18** |
+| runs fechadas por inteiro | — | **56%** |
+
+---
+
 ## 5. O AVESSO — o coringa
 
 **R21 — A FORJA.** Toda colheita prensa as **duas cartas de maior valor** daquela linha num

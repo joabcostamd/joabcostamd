@@ -21,58 +21,73 @@ func _init() -> void:
         graus = [0, 1, 2, 3, 4, 5, 6, 7, 8]
 
     print("")
-    print("CURVA — %d sementes por célula, jogador guloso, sem loja" % sementes)
+    var com_loja := args.size() > 2 or (args.size() > 1 and args[1] == "loja")
+    print("CURVA — %d sementes por célula, jogador guloso%s"
+          % [sementes, ", COM loja" if com_loja else ", sem loja"])
     print("")
-    print("  grau                       vitória por rodada 1→6      run inteira")
+    print("  grau            vitória da mesa por rodada 1→6    run    mesas   compras")
     for grau in graus:
         var d := Desafio.tabuleiro(grau)
-        var r := medir(sementes, d)
-        print("  %-12s  %s   %5.1f%%   completou %.1f de 18"
-              % [d.nome(), r["texto"], float(r["mesas"]), float(r["ate_onde"])])
+        var r := medir(sementes, d, com_loja)
+        print("  %-12s  %s   %5.1f%%  %4.1f/18  %.1f selos %.1f níveis"
+              % [d.nome(), r["texto"], float(r["runs"]), float(r["ate_onde"]),
+                 float(r["selos"]), float(r["niveis"])])
 
-    var e := medir(sementes, Desafio.estufa())
-    print("  %-12s  %s   %5.1f%%   completou %.1f de 18"
-          % ["Estufa", e["texto"], float(e["mesas"]), float(e["ate_onde"])])
+    var e := medir(sementes, Desafio.estufa(), com_loja)
+    print("  %-12s  %s   %5.1f%%  %4.1f/18  %.1f selos %.1f níveis"
+          % ["Estufa", e["texto"], float(e["runs"]), float(e["ate_onde"]),
+             float(e["selos"]), float(e["niveis"])])
     print("")
-    print("  vitória por mesa avulsa. 'completou' = quantas mesas a run vence")
-    print("  antes de acabarem as três vidas.")
+    print("  vitória medida DENTRO da run, com a build que o jogador tinha ali.")
+    print("  'run' = runs fechadas por inteiro; 'mesas' = quantas das 18 caem.")
     quit()
 
-func medir(sementes: int, d: Desafio) -> Dictionary:
-    ## Duas medições diferentes, e as duas importam: a vitória de uma mesa
-    ## avulsa em cada rodada (a curva) e quanto de uma run inteira o jogador
-    ## atravessa antes de gastar as vidas (a experiência real).
+func medir(sementes: int, d: Desafio, com_loja := false) -> Dictionary:
+    ## A medição que importa é DENTRO da run: uma mesa da rodada 6 jogada por
+    ## quem chegou lá com uma build é outra mesa. Medir a rodada 6 isolada, com
+    ## poderes zerados, mede um jogo que ninguém joga.
     var vitorias := []
-    var mesas := []
+    var tentadas := []
     for i in Metas.RODADAS:
         vitorias.append(0)
-        mesas.append(0)
-    var total := 0
-    var vencidas := 0
-    for s in sementes:
-        for rodada in range(1, Metas.RODADAS + 1):
-            for tipo in Metas.TIPOS:
-                var m := Mesa.new(tipo, rodada, SEMENTE_BASE + s * PASSO, 1, d)
-                Politica.jogar(m)
-                mesas[rodada - 1] += 1
-                total += 1
-                if m.venceu:
-                    vitorias[rodada - 1] += 1
-                    vencidas += 1
+        tentadas.append(0)
 
+    var runs_vencidas := 0
     var ate_onde := 0.0
+    var selos := 0.0
+    var dinheiro := 0.0
+    var niveis := 0.0
     for s in sementes:
         var run := Run.new(SEMENTE_BASE + s * PASSO, d)
         var voltas := 0
-        while not run.acabou and voltas < 80:
+        while not run.acabou and voltas < 90:
             voltas += 1
+            var rodada := run.rodada
             Politica.jogar(run.mesa)
+            tentadas[rodada - 1] += 1
+            if run.mesa.venceu:
+                vitorias[rodada - 1] += 1
             run.concluir_mesa()
+            if com_loja and run.loja != null:
+                Politica.comprar(run.loja, run.poderes)
+            run.fechar_loja()
+        if run.venceu:
+            runs_vencidas += 1
         ate_onde += float(run.mesas_vencidas)
-    ate_onde /= float(maxi(1, sementes))
+        selos += float(run.poderes.quantos_selos())
+        dinheiro += float(run.poderes.dinheiro)
+        var soma := 0
+        for c in Maos.CATEGORIAS:
+            soma += run.poderes.nivel(c)
+        niveis += float(soma)
 
+    var n := float(maxi(1, sementes))
     var texto := ""
     for i in Metas.RODADAS:
-        texto += "%6.1f" % (100.0 * float(vitorias[i]) / float(maxi(1, mesas[i])))
-    return {"texto": texto, "mesas": 100.0 * float(vencidas) / float(maxi(1, total)),
-            "ate_onde": ate_onde}
+        if tentadas[i] == 0:
+            texto += "     —"
+        else:
+            texto += "%6.1f" % (100.0 * float(vitorias[i]) / float(tentadas[i]))
+    return {"texto": texto, "runs": 100.0 * float(runs_vencidas) / n,
+            "ate_onde": ate_onde / n, "selos": selos / n,
+            "dinheiro": dinheiro / n, "niveis": niveis / n}

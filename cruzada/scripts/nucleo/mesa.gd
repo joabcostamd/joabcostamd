@@ -50,6 +50,13 @@ var venceu := false
 ## Tabuleiro 0, que é a linha de base contra a qual todo número foi medido.
 var desafio: Desafio
 
+## O que o jogador comprou. Nunca nulo: sem loja, é um Poderes vazio, e o motor
+## não precisa saber a diferença.
+var poderes: Poderes
+
+## Dinheiro ganho DENTRO da mesa, pelos selos de Cofre. Some com o pagamento.
+var moedas_da_mesa := 0
+
 ## Casas que nascem lacradas (geometria 2). Não recebem carta a mesa inteira, e
 ## por isso as linhas que passam por elas nunca fecham.
 var lacradas := PackedInt32Array()
@@ -117,14 +124,19 @@ static func quantas_cartas(carta: int) -> int:
 
 func _init(p_tipo: int, p_rodada: int, semente_run: int, tentativa := 1,
            p_desafio: Desafio = null, catraca := 0, p_fianca := 0,
-           fora_do_baralho: Array = [], p_linhas_mortas: Array = []) -> void:
+           fora_do_baralho: Array = [], p_linhas_mortas: Array = [],
+           p_poderes: Poderes = null) -> void:
     tipo = p_tipo
     rodada = p_rodada
     desafio = p_desafio if p_desafio != null else Desafio.new()
+    poderes = p_poderes if p_poderes != null else Poderes.new()
     fianca = clampi(p_fianca, 0, FIANCA_LUZES)
     meta = desafio.meta(p_tipo, p_rodada)
-    posicionamentos_max = desafio.posicionamentos(p_tipo, catraca)
-    descartes_restantes = desafio.quantos_descartes(p_tipo)
+    posicionamentos_max = desafio.posicionamentos(p_tipo, catraca) \
+        + poderes.posicionamentos_extra()
+    descartes_restantes = desafio.quantos_descartes(p_tipo) + poderes.descartes_extra()
+    tear = poderes.tear_inicial()
+    tamanho_da_mao = poderes.tamanho_da_mao()
 
     grade.resize(Geometria.CASAS)
     grade.fill(VAZIA)
@@ -352,7 +364,8 @@ func posicionar(indice_na_mao: int, casa: int) -> Dictionary:
         relato["pontos_parcela"] = pontos_parcela
 
     ## R14 — o tique do Tear, a cada 4 posicionamentos.
-    if posicionamentos_usados % Metas.TEAR_POR_TIQUE == 0 and tear < Metas.TEAR_TETO:
+    if posicionamentos_usados % poderes.tear_por_tique() == 0 \
+            and tear < poderes.tear_teto():
         tear += 1
         relato["tique_do_tear"] = true
 
@@ -388,24 +401,47 @@ const GRAUS: PackedStringArray = ["", "colheita", "DUPLA", "TRIPLA", "CRUZ TOTAL
 func conta_do_evento(alvo: Array, casa := -1, carta := VAZIA) -> Dictionary:
     var linhas := []
     var categorias: Array[int] = []
+    ## Quantas mãos fracas o evento tem, e quantos Avessos: duas relíquias olham
+    ## para isso, e as duas precisam da conta ANTES de somar linha nenhuma.
+    var fracas := 0
+    for l: int in alvo:
+        var cs := cartas_da_linha(l, casa, carta)
+        if cs.size() == Geometria.LADO \
+                and Maos.fraca(Maos.categoria(cs[0], cs[1], cs[2], cs[3], cs[4])):
+            fracas += 1
+
     for l: int in alvo:
         var cartas := cartas_da_linha(l, casa, carta)
         if cartas.size() != Geometria.LADO:
             continue
         var cat := Maos.categoria(cartas[0], cartas[1], cartas[2], cartas[3], cartas[4])
         categorias.append(cat)
+        ## R24 — as fichas base já vêm com os níveis comprados.
+        var fichas := poderes.fichas_base(cat) + Maos.fichas_de(cartas)
+        if Maos.fraca(cat):
+            fichas += Maos.padroes_parciais(cartas) * Maos.PISO_POR_PADRAO
+        var casas: Array = Geometria.CELULAS[l]
+        var avessos := 0
+        for cs2 in casas:
+            var bruta: int = carta if cs2 == casa else grade[cs2]
+            if bruta != VAZIA and eh_avesso(bruta):
+                avessos += 1
+        var bonus := poderes.bonus_da_linha(l, casas, cartas, avessos, fracas)
         linhas.append({
             "linha": l, "categoria": cat, "nome": Maos.NOMES[cat],
-            "fichas": Maos.fichas_da_linha(cartas), "pontos": 0,
+            "fichas": fichas + int(bonus["fichas"]), "pontos": 0,
             "diagonal": Geometria.diagonal(l), "cartas": cartas,
+            "mult_extra": int(bonus["mult"]), "tear_extra": int(bonus["tear"]),
+            "moedas": int(bonus["dinheiro"]),
         })
     var soma := _soma_dos_mults(categorias, linhas)
     var fator := soma * tear
     var total := 0
     for linha in linhas:
-        var p := Maos.pontos_da_linha(int(linha["fichas"]), fator,
-                                      bool(linha["diagonal"]))
-        if linhas_mortas[int(linha["linha"])] == 1:
+        var l1 := int(linha["linha"])
+        var piso := poderes.piso_da_diagonal(l1) if bool(linha["diagonal"]) else 1.0
+        var p := int(floor(maxf(0.0, float(linha["fichas"]) * float(fator) * piso)))
+        if linhas_mortas[l1] == 1:
             p = 0
             linha["morta"] = true
         linha["pontos"] = p
@@ -429,7 +465,7 @@ func _soma_dos_mults(categorias: Array, linhas: Array) -> int:
         if linhas_mortas[l0] == 1:
             continue
         var cat: int = categorias[i]
-        var m := Maos.MULTIPLICADOR[cat]
+        var m := poderes.mult_da_categoria(cat) + int(linhas[i]["mult_extra"])
         ## Geometria 3 — a coluna paga um mult a menos. Piso em 1: mult zero
         ## faria a linha valer nada, e "nada vale zero" é regra do jogo.
         if desafio.tem(Desafio.GEO_COLUNA_PAGA_MENOS):
@@ -520,7 +556,11 @@ func _colher(alvo: Array, relato: Dictionary) -> void:
         avessos_forjados += 1
 
     ## R14 — o Tear sobe uma vez por linha colhida.
-    tear = mini(Metas.TEAR_TETO, tear + conta["linhas"].size())
+    var tear_dos_selos := 0
+    for linha in conta["linhas"]:
+        tear_dos_selos += int(linha["tear_extra"])
+        moedas_da_mesa += int(linha["moedas"])
+    tear = mini(poderes.tear_teto(), tear + conta["linhas"].size() + tear_dos_selos)
 
     ## As colhidas deixam de ser maduras; e uma madura que perdeu carta para uma
     ## colheita perpendicular deixa de estar cheia, então também deixa de esperar.
@@ -545,7 +585,7 @@ func _colher(alvo: Array, relato: Dictionary) -> void:
         relato["fianca_acendeu"] = true
 
     if troco_tear > 0 or troco_descartes > 0 or troco_mao > 0:
-        tear = mini(Metas.TEAR_TETO, tear + troco_tear)
+        tear = mini(poderes.tear_teto(), tear + troco_tear)
         descartes_restantes += troco_descartes
         tamanho_da_mao += troco_mao
         relato["troco"] = {"tear": troco_tear, "descartes": troco_descartes,
@@ -705,22 +745,42 @@ func _valor_da_parcela(linha: int, casa: int, carta: int) -> int:
     if linhas_mortas[linha] == 1:
         return 0
     var cartas := cartas_da_linha(linha, casa, carta)
-    return Maos.pontos_parciais(cartas, Geometria.diagonal(linha), tear,
-                                Metas.PARCELA)
+    return _parciais(cartas, linha, poderes.parcela())
+
+## A parcela e o fecho, com os níveis comprados e o piso da diagonal dos poderes.
+## Os selos NÃO entram aqui: eles são recompensa de colheita, e a promessa de uma
+## linha incompleta já é paga pela categoria dela.
+func _parciais(cartas: Array, linha: int, fracao: float) -> int:
+    if cartas.is_empty():
+        return 0
+    var cat := Maos.categoria_parcial(cartas)
+    var fichas := poderes.fichas_base(cat) + Maos.fichas_de(cartas)
+    var v := float(fichas) * float(poderes.mult_da_categoria(cat) * tear) * fracao
+    if Geometria.diagonal(linha):
+        v *= poderes.piso_da_diagonal(linha)
+    return int(floor(maxf(0.0, v)))
 
 # ─────────────────────── R19/R20 — o fim da mesa ───────────────────────
+
+## Não há mais jogada possível? Sem carta na mão ou sem casa vazia, o turno não
+## existe. É outra forma de o orçamento acabar, e ela precisa ENCERRAR a mesa:
+## na primeira versão a mesa simplesmente parava de responder, e a run repetia o
+## mesmo estado para sempre — congelada, sem nem gastar uma vida.
+func travada() -> bool:
+    return mao.is_empty() or casas_vazias().is_empty()
 
 func _conferir_fim(relato: Dictionary) -> void:
     ## R20 — bater a meta encerra na hora, com vitória.
     if pontos >= meta:
         acabou = true
         venceu = true
-    elif posicionamentos_usados >= posicionamentos_max:
+    elif posicionamentos_usados >= posicionamentos_max or travada():
         ## R19 — o fecho conta para a meta, e por isso é calculado ANTES de
         ## decidir a derrota. Este `if` na ordem errada valia 6,1 pontos
         ## percentuais de vitória: o fecho nunca virava a mesa.
         var fecho := colheita_final()
         relato["fecho"] = fecho
+        relato["travou"] = travada() and posicionamentos_usados < posicionamentos_max
         acabou = true
         venceu = pontos >= meta
     relato["acabou"] = acabou
@@ -743,8 +803,7 @@ func colheita_final() -> Dictionary:
         if contagem[l] < 3 or linhas_mortas[l] == 1:
             continue
         var cartas := cartas_da_linha(l)
-        var p := Maos.pontos_parciais(cartas, Geometria.diagonal(l), tear,
-                                      Metas.FECHO)
+        var p := _parciais(cartas, l, Metas.FECHO)
         if p <= 0:
             continue
         fecho += p

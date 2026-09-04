@@ -14,6 +14,7 @@ extends Node
 
 var _passou := 0
 var _falhou := 0
+var _vitrines := 0
 
 const PERFIL_DO_TESTE := "user://teste-fluxo.save"
 
@@ -54,8 +55,21 @@ func abrir() -> Jogo:
     await get_tree().process_frame
     return jogo
 
+## Passa pela loja, se ela estiver aberta: compra o que der e segue.
+func passar_pela_loja(jogo: Jogo) -> bool:
+    if jogo._onde != Jogo.LOJA:
+        return false
+    var tela: TelaLoja = jogo._tela as TelaLoja
+    ok(tela.run == jogo.run, "a loja conhece a run") if _vitrines == 0 else null
+    Politica.comprar(jogo.run.loja, jogo.run.poderes)
+    _vitrines += 1
+    tela.emit_signal("seguir")
+    return true
+
 ## Joga a mesa da tela até ela acabar, com a política gulosa, e avisa a tela.
 func jogar_a_mesa(jogo: Jogo) -> void:
+    if passar_pela_loja(jogo):
+        return
     var tela: Partida = jogo._tela as Partida
     var passos := 0
     while not tela.mesa.acabou and passos < 200:
@@ -86,19 +100,29 @@ func _uma_run_inteira() -> void:
     igual(tela.vidas(), 3, "três vidas")
 
     var mesas := 0
-    while not jogo.run.acabou and mesas < 60:
+    while not jogo.run.acabou and mesas < 90:
         mesas += 1
         jogar_a_mesa(jogo)
     ok(jogo.run.acabou, "a run termina sozinha (%d mesas jogadas)" % mesas)
     igual(jogo._onde, Jogo.FIM_DA_RUN, "e a tela vira o fecho da run")
     ok(jogo._tela == null, "o fecho é desenhado pelo próprio Jogo")
-    ok(jogo.perfil.mesas_jogadas >= mesas, "o perfil contou as mesas")
+    igual(jogo.perfil.mesas_jogadas, jogo.run.mesas_jogadas,
+          "o perfil contou exatamente as mesas que a run jogou")
     ok(jogo.run.maior_evento > 0, "houve pelo menos uma colheita na run")
+    ok(_vitrines > 0, "a loja abriu entre as mesas (%d vezes)" % _vitrines)
+    ok(jogo.run.poderes.quantos_selos() + _niveis(jogo) > 0,
+       "e o jogador saiu dela com poder comprado")
 
     ## A conservação continua valendo depois de uma run inteira.
     ok(jogo.run.mesa.conservacao(), "a conta das cartas fecha no fim da run")
 
     jogo.free()
+
+func _niveis(jogo: Jogo) -> int:
+    var n := 0
+    for cat in Maos.CATEGORIAS:
+        n += jogo.run.poderes.nivel(cat)
+    return n
 
 func _derrota_gasta_as_vidas() -> void:
     print("── três derrotas encerram a run")

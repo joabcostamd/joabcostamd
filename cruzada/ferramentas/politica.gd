@@ -130,3 +130,80 @@ static func jogar(m: Mesa, limite := 400) -> Mesa:
         if not bool(m.posicionar(int(jogada[0]), int(jogada[1]))["valido"]):
             break
     return m
+
+# ─────────────────────────── o comprador ───────────────────────────
+
+## Um comprador simulado, para medir se a loja resolve a curva. Ele NÃO é o
+## jogador: é o jogador mediano — compra o que couber no bolso, do mais caro
+## para o mais barato, e cola os selos onde a geometria toca mais linhas.
+##
+## Se a rodada 6 ficar possível com ESTE comprador, ela fica possível para
+## qualquer um que preste atenção. Medir com um comprador ótimo mediria o teto,
+## e o teto não é onde as pessoas jogam.
+static func comprar(loja: Loja, poderes: Poderes) -> int:
+    if loja == null:
+        return 0
+    var compras := 0
+    var voltas := 0
+    while voltas < 8:
+        voltas += 1
+        var melhor := -1
+        var melhor_preco := -1
+        for i in loja.vagas.size():
+            if not loja.pode_comprar(i, poderes):
+                continue
+            var preco := loja.preco_da_vaga(i, poderes)
+            if preco > melhor_preco:
+                melhor_preco = preco
+                melhor = i
+        if melhor < 0:
+            break
+        if not loja.comprar(melhor, poderes, _onde_colar(loja, melhor, poderes)).is_empty():
+            compras += 1
+    return compras
+
+## Onde colar. As casas valem por quantas linhas passam por elas — o centro toca
+## quatro, os cantos três, o resto duas — e as linhas valem pelo que já carregam.
+## É a mesma conta que um jogador atento faz olhando a grade.
+static func _onde_colar(loja: Loja, i: int, poderes: Poderes) -> int:
+    match loja.precisa_de_alvo(i):
+        0:
+            var melhor := Geometria.CASAS / 2
+            var melhor_nota := -1
+            for casa in Geometria.CASAS:
+                ## Espalhar: duas Brasas na mesma casa somam, mas uma casa só
+                ## participa das linhas dela, e a grade tem doze.
+                var nota := Geometria.linhas_da_casa(casa).size() * 10
+                nota -= int(poderes.selos_de_casa.get(casa, []).size()) * 12
+                if nota > melhor_nota:
+                    melhor_nota = nota
+                    melhor = casa
+            return melhor
+        1:
+            ## Diagonais por último: elas pagam 60%, então um selo nelas rende
+            ## menos — a não ser que o selo seja justamente a Bússola.
+            var eh_bussola := str(loja.vagas[i].get("id", "")) == "bussola"
+            var melhor := 0
+            var melhor_nota := -999
+            for l in Geometria.LINHAS:
+                var nota := 0
+                if Geometria.diagonal(l):
+                    nota = 20 if eh_bussola else -20
+                nota -= int(poderes.selos_de_eixo.get(l, []).size()) * 12
+                if nota > melhor_nota:
+                    melhor_nota = nota
+                    melhor = l
+            return melhor
+    return -1
+
+## Uma run inteira com loja: joga a mesa, compra o que der, segue.
+static func jogar_run(run: Run, limite := 90) -> Run:
+    var voltas := 0
+    while not run.acabou and voltas < limite:
+        voltas += 1
+        jogar(run.mesa)
+        run.concluir_mesa()
+        if run.loja != null:
+            comprar(run.loja, run.poderes)
+            run.fechar_loja()
+    return run

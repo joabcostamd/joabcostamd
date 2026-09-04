@@ -5,7 +5,7 @@ class_name Jogo
 ## Nenhuma regra mora aqui: ela só decide QUAL tela está no ar e passa adiante o
 ## que a `Run` respondeu.
 
-enum { MENU, PARTIDA, TEMAS, DESAFIO, FIM_DA_RUN }
+enum { MENU, PARTIDA, TEMAS, DESAFIO, LOJA, FIM_DA_RUN }
 
 ## Onde o progresso é gravado. O teste de fluxo aponta para outro arquivo:
 ## rodar a suíte não pode apagar o que o jogador conquistou.
@@ -47,6 +47,10 @@ func _ir(onde: int) -> void:
             _tela = preload("res://cenas/temas.tscn").instantiate()
             _tela.set("perfil", perfil)
             _tela.connect("fechou", _voltar_ao_menu)
+        LOJA:
+            _tela = preload("res://cenas/loja.tscn").instantiate()
+            _tela.set("run", run)
+            _tela.connect("seguir", _sair_da_loja)
         DESAFIO:
             _tela = preload("res://cenas/desafio.tscn").instantiate()
             _tela.set("desafio", perfil.desafio.copia())
@@ -65,6 +69,11 @@ func _ir(onde: int) -> void:
     _tela.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
     add_child(_tela)
     queue_redraw()
+
+func _sair_da_loja() -> void:
+    run.fechar_loja()
+    perfil.gravar(caminho_do_perfil)
+    _ir(PARTIDA)
 
 func _guardar_desafio() -> void:
     perfil.desafio = (_tela.get("desafio") as Desafio).copia()
@@ -100,6 +109,11 @@ func _mesa_terminada(_venceu: bool) -> void:
 
     if run.acabou:
         _ir(FIM_DA_RUN)
+        return
+    ## A loja só abre depois de uma mesa vencida. Perder repete a mesa na hora:
+    ## passar pela vitrine sem dinheiro novo seria só atrito.
+    if bool(passo.get("loja", false)) and run.loja != null:
+        _ir(LOJA)
         return
     _ir(PARTIDA)
 

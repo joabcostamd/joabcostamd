@@ -123,11 +123,15 @@ func _draw() -> void:
             descricao += "· " + Desafio.GEO_NOMES[g] + "\n"
     var altura := f.get_multiline_string_size(descricao, HORIZONTAL_ALIGNMENT_LEFT,
                                               util - 28, Temas.T_CORPO).y
-    var painel := Rect2(margem, y, util, altura + 28.0)
+    var painel := Rect2(margem, y, util, altura + 52.0)
     Pintura.caixa(self, painel, 10, 0.6)
     draw_multiline_string(f, Vector2(margem + 14, y + 22), descricao,
                           HORIZONTAL_ALIGNMENT_LEFT, util - 28, Temas.T_CORPO,
                           -1, Temas.TEXTO_SUAVE)
+    ## A expectativa medida, em número. Quem escolhe quanto quer apanhar tem
+    ## direito de saber o que está escolhendo — "difícil" não informa nada.
+    draw_string(ff, Vector2(margem + 14, y + altura + 40), desafio.expectativa(),
+                HORIZONTAL_ALIGNMENT_LEFT, util - 28, Temas.T_ROTULO, Temas.DESTAQUE)
     y += painel.size.y + 22.0
 
     ## As três réguas, com o efeito escrito em número de jogo, não em jargão.
