@@ -371,3 +371,146 @@ Trocar é editar `data/marca.json` e rodar os portões. Nenhum script escreve o
 nome à mão — existe um teste que reprova se algum voltar a escrever. O custo de
 renomear **antes** do lançamento é uma linha; **depois** do lançamento é a página
 da loja, o histórico de avaliações, os links de imprensa e o SEO acumulado.
+
+---
+
+# RODADA 3 — busca de setembro de 2026
+
+Feita depois da decisão da seção 8, a pedido. Ela achou **um vizinho de gênero
+que as duas primeiras rodadas não tinham visto**, e esse achado muda a nota de
+nomes que já estavam bem colocados.
+
+## 3.0. O achado que mexe com a lista antiga
+
+| Jogo | Onde | Por que importa |
+|---|---|---|
+| **Outhold** | Steam 3767740 · ~1.787 análises · 86% positivas | "Um jogo incremental curto e estratégico que mistura tower defense com meta-progressão profunda". **É o nosso gênero exato, com o nosso sufixo.** |
+| **Loop Tower** | Steam 4211380 (+ demo 4480440) | "Torre sem fim · idle de mesa + roguelike + RPG". Queima `loop` junto de `tower`. |
+| **Loophole** | Steam 3629400 · 99% de 152 | Quebra-cabeça sobre **lutar contra os seus eus anteriores** — a nossa premissa, com outro nome. |
+| **UnTower** | itch.io | Tower defense com física. Queima UNTOWER. |
+| **Forebears** / **Forebearers** | Steam 1361990 / 923590 | Queima FOREBEAR, que era o melhor trocadilho que eu tinha (antepassado + suportar). |
+| **Endless Tower Survivors** | Steam 4516320 | O campo "Endless Tower" ganhou mais um desde a rodada 1. |
+| **The Perfect Tower** | Steam 2515620 | Idle de estratégia. Concorrente direto de vitrine. |
+| **Re:Curse** | itch.io | Enfraquece RECURSE. |
+
+**Consequência para a lista da rodada 2:** `-hold` deixou de ser campo limpo
+**para este gênero**. AEONHOLD (22), LASTHOLD (20) e NULLHOLD (20) foram
+avaliados quando eu achava que o sufixo estava livre; com *Outhold* na mesma
+prateleira, os três perdem um ponto de colisão e um de achabilidade. Não estão
+proibidos — estão piores do que a tabela antiga diz. HOLDOVER, ECHOHOLD,
+WAKEHOLD e SELFHOLD nasceram mortos pelo mesmo motivo e nem entram abaixo.
+
+## 3.1. ★ OUROTOWER — a nova recomendação
+
+> **OUROTOWER**
+> *It eats its own tail* / *Ela come o próprio rabo*
+
+De **ouroboros**, a serpente que morde a própria cauda. É o símbolo universal de
+"sem fim" — e é literalmente o que o jogo é: o Enxame são as versões anteriores
+da torre, então a torre se devora e recomeça, para sempre.
+
+Ele faz cinco coisas ao mesmo tempo, e nenhum outro candidato fez mais que três:
+
+1. **Contém `TOWER`** — a palavra que o público do gênero digita na busca.
+2. **É uma palavra inventada** — uma marca só, defensável, sem tradução em
+   idioma nenhum, uma logo só nos 20 idiomas.
+3. **Diz "infinito" sem escrever a palavra** — que é justamente onde
+   *Infinitode 2* e *Endless Tower* já estão lotados.
+4. **É a lore, não um enfeite** — a revelação do jogo virou o título.
+5. **`OURO` é ouro em português**, e a moeda do jogo é ouro. O nome funciona em
+   duas camadas para quem fala a nossa língua, e em uma para o resto do mundo —
+   que é a ordem certa, não a contrária.
+
+A logo se desenha sozinha: o **O** inicial é o anel da serpente em tubo de néon,
+e a torre sobe por dentro dele. Em *capsule* pequena (462×174) cabe folgado.
+
+**Colisão medida:** nenhuma. Existem *OURO* (itch.io, estratégia hexagonal),
+*Ouros* (quebra-cabeça) e vários *Ouroboros* — palavras diferentes, gêneros
+diferentes, nenhum tower defense, nenhum idle.
+
+| Critério | Nota |
+|---|---|
+| Memorável | **5** — palavra inventada com som estranho, e ninguém mais tem |
+| Lendário | **5** — o ouroboros é mito literal |
+| Explica | 4 — diz "torre" e diz "sem fim"; não diz "idle" |
+| Curto | 4 — 9 letras, uma palavra |
+| Logo | **5** — o anel já está na primeira letra |
+| **Soma** | **23** |
+
+## 3.2. Os outros limpos da rodada
+
+### ★ KINSIEGE
+> *Your own blood is at the gate* / *Quem está no portão é do seu sangue*
+
+O irmão mais quente de SELFSIEGE: quem te cerca não é "você", é a **sua
+parentela** — as torres que vieram antes. `kin` é curto, antigo e comum em
+inglês; `siege` sinaliza defesa. Colisão: nenhuma.
+
+### ★ TOWERGEIST
+> *The tower is haunted by itself* / *A torre é assombrada por si mesma*
+
+`geist` é espírito, e o Enxame é literalmente o fantasma das torres anteriores.
+Contém `TOWER`. Som marcante e único. Colisão: nenhuma.
+Contra: é empréstimo do alemão, e parte do público não vai saber pronunciar.
+
+### ★ ZEROTH TOWER
+> *The tower before the first* / *A torre antes da primeira*
+
+`zeroth` é palavra rara em inglês e por isso gruda. Diz exatamente o que a
+Ascensão faz. Colisão: nenhuma. Contra: é quase o mesmo nome que **TOWER ZERO**
+(23 na rodada 2) e disputa a mesma busca — escolher os dois é escolher um.
+
+### ★ AFTERTOWER
+> *What comes after the tower* / *O que vem depois da torre*
+
+Contém `TOWER`, uma palavra, sem tradução. Colisão: nenhuma. É o mais discreto
+dos cinco: correto e pouco emocionante.
+
+### ★ NEVERSLEEP
+> *It never sleeps. Neither does the tower* / *Ele nunca dorme. A torre também não*
+
+É a promessa do idle dita em uma palavra, e casa com o Modo Repouso. Colisão:
+nenhuma (existem *Neverway* e *Neverliria*, outros jogos, outros campos).
+Contra: não diz "torre" em lugar nenhum.
+
+### Também limpos, mas abaixo da linha
+**THE MILLIONTH TOWER** (conta a premissa inteira em três palavras, e não cabe
+na *capsule*) · **HEIRSIEGE** (mais travado que KINSIEGE) · **WAVEBOUND**
+(bonito e sem sinal de gênero) · **TOWERSELF** (a ideia certa, o som errado).
+
+## 3.3. Tabela da rodada 3
+
+| Nome | Memorável | Lendário | Explica | Curto | Logo | **Soma** | Colisão |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|---|
+| **OUROTOWER** | 5 | 5 | 4 | 4 | 5 | **23** | nenhuma |
+| **KINSIEGE** | 5 | 4 | 3 | 5 | 5 | **22** | nenhuma |
+| **TOWERGEIST** | 5 | 5 | 4 | 4 | 4 | **22** | nenhuma |
+| ZEROTH TOWER | 4 | 4 | 5 | 4 | 4 | 21 | nenhuma |
+| AFTERTOWER | 4 | 4 | 4 | 4 | 4 | 20 | nenhuma |
+| NEVERSLEEP | 4 | 3 | 4 | 4 | 5 | 20 | nenhuma |
+| THE MILLIONTH TOWER | 5 | 5 | 5 | 2 | 2 | 19 | nenhuma |
+| ~~FOREBEAR~~ | — | — | — | — | — | — | *Forebears*, *Forebearers* |
+| ~~HOLDOVER~~ | — | — | — | — | — | — | *Outhold* (mesmo gênero) |
+| ~~LOOPHOLD~~ | — | — | — | — | — | — | *Loophole*, *Loop Tower* |
+| ~~UNTOWER~~ | — | — | — | — | — | — | *UnTower* (itch.io) |
+
+## 3.4. O quadro completo, somando as três rodadas
+
+| Nome | Soma | Rodada | Situação |
+|---|:---:|:---:|---|
+| **OUROTOWER** | 23 | 3 | limpo · contém TOWER · é a lore · é o infinito |
+| **SELFSIEGE** | 23 | 1 | limpo · não contém TOWER |
+| **TOWER ZERO** | 23 | 1-2 | limpo · o mais seguro na busca |
+| **KINSIEGE** | 22 | 3 | limpo |
+| **TOWERGEIST** | 22 | 3 | limpo |
+| **TOWERWAKE** | 22 | 1 | limpo |
+| AEONHOLD | 22 → **20** | 1 | **rebaixado**: *Outhold* está no mesmo gênero |
+| **ETERNAL TOWER** | 13 | — | **é o nome atual** · *Eternal Towers*, Steam 4036730 |
+
+**Recomendação da rodada 3: OUROTOWER.** É o primeiro candidato que empata no
+topo *e* carrega a palavra do gênero *e* diz "sem fim" sem entrar no campo
+lotado de "Infinite/Endless". Nenhum dos outros 23 fez as três coisas.
+
+Trocar continua sendo uma linha em `data/marca.json` mais os portões. Depois do
+lançamento, é a página da loja, o histórico de análises e o SEO.
+
