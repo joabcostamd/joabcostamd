@@ -77,6 +77,43 @@ responde *qual carta?* e o problema é *quando?*.
 
 ---
 
+## 3b. ASSISTÊNCIA DE POSICIONAMENTO — mantida, com a régua trocada
+
+O documento já oferece sugestão de jogada: halo verde/amarelo/vermelho nas casas vazias e
+**anel numerado nas 5 melhores, ordenado por ganho de pontos**, desligável em três níveis.
+
+**O que a medição diz a favor:** a assistência **não trivializa o jogo**. A jogada de maior
+ganho imediato coincide com a ótima em apenas **58,8%** dos turnos, e segui-la sempre custa
+só **1,4 ponto percentual** de vitória. O jogador assistido não é punido.
+
+**O que a medição diz contra, e é grave:** a política gulosa do simulador *é* um jogador
+seguindo o anel #1, e ela produziu **0,000 cruzada em 30.944 turnos**.
+
+> A assistência não faz o jogador perder. Faz o jogador **nunca ver o melhor momento do jogo**.
+
+E não é passiva: uma lista ordenada por ganho imediato **sempre** recomenda fechar a linha em
+4/5, que é exatamente o que impede a cruzada. Ordenada assim, a assistência é uma máquina de
+impedir o clímax — e ensina a jogada errada com ar de autoridade.
+
+**Contradição no próprio documento:** a §15 exige que o jogador pensante vença **12 pp** a mais
+que o assistido, sob pena de reprovar o build. O abismo real entre políticas competentes é
+**1,4 pp** — a banda pede um abismo **8,6× maior que o maior que existe**. O teste, como está,
+reprovaria o jogo.
+
+**Decidido:** manter a feature, em três níveis, e trocar o que ela ordena e o que o teste mede.
+
+| Nível | O que faz | Por quê |
+|---|---|---|
+| 1 — silenciar o ruído | apaga as ~85 casas que não mudam nada | em 86% dos turnos todas as jogadas dão o mesmo resultado; isso é ruído, não decisão. É informação, não conselho — pode ficar ligado até no modo difícil |
+| 2 — mostrar a conta dos dois lados | "fecha a linha 3 (Trinca, 340 pts) **e** derruba a coluna C de 4/5 para 3/5" | o halo vermelho já faz metade; completar é o único mecanismo encontrado que **ensina a recusa** — o problema aberto que seis bancadas não resolveram |
+| 3 — recomendação explícita | mantida para quem quer zero estresse, rotulada **"maior ganho agora"** e nunca "melhor jogada" | medimos: não é a melhor em 41% dos turnos. Rótulo honesto ou nada |
+
+**Régua nova do teste de segurança:** medir vitória é medir a coisa errada — o custo da
+assistência não aparece lá (1,4 pp). A pergunta que reprova o build passa a ser:
+**um jogador que segue a dica chega a ver uma cruzada alguma vez?** Hoje a resposta é não.
+
+---
+
 ## 4. DIALS QUE SÃO CÓDIGO MORTO — não vire parâmetro nenhum destes
 
 Medidos, deram zero. Transformar isso em opção de balanceamento é dívida técnica gratuita.
