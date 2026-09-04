@@ -763,6 +763,82 @@ func girar_na_mao(indice_na_mao: int) -> bool:
     mao[indice_na_mao] = girar(mao[indice_na_mao])
     return true
 
+## A CONTA DOS DOIS LADOS. O que esta jogada fecha, e o que ela derruba.
+##
+## É a dica de nível 2, e a pesquisa é enfática: foi o ÚNICO mecanismo encontrado
+## que ensina a recusa. Uma lista ordenada por ganho imediato sempre recomenda
+## fechar a linha em 4/5 — que é exatamente o que impedia a cruzada. Mostrar o
+## preço perpendicular é o que permite ao jogador escolher NÃO fechar.
+func a_conta(indice_na_mao: int, casa: int) -> Dictionary:
+    var vazio := {"ganha": 0, "fecha": [], "derruba": [], "amadurece": [],
+                  "aproxima": []}
+    if indice_na_mao < 0 or indice_na_mao >= mao.size() or not pode_posicionar(casa):
+        return vazio
+    var carta: int = mao[indice_na_mao]
+    var alvo := alvo_de(casa)
+    var conta := {}
+    if not alvo.is_empty():
+        conta = conta_do_evento(alvo, casa, carta)
+        for linha in conta["linhas"]:
+            vazio["fecha"].append({"linha": int(linha["linha"]),
+                                   "nome": str(linha["nome"]),
+                                   "pontos": int(linha["pontos"])})
+    ## O que a colheita vai derrubar: linhas em 4/5 que perdem carta e não estão
+    ## no evento. É o preço que a lista de ganho imediato nunca mostra.
+    if not alvo.is_empty():
+        var casas_que_saem := {}
+        for l: int in alvo:
+            for c in Geometria.CELULAS[l]:
+                casas_que_saem[c] = true
+        for l in Geometria.LINHAS:
+            if alvo.has(l) or contagem[l] < 3:
+                continue
+            var perde := 0
+            for c in Geometria.CELULAS[l]:
+                if casas_que_saem.has(c) and grade[c] != VAZIA:
+                    perde += 1
+            if perde > 0:
+                vazio["derruba"].append({"linha": l, "de": contagem[l],
+                                         "para": contagem[l] - perde})
+    else:
+        ## Sem colheita, a jogada pode amadurecer uma linha: também é consequência.
+        for l in Geometria.linhas_da_casa(casa):
+            if contagem[l] == Geometria.LADO - 1:
+                vazio["amadurece"].append(l)
+    ## O que a jogada faz nas linhas que NÃO fecham. É a maior parte dos turnos,
+    ## e sem isso a dica só falaria em 14% deles — dica muda quase sempre lê como
+    ## dica quebrada.
+    for l in Geometria.linhas_da_casa(casa):
+        if alvo.has(l) or contagem[l] + 1 >= Geometria.LADO:
+            continue
+        var depois: int = contagem[l] + 1
+        if depois < 3:
+            continue
+        var paga := (depois == 3 or depois == 4) and parcelas_dadas[l] < 2 \
+                    and linhas_mortas[l] == 0
+        vazio["aproxima"].append({"linha": l, "para": depois, "parcela": paga})
+    vazio["ganha"] = ganho(indice_na_mao, casa)
+    return vazio
+
+## As casas onde esta carta muda alguma coisa. Em 86% dos turnos todas as jogadas
+## dão o mesmo resultado — apagar as que não mudam nada é INFORMAÇÃO, não
+## conselho, e é a diferença entre ajudar e jogar pelo outro.
+func casas_que_mudam(indice_na_mao: int) -> Array[int]:
+    var r: Array[int] = []
+    if indice_na_mao < 0 or indice_na_mao >= mao.size():
+        return r
+    for casa in casas_vazias():
+        if ganho(indice_na_mao, casa) > 0:
+            r.append(casa)
+            continue
+        ## Encostar numa linha que já tem carta também muda alguma coisa: ela
+        ## fica mais perto. Casa isolada numa grade vazia é que não muda nada.
+        for l in Geometria.linhas_da_casa(casa):
+            if contagem[l] > 0:
+                r.append(casa)
+                break
+    return r
+
 ## A jogada de maior ganho imediato: [indice_na_mao, casa, ganho].
 func maior_ganho_agora() -> Array:
     var melhor := [-1, -1, -1]

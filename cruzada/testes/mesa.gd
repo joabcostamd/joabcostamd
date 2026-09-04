@@ -19,6 +19,7 @@ func _init() -> void:
     _avesso()
     _fim_da_mesa()
     _mesas_inteiras()
+    _as_dicas()
 
     print("")
     if _falhou > 0:
@@ -412,3 +413,58 @@ func _mesas_inteiras() -> void:
     ok(com_cruzada > 0, "cruzadas aconteceram (%d)" % com_cruzada)
     ok(com_avesso > 0, "Avessos foram forjados (%d)" % com_avesso)
     ok(vitorias >= 0, "vitórias contadas: %d de 180" % vitorias)
+
+# ─────────────────── §6 — a conta dos dois lados ───────────────────
+
+func _as_dicas() -> void:
+    secao("as DICAS (§6)")
+    var m := Mesa.new(Metas.CHEFE, 1, 5)
+
+    ## Sem nada montado, a jogada não fecha nem derruba nada.
+    var seca := m.a_conta(0, 0)
+    igual(seca["fecha"].size(), 0, "casa vazia não fecha linha")
+    igual(seca["derruba"].size(), 0, "nem derruba")
+
+    ## Quatro cartas na fileira 1: a quinta AMADURECE a linha.
+    for casa in 4:
+        qualquer(m, casa)
+    var madura := m.a_conta(0, 4)
+    igual(madura["amadurece"].size(), 1, "a quinta carta deixa a fileira madura")
+    igual(int(madura["amadurece"][0]), 0, "e é a fileira 1")
+
+    ## Agora o caso que importa, montado na ordem certa: uma coluna carregada
+    ## ATRAVÉS da fileira, a fileira amadurecendo, e uma jogada que colhe a
+    ## fileira e leva a coluna junto. É a conta que ensina a recusa.
+    var t := Mesa.new(Metas.CHEFE, 1, 5)
+    for casa in [6, 11, 16]:          ## coluna B, fora da fileira 1
+        qualquer(t, casa)
+    for casa in [0, 1, 2, 3]:         ## fileira 1 em 4/5; a casa 1 é da coluna B
+        qualquer(t, casa)
+    igual(t.contagem[Geometria.COLUNA_0 + 1], 4, "a coluna B ficou em 4/5")
+    qualquer(t, 4)                    ## a fileira 1 enche e AMADURECE
+    igual(t.linhas_maduras(), [0] as Array[int], "a fileira 1 está madura")
+
+    ## Qualquer posicionamento agora colhe a fileira — e a colheita leva a casa
+    ## B1, derrubando a coluna B de 4/5 para 3/5.
+    var conta := t.a_conta(0, 20)
+    ok(conta["fecha"].size() >= 1, "a jogada colhe a fileira madura")
+    var derruba := false
+    for d in conta["derruba"]:
+        if int(d["linha"]) == Geometria.COLUNA_0 + 1:
+            derruba = true
+            igual(int(d["de"]), 4, "a coluna B estava em 4/5")
+            igual(int(d["para"]), 3, "e cai para 3/5")
+    ok(derruba,
+       "a conta MOSTRA o que a colheita derruba — o preço que ensina a recusa")
+    ok(int(conta["ganha"]) > 0, "e diz quanto a jogada paga")
+
+    ## As casas que não mudam nada: num tabuleiro com cartas, quase toda casa
+    ## encosta em alguma linha; a lista existe para o caso em que não.
+    var vazia := Mesa.new(Metas.CHEFE, 1, 5)
+    igual(vazia.casas_que_mudam(0).size(), 0,
+          "numa grade vazia, nenhuma casa muda nada — todas são iguais por simetria")
+    qualquer(vazia, 12)
+    ok(vazia.casas_que_mudam(0).size() > 0,
+       "com uma carta na grade, as casas das linhas dela passam a mudar")
+    ok(vazia.casas_que_mudam(0).size() < Geometria.CASAS,
+       "e as casas longe dela continuam sem mudar nada")

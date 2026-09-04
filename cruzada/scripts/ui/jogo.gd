@@ -51,6 +51,7 @@ func _ir(onde: int) -> void:
             p.run = run
             p.mesa = run.mesa
             p.volume = perfil.volume
+            p.dicas = perfil.dicas
             p.mesa_terminada.connect(_mesa_terminada)
             _tela = p
         TEMAS:

@@ -17,6 +17,7 @@ var _r_voltar := Rect2()
 var _r_cinza := Rect2()
 var _r_cores := Rect2()
 var _r_som := Rect2()
+var _r_dicas := Rect2()
 
 func _ready() -> void:
     _poeira = Pintura.semear_poeira()
@@ -100,6 +101,24 @@ func _draw() -> void:
     _chave(_r_cinza, "ESCALA DE CINZA", Temas.escala_de_cinza, ff)
     var vol := perfil.volume if perfil != null else 0.7
     _chave(_r_som, "SOM  %d%%" % int(round(vol * 100.0)), vol > 0.0, ff)
+
+    ## As DICAS ganham linha própria, com o que cada nível FAZ escrito. "Nível 2"
+    ## não informa nada; "mostra o que a jogada derruba" informa tudo.
+    const O_QUE_FAZ := [
+        "desligadas",
+        "apaga as casas que não mudam nada",
+        "mostra também o que a jogada derruba",
+        "aponta o maior ganho agora — que nem sempre é a melhor jogada",
+    ]
+    var nivel := perfil.dicas if perfil != null else 2
+    _r_dicas = Rect2(margem, y + 56, util, 44)
+    Pintura.caixa(self, _r_dicas, 10, 0.8)
+    draw_string(ff, Vector2(_r_dicas.position.x + 14, _r_dicas.position.y + 28),
+                "DICAS %d" % nivel, HORIZONTAL_ALIGNMENT_LEFT, -1,
+                Temas.T_ROTULO, Temas.DESTAQUE)
+    draw_string(f, Vector2(_r_dicas.position.x + 96, _r_dicas.position.y + 28),
+                str(O_QUE_FAZ[nivel]), HORIZONTAL_ALIGNMENT_LEFT,
+                _r_dicas.size.x - 110, Temas.T_CORPO, Temas.TEXTO)
 
 func _cartao(i: int, c: Rect2, ff: FontFile, f: FontFile) -> void:
     var t := Temas.dados(i)

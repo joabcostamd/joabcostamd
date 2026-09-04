@@ -35,6 +35,11 @@ var _realce := 0.0
 var juice := Juice.new()
 var som: Som
 var volume := 0.7
+## O nível das DICAS, 0 a 3. Ver DESIGN §6 — e o rótulo do nível 3 é "maior
+## ganho agora", nunca "melhor jogada": ela não é a melhor em 41% dos turnos.
+var dicas := 2
+## A jogada de maior ganho, recalculada só quando a mão ou a grade mudam.
+var _melhor := [-1, -1, -1]
 var _tear_mostrado := 0
 var _pontos_mostrados := 0.0  ## o número corre até o valor real, não salta
 
@@ -184,6 +189,7 @@ func jogar(indice: int, casa: int) -> void:
     if not bool(r["valido"]):
         return
     _relato = r
+    _melhor = [-1, -1, -1]
     _reagir(r, casa, tear_antes)
     if bool(r["colheita"]) or int(r["pontos_parcela"]) > 0:
         _realce = TEMPO_DO_REALCE
@@ -320,6 +326,7 @@ func _centro(r: Rect2) -> void:
     const ROT_COLUNA := 24.0
     const VAO_CELULA := 5.0
     const VAO_MAO := 12.0
+    const FOLGA := 28.0
 
     var por_largura := (r.size.x - ROT_FILEIRA - 8.0 - VAO_CELULA * 4.0) / 5.0
     ## A mão é limitada a 82 px de largura. Sem o teto ela cresce com a coluna,
@@ -327,7 +334,7 @@ func _centro(r: Rect2) -> void:
     ## de 64. A grade é a coisa mais importante da tela; quem cede é a mão.
     var carta_mao := minf((r.size.x - VAO_MAO * 4.0) / 5.0, 82.0)
     var alt_mao := carta_mao * Carta.RAZAO
-    var sobra := r.size.y - ROT_COLUNA - 28.0 - alt_mao
+    var sobra := r.size.y - ROT_COLUNA - FOLGA - alt_mao
     var por_altura := (sobra - VAO_CELULA * 4.0) / (5.0 * Carta.RAZAO)
     var celula := floorf(minf(por_largura, por_altura))
 
@@ -343,6 +350,7 @@ func _centro(r: Rect2) -> void:
     _grade(grade, celula, VAO_CELULA)
     _rotulos(grade, celula, VAO_CELULA, ROT_FILEIRA, ROT_COLUNA)
     _diagonais(Rect2(grade.end.x + 8, grade.end.y + 8, ROT_FILEIRA, ROT_COLUNA))
+    _a_conta()
     _faixa_do_evento(grade)
     ## A mão alinha pelo centro da MESA, não da grade nem da coluna. A massa
     ## visual que o olho usa como eixo é a mesa inteira.
@@ -389,6 +397,7 @@ func _retrato() -> void:
         _diagonais(Rect2(faixa.position.x + 10, faixa.position.y + 8, 116, 24))
         _linha_do_evento(Rect2(faixa.position.x + 134, faixa.position.y,
                                faixa.size.x - 144, faixa.size.y))
+    _a_conta()
 
 # ─────────────────────────────── as peças ───────────────────────────────
 
@@ -589,6 +598,24 @@ func _grade(r: Rect2, celula: float, vao: float) -> void:
             Carta.desenhar(self, c, Cartas.figura(carta), Cartas.naipe(carta), estado)
 
 ## A casa pertence a alguma linha madura, esperando a colheita?
+## As casas onde a carta escolhida muda alguma coisa. Calculado uma vez por
+## quadro, não por casa: `casas_que_mudam` percorre a grade inteira.
+var _mudam := {}
+var _mudam_para := -1
+
+func _muda_alguma_coisa(casa: int) -> bool:
+    if _mudam_para != _selecionada:
+        _mudam_para = _selecionada
+        _mudam = {}
+        for c in mesa.casas_que_mudam(_selecionada):
+            _mudam[c] = true
+    return _mudam.has(casa)
+
+func _a_melhor() -> Array:
+    if int(_melhor[0]) < 0:
+        _melhor = mesa.maior_ganho_agora()
+    return _melhor
+
 func _casa_madura(casa: int) -> bool:
     for l in Geometria.linhas_da_casa(casa):
         if mesa.madura[l] == 1:
@@ -612,7 +639,18 @@ func _casa_livre(c: Rect2, casa: int) -> void:
         if mesa.contagem[l] == Geometria.LADO - 1:
             viva = true
     Pintura.casa_vazia(self, c, viva)
+    ## DICA 1 — apaga a casa que não muda nada. Em 86% dos turnos todas as
+    ## jogadas dão o mesmo resultado; isso é ruído, e apagá-lo é INFORMAÇÃO, não
+    ## conselho. A casa continua clicável.
+    if dicas >= 1 and _selecionada >= 0 and not _muda_alguma_coisa(casa):
+        draw_rect(c, Color(Temas.FUNDO, 0.45))
     _marca_de_selo(c, casa)
+    ## DICA 3 — o anel do maior ganho, e o rótulo é "maior ganho agora". Nunca
+    ## "melhor jogada": medimos que ela não é a melhor em 41% dos turnos, e um
+    ## rótulo que promete o que não entrega é pior que dica nenhuma.
+    if dicas >= 3 and _selecionada >= 0 and casa == int(_a_melhor()[1]) \
+            and int(_a_melhor()[2]) > 0:
+        draw_rect(c.grow(-3.0), Color(Temas.ACENTO, 0.85), false, 2.0)
     if _selecionada < 0 or _casa_sob_o_dedo != casa or mesa.acabou:
         return
     ## O fantasma da carta escolhida, e o que ela paga. A dica mais barata que
@@ -797,6 +835,72 @@ func _mao(r: Rect2, largura: float, vao: float) -> void:
             Carta.desenhar(self, c, Cartas.figura(carta), Cartas.naipe(carta), estado)
 
 # ────────────────────── o que acabou de acontecer ──────────────────────
+
+## DICA 2 — a conta dos dois lados, colada na casa sob o dedo. É o único
+## mecanismo que a pesquisa achou capaz de ENSINAR A RECUSA: uma lista ordenada
+## por ganho imediato sempre manda fechar a linha em 4/5, e era isso que impedia
+## a cruzada. Mostrar o preço perpendicular é o que permite escolher não fechar.
+##
+## Ela flutua junto do cursor em vez de ocupar uma faixa fixa. A faixa custaria
+## 18 px de altura da grade, e a medição mostrou que isso derruba a casa de 64
+## para 61 px — abaixo do alvo de toque. O elemento onde o dedo trabalha é o
+## único que não cede tamanho.
+func _a_conta() -> void:
+    if dicas < 2 or _selecionada < 0 or _casa_sob_o_dedo < 0 or mesa.acabou:
+        return
+    if _casa_sob_o_dedo >= _r_casas.size():
+        return
+    var conta := mesa.a_conta(_selecionada, _casa_sob_o_dedo)
+    var partes := []
+    for f in conta["fecha"]:
+        partes.append("fecha a %s · %s · %s" % [Geometria.nome(int(f["linha"])),
+                                                str(f["nome"]),
+                                                Pintura.milhar(int(f["pontos"]))])
+    for d in conta["derruba"]:
+        partes.append("derruba a %s de %d/5 para %d/5"
+                      % [Geometria.nome(int(d["linha"])), int(d["de"]), int(d["para"])])
+    for l in conta["amadurece"]:
+        partes.append("deixa a %s madura" % Geometria.nome(int(l)))
+    for a in conta["aproxima"]:
+        var frase := "leva a %s a %d/5" % [Geometria.nome(int(a["linha"])),
+                                           int(a["para"])]
+        if bool(a["parcela"]):
+            frase += " e paga a parcela"
+        partes.append(frase)
+    if partes.is_empty():
+        return
+
+    var f := Temas.fonte_do_tema()
+    var ff := Temas.fonte_do_tema(true)
+    var larguras := 0.0
+    for parte in partes:
+        larguras = maxf(larguras, f.get_string_size(str(parte), HORIZONTAL_ALIGNMENT_LEFT,
+                                                    -1, Temas.T_ROTULO).x)
+    var caixa := Rect2(Vector2.ZERO, Vector2(larguras + 24.0,
+                                             12.0 + partes.size() * 19.0))
+    var casa := _r_casas[_casa_sob_o_dedo]
+    ## Abaixo da casa, ou acima quando não cabe. Clampeada na tela: etiqueta
+    ## cortada pela borda é pior que etiqueta nenhuma.
+    caixa.position = Vector2(casa.get_center().x - caixa.size.x * 0.5, casa.end.y + 6.0)
+    if caixa.end.y > size.y - 8.0:
+        caixa.position.y = casa.position.y - caixa.size.y - 6.0
+    caixa.position.x = clampf(caixa.position.x, 8.0, size.x - caixa.size.x - 8.0)
+
+    var fundo := StyleBoxFlat.new()
+    fundo.bg_color = Color(Temas.FUNDO, 0.96)
+    fundo.border_color = Temas.BORDA
+    fundo.set_border_width_all(1)
+    fundo.set_corner_radius_all(8)
+    draw_style_box(fundo, caixa)
+    var y := caixa.position.y + 16.0
+    for parte in partes:
+        ## O que ela derruba vem em cor de alerta: o preço tem de ser lido como
+        ## preço, senão a conta vira propaganda da jogada.
+        var cor := Temas.ALERTA if str(parte).begins_with("derruba") else Temas.TEXTO
+        draw_string(ff if cor == Temas.ALERTA else f,
+                    Vector2(caixa.position.x + 12, y), str(parte),
+                    HORIZONTAL_ALIGNMENT_LEFT, -1, Temas.T_ROTULO, cor)
+        y += 19.0
 
 func _linha_do_evento(r: Rect2) -> void:
     if _relato.is_empty():

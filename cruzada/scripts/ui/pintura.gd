@@ -186,6 +186,11 @@ static func centrado(alvo: CanvasItem, f: FontFile, r: Rect2, texto: String, tam
                 r.position.y + (r.size.y + med.y * 0.62) * 0.5),
                 texto, HORIZONTAL_ALIGNMENT_LEFT, -1, tam, cor)
 
+## Um decimal com vírgula, como se escreve em português. `%.1f` do GDScript sai
+## com ponto, e "10.7 mesas" numa tela inteiramente em português lê como erro.
+static func decimal(x: float, casas := 1) -> String:
+    return ("%.*f" % [casas, x]).replace(".", ",")
+
 ## Milhar com ponto, como se escreve em português.
 
 static func milhar(n: int) -> String:

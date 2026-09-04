@@ -20,6 +20,10 @@ SECUNDARIO = 44      # botão de menu
 def paisagem(largura=1280.0, altura=720.0):
     margem, vao, barra = 24.0, 20.0, 52.0
     rot_fileira, rot_coluna, vao_celula, vao_mao = 108.0, 24.0, 5.0, 12.0
+    # A folga entre a mesa e a mão. Espelha `FOLGA` em `partida.gd`. Ela NÃO
+    # cresce para caber a conta das dicas: medimos, e 18 px a mais derrubam a
+    # casa de 64 para 61 px. A conta flutua junto do cursor por causa disto.
+    folga = 28.0
 
     util = largura - margem * 2
     centro = max(420.0, min(util * 0.41, 560.0))
@@ -27,10 +31,10 @@ def paisagem(largura=1280.0, altura=720.0):
     alt = altura - (topo + barra + 8.0) - margem * 0.5
 
     carta_mao = min((centro - vao_mao * 4) / 5, 82.0)
-    sobra = alt - rot_coluna - 28.0 - carta_mao * RAZAO
+    sobra = alt - rot_coluna - folga - carta_mao * RAZAO
     celula = int(min((centro - rot_fileira - 8.0 - vao_celula * 4) / 5,
                      (sobra - vao_celula * 4) / (5 * RAZAO)))
-    usado = celula * RAZAO * 5 + vao_celula * 4 + rot_coluna + 28.0 + carta_mao * RAZAO
+    usado = celula * RAZAO * 5 + vao_celula * 4 + rot_coluna + folga + carta_mao * RAZAO
     return {
         "nome": "paisagem %dx%d" % (largura, altura),
         "casa": celula, "carta": int(carta_mao),

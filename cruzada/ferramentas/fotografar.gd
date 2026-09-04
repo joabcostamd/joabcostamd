@@ -49,14 +49,23 @@ func _ready() -> void:
             break
     if nome.begins_with("regras"):
         tela._regras_abertas = true
-    ## Deixa o juice a meio caminho: é a foto que mostra fagulha e carta voando.
+    ## Deixa o juice a meio caminho SÓ na foto da colheita; nas outras ele já
+    ## terminou, senão a fagulha cobre justamente o que se quer olhar.
+    tela.juice.pausa = 0.0
     if nome.begins_with("colheita"):
-        tela.juice.pausa = 0.0
         tela.juice.avancar(0.16)
+    else:
+        for i in 200:
+            tela.juice.avancar(0.016)
     tela._selecionada = 0
     var vazias := tela.mesa.casas_vazias()
     if not vazias.is_empty():
-        tela._casa_sob_o_dedo = vazias[vazias.size() / 2]
+        ## Aponta para a casa de maior ganho: é o estado que mostra as três dicas
+        ## ao mesmo tempo — o apagado, a conta dos dois lados e o anel.
+        var melhor := tela.mesa.maior_ganho_agora()
+        tela._casa_sob_o_dedo = int(melhor[1]) if int(melhor[1]) >= 0 \
+            else vazias[vazias.size() / 2]
+        tela._selecionada = maxi(0, int(melhor[0]))
     tela.queue_redraw()
 
     await RenderingServer.frame_post_draw

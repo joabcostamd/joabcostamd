@@ -465,6 +465,16 @@ perder (custa 1,4 ponto percentual) — ela fazia o jogador **nunca ver o melhor
 Por isso o teste que reprova o build não é "quem pensa vence mais": é **um jogador que segue a
 dica chega a ver uma cruzada alguma vez?**
 
+**Onde a conta aparece, e por quê.** A conta do nível 2 **flutua junto do cursor**, não numa faixa
+fixa sob a mesa. A faixa custaria 18 px de altura da grade, e a medição mostrou que isso derruba a
+casa de **64 para 61 px** — abaixo do alvo de toque. *O elemento onde o dedo trabalha é o único
+que não cede tamanho.*
+
+O que ela derruba vem em **cor de alerta**: o preço tem de ser lido como preço, senão a conta vira
+propaganda da jogada. E ela fala também das linhas que a jogada só **aproxima** (`leva a fileira 4
+a 3/5 e paga a parcela`) — sem isso, ela ficaria muda em 86% dos turnos, e dica muda quase sempre
+lê como dica quebrada.
+
 ---
 
 ## 7. O QUE NÃO ESTÁ AQUI, E POR QUÊ

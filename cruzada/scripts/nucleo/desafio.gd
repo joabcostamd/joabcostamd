@@ -106,9 +106,10 @@ func expectativa() -> String:
         return "configuração própria — não medida"
     var m: Dictionary = VITORIA_MEDIDA[g]
     if int(m["run"]) <= 0:
-        return "o simulado nunca fechou uma run — chega a %.1f das 18 mesas" % float(m["mesas"])
-    return "%d%% das runs fecham — o simulado chega a %.1f das 18 mesas" \
-        % [int(m["run"]), float(m["mesas"])]
+        return "o simulado nunca fechou uma run — chega a %s das 18 mesas" \
+            % Pintura.decimal(float(m["mesas"]))
+    return "%d%% das runs fecham — o simulado chega a %s das 18 mesas" \
+        % [int(m["run"]), Pintura.decimal(float(m["mesas"]))]
 
 ## A ESTUFA. Não é versão de mentira: a coleção desbloqueia igual, e é onde o
 ## jogo se aprende. Quem nunca viu uma cruzada não decide nada sobre ela.
