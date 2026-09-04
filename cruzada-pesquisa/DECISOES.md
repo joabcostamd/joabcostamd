@@ -223,6 +223,84 @@ número sem pensar, teria estragado seis temas para consertar dois.
 
 ---
 
+## 3g. A CONSTRUÇÃO — o que só apareceu quando o jogo virou jogo
+
+A sonda tinha 4.813 linhas e cinco rodadas de bancada. Ainda assim, escrever o jogo de verdade
+achou coisa que 100.000 mesas não tinham achado. Registrado aqui porque é o argumento contra
+"mais uma rodada de simulação".
+
+### O motor foi aferido contra a bancada, e sete de nove métricas fecham
+
+O jogo roda uma aferição de 810 mesas (`ferramentas/aferir.gd`) com um jogador guloso que é
+o mesmo da bancada. Sem isso, "portamos o núcleo" seria afirmação sem prova.
+
+| métrica | bancada | jogo | |
+|---|---|---|---|
+| turnos com recompensa | 75,9% | **75,3%** | ✅ |
+| seca mediana | 2 | **2** | ✅ |
+| cruzadas por mesa | 0,839 | **0,830** | ✅ |
+| razão pontos/meta | 0,790 | **0,768** | ✅ |
+| Tear mediano | 7 | **7** | ✅ |
+| eventos por mesa | 1,17 | **1,16** | ✅ |
+| colheita · DUPLA · TRIPLA · TOTAL | 29,0 · 51,9 · 18,2 · 0,85% | **28,7 · 55,4 · 15,2 · 0,7%** | ✅ |
+| **Avessos por mesa** | 1,66 | **2,19** | ⚠ |
+| **vitória do guloso** | 34,1% | **39,4%** | ⚠ |
+
+As duas divergências são a combinação que o §7 desta ficha já declarava **não medida**, e as
+duas apontam para o mesmo lugar: a Janela colhe mais linhas por mesa do que a bancada do
+coringa colhia, e como cada linha colhida forja um Avesso, saem 2,19 em vez de 1,66. Mais
+Avesso é mais Quina e mais Quadra, e a cauda de pontuação engorda — daí a vitória subir 5
+pontos. **Nada disso é regressão de porte: é a soma que nunca tinha sido somada.**
+
+### O K continua em 4,84, e agora por medição própria
+
+Varremos a constante da curva contra o motor de verdade (`ferramentas/calibrar.gd`):
+
+| fator | K | razão | vitória | vitória por rodada 1→6 |
+|---|---|---|---|---|
+| **1,00** | **4,84** | **0,802** | 38,2% | 87,5 · 75,0 · 41,7 · 16,7 · 8,3 · 0,0 |
+| 1,08 | 5,23 | 0,742 | 36,8% | 87,5 · 66,7 · 41,7 · 16,7 · 8,3 · 0,0 |
+| 1,16 | 5,61 | 0,691 | 34,7% | 87,5 · 62,5 · 37,5 · 16,7 · 4,2 · 0,0 |
+| 1,24 | 6,00 | 0,646 | 31,2% | 79,2 · 58,3 · 37,5 · 8,3 · 4,2 · 0,0 |
+
+**Mantido em 4,84.** É o valor que põe a razão em 0,77–0,80, que é o alvo da calibragem; subir K
+para trazer a vitória ao meio da banda derrubaria a razão para 0,69, e a razão é a régua, não a
+vitória. A vitória em 39,4% encosta no teto de 40 — exatamente como a bancada previu que
+aconteceria com a BC_rec ligada.
+
+**As duas pontas da curva continuam abertas, e as duas dependem da loja, que não existe:**
+a rodada 1 é passeio (87,5%) e a rodada 6 é intransponível (0,0%). A bancada tinha 76,1% e 0,6%
+com o produto ligado e sem BC_rec. Não corrigir isso mexendo em K: o que falta é poder de
+compra entre as mesas, e inventar dificuldade para compensar um sistema ausente é a forma mais
+cara de errar.
+
+### O simulador errado mede ruído, não jogo
+
+A primeira aferição reprovou em três métricas, e o defeito era o **jogador**, não o motor. Eu
+tinha escrito uma política gulosa que maximiza pontos imediatos — parecia a definição óbvia de
+"guloso". Ela produz:
+
+| | política ingênua | política da bancada | |
+|---|---|---|---|
+| turnos com recompensa | 52,3% | **75,3%** | |
+| razão pontos/meta | 0,463 | **0,768** | |
+| linhas colhidas em Par | **53,6%** | 16,1% | ← o diagnóstico |
+| linhas colhidas em Flush | 0,35% | 14,1% | |
+| linhas colhidas em Quadra | 0,26% | 7,9% | |
+
+A política da bancada não maximiza pontos: ela colhe quando dá e, quando não dá, **maximiza o
+quanto as linhas ainda prometem** (`melhor_alcancavel` projetado para 5 cartas, pesado por
+quantas cartas a linha já tem). Sem essa segunda conta o bot enche casa com qualquer carta e
+colhe Par em metade das linhas — e todo número medido em cima dele é ruído com três casas
+decimais.
+
+**Lição:** a política do simulador é parte do instrumento, não do experimento. Trocá-la sem
+dizer invalida a série inteira. Ela e o descarte (que a bancada usava e eu tinha esquecido, e
+que sozinho move a razão de 0,626 para 0,789) estão agora em `ferramentas/politica.gd`, com o
+porquê escrito.
+
+---
+
 ## 4. DIALS QUE SÃO CÓDIGO MORTO — não vire parâmetro nenhum destes
 
 Medidos, deram zero. Transformar isso em opção de balanceamento é dívida técnica gratuita.
@@ -266,6 +344,19 @@ Registrados de propósito. Errar de novo custa mais caro que admitir.
    diferente, número diferente.
 4. **Uma proposta chegou com número inventado no texto** ("produto ~1.120"); o medido foi 24.
    → *Número em proposta é hipótese até a bancada rodar.*
+5. **Escrevi a fórmula do evento errada no documento de regras**, e quase construí em cima dela.
+   Tinha escrito "pontos do evento = soma das linhas × Tear", cada linha com o próprio
+   multiplicador. A conta medida é outra: o fator é a **soma dos multiplicadores de todas as
+   mãos colhidas**, vezes o Tear, e vale igual para todas elas. Sob a minha versão, colher duas
+   linhas juntas pagaria o mesmo que colher as duas separadas — e a Janela da Colheita, que é a
+   regra que dá nome ao jogo, não teria razão de existir. → *Toda fórmula do documento é
+   reconferida contra o motor medido antes de virar código, e o teste que a guarda compara as
+   duas colheitas em vez de conferir um número.*
+6. **Medi com o bot errado e quase acreditei.** Ver §3g: uma política gulosa que maximiza pontos
+   imediatos parece a definição óbvia de guloso e produz um jogo que não existe.
+7. **Um script de bancada sem `quit()` roda para sempre.** Uma calibragem ficou 25 minutos
+   ocupando o processador depois de já ter terminado a conta, com a saída presa no buffer. Não
+   é erro de medição, é erro de instrumento — e custou o mesmo tempo.
 
 ---
 
@@ -277,7 +368,8 @@ Registrados de propósito. Errar de novo custa mais caro que admitir.
 | **A cruzada virou o comum** | **71% dos eventos** agora são cruzada (banda saudável 0,35–0,55 por evento); eventos por mesa 2,21 → 1,17; explosão 15,6× → 10,0×. Proposta: mover o clímax um degrau acima, para a escada **DUPLA (9 posic, 2×) · TRIPLA (13, 3×) · CRUZ TOTAL (17, 4×)** — a Tripla é 18,2% dos eventos e a Total 0,85%, e a Cruz Total cabe **exata** numa mesa Grande |
 | **Ergonomia do Avesso na tela** | não medido — desenhar uma carta de duas caras que se lê de relance é **condição de corte** do coringa |
 | **Ensinar a recusa** | nenhuma bancada achou mecanismo que ensine o jogador a *não* fechar uma linha. É a habilidade central e ninguém a ensina |
-| **AVESSO × PRODUTO** | combinação nunca rodada |
+| **AVESSO × PRODUTO** | combinação nunca rodada. Agora rodam juntos no jogo: Avessos vão a 2,19/mesa e a vitória a 39,4% (§3g). Não é regressão — é a soma, medida pela primeira vez |
+| **A rodada 1 é passeio e a 6 é intransponível** | 87,5% e 0,0% de vitória. As duas pontas esperam a loja, que não existe. Não corrigir com K |
 | **34% dos turnos ainda são mudos** | melhor que 86%, ainda não é Balatro (0%) |
 | **O maior momento ainda é pequeno** | pico de 4,19× a meta, p99 de 2,36×. É "passei raspando", não "quebrei o jogo" |
 

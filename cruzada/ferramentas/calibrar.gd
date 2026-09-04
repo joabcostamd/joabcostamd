@@ -34,6 +34,9 @@ func _init() -> void:
                  float(r["vitoria"]), por_rodada])
     print("")
     print("  alvo: razão 0,790 · vitória 20–40%% · rodada 6 quase intransponível")
+    ## Sem isto o processo termina a conta e fica rodando o laço da SceneTree
+    ## para sempre — e a saída, presa no buffer, nunca aparece.
+    quit()
 
 func rodar(sementes: int, fator: float) -> Dictionary:
     var razoes := []
