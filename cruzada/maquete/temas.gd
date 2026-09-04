@@ -14,6 +14,20 @@ class_name Temas
 ## fazendo o trabalho e não a cor.
 static var escala_de_cinza := false
 
+## ── escala tipográfica ──
+## Razão 1,25 ancorada em 14. Cinco papéis, cinco degraus, e nenhum tamanho
+## fora daqui entra na tela. Antes os tamanhos eram escolhidos um a um e o
+## resultado tinha 13 e 14 lado a lado (que ninguém distingue) e um salto de
+## 18 para 50 sem nada no meio.
+##
+## O salto de TITULO para HEROI é ×2 de propósito: não é degrau da escala, é
+## quebra de categoria. O número da pontuação não compete com título nenhum.
+const T_ROTULO := 14   ## PONTOS, MÃOS, RODADA — caixa alta
+const T_CORPO := 17    ## nomes das mãos, frases, botões
+const T_NUMERO := 21   ## fichas e multiplicadores da tabela
+const T_TITULO := 26   ## CRUZADA
+const T_HEROI := 52    ## a pontuação e o multiplicador da mesa
+
 const TEMAS: Array[Dictionary] = [
 {
     "id": "casino", "nome": "Casino noturno", "claro": false, "fundo_estilo": "brilho",

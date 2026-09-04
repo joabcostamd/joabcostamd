@@ -54,6 +54,22 @@ tamanho.
 - **Calcule a medida da peça pela restrição mais apertada** entre largura e altura, em tempo de
   desenho. Número fixo quebra assim que a janela muda.
 
+## Tipografia
+
+- **Escala modular, nunca tamanhos avulsos.** Razão entre 1,2 e 1,25, um degrau por papel:
+  rótulo · corpo · número · título · herói. Cinco chegam; sete já é indecisão.
+- **Dois degraus a menos de ×1,12 de distância são um degrau só** — o olho não separa, e você
+  gastou uma decisão à toa.
+- **Mínimo de 14 px** para rótulo em caixa alta e **16-17 px** para texto corrido de jogo. Abaixo
+  disso o jogador não lê de relance, que é o único modo como ele lê a interface.
+- **O salto para o número-herói é proposital.** Ele não é degrau da escala, é quebra de categoria:
+  a pontuação não compete com título nenhum.
+- **Algarismos tabulares são obrigatórios em qualquer número que conte.** Se os dígitos têm
+  larguras diferentes, o número treme enquanto sobe. Meça: os dez dígitos precisam ter a mesma
+  largura de avanço. Se a fonte não tiver, desenhe cada algarismo em célula de largura fixa.
+- **A escala mora junto das cores**, no mesmo arquivo de tokens. Validador que carrega a própria
+  cópia dos valores não valida nada — valida a cópia.
+
 ## Alvos de toque
 
 | Elemento | Menor lado |
@@ -101,6 +117,8 @@ Sem elas, "ficou bonito" é chute. Com elas, é build que passa ou reprova.
 3. **Matriz de layout.** Instancia toda tela em cada tamanho × idioma × escala de fonte e falha
    se algum elemento estourar o pai, se texto ficar abaixo do mínimo legível, ou se um alvo
    primário ficar abaixo de 64 px.
+4. **Escala tipográfica.** Confere que os degraus são distintos, que nenhum está abaixo do mínimo,
+   e que os algarismos são tabulares.
 
 E uma que continua humana: **olhe a captura**. Toda vez.
 
@@ -115,6 +133,9 @@ E uma que continua humana: **olhe a captura**. Toda vez.
 | Temas **parecidos** apesar de paletas diferentes | todos compartilham o mesmo tratamento de fundo | cada tema declara o seu estilo de fundo |
 | Número do canto **colide** com o miolo da peça | área de conteúdo começa alto demais | recue o miolo abaixo e à direita do índice |
 | Elemento erguido no hover **invade** o vizinho | folga calculada sem contar o deslocamento da animação | reserve a folga incluindo o pico da animação |
+| Texto **encosta na borda** e cabe por um pixel | frase longa herdada da tela larga | tela estreita leva o nome, não a explicação |
+| Ferramenta de medir texto **trava** em `--headless` | o TextServer não mede sem display | rode sob `xvfb-run`, como as capturas |
+| `FontFile.duplicate()` **trava** o processo | duplicar fonte carregada é operação pesada e sem retorno | não duplique: aplique o ajuste na instância ou aceite o padrão |
 
 ## Checklist antes de dizer que a tela está pronta
 

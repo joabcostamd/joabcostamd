@@ -16,6 +16,11 @@ echo "── capturas da maquete (8 temas × 3 modos) ──"
 # Captura exige display: em --headless o renderizador é nulo e não desenha nada.
 if command -v xvfb-run >/dev/null 2>&1; then
   xvfb-run -a "$GODOT" --resolution 1280x720 res://maquete/capturas.tscn
+  echo
+  echo "── escala tipográfica e algarismos ──"
+  # Exige display: o TextServer não mede texto sob --headless puro.
+  xvfb-run -a "$GODOT" --resolution 640x480 res://maquete/tipografia.tscn 2>/dev/null \
+    | grep -vE "^(WARNING|OpenGL|libpulse|   at:)" | grep -v "^$"
 else
   echo "CAPTURAS — puladas — xvfb ausente"
 fi

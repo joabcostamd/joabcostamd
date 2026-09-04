@@ -279,29 +279,32 @@ func _retrato() -> void:
         var faixa := Rect2(MARGEM_R, vao_topo + (vao_alt - 40.0) * 0.5, util, minf(40.0, vao_alt))
         _caixa(faixa, 10, 0.72)
         var ff := Temas.fonte_do_tema(true)
-        draw_string(ff, Vector2(faixa.position.x + 14, faixa.position.y + faixa.size.y * 0.62),
-                    "MESA", HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Temas.TEXTO_SUAVE)
-        draw_string(Temas.fonte_do_tema(), Vector2(faixa.position.x + 62,
-                    faixa.position.y + faixa.size.y * 0.64), "Rachada · as quinas nascem lacradas",
-                    HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Temas.ALERTA)
+        draw_string(ff, Vector2(faixa.position.x + 14, faixa.position.y + faixa.size.y * 0.66),
+                    "MESA", HORIZONTAL_ALIGNMENT_LEFT, -1, Temas.T_ROTULO, Temas.TEXTO_SUAVE)
+        # Em retrato só o nome. A explicação do modificador é trabalho do
+        # compêndio: tela estreita não é lugar de frase longa, e texto que
+        # encosta na borda lê como descuido mesmo quando cabe por um pixel.
+        draw_string(Temas.fonte_do_tema(), Vector2(faixa.position.x + 66,
+                    faixa.position.y + faixa.size.y * 0.66), "Rachada",
+                    HORIZONTAL_ALIGNMENT_LEFT, -1, Temas.T_CORPO, Temas.ALERTA)
 
 # ─────────────────────────────── as peças ───────────────────────────────
 
 func _barra(r: Rect2) -> void:
     var f := Temas.fonte_do_tema(true)
-    var tam := 24 if r.size.y > 46 else 19
+    var tam := Temas.T_TITULO if r.size.y > 46 else Temas.T_NUMERO
     draw_string(f, Vector2(r.position.x, r.position.y + r.size.y * 0.70),
                 "CRUZADA", HORIZONTAL_ALIGNMENT_LEFT, -1, tam, Temas.TEXTO)
     var largura := f.get_string_size("CRUZADA", HORIZONTAL_ALIGNMENT_LEFT, -1, tam).x
     if r.size.x > 420:
         draw_string(Temas.fonte_do_tema(), Vector2(r.position.x + largura + 16,
                     r.position.y + r.size.y * 0.68), "rodada 4 · mesa 2 de 3",
-                    HORIZONTAL_ALIGNMENT_LEFT, -1, tam - 8, Temas.TEXTO_SUAVE)
+                    HORIZONTAL_ALIGNMENT_LEFT, -1, Temas.T_CORPO, Temas.TEXTO_SUAVE)
 
     # REGRAS: âncora fixa no alto à direita, 44 px de altura mínima para o dedo.
     var b := Rect2(r.end.x - 112, r.position.y, 112, maxf(r.size.y, 44.0))
     _caixa(b, 8, 0.9)
-    _centrado(Temas.fonte_do_tema(true), b, "REGRAS", 15, Temas.TEXTO)
+    _centrado(Temas.fonte_do_tema(true), b, "REGRAS", Temas.T_CORPO, Temas.TEXTO)
 
 ## Coluna esquerda: o ESTADO. O jogador consulta, não toca.
 func _painel_estado(r: Rect2) -> void:
@@ -312,11 +315,11 @@ func _painel_estado(r: Rect2) -> void:
     var larg := r.size.x - 40.0
 
     draw_string(ff, Vector2(x, r.position.y + 30), "PONTOS",
-                HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Temas.TEXTO_SUAVE)
+                HORIZONTAL_ALIGNMENT_LEFT, -1, Temas.T_ROTULO, Temas.TEXTO_SUAVE)
     draw_string(ff, Vector2(x, r.position.y + 84), _milhar(PONTOS),
-                HORIZONTAL_ALIGNMENT_LEFT, -1, 50, Temas.TEXTO)
+                HORIZONTAL_ALIGNMENT_LEFT, -1, Temas.T_HEROI, Temas.TEXTO)
     draw_string(f, Vector2(x, r.position.y + 112), "de " + _milhar(META),
-                HORIZONTAL_ALIGNMENT_LEFT, -1, 18, Temas.TEXTO_SUAVE)
+                HORIZONTAL_ALIGNMENT_LEFT, -1, Temas.T_CORPO, Temas.TEXTO_SUAVE)
 
     var trilho := Rect2(x, r.position.y + 128, larg, 10)
     _pilula(trilho, Color(Temas.BORDA, 0.8))
@@ -327,18 +330,18 @@ func _painel_estado(r: Rect2) -> void:
     draw_rect(Rect2(x, r.position.y + 164, larg, 1), Color(Temas.FILETE, 0.18))
 
     draw_string(ff, Vector2(x, r.position.y + 196), "MULTIPLICADOR",
-                HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Temas.TEXTO_SUAVE)
+                HORIZONTAL_ALIGNMENT_LEFT, -1, Temas.T_ROTULO, Temas.TEXTO_SUAVE)
     draw_string(ff, Vector2(x, r.position.y + 252), "×%d" % MULT,
-                HORIZONTAL_ALIGNMENT_LEFT, -1, 50, Temas.DESTAQUE)
+                HORIZONTAL_ALIGNMENT_LEFT, -1, Temas.T_HEROI, Temas.DESTAQUE)
     draw_string(f, Vector2(x + 88, r.position.y + 248), "sobe e nunca desce",
-                HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Temas.TEXTO_SUAVE)
+                HORIZONTAL_ALIGNMENT_LEFT, -1, Temas.T_CORPO, Temas.TEXTO_SUAVE)
 
     draw_rect(Rect2(x, r.position.y + 286, larg, 1), Color(Temas.FILETE, 0.18))
 
     # Rodada e vidas como contas, não como texto: o jogador vê onde está e
     # quanto lhe resta sem ler nada.
     draw_string(ff, Vector2(x, r.position.y + 322), "RODADA",
-                HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Temas.TEXTO_SUAVE)
+                HORIZONTAL_ALIGNMENT_LEFT, -1, Temas.T_ROTULO, Temas.TEXTO_SUAVE)
     for i in 6:
         var c := Vector2(x + 92 + i * 19, r.position.y + 317)
         if i < 4:
@@ -347,7 +350,7 @@ func _painel_estado(r: Rect2) -> void:
             draw_circle(c, 5.5, Color(Temas.BORDA, 0.9))
 
     draw_string(ff, Vector2(x, r.position.y + 356), "VIDAS",
-                HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Temas.TEXTO_SUAVE)
+                HORIZONTAL_ALIGNMENT_LEFT, -1, Temas.T_ROTULO, Temas.TEXTO_SUAVE)
     for i in 3:
         var c := Vector2(x + 92 + i * 26, r.position.y + 351)
         # Vida gasta vira contorno, não some: quem olha precisa ver que tinha três.
@@ -365,7 +368,7 @@ func _contadores(r: Rect2) -> void:
     for i in itens.size():
         var b := Rect2(r.position.x + i * (larg + 10), r.position.y, larg, r.size.y)
         _pilula(b, Color(Temas.BORDA, 0.35))
-        _centrado(f, b, "%s  %s" % [itens[i][0], itens[i][1]], 14, Temas.TEXTO)
+        _centrado(f, b, "%s  %s" % [itens[i][0], itens[i][1]], Temas.T_CORPO, Temas.TEXTO)
 
 ## Faixa de estado do retrato: os mesmos três números, deitados.
 func _faixa_estado(r: Rect2) -> void:
@@ -385,7 +388,7 @@ func _painel_referencia(r: Rect2) -> void:
     var f := Temas.fonte_do_tema()
     var ff := Temas.fonte_do_tema(true)
     draw_string(ff, Vector2(r.position.x + 20, r.position.y + 30), "MÃOS",
-                HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Temas.TEXTO_SUAVE)
+                HORIZONTAL_ALIGNMENT_LEFT, -1, Temas.T_ROTULO, Temas.TEXTO_SUAVE)
 
     var passo := minf(44.0, (r.size.y - 72.0) / MAOS.size())
     var y := r.position.y + 52.0
@@ -396,12 +399,12 @@ func _painel_referencia(r: Rect2) -> void:
             _pilula(Rect2(r.position.x + 12, y - 15, r.size.x - 24, 28),
                     Color(Temas.DESTAQUE, 0.16), 6)
         draw_string(f, Vector2(r.position.x + 20, y + 5), str(m[0]),
-                    HORIZONTAL_ALIGNMENT_LEFT, -1, 16, cor)
+                    HORIZONTAL_ALIGNMENT_LEFT, -1, Temas.T_CORPO, cor)
         # Números tabulares alinhados à direita: o olho compara sem esforço.
         draw_string(ff, Vector2(r.end.x - 112, y + 5), str(m[1]),
-                    HORIZONTAL_ALIGNMENT_RIGHT, 60, 16, Temas.TEXTO_SUAVE)
+                    HORIZONTAL_ALIGNMENT_RIGHT, 60, Temas.T_CORPO, Temas.TEXTO_SUAVE)
         draw_string(ff, Vector2(r.end.x - 62, y + 5), str(m[2]),
-                    HORIZONTAL_ALIGNMENT_RIGHT, 44, 16, Temas.ACENTO)
+                    HORIZONTAL_ALIGNMENT_RIGHT, 44, Temas.T_CORPO, Temas.ACENTO)
         y += passo
 
 
@@ -429,10 +432,10 @@ func _rodape_mesa(r: Rect2) -> void:
     _caixa(r, 10, 0.72)
     var ff := Temas.fonte_do_tema(true)
     draw_string(ff, Vector2(r.position.x + 18, r.position.y + 22), "MESA",
-                HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Temas.TEXTO_SUAVE)
-    draw_string(Temas.fonte_do_tema(), Vector2(r.position.x + 18, r.position.y + 42),
+                HORIZONTAL_ALIGNMENT_LEFT, -1, Temas.T_ROTULO, Temas.TEXTO_SUAVE)
+    draw_string(Temas.fonte_do_tema(), Vector2(r.position.x + 18, r.position.y + 44),
                 "Rachada · as quinas nascem lacradas", HORIZONTAL_ALIGNMENT_LEFT, -1,
-                14, Temas.ALERTA)
+                Temas.T_CORPO, Temas.ALERTA)
 
 func _grade(r: Rect2, celula: float, vao: float) -> void:
     var alt := celula * Carta.RAZAO
@@ -513,7 +516,7 @@ func _rotulo(f: FontFile, r: Rect2, texto: String, cheia: bool, compacto: bool) 
     var t := texto
     if compacto and cheia:
         t = "CHEIA"
-    _centrado(f, r, t, 11 if compacto else 14, cor)
+    _centrado(f, r, t, Temas.T_ROTULO, cor)
 
 func _mao(r: Rect2, largura: float, vao: float) -> void:
     var n := MAO.size()
@@ -560,7 +563,7 @@ func _pilula(r: Rect2, cor: Color, raio := -1) -> void:
 func _numero(r: Rect2, titulo: String, valor: String, cor: Color, tam: int) -> void:
     var f := Temas.fonte_do_tema(true)
     draw_string(f, Vector2(r.position.x, r.position.y + 14), titulo,
-                HORIZONTAL_ALIGNMENT_CENTER, r.size.x, 11, Temas.TEXTO_SUAVE)
+                HORIZONTAL_ALIGNMENT_CENTER, r.size.x, Temas.T_ROTULO, Temas.TEXTO_SUAVE)
     draw_string(f, Vector2(r.position.x, r.position.y + 14 + tam), valor,
                 HORIZONTAL_ALIGNMENT_CENTER, r.size.x, tam, cor)
 

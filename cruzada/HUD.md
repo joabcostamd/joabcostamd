@@ -114,7 +114,33 @@ Cada tema declara o seu **estilo de fundo**, não só a sua cor:
 | `grade` | linhas acesas ortogonais + horizonte | Neon |
 | `tecido` | trama cruzada de 4 px quase invisível | Feltro |
 
-## 9. Os quatro detalhes que separam premium de improvisado
+## 9. A escala tipográfica
+
+Cinco papéis, cinco degraus, razão **1,25** ancorada em 14. Nenhum tamanho fora daqui entra na
+tela, e a escala mora em `temas.gd` junto das cores — o validador só confere.
+
+| Papel | Tamanho | Onde | Razão |
+|---|---|---|---|
+| `T_ROTULO` | **14** | PONTOS, MÃOS, RODADA, VIDAS, MESA — caixa alta | — |
+| `T_CORPO` | **17** | nomes das mãos, frases, botões, contadores | ×1,21 |
+| `T_NUMERO` | **21** | fichas e multiplicadores da tabela | ×1,24 |
+| `T_TITULO` | **26** | CRUZADA | ×1,24 |
+| `T_HEROI` | **52** | a pontuação e o multiplicador da mesa | ×2,00 |
+
+O salto de `TITULO` para `HEROI` é ×2 **de propósito**: não é degrau da escala, é quebra de
+categoria. O número da pontuação não compete com título nenhum — ele é de outra ordem.
+
+**O que a escala substituiu.** Os tamanhos eram escolhidos um a um: 11, 13, 14, 16, 18 e 50. O
+13 e o 14 ficavam lado a lado com razão ×1,08 — dois degraus que ninguém distingue, ou seja, um
+degrau desperdiçado. E entre 18 e 50 havia ×2,78 de nada. Os rótulos em 11 e 13 estavam abaixo do
+mínimo recomendado para texto de jogo.
+
+**Os algarismos são tabulares.** Medido: os dez dígitos do Nunito têm exatamente 30,0 px a 50 px
+de corpo, Regular e Bold. Isso importa mais aqui que em quase qualquer outra interface — a
+pontuação sobe contando, e com dígitos de larguras diferentes o número **treme** enquanto conta.
+`maquete/tipografia.gd` mede isso a cada rodada de teste.
+
+## 10. Os quatro detalhes que separam premium de improvisado
 
 Nenhum deles é caro. Todos são um `draw_rect` ou dois.
 
