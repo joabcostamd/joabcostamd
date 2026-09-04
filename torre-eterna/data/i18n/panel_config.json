@@ -786,5 +786,37 @@
  "cfg_repouso_nunca": {
   "pt": "Nunca",
   "en": "Never"
+ },
+ "cfg_licencas": {
+  "pt": "Licenças",
+  "en": "Licences"
+ },
+ "cfg_licencas_dica": {
+  "pt": "Os componentes de terceiros usados neste jogo e as licenças deles. O texto da licença do Godot acompanha o produto por exigência da própria licença.",
+  "en": "The third-party components used in this game and their licences. The Godot licence text ships with the product as that licence requires."
+ },
+ "cfg_licencas_sem": {
+  "pt": "Arquivo de licenças não encontrado nesta cópia.",
+  "en": "Licence file not found in this copy."
+ },
+ "cfg_novidades": {
+  "pt": "Novidades",
+  "en": "What's new"
+ },
+ "cfg_novidades_dica": {
+  "pt": "O que mudou em cada versão do jogo.",
+  "en": "What changed in each version of the game."
+ },
+ "cfg_novidades_sem": {
+  "pt": "Nenhuma nota de versão nesta cópia.",
+  "en": "No release notes in this copy."
+ },
+ "cfg_versao_atual": {
+  "pt": "esta versão",
+  "en": "this version"
+ },
+ "cfg_cred_autoria": {
+  "pt": "Autoria",
+  "en": "Authorship"
  }
 }

@@ -8,7 +8,7 @@
 ![GDScript](https://img.shields.io/badge/GDScript-2.0-478CBF)
 ![Arte](https://img.shields.io/badge/Arte-100%25%20procedural-a855f7)
 ![Áudio](https://img.shields.io/badge/Áudio-sintetizado-f472b6)
-![Testes](https://img.shields.io/badge/Testes-889%2F889-4ade80)
+![Testes](https://img.shields.io/badge/Testes-917%2F917-4ade80)
 ![Idiomas](https://img.shields.io/badge/Idiomas-PT--BR%20%C2%B7%20EN-38bdf8)
 
 ---
@@ -44,7 +44,7 @@ cd torre-eterna
 # Verificação estrutural (todo script compila? dados presentes?)
 godot --headless --path . -s res://tools/verificar.gd
 
-# Suíte de testes da simulação — 889 testes, sem mocks
+# Suíte de testes da simulação — 917 testes, sem mocks
 godot --headless --path . -s res://tools/testes.gd
 
 # Convenções do projeto (emoji na interface, print solto, painel órfão, mídia)
@@ -191,8 +191,8 @@ em que você está apanhando. Isso é bom, mas é o contrário de perseguir o li
 - **58.282** formas nomeadas de inimigo, compostas por gramática a partir de 38 traços escritos à mão
 - **40** entradas de lore em 8 capítulos · **30** dicas
 - **6** moedas · **6** raridades · **39** atributos de torre
-- **1.086** chaves de interface e **1.286** textos de conteúdo, em português e inglês
-- **889** testes da simulação · **0** arquivo de som · a única imagem do repositório é `icon.svg`, o ícone do projeto
+- **1.094** chaves de interface e **1.286** textos de conteúdo, em português e inglês
+- **917** testes da simulação · **0** arquivo de som · a única imagem do repositório é `icon.svg`, o ícone do projeto
 
 ---
 

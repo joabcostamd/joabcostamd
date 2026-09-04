@@ -196,13 +196,33 @@ func _checar_paineis() -> void:
 	d.list_dir_end()
 
 ## Nenhuma imagem ou som no repositório — a promessa do projeto.
+##
+## AS FONTES SÃO A ÚNICA EXCEÇÃO, e ela é obrigatória. Vinte idiomas incluem
+## chinês, japonês, coreano e tailandês, e não existe jeito de DESENHAR um
+## ideograma por código: ou o jogo embarca uma fonte que os tem, ou esses quatro
+## idiomas mostram quadradinhos. A regra continua valendo para todo o resto —
+## imagem, som e música seguem proibidos, porque para esses o procedural DÁ conta
+## e o projeto inteiro é a prova.
+##
+## A exceção é fechada a `res://fontes/`, e o portão de dados confere que cada
+## arquivo lá dentro está declarado em `fontes/FONTES.md` com licença e origem.
+## Uma fonte solta na pasta, sem procedência, é problema jurídico na loja.
+const PASTA_FONTES := "res://fontes/"
+
 func _checar_recursos() -> void:
 	var proibidas := ["png", "jpg", "jpeg", "webp", "ogg", "wav", "mp3", "ttf", "otf"]
 	var achados: Array = []
 	_varrer("res://", proibidas, achados)
-	# icon.svg é a única exceção: é vetor, e é o ícone da janela.
-	if not achados.is_empty():
-		erros.append("arquivos de mídia no projeto (tudo deve ser procedural): %s" % str(achados))
+	var fora: Array = []
+	for a in achados:
+		var caminho := str(a)
+		var e_fonte := caminho.ends_with(".ttf") or caminho.ends_with(".otf")
+		if e_fonte and caminho.begins_with(PASTA_FONTES):
+			continue
+		fora.append(caminho)
+	# icon.svg é a única exceção de imagem: é vetor, e é o ícone da janela.
+	if not fora.is_empty():
+		erros.append("arquivos de mídia no projeto (tudo deve ser procedural): %s" % str(fora))
 
 func _varrer(pasta: String, exts: Array, saida: Array) -> void:
 	var d := DirAccess.open(pasta)

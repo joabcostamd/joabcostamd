@@ -118,8 +118,18 @@ func _i18n_conteudo() -> void:
 		erros.append("conteúdo sem tradução em EN (%d): %s" % [
 			faltas.size(), str(faltas.slice(0, 8))])
 
-func _varrer_traducao(o, arquivo: String, faltas: Array) -> void:
+## NOME PRÓPRIO NÃO SE TRADUZ.
+##
+## "Estrato Games" e "Joab Costa" são o nome de uma empresa e o de uma pessoa:
+## eles têm um `nome` e nunca terão um `nomeEn`. Sem esta exceção, a regra que
+## garante o jogo inteiro em inglês passaria a cobrar tradução de gente.
+const NAO_TRADUZ := {"marca.json": ["estudio", "legal", "steam"]}
+
+func _varrer_traducao(o, arquivo: String, faltas: Array, caminho: String = "") -> void:
 	if o is Dictionary:
+		var isentos: Array = NAO_TRADUZ.get(arquivo, [])
+		if isentos.has(caminho):
+			return
 		for campo_v in CAMPOS_TRADUZIVEIS:
 			var campo := str(campo_v)
 			if not o.has(campo) or not (o[campo] is String):
@@ -130,11 +140,11 @@ func _varrer_traducao(o, arquivo: String, faltas: Array) -> void:
 			var par: String = str(campo) + "En"
 			if not o.has(par):
 				faltas.append("%s:%s.%s" % [arquivo, str(o.get("id", "?")), campo])
-		for v in o.values():
-			_varrer_traducao(v, arquivo, faltas)
+		for k in o.keys():
+			_varrer_traducao(o[k], arquivo, faltas, str(k))
 	elif o is Array:
 		for v in o:
-			_varrer_traducao(v, arquivo, faltas)
+			_varrer_traducao(v, arquivo, faltas, caminho)
 
 func _contagens() -> void:
 	var reais := {

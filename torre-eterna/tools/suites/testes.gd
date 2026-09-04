@@ -46,6 +46,8 @@ func rodar(cena: SceneTree) -> void:
 	t_formas()
 	t_editos()
 	t_repouso()
+	t_marca()
+	t_versao()
 	t_mira()
 	t_fim_de_sessao()
 	t_celebracao()
@@ -88,7 +90,7 @@ func rodar(cena: SceneTree) -> void:
 	var minimo_por_grupo := {
 		"Acessibilidade": 22, "Alcancavel": 8, "Big": 12,
 		"Chaves dinamicas": 3, "Combate": 9, "Defesa": 27,
-		"Dicas": 5, "Economia": 9, "Cepas": 40, "Formas": 18, "Editos": 26, "Repouso": 13,
+		"Dicas": 5, "Economia": 9, "Cepas": 40, "Formas": 18, "Editos": 26, "Repouso": 13, "Marca": 8, "Versao": 17,
 		"Eventos": 12, "Feedback": 2, "Ferramentas": 3, "Daltonismo": 9, "Tempo": 5, "Conteudo lido": 21, "Fmt": 6,
 		"Habilidades": 17, "Icones": 2, "Integridade": 9,
 		"Longo prazo": 7, "Mecânicas": 69, "Mira": 6,
@@ -2040,6 +2042,125 @@ func t_repouso() -> void:
 	ok("e o _process nao simula nada", not trecho_proc.contains("simular("))
 
 	Engine.max_fps = fps_antes
+
+
+## ------------------------------------------------------------- marca e versão
+## O nome do produto e o número da versão são os dois dados que aparecem em mais
+## lugares fora do código: no executável, na loja, no relatório de bug, na tela
+## de créditos. Se cada lugar tiver a própria cópia, um dia eles divergem — e a
+## divergência não quebra nada, só mostra o nome errado para quem comprou.
+func t_marca() -> void:
+	g("Marca")
+	Marca.carregar(true)
+	ok("a marca tem nome nos dois idiomas",
+		Marca.nome(false) != "" and Marca.nome(true) != "",
+		"%s / %s" % [Marca.nome(false), Marca.nome(true)])
+	ok("a marca tem subtitulo nos dois idiomas",
+		Marca.subtitulo(false) != "" and Marca.subtitulo(true) != "")
+	ok("o nome completo junta os dois", Marca.completo(false).contains(Marca.nome(false)))
+	ok("a marca tem estudio e titular", Marca.estudio() != "" and Marca.titular() != "")
+
+	# O ID CURTO NÃO PODE SEGUIR O NOME COMERCIAL. Ele nomeia o arquivo de save:
+	# se mudasse junto com o nome do produto, todo mundo que já joga perderia o
+	# progresso na atualização que renomeia o jogo.
+	var id := Marca.id_curto()
+	ok("o id curto existe e e simples", id != "" and id == id.to_lower(), id)
+	var so_simples := true
+	for i in id.length():
+		var c := id[i]
+		if not ((c >= "a" and c <= "z") or (c >= "0" and c <= "9") or c == "_"):
+			so_simples = false
+	ok("o id curto nao tem acento nem espaco", so_simples, id)
+	ok("o save usa o id curto, e nao o nome comercial",
+		SaveSys.CAMINHO.contains(id), SaveSys.CAMINHO)
+
+	# A linha de copyright é o texto que vai para a loja e para os créditos.
+	var linha := Marca.copyright_linha()
+	ok("o copyright tem simbolo, ano e titular",
+		linha.begins_with("©") and linha.contains(str(Marca.ano_inicial()))
+		and linha.contains(Marca.titular()), linha)
+
+	# NINGUÉM ESCREVE O NOME À MÃO. Este é o portão que faz a fonte única valer:
+	# sem ele, alguém acrescenta um "Torre Eterna" literal num painel e a troca
+	# de nome deixa esse painel para trás, em silêncio.
+	var nome_pt := Marca.nome(false)
+	var fora: Array = []
+	for arq in ["res://scripts/ui/tela_titulo.gd", "res://scripts/ui/panel_config.gd",
+			"res://scripts/ui/hud.gd", "res://scripts/ui/tela_final.gd",
+			"res://scripts/ui/tela_pausa.gd", "res://scripts/core/save_system.gd"]:
+		var codigo := FileAccess.get_file_as_string(arq)
+		if codigo.contains("\"%s\"" % nome_pt):
+			fora.append(arq)
+	ok("nenhum script escreve o nome do jogo a mao", fora.is_empty(), str(fora))
+
+func t_versao() -> void:
+	g("Versao")
+	var v := Versao.numero()
+	ok("o jogo tem numero de versao", v != "" and v != "0.0.0", v)
+	ok("a versao tem tres campos", v.split(".").size() == 3, v)
+
+	# COMPARAR VERSÃO COMO TEXTO DÁ ERRADO NA DÉCIMA. "0.10.0" < "0.9.0" é
+	# verdade em texto e mentira em versão — e o efeito seria a tela de
+	# novidades aparecer para trás, ou nunca mais aparecer.
+	ok("0.9.0 vem antes de 0.10.0", Versao.comparar("0.9.0", "0.10.0") == -1)
+	ok("0.10.0 vem depois de 0.9.0", Versao.comparar("0.10.0", "0.9.0") == 1)
+	ok("versoes iguais empatam", Versao.comparar("1.2.3", "1.2.3") == 0)
+	ok("faltar campo conta como zero", Versao.comparar("1.2", "1.2.0") == 0)
+	ok("1.0.0 vem depois de 0.99.99", Versao.comparar("1.0.0", "0.99.99") == 1)
+
+	# A tela de novidades só sobe para quem ATUALIZOU. Save novo não tem o que
+	# comparar, e mostrar a lista de mudanças para quem nunca jogou seria ruído.
+	ok("save novo nao ve novidades", not Versao.e_novidade(""))
+	ok("quem ja estava na versao atual nao ve de novo", not Versao.e_novidade(v))
+	ok("quem vinha de uma versao antiga ve", Versao.e_novidade("0.0.1"))
+
+	# O CHANGELOG PRECISA TER A VERSÃO QUE ESTÁ RODANDO. Sem isso, a tela de
+	# novidades subiria vazia — pior do que não subir.
+	ok("o changelog descreve a versao atual", not Versao.entrada_atual().is_empty(), v)
+	var mudancas := Versao.mudancas(v, false)
+	ok("a versao atual tem mudancas escritas", mudancas.size() > 0)
+	var sem_en := 0
+	var tipo_torto: Array = []
+	for e in Dados.changelog:
+		var ed: Dictionary = e
+		for it in ed.get("itens", []):
+			var i: Dictionary = it
+			if str(i.get("textoEn", "")) == "" or str(i.get("texto", "")) == "":
+				sem_en += 1
+			if not (str(i.get("tipo", "")) in ["novo", "melhoria", "correcao"]):
+				tipo_torto.append(str(i.get("tipo", "")))
+		if str(ed.get("tituloEn", "")) == "":
+			sem_en += 1
+	ok("todo item do changelog fala as duas linguas", sem_en == 0, "faltando=%d" % sem_en)
+	ok("todo item tem um tipo conhecido", tipo_torto.is_empty(), str(tipo_torto))
+
+	# O CHANGELOG.md E O JSON SÃO O MESMO CONTEÚDO. Dois lugares com a mesma
+	# lista divergem: o repositório conta uma história e o jogo conta outra.
+	var md := FileAccess.get_file_as_string("res://../CHANGELOG.md")
+	if md == "":
+		md = FileAccess.get_file_as_string("res://CHANGELOG.md")
+	if md != "":
+		var faltando: Array = []
+		for e2 in Dados.changelog:
+			var ver := str((e2 as Dictionary).get("versao", ""))
+			if not md.contains(ver):
+				faltando.append(ver)
+		ok("o CHANGELOG.md tem todas as versoes do jogo", faltando.is_empty(), str(faltando))
+
+	# `config/features` tem que declarar a MESMA linha do motor que roda. Ficou
+	# em "4.4" depois da subida para 4.7.2, e o exportador usa esse campo para
+	# decidir o que empacotar.
+	var feats = ProjectSettings.get_setting("application/config/features", PackedStringArray())
+	var linha_motor := "%d.%d" % [Engine.get_version_info().get("major", 4), Engine.get_version_info().get("minor", 0)]
+	ok("features declara a linha do motor que roda",
+		Array(feats).has(linha_motor), "features=%s motor=%s" % [str(feats), linha_motor])
+
+	# O arquivo de licencas de terceiros ACOMPANHA o produto: e condicao da
+	# licenca MIT do Godot, e nao gentileza.
+	var lic := FileAccess.get_file_as_string("res://licencas/TERCEIROS.txt")
+	ok("o texto de licencas esta no produto", lic.length() > 2000, "bytes=%d" % lic.length())
+	ok("ele contem a licenca do Godot", lic.contains("Godot Engine") and lic.contains("MIT") or lic.contains("WITHOUT WARRANTY"))
+	ok("ele contem a licenca das fontes", lic.contains("SIL OPEN FONT LICENSE"))
 
 ## ------------------------------------------------------------- mira
 ## `alvo_ids` é a busca mais quente do jogo (todo impacto de perfuração e todo

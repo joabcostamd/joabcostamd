@@ -567,8 +567,10 @@ func _aba_sobre() -> void:
 
 	var b3 := _bloco("carta", UI.ACENTO2, Txt.t("cfg_creditos"), Txt.t("cfg_creditos_sub"))
 	for par in [
-		[Txt.t("cfg_cred_projeto"), "Joab Costa"],
-		[Txt.t("cfg_motor"), "Godot Engine 4.4 — MIT"],
+		[Txt.t("cfg_cred_projeto"), Marca.estudio()],
+		[Txt.t("cfg_cred_autoria"), Marca.titular()],
+		[Txt.t("cfg_versao"), Versao.numero()],
+		[Txt.t("cfg_motor"), "Godot Engine %s — MIT" % Engine.get_version_info().get("string", "4")],
 		[Txt.t("cfg_arte"), Txt.t("cfg_cred_arte_v")],
 		[Txt.t("c_audio"), Txt.t("cfg_cred_audio_v")],
 		[Txt.t("cfg_agradecimentos"), Txt.t("cfg_cred_obrigado_v")],
@@ -581,9 +583,27 @@ func _aba_sobre() -> void:
 		hh.add_child(UI.rotulo(str(linha_par[1]), 13, UI.TEXTO))
 		b3["corpo"].add_child(hh)
 
-	var rodape := UI.rotulo(Txt.t("cfg_rodape_sobre"), 12, UI.TEXTO3)
+	# DUAS PORTAS QUE A LOJA EXIGE E QUE NÃO EXISTIAM.
+	#
+	# O texto MIT do Godot precisa acompanhar o produto — não é gentileza, é
+	# condição da licença que permite usar a engine comercialmente. E a lista do
+	# que mudou na versão é o que responde "a correção que eu esperava já
+	# chegou?" sem obrigar ninguém a procurar num fórum.
+	var linha_botoes := UI.hbox(8)
+	linha_botoes.add_child(UI.botao(Txt.t("cfg_novidades"), func(): _abrir_janela("novidades"),
+		Txt.t("cfg_novidades_dica")))
+	linha_botoes.add_child(UI.botao(Txt.t("cfg_licencas"), func(): _abrir_janela("licencas"),
+		Txt.t("cfg_licencas_dica")))
+	b3["corpo"].add_child(linha_botoes)
+
+	var rodape := UI.rotulo("%s  ·  %s" % [Marca.copyright_linha(), Txt.t("cfg_rodape_sobre")], 12, UI.TEXTO3)
 	rodape.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	conteudo.add_child(rodape)
+
+func _abrir_janela(qual: String) -> void:
+	var pm := get_node_or_null("/root/Main/UI")
+	if pm != null and pm.has_method("abrir_texto_longo"):
+		pm.abrir_texto_longo(qual)
 
 # ============================================================ ações do save
 

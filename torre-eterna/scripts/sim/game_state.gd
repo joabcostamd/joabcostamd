@@ -168,7 +168,9 @@ static func novo() -> Dictionary:
 		"adaptacao": {},
 		"retomada": {},
 		"seg_por_onda_media": 18.0,
-		"novidades": {},
+		# `versao_vista` guarda a ultima versao cuja tela de novidades ja subiu.
+		# Ver `PanelManager._talvez_novidades`.
+		"novidades": {"versao_vista": ""},
 
 		"buffs": [],             # [{id, stat, tipo, valor, restante, fonte, icone, cor}]
 		"combo": {"atual": 0, "melhor": 0, "timer": 0.0},

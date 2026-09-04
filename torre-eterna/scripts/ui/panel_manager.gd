@@ -67,6 +67,7 @@ func _ready() -> void:
 	await get_tree().process_frame
 	_montar_overlay()
 	_escoar_fila_inicial()
+	_talvez_novidades()
 	# Cinto e suspensório: se nem pela fila veio, o Jogo guarda o relatório.
 	if jogo != null and not _offline_mostrado:
 		var guardado: Dictionary = jogo.relatorio_offline
@@ -309,6 +310,43 @@ func abrir_editos() -> void:
 		_posicionar_toasts())
 	dialogo.move_to_front()
 	_posicionar_toasts()
+
+## Licencas e novidades da versao. Ver `scripts/ui/dialogo_texto.gd`.
+func abrir_texto_longo(qual: String) -> void:
+	if dialogo != null and is_instance_valid(dialogo):
+		return
+	var script := load("res://scripts/ui/dialogo_texto.gd")
+	if script == null:
+		return
+	dialogo = Control.new()
+	dialogo.name = "DialogoTexto"
+	dialogo.set_script(script)
+	dialogo.qual = qual
+	raiz.add_child(dialogo)
+	dialogo.tree_exited.connect(func():
+		dialogo = null
+		_posicionar_toasts())
+	dialogo.move_to_front()
+	_posicionar_toasts()
+
+## A TELA DE NOVIDADES APARECE SOZINHA, uma vez por versao.
+##
+## Quem atualiza o jogo nao vai ao painel de configuracoes procurar o que mudou.
+## Se a lista so existir la, ela existe para ninguem. Aqui ela sobe na primeira
+## abertura depois da atualizacao, e a versao vista fica gravada no save para nao
+## subir de novo. Um save novo (versao vista vazia) NAO ve a tela: quem esta
+## comecando o jogo nao tem o que comparar.
+func _talvez_novidades() -> void:
+	if jogo == null or not (jogo.s.get("novidades", null) is Dictionary):
+		return
+	var n: Dictionary = jogo.s["novidades"]
+	var vista := str(n.get("versao_vista", ""))
+	n["versao_vista"] = Versao.numero()
+	if not Versao.e_novidade(vista):
+		return
+	if Versao.entrada_atual().is_empty():
+		return
+	abrir_texto_longo("novidades")
 
 ## O save do boot nao pode ser lido: avisa e oferece religar o salvamento.
 func _ao_save_ilegivel(_motivo: String) -> void:

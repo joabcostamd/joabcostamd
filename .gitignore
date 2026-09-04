@@ -8,3 +8,10 @@ torre-eterna/export_presets.cfg
 .DS_Store
 Thumbs.db
 node_modules/
+
+# Fontes do jogo: nao versionadas, baixadas por tools/baixar_fontes.sh.
+# Ver torre-eterna/fontes/FONTES.md.
+torre-eterna/fontes/*.ttf
+torre-eterna/fontes/*.otf
+torre-eterna/fontes/*.ttc
+torre-eterna/fontes/*.import

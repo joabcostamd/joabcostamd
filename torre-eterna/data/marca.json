@@ -1,0 +1,30 @@
+{
+ "_nota": "FONTE ÚNICA DA MARCA. Nada no jogo escreve o nome do produto à mão: HUD, tela de título, créditos, save, exportação e página da loja leem daqui. Trocar o nome do jogo ou da desenvolvedora é editar este arquivo — e não caçar a palavra em 20 idiomas, 93 scripts e uma logo. Ver scripts/core/marca.gd.",
+ "_estado": "PROVISORIO — o nome definitivo ainda não foi escolhido. Ver docs/NOMES.md.",
+
+ "jogo": {
+  "nome": "Torre Eterna",
+  "nomeEn": "Eternal Tower",
+  "subtitulo": "A torre que lembra",
+  "subtituloEn": "The tower that remembers",
+  "traduzir_nome": true,
+  "id_curto": "torre_eterna"
+ },
+
+ "estudio": {
+  "nome": "Estrato Games",
+  "url": "",
+  "suporte": ""
+ },
+
+ "legal": {
+  "titular": "Joab Costa",
+  "ano_inicial": 2026
+ },
+
+ "steam": {
+  "app_id": 0,
+  "nome_loja": "",
+  "url_loja": ""
+ }
+}
