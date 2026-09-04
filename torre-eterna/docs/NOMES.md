@@ -576,3 +576,101 @@ título não é o lugar de gastar isso — a descrição curta é.
 
 **Fica atrás até de ETERNAL TOWER (13).** Não recomendo.
 
+---
+
+## 3.6. SPACE TOWER · UNKNOWN TOWER · GRAVITY TOWER — a pedido
+
+Os três compartilham um problema que não é de colisão, e por isso ele vem
+primeiro.
+
+### O teste que vem antes da busca: o nome combina com a arte que já existe?
+
+`docs/IDENTIDADE.md`, seção 1, é uma regra fechada e com portão:
+
+> **Não é ficção científica de nave.** É o painel de uma máquina antiga que
+> ainda funciona, sozinha, muito depois de quem a construiu ter ido embora. A
+> luz vem de dentro dela e do que ela atira — nunca do ambiente.
+> Escuro, luminoso, exato.
+
+**SPACE** e **GRAVITY** empurram o jogo para ficção científica espacial. Não é
+detalhe de gosto: a paleta (`#080b14` azul-noite, neon só onde há energia), a
+ausência total de textura, a arena vista de cima e a máquina solitária foram
+construídas, testadas e aprovadas contra essa frase. Trocar para um nome
+espacial significa **jogar fora a identidade visual inteira e refazer**, ou
+lançar com nome e arte contando histórias diferentes — que é o pior dos dois.
+
+Agora as medições.
+
+### SPACE TOWER — nota 8, o pior de todos até agora
+
+| Jogo | Onde |
+|---|---|
+| **Space Tower** | Steam 1064750 — **o nome exato, roguelike de estratégia** |
+| Space Tower Defense | Steam 3975220 — *"jogo estratégico de tower defense espacial"* |
+| Super Space Towers | Steam 1153850 |
+| Space Nature Attack Tower Defense | Steam 2761490 |
+
+O nome exato está ocupado por um jogo publicado, e o gênero exato está ocupado
+por outro. `space` é ainda mais genérico que `endless`: é a palavra mais usada
+em título de jogo indie depois de `dark`. Não recomendo, em nenhuma condição.
+
+### GRAVITY TOWER — nota 11
+
+**Colisão:** nenhuma direta encontrada. É o único ponto a favor.
+
+Contra, e é decisivo: **o jogo não tem gravidade.** Nenhuma mecânica, em lugar
+nenhum — os inimigos andam, não caem. Título que promete uma mecânica que não
+existe é pedido de reembolso e análise negativa, e o público de idle é
+justamente o que lê a descrição inteira antes de comprar.
+
+Existe uma leitura poética honesta — a torre como poço gravitacional, tudo
+desabando na direção dela. Ela é boa. Mas o jogador só a alcança **depois** de
+comprar, e o título trabalha **antes**. Somado ao conflito com a identidade
+visual, não compensa.
+
+### UNKNOWN TOWER — nota 13, o melhor dos três
+
+**Primeiro, a grafia:** a palavra é **UNKNOWN**, com `n` no fim. `UNKNOW` não
+existe em inglês. Título com erro de grafia na Steam não é charme — ele some da
+busca, porque ninguém digita errado de propósito, e vira piada em análise e em
+imprensa. Se este nome for escolhido, ele é UNKNOWN TOWER.
+
+**Colisão:** nenhuma direta. O vizinho mais próximo é *The Untitled Tower*
+(Steam 3567030), que é outra palavra e outro gênero.
+
+**A favor, e é real:** o jogo tem descoberta interminável de verdade — a
+Gramática das Cepas são 38 traços que se combinam, e `formas.gd` guarda um
+conjunto exato do que você já viu, para sempre. "Desconhecido" descreve isso
+com honestidade.
+
+**Contra:** `unknown` é adjetivo comum e **não pertence a ninguém**. Não dá para
+registrar como marca com força, não tem som próprio, e some numa lista de 20
+capas. Ele não erra — ele só não faz nada. E, como ENDLESS, ele não diz "torre
+que se defende": diz "mistério", que é um gênero diferente.
+
+### Tabela
+
+| Nome | Colisão | Achável | Combina com a arte | Registrável | Logo | **Soma** |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|
+| UNKNOWN TOWER | 4 | 3 | 3 | 1 | 2 | **13** |
+| GRAVITY TOWER | 4 | 3 | 1 | 2 | 1 | **11** |
+| SPACE TOWER | 1 | 1 | 1 | 1 | 4 | **8** |
+
+Para comparar: OUROTOWER 23, TOWER ZERO 23, ETERNAL TOWER 13, ENDLESS TOWER 12.
+
+### O padrão nas suas escolhas, e o que ele indica
+
+ETERNAL TOWER, ENDLESS TOWER, SPACE TOWER, UNKNOWN TOWER, GRAVITY TOWER: cinco
+tentativas na forma **`ADJETIVO + TOWER`**. É uma forma boa — clara, dá sinal
+de gênero na hora — mas é também a forma mais disputada da loja inteira, porque
+todo mundo do gênero tenta ela. Cada adjetivo comum do inglês já foi usado.
+
+Só se sai dessa forma de duas maneiras, e as duas já estão medidas e limpas:
+
+1. **Inverter a ordem** → **TOWER ZERO** (23). Continua duas palavras, continua
+   dizendo "torre", mas `zero` depois do substantivo vira nome próprio em vez
+   de descrição, e ninguém ocupou.
+2. **Fundir numa palavra só** → **OUROTOWER** (23). Vira palavra inventada:
+   marca defensável, uma logo em 20 idiomas, som próprio — e ainda carrega
+   `tower` inteiro dentro, então a busca continua achando.
+
