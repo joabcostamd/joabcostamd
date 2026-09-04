@@ -405,8 +405,8 @@ func _barra(r: Rect2) -> void:
     var f := Temas.fonte_do_tema(true)
     var tam := Temas.T_TITULO if r.size.y > 46 else Temas.T_NUMERO
     draw_string(f, Vector2(r.position.x, r.position.y + r.size.y * 0.70),
-                "CRUZADA", HORIZONTAL_ALIGNMENT_LEFT, -1, tam, Temas.TEXTO)
-    var largura := f.get_string_size("CRUZADA", HORIZONTAL_ALIGNMENT_LEFT, -1, tam).x
+                Marca.NOME, HORIZONTAL_ALIGNMENT_LEFT, -1, tam, Temas.TEXTO)
+    var largura := f.get_string_size(Marca.NOME, HORIZONTAL_ALIGNMENT_LEFT, -1, tam).x
     if r.size.x > 420:
         draw_string(Temas.fonte_do_tema(),
                     Vector2(r.position.x + largura + 16, r.position.y + r.size.y * 0.68),

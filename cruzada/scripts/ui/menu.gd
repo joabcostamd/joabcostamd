@@ -81,7 +81,7 @@ func _draw() -> void:
     ## que deixa o olho pousar no nome antes de procurar o botão.
     var tam := int(clampf(size.x * 0.09, 40.0, 96.0))
     Pintura.centrado(self, ff, Rect2(0, size.y * 0.13, size.x, tam + 10),
-                     "CRUZADA", tam, Temas.TEXTO)
+                     Marca.NOME, tam, Temas.TEXTO)
     draw_multiline_string(f, Vector2(size.x * 0.5 - 260, size.y * 0.13 + tam + 34),
                           FRASE, HORIZONTAL_ALIGNMENT_CENTER, 520, Temas.T_CORPO,
                           -1, Temas.TEXTO_SUAVE)
