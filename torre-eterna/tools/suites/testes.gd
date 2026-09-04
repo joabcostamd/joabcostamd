@@ -42,7 +42,8 @@ func rodar(cena: SceneTree) -> void:
 	t_tempo()
 	t_daltonismo()
 	t_nada_mudo()
-	t_elites()
+	t_cepas()
+	t_formas()
 	t_mira()
 	t_fim_de_sessao()
 	t_celebracao()
@@ -85,7 +86,7 @@ func rodar(cena: SceneTree) -> void:
 	var minimo_por_grupo := {
 		"Acessibilidade": 22, "Alcancavel": 8, "Big": 12,
 		"Chaves dinamicas": 3, "Combate": 9, "Defesa": 27,
-		"Dicas": 5, "Economia": 9, "Elites": 11,
+		"Dicas": 5, "Economia": 9, "Cepas": 40, "Formas": 18,
 		"Eventos": 12, "Feedback": 2, "Ferramentas": 3, "Daltonismo": 9, "Tempo": 5, "Conteudo lido": 21, "Fmt": 6,
 		"Habilidades": 17, "Icones": 2, "Integridade": 9,
 		"Longo prazo": 7, "Mecânicas": 69, "Mira": 6,
@@ -125,7 +126,7 @@ func _conferir_doc(total_testes: int) -> int:
 	var reais := {
 		"testes": total_testes,
 		"inimigos": Dados.inimigos.size(),
-		"elites": Dados.elites.size(),
+		"cepas": Dados.cepas.size(),
 		"chefes": Dados.chefes.size(),
 		"super_chefes": Dados.super_chefes.size(),
 		"stats": Dados.stat_defs.size(),
@@ -150,7 +151,7 @@ func _conferir_doc(total_testes: int) -> int:
 	var alvos := {
 		"res://README.md": [
 			["- \\*\\*([\\d.]+)\\*\\* tipos de inimigo", "inimigos"],
-			["\\*\\*([\\d.]+)\\*\\* modificadores de elite", "elites"],
+			["\\*\\*([\\d.]+)\\*\\* cepas em 3 eixos", "cepas"],
 			["\\*\\*([\\d.]+)\\*\\* chefes", "chefes"],
 			["\\*\\*([\\d.]+)\\*\\* super-chefes", "super_chefes"],
 			["\\*\\*([\\d.]+)\\*\\* atributos de torre", "stats"],
@@ -176,7 +177,7 @@ func _conferir_doc(total_testes: int) -> int:
 			["`testes` \\(([\\d.]+)\\)", "testes"],
 			["([\\d.]+) efeitos \\+ m[uú]sica adaptativa", "efeitos_audio"],
 			["(?m)^([\\d.]+) inimigos · ", "inimigos"],
-			[" · ([\\d.]+) elites · ", "elites"],
+			[" · ([\\d.]+) cepas · ", "cepas"],
 			[" · ([\\d.]+) chefes · ", "chefes"],
 			[" · ([\\d.]+) super-chefes · ", "super_chefes"],
 			[" · ([\\d.]+) melhorias · ", "upgrades"],
@@ -600,6 +601,16 @@ func t_combate() -> void:
 	# O alcance da busca de colisao usa o maior raio VIVO. Se ele ficar menor
 	# que o corpo de alguem, esse alguem vira intocavel — e nada mais no jogo
 	# reclamaria.
+	#
+	# TENTEI TIRAR O GIGANTE DAQUI, E PIOROU DUAS VEZES. A ideia era boa no
+	# papel: `raio_max_vivo` e global, entao um unico corpo grande alarga a
+	# caixa de busca de TODO projetil do quadro. Separei os corpos acima de um
+	# limiar numa lista conferida a parte, esperando caixa menor para todos. O
+	# portao mediu 9.169 us contra 4.135 — mais que o dobro. O motivo e a
+	# distribuicao real dos dados: com as Cepas, inimigo grande deixou de ser
+	# raro, a "lista de excecoes" passou a ter dezenas de corpos, e varre-la
+	# por projetil custa muito mais do que a celula extra que ela economizava.
+	# A otimizacao so paga se o gigante for MESMO raro, e neste jogo ele nao e.
 	ok("o alcance de busca cobre o maior corpo vivo",
 		jogo.arena.raio_max_vivo >= chefao.raio,
 		"alcance %.1f, corpo %.1f" % [jogo.arena.raio_max_vivo, chefao.raio])
@@ -610,6 +621,10 @@ func t_combate() -> void:
 	var na_borda: Vector2 = chefao.pos + Vector2(chefao.raio - 1.0, 0.0)
 	ok("corpo grande e achado pela borda",
 		jogo.arena.primeiro_colidindo(na_borda, 1.0, {}) == chefao)
+	# A busca respeita `ignorar`, senao perfuracao e ricochete bateriam duas
+	# vezes no mesmo corpo.
+	ok("a busca respeita o ignorar",
+		jogo.arena.primeiro_colidindo(na_borda, 1.0, {chefao.id: true}) == null)
 	# Com o chefe fora, o alcance encolhe — que e a economia inteira.
 	var alcance_com_chefe: float = jogo.arena.raio_max_vivo
 	chefao.ativo = false
@@ -1383,43 +1398,132 @@ func _listar_gd(raiz: String) -> Array:
 	d.list_dir_end()
 	return saida
 
-## --------------------------------------------------- elites de verdade
+## --------------------------------------------------- cepas de verdade
 ## Seis dos nove modificadores de elite tinham campo mecânico no JSON ou um
 ## ramo no código. Três — espinhoso, magnetico e fantasmal — tinham APENAS id,
 ## nome, cor e descrição: eram recolorização pura, e as descrições prometiam
 ## mecânica exata ao jogador, nos dois idiomas, impressa no codex. Uma auditoria
 ## independente pegou isso com `grep -rn espinhoso scripts/sim/` devolvendo
 ## zero. Estes testes existem para que a promessa não volte a ser só cor.
-func t_elites() -> void:
-	g("Elites")
+func t_cepas() -> void:
+	g("Cepas")
 	var def: Dictionary = Dados.inimigo_por_id["grunhido"]
 
-	# Todo modificador de elite precisa de efeito: ou um campo que muda número,
-	# ou um ramo no código que leia o id. Cor e texto não bastam.
+	# TODA CEPA PRECISA MUDAR O JOGO, NÃO SÓ A COR.
+	#
+	# A versão anterior deste teste cobria os 9 modificadores de elite. As Cepas
+	# são 38, e a regra continua a mesma: ou a cepa declara um campo que mexe em
+	# número, ou existe um ramo no código que lê o bit dela. Cor e texto não
+	# bastam — foi exatamente assim que se descobriu, na auditoria, que seis dos
+	# nove elites antigos só trocavam a cor.
 	var com_efeito := 0
 	var so_cor: Array = []
 	var codigo := ""
 	for arq in ["res://scripts/sim/enemy_ai.gd", "res://scripts/sim/combat.gd",
-			"res://scripts/sim/game.gd", "res://scripts/sim/economy.gd"]:
+			"res://scripts/sim/game.gd", "res://scripts/sim/economy.gd",
+			"res://scripts/render/art_enemy.gd"]:
 		codigo += FileAccess.get_file_as_string(arq)
-	for m in Dados.elites:
+	for m in Dados.cepas:
 		var id := str(m.get("id", ""))
-		var tem_campo: bool = m.has("hp") or m.has("vel") or m.has("esc") or m.has("ouro")
-		var tem_ramo := codigo.contains('"%s"' % id)
+		var tem_campo: bool = m.has("hp") or m.has("vel") or m.has("esc") \
+			or m.has("ouro") or m.has("xp") or m.has("armadura")
+		var tem_ramo := codigo.contains("B_" + id.to_upper())
 		if tem_campo or tem_ramo:
 			com_efeito += 1
 		else:
 			so_cor.append(id)
-	ok("todo elite muda o jogo, nao so a cor", so_cor.is_empty(),
+	ok("toda cepa muda o jogo, nao so a cor", so_cor.is_empty(),
 		"so cor e texto: %s" % str(so_cor))
-	ok("os 9 modificadores foram conferidos", com_efeito == Dados.elites.size(),
-		"com efeito=%d de %d" % [com_efeito, Dados.elites.size()])
+	ok("as 38 cepas foram conferidas", com_efeito == Dados.cepas.size(),
+		"com efeito=%d de %d" % [com_efeito, Dados.cepas.size()])
+	ok("o lexico tem os tres eixos cheios",
+		Dados.cepas_por_eixo.get("corpo", []).size() >= 10
+		and Dados.cepas_por_eixo.get("andar", []).size() >= 10
+		and Dados.cepas_por_eixo.get("marca", []).size() >= 10)
 
+	# TODO ID COM BIT PRECISA DE BIT DE VERDADE. Um erro de digitação no
+	# dicionário `_bits` devolveria 0 em silêncio, e a cepa viraria decoração:
+	# nasceria, apareceria no nome, e nenhum ramo do jogo a leria.
+	var sem_bit: Array = []
+	for m in Dados.cepas:
+		var id2 := str(m.get("id", ""))
+		if codigo.contains("B_" + id2.to_upper()) and Cepas.bit(id2) == 0:
+			sem_bit.append(id2)
+	ok("toda cepa lida por bit tem bit", sem_bit.is_empty(), str(sem_bit))
+
+	# DOIS IDS NÃO PODEM DIVIDIR O MESMO BIT. Se dividissem, ligar um ligaria o
+	# outro e o inimigo ganharia um poder que ninguém sorteou.
+	var vistos := {}
+	var repetido := ""
+	for m in Dados.cepas:
+		var b := Cepas.bit(str(m.get("id", "")))
+		if b == 0:
+			continue
+		if vistos.has(b):
+			repetido = "%s e %s" % [str(vistos[b]), str(m.get("id", ""))]
+		vistos[b] = str(m.get("id", ""))
+	ok("nenhum bit e usado por duas cepas", repetido == "", repetido)
+
+	# A ESCADA DA PROFUNDIDADE. A segunda cepa não pode existir antes da onda 60
+	# e a terceira não pode existir antes da 200 — é isso que faz o Enxame da
+	# hora 200 ser feito de coisas que não podiam existir na hora 2.
+	var maxn_cedo := 0
+	var maxn_meio := 0
+	var maxn_fundo := 0
+	for i in 4000:
+		maxn_cedo = maxi(maxn_cedo, Cepas.quantas(20, jogo.rng_cepas, 1.0, jogo.rng))
+		maxn_meio = maxi(maxn_meio, Cepas.quantas(100, jogo.rng_cepas, 1.0, jogo.rng))
+		maxn_fundo = maxi(maxn_fundo, Cepas.quantas(600, jogo.rng_cepas, 1.0, jogo.rng))
+	ok("onda rasa nunca passa de uma cepa", maxn_cedo == 1, "max=%d" % maxn_cedo)
+	ok("onda media chega a duas", maxn_meio == 2, "max=%d" % maxn_meio)
+	ok("onda funda chega a tres", maxn_fundo == 3, "max=%d" % maxn_fundo)
+	ok("chance zero nunca sorteia cepa", Cepas.quantas(600, jogo.rng_cepas, 0.0, jogo.rng) == 0)
+
+	# NO MÁXIMO UMA CEPA POR EIXO. Duas do mesmo eixo se anulariam no nome
+	# ("Grunhido Encouraçado Colossal") e nos números.
+	var quebrou_eixo := ""
+	for i in 500:
+		var lista := Cepas.sortear(3, jogo.rng_cepas, jogo.rng)
+		var usados := {}
+		for c in lista:
+			var eixo := str(c.get("eixo", ""))
+			if usados.has(eixo):
+				quebrou_eixo = eixo
+			usados[eixo] = true
+	ok("o sorteio nunca repete eixo", quebrou_eixo == "", quebrou_eixo)
+	ok("pedir mais eixos do que existem nao quebra",
+		Cepas.sortear(9, jogo.rng_cepas, jogo.rng).size() <= Cepas.EIXOS.size())
+	ok("pedir zero devolve vazio", Cepas.sortear(0, jogo.rng_cepas, jogo.rng).is_empty())
+
+	# O NOME MUDA DE LADO CONFORME A LÍNGUA. Em português o adjetivo vem depois
+	# do substantivo; em inglês, antes. Concatenar cego acerta uma e erra a outra.
+	var duas := [Dados.cepa_por_id["blindado"], Dados.cepa_por_id["veloz"]]
+	ok("nome em portugues poe o adjetivo depois",
+		Cepas.nome_composto("Grunhido", duas, false) == "Grunhido Encouraçado Frenético",
+		Cepas.nome_composto("Grunhido", duas, false))
+	ok("nome em ingles poe o adjetivo antes",
+		Cepas.nome_composto("Grunt", duas, true) == "Armored Frenzied Grunt",
+		Cepas.nome_composto("Grunt", duas, true))
+	ok("sem cepa o nome e o da base",
+		Cepas.nome_composto("Grunhido", [], false) == "Grunhido")
+
+	# A ASSINATURA IGNORA A ORDEM DO SORTEIO. Sem ordenar, a mesma forma
+	# contaria como duas e o número de formas vistas dobraria sozinho.
+	ok("a assinatura nao depende da ordem",
+		Cepas.assinatura("grunhido", duas) == Cepas.assinatura("grunhido", [duas[1], duas[0]]))
+
+	# A cor marcante é a da cepa mais rara, e não a da última sorteada.
+	var raro_e_comum := [Dados.cepa_por_id["blindado"], Dados.cepa_por_id["ancestral"]]
+	ok("tinge pela cepa mais rara",
+		Cepas.cor_marcante(raro_e_comum) == str(Dados.cepa_por_id["ancestral"].get("cor", "")))
+
+	# ---------------------------------------------------- comportamentos
 	# fantasmal: fica intangivel e volta
 	jogo.arena.limpar_inimigos()
-	var fan := EnemyAI.criar(def, 10, jogo, {"elite": true, "elite_mod": "fantasmal"})
+	var fan := EnemyAI.criar(def, 10, jogo, {"elite": true, "cepas": [Dados.cepa_por_id["fantasmal"]]})
 	ok("fantasmal nasce solido", fan != null and fan.intangivel <= 0.0)
 	if fan != null:
+		ok("a cepa acende o bit dela", (fan.cepa_bits & Cepas.B_FANTASMAL) != 0)
 		var virou := false
 		var voltou := false
 		for i in 400:
@@ -1444,8 +1548,8 @@ func t_elites() -> void:
 
 	# espinhoso: devolve dano em contato
 	jogo.arena.limpar_inimigos()
-	var esp := EnemyAI.criar(def, 10, jogo, {"elite": true, "elite_mod": "espinhoso"})
-	var comum := EnemyAI.criar(def, 10, jogo, {"elite": true, "elite_mod": "blindado"})
+	var esp := EnemyAI.criar(def, 10, jogo, {"elite": true, "cepas": [Dados.cepa_por_id["espinhoso"]]})
+	var comum := EnemyAI.criar(def, 10, jogo, {"elite": true, "cepas": [Dados.cepa_por_id["blindado"]]})
 	if esp != null and comum != null:
 		var torre_s: Dictionary = jogo.s["torre"]
 		torre_s["vida"] = Big.from(1.0e9)
@@ -1460,11 +1564,123 @@ func t_elites() -> void:
 		jogo.invulneravel = 0.0
 		var vida1: float = torre_s["vida"]
 		Combate.aplicar_dano(comum, Big.from(1000.0), jogo, {"puro": true})
-		ok("elite comum nao devolve dano", not Big.lt(torre_s["vida"], vida1))
+		ok("cepa comum nao devolve dano", not Big.lt(torre_s["vida"], vida1))
+
+	# blindado e friavel sao os dois lados da mesma moeda: um segura o dano, o
+	# outro o multiplica. Se os dois mordessem para o mesmo lado, a cepa que o
+	# jogador QUER encontrar seria mais uma que o castiga.
+	jogo.arena.limpar_inimigos()
+	var bl := EnemyAI.criar(def, 10, jogo, {"elite": true, "cepas": [Dados.cepa_por_id["blindado"]]})
+	var fr := EnemyAI.criar(def, 10, jogo, {"elite": true, "cepas": [Dados.cepa_por_id["friavel"]]})
+	if bl != null and fr != null:
+		bl.hp = Big.from(1.0e12); bl.hp_max = bl.hp; bl.armadura = 0.0
+		fr.hp = Big.from(1.0e12); fr.hp_max = fr.hp; fr.armadura = 0.0
+		# `Combate._responder` reaproveita UM dicionario estatico — guardar as
+		# duas respostas em variaveis daria o mesmo objeto duas vezes. Le-se o
+		# numero na hora.
+		var d_bl: float = Combate.aplicar_dano(bl, Big.from(1000.0), jogo, {"puro": true})["dano"]
+		var d_fr: float = Combate.aplicar_dano(fr, Big.from(1000.0), jogo, {"puro": true})["dano"]
+		ok("blindado apara o golpe", Big.lt(d_bl, Big.from(1000.0)))
+		ok("friavel amplifica o golpe", Big.gt(d_fr, Big.from(1000.0)))
+
+	# glacial: imune a critico, e a negacao acontece na origem do critico
+	jogo.arena.limpar_inimigos()
+	var gl := EnemyAI.criar(def, 10, jogo, {"elite": true, "cepas": [Dados.cepa_por_id["glacial"]]})
+	if gl != null:
+		var alvo_comum := EnemyAI.criar(def, 10, jogo, {})
+		jogo.stats.add_flat("critChance", 10.0, "teste")
+		var teve_crit := false
+		var teve_crit_comum := false
+		for i in 120:
+			if bool(Combate.rolar_golpe(Big.from(100.0), jogo, gl)[1]):
+				teve_crit = true
+			if alvo_comum != null and bool(Combate.rolar_golpe(Big.from(100.0), jogo, alvo_comum)[1]):
+				teve_crit_comum = true
+		ok("glacial nunca leva critico", not teve_crit)
+		# O CONTROLE IMPORTA MAIS QUE O CASO. Sem ele, um teste que zerasse o
+		# critico do jogo inteiro por engano passaria com louvor.
+		ok("sem a cepa o critico volta a sair", teve_crit_comum)
+		jogo.marcar_sujo()
+		jogo.recalcular()
+
+	# faminto cresce, acelerante corre mais quando esta morrendo
+	jogo.arena.limpar_inimigos()
+	var fm := EnemyAI.criar(def, 10, jogo, {"elite": true, "cepas": [Dados.cepa_por_id["faminto"]]})
+	if fm != null:
+		var esc0: float = fm.escala
+		for i in 120:
+			EnemyAI.atualizar(1.0 / 60.0, jogo)
+		ok("faminto cresce enquanto vive", fm.escala > esc0,
+			"antes=%.2f depois=%.2f" % [esc0, fm.escala])
+		ok("faminto respeita o teto", fm.escala <= EnemyAI.FAMINTO_TETO + 0.001)
+	jogo.arena.limpar_inimigos()
+	var ac := EnemyAI.criar(def, 10, jogo, {"elite": true, "cepas": [Dados.cepa_por_id["acelerante"]]})
+	if ac != null:
+		ac.pos = jogo.arena.centro + Vector2(400.0, 0.0)
+		EnemyAI.atualizar(1.0 / 60.0, jogo)
+		var v_cheio: float = ac.velocidade
+		ac.hp = Big.mul_f(ac.hp_max, 0.02)
+		EnemyAI.atualizar(1.0 / 60.0, jogo)
+		ok("acelerante corre mais quase morto", ac.velocidade > v_cheio,
+			"cheio=%.1f ferido=%.1f" % [v_cheio, ac.velocidade])
+
+	# tecelao nasce com escudo; simbionte nasce mais forte com a tela cheia
+	jogo.arena.limpar_inimigos()
+	var tc := EnemyAI.criar(def, 10, jogo, {"elite": true, "cepas": [Dados.cepa_por_id["tecelao"]]})
+	ok("tecelao nasce com escudo", tc != null and tc.escudo > Big.LIMIAR_ZERO)
+	jogo.arena.limpar_inimigos()
+	var s_vazio := EnemyAI.criar(def, 10, jogo, {"elite": true, "cepas": [Dados.cepa_por_id["simbionte"]]})
+	var hp_vazio: float = s_vazio.hp if s_vazio != null else 0.0
+	for i in 80:
+		EnemyAI.criar(def, 10, jogo, {})
+	# `contagem_viva` e o numero do QUADRO passado (ver `arena.gd`); sem refazer
+	# a grade o simbionte nasceria lendo uma tela vazia.
+	jogo.arena.reconstruir_grade()
+	var s_cheio := EnemyAI.criar(def, 10, jogo, {"elite": true, "cepas": [Dados.cepa_por_id["simbionte"]]})
+	ok("simbionte nasce mais forte com a tela cheia",
+		s_cheio != null and Big.gt(s_cheio.hp, hp_vazio))
+
+	# bipartido divide e ecoante deixa eco — os dois so na morte
+	jogo.arena.limpar_inimigos()
+	var bp := EnemyAI.criar(def, 10, jogo, {"elite": true, "cepas": [Dados.cepa_por_id["bipartido"]]})
+	if bp != null:
+		var antes_bp: int = jogo.arena.contagem_viva_agora()
+		Combate.matar(bp, jogo)
+		ok("bipartido deixa dois no lugar", jogo.arena.contagem_viva_agora() > antes_bp)
+	jogo.arena.limpar_inimigos()
+	var ec := EnemyAI.criar(def, 10, jogo, {"elite": true, "cepas": [Dados.cepa_por_id["ecoante"]]})
+	if ec != null:
+		Combate.matar(ec, jogo)
+		ok("ecoante deixa um eco", jogo.arena.contagem_viva_agora() >= 1)
+	# O eco nao pode ecoar: dois ecoantes se multiplicariam sem fim e o jogo
+	# ficaria preso numa cascata de inimigos que nunca acaba.
+	jogo.arena.limpar_inimigos()
+	var ec2 := EnemyAI.criar(def, 10, jogo, {
+		"elite": true, "cepas": [Dados.cepa_por_id["ecoante"]], "segmento": true})
+	if ec2 != null:
+		Combate.matar(ec2, jogo)
+		ok("o eco nao ecoa de novo", jogo.arena.contagem_viva_agora() == 0,
+			"vivos=%d" % jogo.arena.contagem_viva_agora())
+
+	# maldito cobra da torre o preco do ouro dele
+	jogo.arena.limpar_inimigos()
+	var md := EnemyAI.criar(def, 10, jogo, {"elite": true, "cepas": [Dados.cepa_por_id["maldito"]]})
+	if md != null:
+		var ts: Dictionary = jogo.s["torre"]
+		ts["vida"] = ts["vida_max"]
+		ts["escudo"] = Big.ZERO
+		jogo.invulneravel = 0.0
+		# Os iframes da torre sobram do teste do espinhoso, logo acima, e valem
+		# para TODA fonte de dano — inclusive esta. Sem zerar, o teste mediria a
+		# janela de invulnerabilidade e nao a maldicao.
+		jogo.torre.iframes = 0.0
+		var v0: float = ts["vida"]
+		Combate.matar(md, jogo)
+		ok("maldito cobra da torre ao morrer", Big.lt(ts["vida"], v0))
 
 	# magnetico: rouba o ouro do chao
 	jogo.arena.limpar_inimigos()
-	var mag := EnemyAI.criar(def, 10, jogo, {"elite": true, "elite_mod": "magnetico"})
+	var mag := EnemyAI.criar(def, 10, jogo, {"elite": true, "cepas": [Dados.cepa_por_id["magnetico"]]})
 	if mag != null:
 		mag.pos = Vector2(900.0, 400.0)
 		var centro: Vector2 = jogo.arena.centro
@@ -1486,7 +1702,99 @@ func t_elites() -> void:
 			"antes=%.1f depois=%.1f" % [perto_do_ima0, perto_do_ima1])
 		ok("o ouro roubado se afasta da torre", perto_do_centro1 > perto_do_centro0,
 			"antes=%.1f depois=%.1f" % [perto_do_centro0, perto_do_centro1])
+
+	# TRÊS CEPAS SOMAM, E O PRÊMIO SOBE JUNTO COM A AMEAÇA.
 	jogo.arena.limpar_inimigos()
+	var simples := EnemyAI.criar(def, 300, jogo, {})
+	var triplo := EnemyAI.criar(def, 300, jogo, {"elite": true, "cepas": [
+		Dados.cepa_por_id["vital"], Dados.cepa_por_id["pesado"], Dados.cepa_por_id["ancestral"]]})
+	if simples != null and triplo != null:
+		ok("tres cepas empilham vida", Big.gt(triplo.hp_max, simples.hp_max))
+		ok("tres cepas empilham ouro", Big.gt(triplo.ouro, simples.ouro))
+		ok("tres cepas acendem tres bits",
+			(triplo.cepa_bits & Cepas.B_ANCESTRAL) != 0)
+	jogo.arena.limpar_inimigos()
+
+## ------------------------------------------------------------- formas vistas
+## O registro de formas é um bitset de 58 mil posições que atravessa
+## Transcendência e atualização de conteúdo. Se ele errar, o jogo mente sobre a
+## única coisa que a pessoa carrega entre sessões — quantas formas ela viu.
+func t_formas() -> void:
+	g("Formas")
+	var mapa := Formas.mapa_atual()
+	var total := Formas.total_enderecos(mapa)
+	ok("o espaco de formas e grande", total > 20000, "total=%d" % total)
+
+	var bits := Formas.novo(mapa)
+	ok("o registro nasce vazio", Formas.contar(bits) == 0)
+
+	var g1 := "grunhido"
+	var so_base := Formas.endereco(g1, [], mapa)
+	var com_uma := Formas.endereco(g1, [Dados.cepa_por_id["blindado"]], mapa)
+	var com_duas := Formas.endereco(g1, [Dados.cepa_por_id["blindado"], Dados.cepa_por_id["veloz"]], mapa)
+	ok("cada forma tem endereco proprio",
+		so_base != com_uma and com_uma != com_duas and so_base != com_duas)
+	ok("todo endereco cabe no espaco",
+		so_base >= 0 and com_duas >= 0 and com_duas < total)
+	ok("base desconhecida nao tem endereco", Formas.endereco("nao_existe", [], mapa) < 0)
+
+	# A ORDEM DO SORTEIO NÃO PODE MUDAR O ENDEREÇO.
+	var invertida := Formas.endereco(g1, [Dados.cepa_por_id["veloz"], Dados.cepa_por_id["blindado"]], mapa)
+	ok("o endereco nao depende da ordem", invertida == com_duas)
+
+	# Marcar responde `true` uma vez só — é esse `true` que vira a comemoração.
+	ok("a primeira vez conta", Formas.marcar(bits, com_duas))
+	ok("a segunda vez nao conta", not Formas.marcar(bits, com_duas))
+	ok("o contador anda um", Formas.contar(bits) == 1)
+	Formas.marcar(bits, com_uma)
+	Formas.marcar(bits, so_base)
+	ok("o contador anda com as outras", Formas.contar(bits) == 3)
+	ok("endereco invalido nao marca nada", not Formas.marcar(bits, -1))
+	ok("endereco fora do espaco nao marca nada", not Formas.marcar(bits, total + 99))
+
+	# IDA E VOLTA PELO SAVE.
+	var guardado := Formas.guardar(bits, mapa)
+	var voltou := Formas.carregar(guardado, mapa)
+	ok("o registro sobrevive ao save", Formas.contar(voltou) == 3)
+	ok("as formas certas voltaram",
+		not Formas.marcar(voltou, com_duas) and not Formas.marcar(voltou, com_uma))
+	ok("save vazio devolve registro vazio", Formas.contar(Formas.carregar(null, mapa)) == 0)
+	ok("save sujo devolve registro vazio",
+		Formas.contar(Formas.carregar({"bits": "%%%nao e base64%%%"}, mapa)) == 0)
+
+	# O REMAPEAMENTO. Quando o jogo ganha uma cepa nova, todos os endereços
+	# andam. Sem remapear, o contador mudaria sozinho e formas que a pessoa
+	# nunca viu apareceriam marcadas. Aqui simulo o lexico ANTIGO tirando uma
+	# cepa do eixo, gravo nele, e carrego no lexico de hoje.
+	var mapa_velho := Formas.mapa_atual()
+	var corpo_velho := PackedStringArray(mapa_velho["corpo"])
+	if corpo_velho.size() > 2:
+		var sem_um := PackedStringArray()
+		for id in corpo_velho:
+			if str(id) != "cascudo":
+				sem_um.append(str(id))
+		mapa_velho["corpo"] = sem_um
+		var bits_velho := Formas.novo(mapa_velho)
+		var e_velho := Formas.endereco(g1, [Dados.cepa_por_id["blindado"], Dados.cepa_por_id["veloz"]], mapa_velho)
+		Formas.marcar(bits_velho, e_velho)
+		var migrado := Formas.carregar(Formas.guardar(bits_velho, mapa_velho), mapa)
+		ok("o remapeamento nao perde a conta", Formas.contar(migrado) == 1,
+			"conta=%d" % Formas.contar(migrado))
+		ok("o remapeamento aponta para a MESMA forma",
+			not Formas.marcar(migrado, com_duas))
+
+	# O jogo marca a forma quando o inimigo morre, e só na primeira vez.
+	var def2: Dictionary = Dados.inimigo_por_id["grunhido"]
+	jogo.arena.limpar_inimigos()
+	jogo._carregar_formas()
+	var antes: int = jogo.formas_vistas()
+	var a1 := EnemyAI.criar(def2, 10, jogo, {"elite": true, "cepas": [Dados.cepa_por_id["seiva"]]})
+	if a1 != null:
+		ok("a forma nova conta", jogo.ver_forma(a1))
+		ok("a mesma forma nao conta duas vezes", not jogo.ver_forma(a1))
+		ok("o total do jogo andou", jogo.formas_vistas() == antes + 1)
+	jogo.arena.limpar_inimigos()
+
 
 ## ------------------------------------------------------------- mira
 ## `alvo_ids` é a busca mais quente do jogo (todo impacto de perfuração e todo

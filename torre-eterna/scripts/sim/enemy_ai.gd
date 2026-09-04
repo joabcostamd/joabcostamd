@@ -18,6 +18,22 @@ static func criar(def: Dictionary, onda: int, j, opt: Dictionary = {}) -> Inimig
 	e.elite = bool(opt.get("elite", false))
 	e.dourado = bool(opt.get("dourado", false))
 	e.elite_mod = str(opt.get("elite_mod", ""))
+	# UM ARRAY VAZIO NAO PRECISA SER NOVO A CADA INIMIGO.
+	#
+	# `opt.get("cepas", [])` constroi um Array a cada chamada, mesmo quando a
+	# chave existe — GDScript avalia o argumento antes de olhar o dicionario. Com
+	# centenas de nascimentos por segundo isso e uma alocacao por inimigo para
+	# guardar nada. `Cepas.VAZIO` e o mesmo Array vazio para todos; ninguem
+	# escreve nele (as listas com conteudo vem do sorteio, sempre novas).
+	e.cepa_bits = 0
+	if opt.has("cepas"):
+		var cepas_op = opt["cepas"]
+		e.cepas = cepas_op if cepas_op is Array else Cepas.VAZIO
+		for c in e.cepas:
+			if c is Dictionary:
+				e.cepa_bits |= Cepas.bit(str(c.get("id", "")))
+	else:
+		e.cepas = Cepas.VAZIO
 	e.dividido = bool(opt.get("dividido", false))
 	e.segmento = bool(opt.get("segmento", false))
 
@@ -36,13 +52,41 @@ static func criar(def: Dictionary, onda: int, j, opt: Dictionary = {}) -> Inimig
 		var M: Dictionary = Bal.SUPER_CHEFE if e.super_chefe else Bal.CHEFE
 		m_hp *= float(M["hp"]); m_ouro *= float(M["ouro"]); m_xp *= float(M["xp"])
 		m_esc *= float(M["escala"]); m_vel *= float(M["vel"])
+	# As cepas entram aqui, cada uma multiplicando o que declara. Tres traços
+	# somam tres multiplicadores: o inimigo de tres cepas e mais perigoso E paga
+	# mais, sem tabela nova nenhuma. `Bal.ELITE` continua entrando UMA vez, por
+	# ser o degrau, nao o traco.
+	var m_arm := 0.0
 	if e.elite:
-		var mod := _elite(e.elite_mod)
-		m_hp *= float(mod.get("hp", 1.0)) * float(Bal.ELITE["hp"])
-		m_ouro *= float(mod.get("ouro", 1.0)) * float(Bal.ELITE["ouro"])
+		m_hp *= float(Bal.ELITE["hp"])
+		m_ouro *= float(Bal.ELITE["ouro"])
 		m_xp *= float(Bal.ELITE["xp"])
-		m_esc *= float(mod.get("esc", 1.0)) * float(Bal.ELITE["escala"])
-		m_vel *= float(mod.get("vel", 1.0))
+		m_esc *= float(Bal.ELITE["escala"])
+	var c_hp := 1.0
+	var c_ouro := 1.0
+	var c_esc := 1.0
+	for c in e.cepas:
+		if not (c is Dictionary):
+			continue
+		var cd: Dictionary = c
+		c_hp *= float(cd.get("hp", 1.0))
+		c_ouro *= float(cd.get("ouro", 1.0))
+		c_esc *= float(cd.get("esc", 1.0))
+		m_vel *= float(cd.get("vel", 1.0))
+		m_xp *= float(cd.get("xp", 1.0))
+		m_arm += float(cd.get("armadura", 0.0))
+	# O TETO DA CAUDA.
+	#
+	# Tres cepas multiplicam, e a multiplicacao tem uma cauda que nao aparece na
+	# mediana. Sorteando 20 mil trincas com os pesos reais do lexico, a vida
+	# tipica de um inimigo de tres cepas e 1,20x — mas a pior combinacao possivel
+	# (Colossal + Ponderoso + Ancestral) e 48x, e isso multiplicado pelos 3,4x
+	# do degrau de elite da 163x: uma parede de chefe nascendo no lugar de um
+	# inimigo comum, sem aviso e sem cerimonia. O teto nao mexe no caso tipico e
+	# corta so a cauda, que e onde o jogo quebraria.
+	m_hp *= minf(c_hp, TETO_CEPA_HP)
+	m_ouro *= minf(c_ouro, TETO_CEPA_OURO)
+	m_esc *= minf(c_esc, TETO_CEPA_ESC)
 	if e.dourado:
 		m_hp *= float(Bal.DOURADO["hp"])
 		# `ouroDourado` vem do talento Toque de Midas ("dobra ... o ouro que eles
@@ -64,7 +108,7 @@ static func criar(def: Dictionary, onda: int, j, opt: Dictionary = {}) -> Inimig
 	e.hp = hp
 	e.ouro = Big.mul_f(Bal.ouro_onda(onda), m_ouro * float(j.mods_dif.get("ouro", 1.0)))
 	e.xp = Big.mul_f(Bal.xp_onda(onda), m_xp)
-	e.armadura = float(def.get("armadura", 0.0)) + (25.0 if e.chefe else 0.0) + float(onda) * 0.35
+	e.armadura = float(def.get("armadura", 0.0)) + (25.0 if e.chefe else 0.0) + float(onda) * 0.35 + m_arm
 	e.escala = m_esc
 	e.raio = 15.0 * m_esc
 	e.vel_base = Bal.velocidade_inimigo(onda) * m_vel * float(j.mods_dif.get("velocidadeInimigo", 1.0))
@@ -81,10 +125,12 @@ static func criar(def: Dictionary, onda: int, j, opt: Dictionary = {}) -> Inimig
 	e.invisivel = bool(def.get("invisivel", false))
 	e.cor = Color.html(str(def.get("cor", "#8b93a7")))
 	e.cor2 = Color.html(str(def.get("cor2", "#3a4050")))
-	if e.elite:
-		var mod2 := _elite(e.elite_mod)
-		if mod2.has("cor"):
-			e.cor2 = Color.html(str(mod2["cor"]))
+	# Tinge pela cepa MAIS RARA que o corpo carrega. Com tres cepas, pintar pela
+	# ultima da lista faria o mesmo inimigo mudar de cor conforme a ordem do
+	# sorteio; pela mais rara, a cor conta o que ha de mais notavel nele.
+	var cor_cepa := Cepas.cor_marcante(e.cepas)
+	if cor_cepa != "":
+		e.cor2 = Color.html(cor_cepa)
 	if e.dourado:
 		e.cor = Color.html("#fcd34d")
 		e.cor2 = Color.html("#92400e")
@@ -92,6 +138,34 @@ static func criar(def: Dictionary, onda: int, j, opt: Dictionary = {}) -> Inimig
 	if def.has("escudoFrac"):
 		e.escudo_max = Big.mul_f(hp, float(def["escudoFrac"]))
 		e.escudo = e.escudo_max
+
+	# CEPAS QUE AGEM UMA VEZ, NO NASCIMENTO. Nao ha portao de mascara aqui: isto
+	# roda uma vez por inimigo, nao por quadro, e o `if` do `is_empty` ja e o
+	# portao para os inimigos comuns.
+	if e.cepa_bits != 0:
+		if (e.cepa_bits & Cepas.B_TECELAO) != 0:
+			e.escudo_max = Big.max_b(e.escudo_max, Big.mul_f(hp, TECELAO_ESCUDO))
+			e.escudo = e.escudo_max
+		# "Nasce mais forte quanto mais cheia estiver a tela": o simbionte le a
+		# lotacao UMA vez, no nascimento. Ler por quadro seria uma consulta de
+		# vizinhanca por inimigo por quadro, que e exatamente o tipo de coisa que
+		# nao entra no orcamento.
+		if (e.cepa_bits & Cepas.B_SIMBIONTE) != 0:
+			var lot := clampf(float(j.arena.contagem_viva()) / SIMBIONTE_REF, 0.0, 1.0)
+			var g := 1.0 + lot * SIMBIONTE_GANHO
+			e.hp = Big.mul_f(e.hp, g)
+			e.hp_max = e.hp
+			e.ouro = Big.mul_f(e.ouro, g)
+		if (e.cepa_bits & Cepas.B_ESPECTRO) != 0:
+			e.invisivel = true
+		# "Veste a forma de outro do Enxame": puramente visual, decidido no
+		# nascimento. O corpo e de outro, a ficha e a dele.
+		if (e.cepa_bits & Cepas.B_MIMETICO) != 0 and not Dados.inimigos.is_empty():
+			var outro = j.rng.escolher(Dados.inimigos)
+			if outro is Dictionary:
+				e.forma = str(outro.get("forma", e.forma))
+		if (e.cepa_bits & Cepas.B_RETARDATARIO) != 0:
+			e.entrada = maxf(e.entrada, RETARDATARIO_ESPERA)
 	if e.chefe:
 		var fases := maxi(1, int(def.get("fases", 1)))
 		e.fase_prox = 1.0 - 1.0 / float(fases)
@@ -109,11 +183,49 @@ const CUSPIR_PARADA := 0.8
 const FANTASMA_CICLO := 3.0
 const FANTASMA_SOME := 1.0
 
-static func _elite(id: String) -> Dictionary:
-	for m in Dados.elites:
-		if str(m.get("id", "")) == id:
-			return m
-	return {}
+## Tetos do empilhamento de cepas. Ver o comentario em `criar`.
+##
+## O TETO DE ESCALA E O MAIS APERTADO DOS TRES, E NAO POR ESTETICA.
+##
+## Medindo a perna de 160 vivos peca por peca, o custo inteiro das Cepas estava
+## no subsistema de projeteis (1286 -> 3095 us/passo) e desligar SO a escala
+## devolvia 1776. Nem a vida, nem a armadura, nem o bloco de combate, nem o
+## caminho de morte pesavam perto disso. A razao e geometrica: o raio entra
+## quadrado na area de colisao e ainda decide quantas celulas da grade o
+## inimigo ocupa, entao 2,2x de escala e quase 5x de trabalho por projetil que
+## passa perto.
+##
+## O teto e exatamente o tamanho que o Colossal ja tinha antes das Cepas, e
+## nao menos: encolher o Colossal para caber no orcamento seria quebrar a
+## unica cepa cuja identidade inteira e o tamanho. O que muda e a FREQUENCIA,
+## e para melhor — antes o Colossal era 1 dos 9 elites, ou 11% deles; agora e
+## uma das 14 do eixo "corpo", sorteada em 1 de cada 3 vezes que um eixo sai:
+## 2,9%. O corpo mais largo do campo passou a aparecer menos, nao mais.
+const TETO_CEPA_HP := 12.0
+const TETO_CEPA_OURO := 15.0
+const TETO_CEPA_ESC := 1.4
+
+## Escudo do "tecelao", como fracao da propria vida.
+const TECELAO_ESCUDO := 0.5
+## Lotacao em que o "simbionte" chega ao ganho cheio, e qual e o ganho.
+const SIMBIONTE_REF := 60.0
+const SIMBIONTE_GANHO := 1.2
+## Quanto tempo o "retardatario" leva para entrar de fato.
+const RETARDATARIO_ESPERA := 1.6
+
+## Quanto o "acelerante" ganha de velocidade com a vida no zero.
+const ACELERANTE_GANHO := 1.6
+## O "faminto" cresce ate este tamanho, e para.
+##
+## O teto e o mesmo de `TETO_CEPA_ESC`, e nao por simetria.
+## `Arena.primeiro_colidindo` dimensiona a caixa de busca de TODO projetil por
+## `raio_max_vivo` — o maior raio vivo no campo, e nao o raio do inimigo que
+## esta sendo testado. Um unico faminto crescido alargava a caixa de todos os
+## projeteis do quadro: o custo de um inimigo, cobrado de duzentos. A arena tem
+## um teto proprio (`RAIO_INIMIGO_MAX`, 34 px) que segura o pior caso, mas
+## encostar nele significa pagar a caixa maxima o tempo todo.
+const FAMINTO_TETO := 1.4
+const FAMINTO_POR_SEG := 0.06
 
 ## Sorteia e cria um inimigo apropriado para a onda.
 static func spawn_onda(onda: int, j) -> void:
@@ -125,7 +237,16 @@ static func spawn_onda(onda: int, j) -> void:
 		return
 	var def: Dictionary = def_v
 
-	var elite: bool = j.rng.chance(Bal.chance_elite(onda))
+	# AS CEPAS. Ver `scripts/sim/cepas.gd`.
+	#
+	# O primeiro degrau e a chance de elite de sempre, intocada: um inimigo com
+	# uma cepa e exatamente o elite de antes, com os mesmos multiplicadores. Os
+	# degraus 2 e 3 sao a parte nova e so existem fundo adentro (ondas 60 e 200),
+	# o que faz o Enxame da hora 200 ser feito de coisas que nao podiam existir
+	# na hora 2 — sem que o portao de balanceamento pare de medir o mesmo jogo
+	# no comeco.
+	var n_cepas := Cepas.quantas(onda, j.rng_cepas, Bal.chance_elite(onda), j.rng)
+	var elite: bool = n_cepas > 0
 	# Coleira Dourada: "dourados aparecem 2× mais por nível, nunca fogem da tela
 	# e soltam 1 gema ao morrer". A relíquia prometia as três coisas e o código
 	# não fazia nenhuma.
@@ -135,9 +256,8 @@ static func spawn_onda(onda: int, j) -> void:
 	var dourado: bool = (not elite) and bool(j.rng.chance(
 		Bal.chance_dourado(onda) * maxf(1.0, float(j.stats.n("sorte"))) * mult_dourado))
 	var opt := {"elite": elite, "dourado": dourado}
-	if elite and not Dados.elites.is_empty():
-		var em: Dictionary = j.rng.escolher(Dados.elites)
-		opt["elite_mod"] = str(em.get("id", ""))
+	if n_cepas > 0:
+		opt["cepas"] = Cepas.sortear(n_cepas, j.rng_cepas, j.rng)
 
 	if def.has("grupo"):
 		var g: Array = def["grupo"]
@@ -442,21 +562,39 @@ static func atualizar(dt: float, j) -> void:
 				vel = 0.0
 		e.velocidade = vel
 
-		if e.elite_mod == "regenerativo" and Big.lt(e.hp, e.hp_max):
-			e.hp = Big.min_b(Big.add(e.hp, Big.mul_f(e.hp_max, 0.02 * dt)), e.hp_max)
-		# "Fica intangível periodicamente" — a promessa estava escrita no JSON,
-		# em português e em inglês, impressa no codex, e nada no jogo a lia: o
-		# modificador só trocava a cor do inimigo. Três segundos sólido, um
-		# segundo intocável, para sempre.
-		if e.elite_mod == "fantasmal":
-			e.fantasma_t += dt
-			if e.intangivel > 0.0:
-				if e.fantasma_t >= FANTASMA_SOME:
+		# UM E DE INTEIROS PARA QUATRO CEPAS.
+		#
+		# Quatro cepas pedem trabalho a cada quadro. Sem este portao, cada um dos
+		# 160 inimigos da perna do portao de desempenho pagaria quatro perguntas
+		# por quadro para que quatro em mil respondessem sim. Com ele, quem nao
+		# carrega nenhuma paga UM E e segue.
+		if (e.cepa_bits & Cepas.MASCARA_TIQUE) != 0:
+			if (e.cepa_bits & Cepas.B_REGENERATIVO) != 0 and Big.lt(e.hp, e.hp_max):
+				e.hp = Big.min_b(Big.add(e.hp, Big.mul_f(e.hp_max, 0.02 * dt)), e.hp_max)
+			# "Fica intangível periodicamente" — a promessa estava escrita no
+			# JSON, em português e em inglês, impressa no codex, e nada no jogo a
+			# lia: o modificador só trocava a cor do inimigo. Três segundos
+			# sólido, um segundo intocável, para sempre.
+			if (e.cepa_bits & Cepas.B_FANTASMAL) != 0:
+				e.fantasma_t += dt
+				if e.intangivel > 0.0:
+					if e.fantasma_t >= FANTASMA_SOME:
+						e.fantasma_t = 0.0
+						e.intangivel = 0.0
+				elif e.fantasma_t >= FANTASMA_CICLO:
 					e.fantasma_t = 0.0
-					e.intangivel = 0.0
-			elif e.fantasma_t >= FANTASMA_CICLO:
-				e.fantasma_t = 0.0
-				e.intangivel = FANTASMA_SOME
+					e.intangivel = FANTASMA_SOME
+			# "Acelerante": fica mais rapido conforme perde vida. Um inimigo que
+			# quase morreu e o que mais assusta.
+			if (e.cepa_bits & Cepas.B_ACELERANTE) != 0:
+				var frac := Big.frac(e.hp, e.hp_max)
+				vel *= 1.0 + (1.0 - frac) * ACELERANTE_GANHO
+				e.velocidade = vel
+			# "Faminto": cresce enquanto estiver vivo. O teto existe para que ele
+			# nao vire uma parede que cobre a arena depois de dois minutos.
+			if (e.cepa_bits & Cepas.B_FAMINTO) != 0 and e.escala < FAMINTO_TETO:
+				e.escala = minf(FAMINTO_TETO, e.escala + FAMINTO_POR_SEG * dt)
+				e.raio = 15.0 * e.escala
 		if e.escudo_max > Big.LIMIAR_ZERO and e.escudo < e.escudo_max and e.sem_dano_t > 2.5:
 			e.escudo = Big.min_b(e.escudo_max, Big.add(e.escudo, Big.mul_f(e.escudo_max, 0.25 * dt)))
 		e.sem_dano_t += dt

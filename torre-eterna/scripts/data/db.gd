@@ -69,6 +69,11 @@ static var capitulos_lore: Array = []
 static var entradas_lore: Array = []
 static var dicas: Array = []
 
+## Ver `scripts/sim/cepas.gd`.
+static var cepas: Array = []
+static var cepas_por_eixo: Dictionary = {}
+static var cepa_por_id: Dictionary = {}
+
 static var carregado := false
 static var faltando: Array = []
 
@@ -82,6 +87,20 @@ static func carregar(forcar: bool = false) -> void:
 	chefes = e.get("chefes", [])
 	super_chefes = e.get("superChefes", [])
 	inimigo_por_id = _indexar(inimigos)
+
+	# O lexico das Cepas, ja separado por eixo. O sorteio roda a cada inimigo
+	# que nasce; agrupar aqui evita filtrar 38 entradas por spawn.
+	var cp := _json("cepas")
+	cepas = cp.get("cepas", [])
+	cepa_por_id = _indexar(cepas)
+	cepas_por_eixo = {}
+	for c in cepas:
+		if not (c is Dictionary):
+			continue
+		var eixo := str(c.get("eixo", ""))
+		if not cepas_por_eixo.has(eixo):
+			cepas_por_eixo[eixo] = []
+		cepas_por_eixo[eixo].append(c)
 
 	var u := _json("upgrades")
 	upgrades = u.get("upgrades", [])

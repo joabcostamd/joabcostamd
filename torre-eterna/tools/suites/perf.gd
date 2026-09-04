@@ -134,13 +134,30 @@ func rodar(cena: SceneTree) -> void:
 	var pool := Dados.pool_da_onda(200)
 	## Repõe a arena até `quantos` inimigos vivos. Chamada sempre FORA da região
 	## cronometrada: encher a arena é custo da ferramenta, não do jogo.
+	# A PERNA TEM QUE SEGURAR O NUMERO QUE ELA DIZ QUE SEGURA.
+	#
+	# `repor` so somava. Como o diretor continua rodando dentro da medida (e
+	# desde as Cepas alguns inimigos se dividem ao morrer), a populacao ANDAVA
+	# durante a perna: uma execucao media 157 vivos e outra 232, e o p90 subia
+	# junto sem que nada no jogo tivesse ficado mais caro. Isso fazia o portao
+	# depender do sorteio — o mesmo codigo passava ou reprovava conforme a
+	# populacao que a perna anterior deixou. Segurar de verdade quer dizer as
+	# duas coisas: repor quem faltou e retirar quem sobrou.
 	var repor := func(quantos: int):
-		var faltam: int = quantos - j.arena.inimigos.size()
+		var vivos: int = j.arena.inimigos.size()
 		var k := 0
-		while k < faltam:
+		while k < quantos - vivos:
 			var def: Dictionary = pool[(j.arena.inimigos.size() + k) % pool.size()]
 			EnemyAI.criar(def, 200, j, {"elite": k % 5 == 0})
 			k += 1
+		# Retira do fim para nao remexer nos indices dos que ficam. Sai da arena
+		# em silencio: `soltar_inimigo` devolve ao pool sem passar por `matar`,
+		# entao nao gera ouro, nem combo, nem forma vista — a perna mede custo,
+		# nao economia.
+		var i: int = j.arena.inimigos.size() - 1
+		while j.arena.inimigos.size() > quantos and i >= 0:
+			j.arena.soltar_inimigo(i)
+			i -= 1
 
 	# Uma medida só, tirada antes, não vale: a disputa por CPU pode começar
 	# depois. Mede de novo no fim e fica com a PIOR das duas — as duas cercam a

@@ -184,10 +184,11 @@ func _montar_bestiario() -> void:
 		var def: Dictionary = item
 		grade.add_child(_tile(def))
 
-	if aba == 0 and not Dados.elites.is_empty():
+	if aba == 0 and not Dados.cepas.is_empty():
 		coluna.add_child(UI.separador())
 		coluna.add_child(_titulo_secao(Txt.t("cdx_variantes_elite"), "estrela", UI.ACENTO2,
 			Txt.t("cdx_variantes_elite_dica")))
+		coluna.add_child(_contador_formas())
 		# DUAS POR LINHA, NAO TRES.
 		#
 		# A ficha de elite tem uma descricao com 190 px de largura minima, mais
@@ -196,14 +197,22 @@ func _montar_bestiario() -> void:
 		# numa coluna de 720, e era ISSO que deixava a barra de rolagem
 		# horizontal no bestiario — nao a grade de inimigos, que eu tinha
 		# acusado primeiro. Duas cabem nos dois idiomas com folga larga.
-		var g2 := GridContainer.new()
-		g2.columns = 2
-		g2.add_theme_constant_override("h_separation", 6)
-		g2.add_theme_constant_override("v_separation", 6)
-		coluna.add_child(g2)
-		for it2 in Dados.elites:
-			var el: Dictionary = it2
-			g2.add_child(_chip_elite(el))
+		# UM BLOCO POR EIXO. As trinta e oito cepas numa lista so viravam um
+		# muro de fichas; separadas por eixo, a pessoa le a gramatica — um
+		# inimigo pega uma de cada — em vez de decorar uma lista.
+		for eixo in Cepas.EIXOS:
+			var pool: Array = Dados.cepas_por_eixo.get(eixo, [])
+			if pool.is_empty():
+				continue
+			coluna.add_child(UI.rotulo(Txt.t("cdx_eixo_" + eixo), 12, UI.TEXTO3))
+			var g2 := GridContainer.new()
+			g2.columns = 2
+			g2.add_theme_constant_override("h_separation", 6)
+			g2.add_theme_constant_override("v_separation", 6)
+			coluna.add_child(g2)
+			for it2 in pool:
+				var el: Dictionary = it2
+				g2.add_child(_chip_elite(el))
 
 	var dir := UI.painel(UI.PAINEL2.darkened(0.2), 12)
 	dir.custom_minimum_size.x = LARG_DETALHE
@@ -279,6 +288,25 @@ func _tile(def: Dictionary) -> Control:
 	_ignorar_mouse(v)
 	tiles[id] = {"caixa": cx, "nome": nome, "contagem": lc, "arte": arte, "conhecido": conhecido, "cor": cor}
 	return b
+
+## O NÚMERO SEM DENOMINADOR.
+##
+## Todo painel deste jogo mostra "x de y": conquistas, codex, missoes, album. Um
+## "347 / 58.282" transformaria as formas em tarefa — a pessoa passaria a olhar
+## o que FALTA em vez do que aparece. Aqui so existe o numero que sobe, e nao ha
+## lista de formas em lugar nenhum do jogo.
+func _contador_formas() -> Control:
+	var cx := UI.painel(UI.PAINEL2.darkened(0.3), 8)
+	cx.tooltip_text = Txt.t("cdx_formas_dica")
+	var h := UI.hbox(8)
+	cx.add_child(h)
+	h.add_child(UI.icone("livro", UI.ACENTO2, 15))
+	h.add_child(UI.rotulo(Txt.t("cdx_formas_vistas"), 12, UI.TEXTO3))
+	var n := UI.rotulo(Fmt.inteiro(jogo.formas_vistas()), 15, UI.ACENTO2)
+	n.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	n.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	h.add_child(n)
+	return cx
 
 func _chip_elite(el: Dictionary) -> Control:
 	var cor := _cor(el, "cor", "#93a3c4")

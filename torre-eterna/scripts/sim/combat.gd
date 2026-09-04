@@ -51,11 +51,20 @@ static func aplicar_dano(e: Inimigo, dano: float, j, opt: Dictionary = {}) -> Di
 	# impressa no codex, e nada no jogo a lia: o modificador só trocava a cor.
 	# Devolve uma fração pequena e fixa; quem reflete o golpe inteiro é o
 	# Guardião do Espelho, e os dois não podem ser a mesma coisa.
-	if e.elite_mod != "":
-		if e.elite_mod == "espinhoso" and not bool(opt.get("reflexo", false)):
+	#
+	# UM E DE INTEIROS NO LUGAR DE DUAS COMPARACOES DE STRING. Este bloco roda a
+	# cada impacto, e um inimigo pode carregar tres cepas — pelo caminho antigo
+	# seriam tres comparacoes de texto por golpe. `MASCARA_COMBATE` responde por
+	# todas de uma vez e a esmagadora maioria dos impactos sai aqui.
+	if (e.cepa_bits & Cepas.MASCARA_COMBATE) != 0:
+		if (e.cepa_bits & Cepas.B_ESPINHOSO) != 0 and not bool(opt.get("reflexo", false)):
 			j.dano_na_torre(Bal.dano_espinho(dano, j.s["torre"]["vida_max"]), e, {"reflexo": true})
-		elif e.elite_mod == "blindado":
+		if (e.cepa_bits & Cepas.B_BLINDADO) != 0:
 			dmg = Big.mul_f(dmg, 0.55)
+		# "Friavel": quebra facil e paga o dobro. E a cepa que o jogador QUER
+		# encontrar, e a unica que torna o inimigo mais fraco de proposito.
+		if (e.cepa_bits & Cepas.B_FRIAVEL) != 0:
+			dmg = Big.mul_f(dmg, 1.7)
 
 	var absorvido := false
 	if e.escudo > Big.LIMIAR_ZERO:
@@ -277,6 +286,13 @@ static func matar(e: Inimigo, j, overkill: float = Big.ZERO, critico: bool = fal
 	st["mortos"] = int(st["mortos"]) + 1
 	st["por_inimigo"][e.tipo] = int(st["por_inimigo"].get(e.tipo, 0)) + 1
 	s["codex"]["inimigos"][e.tipo] = int(s["codex"]["inimigos"].get(e.tipo, 0)) + 1
+	# A DESCOBERTA. `ver_forma` responde `true` uma unica vez por combinacao na
+	# vida do save — e esse `true` que vira o aviso na tela. Note que nao existe
+	# lista de "formas que faltam" em lugar nenhum do jogo: o numero so sobe, e
+	# nunca aparece um denominador. Um "347/58282" transformaria descoberta em
+	# tarefa, que e exatamente o que este sistema existe para nao ser.
+	if not e.cepas.is_empty() and j.ver_forma(e):
+		Bus.forma_nova.emit(e)
 	if e.chefe:
 		st["chefes_mortos"] = int(st["chefes_mortos"]) + 1
 		s["codex"]["chefes"][e.tipo] = int(s["codex"]["chefes"].get(e.tipo, 0)) + 1
@@ -314,11 +330,44 @@ static func matar(e: Inimigo, j, overkill: float = Big.ZERO, critico: bool = fal
 	if e.chefe:
 		Bus.chefe_morreu.emit(e)
 
+	if (e.cepa_bits & Cepas.MASCARA_MORTE) != 0:
+		_cepas_ao_morrer(e, j)
+
 	j.ao_morrer_inimigo(e, critico)
+
+## O que as cepas fazem quando o corpo cai.
+##
+## Fica atras de `MASCARA_MORTE` pelo mesmo motivo dos outros portoes: a morte
+## de inimigo e um caminho quente (dezenas por segundo numa onda cheia) e a
+## esmagadora maioria dos corpos nao carrega nenhuma destas quatro.
+static func _cepas_ao_morrer(e: Inimigo, j) -> void:
+	if (e.cepa_bits & Cepas.B_CINTILANTE) != 0:
+		Economia.ganhar_moeda("gemas", Big.from(1.0), j, "cintilante")
+	if (e.cepa_bits & Cepas.B_MALDITO) != 0:
+		# 10x de ouro tem preco. O dano e uma fracao da vida MAXIMA da torre para
+		# que a maldicao continue significando a mesma coisa na hora 200.
+		j.dano_na_torre(Big.mul_f(j.s["torre"]["vida_max"], Bal.MALDITO_DANO), e, {"puro": true})
+	if (e.cepa_bits & Cepas.B_ECOANTE) != 0 and not e.segmento:
+		EnemyAI.criar(e.def, int(j.s["onda"]), j, {
+			"pos": e.pos, "hp_mult": Bal.ECO_HP, "esc_mult": 0.7, "segmento": true,
+		})
+	if (e.cepa_bits & Cepas.B_BIPARTIDO) != 0 and not e.segmento:
+		for i in 2:
+			var off: Vector2 = j.rng.direcao() * 18.0
+			EnemyAI.criar(e.def, int(j.s["onda"]), j, {
+				"pos": e.pos + off, "hp_mult": 0.35, "esc_mult": 0.6, "segmento": true,
+			})
 
 ## Rola crítico e devolve [dano_final, foi_critico].
 static func rolar_golpe(dano_base: float, j, alvo: Inimigo) -> Array:
+	# "Glacial: imune a critico" e negado AQUI, onde o critico nasce, e nao la
+	# no `aplicar_dano` onde o dano ja chega multiplicado. Desfazer o bonus
+	# depois exigiria dividir pelo `critDano`, e as habilidades chamam
+	# `aplicar_dano` com `crit: true` SEM terem multiplicado por nada — a divisao
+	# tiraria dano que ninguem tinha dado. Negar na origem nao tem esse buraco.
 	var crit: bool = j.rng.chance(j.stats.n("critChance"))
+	if crit and alvo != null and (alvo.cepa_bits & Cepas.B_GLACIAL) != 0:
+		crit = false
 	var dmg := dano_base
 	if crit:
 		dmg = Big.mul_f(dmg, float(j.stats.n("critDano")))

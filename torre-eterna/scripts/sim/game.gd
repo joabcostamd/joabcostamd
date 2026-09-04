@@ -8,6 +8,11 @@ var stats: StatEngine
 var esp: Dictionary = {}
 var pas: Dictionary = {}
 var rng := RngX.new()
+## O gerador SO das Cepas. Ver o comentario em `Cepas.quantas`: manter a
+## composicao fora do fluxo principal e o que garante que a mesma semente
+## continue produzindo a mesma onda, a mesma torre e a mesma medida no portao
+## de desempenho.
+var rng_cepas := RngX.new(20260904)
 var arena := Arena.new()
 var torre: TorreSim
 var diretor: Diretor
@@ -77,6 +82,15 @@ func _ready() -> void:
 ## intacto, esperando alguém decidir o que fazer com ele.
 var salvamento_travado := false
 
+## O REGISTRO DE FORMAS VISTAS. Ver `scripts/sim/formas.gd`.
+##
+## Fica decodificado aqui porque e escrito no meio do combate (uma marcacao por
+## inimigo morto) e o formato gravado e base64 — codificar por morte seria
+## trabalho de sobra num caminho quente. Volta para `s["codex"]["formas"]` na
+## hora de salvar, que e quando a conta importa.
+var formas_bits := PackedByteArray()
+var formas_mapa := {}
+
 func iniciar() -> void:
 	if iniciado:
 		return
@@ -95,6 +109,8 @@ func iniciar() -> void:
 			Bus.save_ilegivel.emit(SaveSys.ultimo_erro)
 	else:
 		s = GameState.mesclar(GameState.novo(), salvo)
+
+	_carregar_formas()
 
 	arena.redimensionar(1280.0, 720.0)
 	# A escolha de poupar o Peregrino e do jogador e mora no save: sem esta
@@ -473,7 +489,7 @@ func ao_morrer_inimigo(e: Inimigo, critico: bool) -> void:
 	Saque.tentar_drop(e, self)
 	if e.def.has("divide") and not e.dividido:
 		EnemyAI.dividir(e, self)
-	if e.elite_mod == "volatil" or str(e.def.get("hab", "")) == "explodir":
+	if (e.cepa_bits & Cepas.B_VOLATIL) != 0 or str(e.def.get("hab", "")) == "explodir":
 		Combate.dano_area(e.pos, float(e.def.get("raio", 100.0)), Big.mul_f(e.hp_max, 0.35), self, {"queda": true})
 		Bus.particulas.emit("explosao", e.pos, {"raio": float(e.def.get("raio", 100.0)), "cor": "#fb923c"})
 	if pas.has("colapso"):
@@ -1055,6 +1071,7 @@ func transcender() -> bool:
 	s["conquistas"] = guardar["conquistas"]
 	s["conquistas_vistas"] = guardar["conquistas_vistas"]
 	s["codex"] = guardar["codex"]
+	_carregar_formas()
 	s["stats"] = guardar["stats"]
 	s["onda_maxima_global"] = guardar["onda_global"]
 	s["criado_em"] = guardar["criado_em"]
@@ -1172,11 +1189,31 @@ func salvar() -> bool:
 	var sujos := GameState.sanear(s)
 	if sujos > 0:
 		push_warning("[save] %d valor(es) nao-finito(s) saneado(s) antes de gravar" % sujos)
+	if not formas_bits.is_empty():
+		s["codex"]["formas"] = Formas.guardar(formas_bits, formas_mapa)
 	var agora := int(Time.get_unix_time_from_system())
 	s["salvo_em"] = agora
 	# a âncora do offline nunca anda para trás (ver `iniciar`)
 	s["tick_em"] = maxi(int(s.get("tick_em", agora)), agora)
 	return SaveSys.salvar(s)
+
+## Traz o registro do save para a memoria. Chamado ao iniciar, ao transcender e
+## ao importar — os tres lugares em que `s` e trocado por outro dicionario.
+func _carregar_formas() -> void:
+	formas_mapa = Formas.mapa_atual()
+	if not (s.get("codex", {}) is Dictionary):
+		s["codex"] = {}
+	formas_bits = Formas.carregar(s["codex"].get("formas", null), formas_mapa)
+
+## Marca a forma deste inimigo. Devolve `true` so na primeira vez que a pessoa
+## ve esta combinacao — quem chama usa isso para comemorar.
+func ver_forma(e: Inimigo) -> bool:
+	if formas_bits.is_empty():
+		return false
+	return Formas.marcar(formas_bits, Formas.endereco(e.tipo, e.cepas, formas_mapa))
+
+func formas_vistas() -> int:
+	return Formas.contar(formas_bits)
 
 func exportar() -> String:
 	s["salvo_em"] = int(Time.get_unix_time_from_system())
@@ -1187,6 +1224,7 @@ func importar(texto: String) -> bool:
 	if novo.is_empty():
 		return false
 	s = GameState.mesclar(GameState.novo(), novo)
+	_carregar_formas()
 	arena.limpar_tudo()
 	torre = TorreSim.new(self)
 	diretor = Diretor.new(self)

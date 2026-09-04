@@ -105,6 +105,20 @@ static func desenhar(ci: CanvasItem, e: Inimigo, t: float, detalhe: float = 1.0)
 		"trono": _trono(ci, p, r, t, cor, cor2, alfa)
 		_: _circulo(ci, p, r, cor, cor2, alfa)
 
+	# OS TRAÇOS DAS CEPAS.
+	#
+	# A cor ja conta que ha ALGUMA coisa nele — mas cor sozinha nao diz o que, e
+	# uma pessoa que joga com daltonismo nao le cor nenhuma. O traco e a forma
+	# da cepa: placas para o encouracado, espinhos para o espinhoso, coroa para
+	# o ancestral. Depois de umas dezenas de encontros a pessoa reconhece o
+	# perigo pelo desenho, antes de ler qualquer nome.
+	#
+	# Roda atras de `MASCARA_ARTE` e de `detalhe`: quem nao carrega nenhuma
+	# cepa desenhavel paga UM E de inteiros, e num campo lotado o nivel de
+	# detalhe ja derruba os tracos antes de a conta pesar.
+	if detalhe > 0.45 and (e.cepa_bits & Cepas.MASCARA_ARTE) != 0:
+		_tracos_cepa(ci, e, p, r, t, cor2, alfa)
+
 	# escudo pessoal
 	if e.escudo > Big.LIMIAR_ZERO and e.escudo_max > Big.LIMIAR_ZERO:
 		var f := Big.frac(e.escudo, e.escudo_max)
@@ -125,6 +139,51 @@ static func desenhar(ci: CanvasItem, e: Inimigo, t: float, detalhe: float = 1.0)
 	var fv := e.frac_vida()
 	if fv < 0.999 and e.morrendo <= 0.0:
 		_barra_vida(ci, p, r, fv, e.chefe, alfa)
+
+## Os tracos que cada cepa acrescenta ao corpo. Ver `scripts/sim/cepas.gd`.
+static func _tracos_cepa(ci: CanvasItem, e: Inimigo, p: Vector2, r: float, t: float, c2: Color, a: float) -> void:
+	var b := e.cepa_bits
+	# Encouracado: tres placas sobrepostas de frente.
+	if (b & Cepas.B_BLINDADO) != 0:
+		for i in 3:
+			var ang := e.ang + (float(i) - 1.0) * 0.55
+			var d := Vector2(cos(ang), sin(ang))
+			ci.draw_line(p + d * r * 0.72, p + d * r * 1.16, Color(0.85, 0.88, 0.95, 0.7 * a), 3.0)
+	# Cascudo: uma casca continua, mais grossa.
+	if (b & Cepas.B_CASCUDO) != 0:
+		ci.draw_arc(p, r * 1.1, e.ang - 1.2, e.ang + 1.2, 14, Color(0.55, 0.5, 0.45, 0.8 * a), 4.0, true)
+	# Espinhoso: seis espinhos em volta.
+	if (b & Cepas.B_ESPINHOSO) != 0:
+		for i in 6:
+			var ang2 := e.ang + float(i) * TAU / 6.0
+			var d2 := Vector2(cos(ang2), sin(ang2))
+			ci.draw_line(p + d2 * r * 0.9, p + d2 * r * 1.42, Color(1.0, 0.6, 0.25, 0.75 * a), 2.0)
+	# Ancestral: coroa de tres pontas em cima.
+	if (b & Cepas.B_ANCESTRAL) != 0:
+		for i in 3:
+			var x := p + Vector2((float(i) - 1.0) * r * 0.42, -r * 1.05)
+			ci.draw_line(x, x + Vector2(0, -r * 0.34), Color(0.99, 0.87, 0.55, 0.85 * a), 2.5)
+		ci.draw_arc(p, r * 1.55, 0, TAU, 30, Color(0.99, 0.87, 0.55, 0.22 * a), 1.5, true)
+	# Faminto: bocas — arcos abertos que pulsam.
+	if (b & Cepas.B_FAMINTO) != 0:
+		var ab := 0.35 + sin(t * 5.0 + e.fase_anim) * 0.28
+		ci.draw_arc(p, r * 0.62, e.ang - ab, e.ang + ab, 10, Color(0.1, 0.02, 0.04, 0.8 * a), 3.0, true)
+	# Tecelao: fios cruzados sobre o corpo.
+	if (b & Cepas.B_TECELAO) != 0:
+		for i in 3:
+			var ang3 := t * 0.6 + float(i) * TAU / 3.0
+			var d3 := Vector2(cos(ang3), sin(ang3)) * r * 1.22
+			ci.draw_line(p - d3, p + d3, Color(0.37, 0.93, 0.83, 0.35 * a), 1.5)
+	# Maldito: um halo escuro que nao pertence a paleta de ninguem.
+	if (b & Cepas.B_MALDITO) != 0:
+		ci.draw_arc(p, r * 1.34 + sin(t * 3.0) * 2.0, 0, TAU, 26, Color(0.42, 0.16, 0.85, 0.6 * a), 2.5, true)
+	# Ecoante: um contorno atrasado, como um rastro que ainda nao alcancou.
+	if (b & Cepas.B_ECOANTE) != 0:
+		var atras := p - Vector2(cos(e.ang), sin(e.ang)) * r * 0.5
+		ci.draw_arc(atras, r * 0.92, 0, TAU, 20, Color(c2.r, c2.g, c2.b, 0.30 * a), 2.0, true)
+	# Espectral: so a borda, enquanto ninguem o revelou.
+	if (b & Cepas.B_ESPECTRO) != 0 and not e.revelado:
+		ci.draw_arc(p, r * 1.05, 0, TAU, 22, Color(0.75, 0.52, 0.99, 0.45 * a), 1.5, true)
 
 ## ---------------------------------------------------------------- formas
 

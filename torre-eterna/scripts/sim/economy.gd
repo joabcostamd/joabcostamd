@@ -35,7 +35,7 @@ static func atualizar_coletaveis(dt: float, j) -> void:
 	# uma vez por quadro em vez de uma busca por coletável.
 	var imas: Array = []
 	for e in j.arena.inimigos:
-		if e.elite_mod == "magnetico" and e.vivo():
+		if (e.cepa_bits & Cepas.B_MAGNETICO) != 0 and e.vivo():
 			imas.append(e)
 	for i in range(lista.size() - 1, -1, -1):
 		var c: Coletavel = lista[i]

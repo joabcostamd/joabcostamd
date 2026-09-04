@@ -99,6 +99,14 @@ const COMBO_JANELA := 2.6
 const COMBO_BONUS_POR := 0.006
 const COMBO_TETO := 250
 const OVERKILL_TETO := 0.5
+
+# ========================================================== CEPAS ====
+## O "maldito" paga 10x de ouro e cobra este tanto da vida MAXIMA da torre ao
+## morrer. Fracao da maxima, e nao valor fixo, para que a barganha continue
+## significando a mesma coisa na onda 2000.
+const MALDITO_DANO := 0.04
+## Vida do eco que o "ecoante" deixa, como fracao da do original.
+const ECO_HP := 0.30
 ## Dano de contato: fração da vida MÁXIMA DO INIMIGO (que escala com a onda),
 ## com um piso linear para o começo do jogo ainda ter tensão.
 ## Antes isso era uma fração da vida da torre — o que tornava comprar vida inútil.

@@ -151,3 +151,7 @@ Para não repetir trabalho — cada um com teste que reprova se voltar:
 - **O aviso atravessava o painel aberto**, apagando duas linhas da lista que a pessoa foi ler
 - **A aba "Segredos" sumia na escala 1,25** atrás das setinhas do TabBar — alcançável não é o mesmo que visível
 - **Os dois botões de reciclagem só divergiam no caractere 14**, e um deles desmancha cartas na hora
+- **A Gramática das Cepas** trocou 9 modificadores de elite por 38 traços em 3 eixos: 58.282 formas nomeadas, compostas, com contador sem denominador
+- **O portão de desempenho segurava 160 e media 232**: `repor` só somava, nunca retirava, então a população andava durante a perna e o p90 subia junto sem que nada tivesse ficado mais caro — o mesmo código passava ou reprovava conforme o que a perna anterior deixou no campo
+- **Cepas compõem num gerador próprio**: com semente fixa, sorteios a mais por inimigo empurram a sequência inteira e os 20 min de jogo real do portão viram outro jogo (o próprio arquivo registra "207 projéteis numa medição, 536 na seguinte, do MESMO commit")
+- **Tentativa de otimização que PIOROU 2× e foi revertida**: separar os corpos grandes da caixa de busca de colisão parecia certo no papel (`raio_max_vivo` é global, um gigante alarga a caixa de todo projétil), mas com as Cepas inimigo grande deixou de ser raro — a "lista de exceções" ganhou dezenas de corpos e varrê-la por projétil custou 9.169 us contra 4.135. Medido, revertido, e o porquê está escrito no teste

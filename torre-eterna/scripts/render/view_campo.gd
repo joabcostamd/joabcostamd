@@ -49,6 +49,7 @@ func _conectar() -> void:
 	# das coisas mais satisfatorias do genero, e o jogo nao dizia nada. `chefe_morreu`
 	# tinha som e nenhum visual proprio, entao um chefe caia igual a um grunhido.
 	Bus.overkill.connect(_ao_overkill)
+	Bus.forma_nova.connect(_ao_forma_nova)
 	Bus.chefe_morreu.connect(_ao_chefe_morreu)
 	Bus.chefe_fase.connect(_ao_chefe_fase)
 	Bus.nivel_subiu.connect(_ao_nivel)
@@ -124,6 +125,22 @@ func _ao_combo(v: int) -> void:
 
 ## Overkill: o excesso de dano vira estilhaco e um anel que cresce com o exagero.
 ## O sinal existia, era emitido pela simulacao, e ninguem escutava.
+## UMA FORMA QUE ESTE SAVE NUNCA TINHA VISTO.
+##
+## Acontece talvez uma vez a cada poucos minutos no comeco e vai ficando raro —
+## e por isso ganha um aviso proprio e nao so mais uma particula. O nome que
+## aparece e o composto ("Grunhido Encouraçado Frenético"), montado na hora pela
+## gramatica: nao existe essa string escrita em lugar nenhum do projeto.
+##
+## De proposito NAO tem som novo nem tremor: o momento e um respiro, e a
+## auditoria de audio deste jogo ja mostrou que empilhar aviso em cima de aviso
+## faz o jogador parar de ouvir todos.
+func _ao_forma_nova(e) -> void:
+	var base := Ux.txt(e.def, "nome", Cfg.ingles())
+	var nome := Cepas.nome_composto(base, e.cepas, Cfg.ingles())
+	Bus.toast(Txt.f("hud_forma_nova", {"n": nome}), "bom", "livro")
+	Bus.particulas.emit("pulso", e.pos, {"raio": 90.0, "cor": e.cor2})
+
 func _ao_overkill(e, fracao: float) -> void:
 	# A FAIXA QUE CHEGA AQUI E ESTREITA, E A CONTA ESPERAVA UMA LARGA.
 	#

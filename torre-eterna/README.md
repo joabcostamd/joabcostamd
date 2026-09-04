@@ -8,7 +8,7 @@
 ![GDScript](https://img.shields.io/badge/GDScript-2.0-478CBF)
 ![Arte](https://img.shields.io/badge/Arte-100%25%20procedural-a855f7)
 ![Áudio](https://img.shields.io/badge/Áudio-sintetizado-f472b6)
-![Testes](https://img.shields.io/badge/Testes-794%2F794-4ade80)
+![Testes](https://img.shields.io/badge/Testes-848%2F848-4ade80)
 ![Idiomas](https://img.shields.io/badge/Idiomas-PT--BR%20%C2%B7%20EN-38bdf8)
 
 ---
@@ -44,7 +44,7 @@ cd torre-eterna
 # Verificação estrutural (todo script compila? dados presentes?)
 godot --headless --path . -s res://tools/verificar.gd
 
-# Suíte de testes da simulação — 794 testes, sem mocks
+# Suíte de testes da simulação — 848 testes, sem mocks
 godot --headless --path . -s res://tools/testes.gd
 
 # Convenções do projeto (emoji na interface, print solto, painel órfão, mídia)
@@ -84,7 +84,7 @@ xvfb-run -a --server-args="-screen 0 1280x720x24" godot --path . --resolution 12
 ### Sistemas
 | Sistema | O que faz |
 |---|---|
-| **Ondas** | Contagem crescente, chefe a cada 10, super-chefe a cada 50, elites e inimigos dourados |
+| **Ondas** | Contagem crescente, chefe a cada 10, super-chefe a cada 50, cepas e inimigos dourados |
 | **Combate** | Crítico, armadura, penetração, perfuração, ricochete, área, execução, roubo de vida, overkill, combo |
 | **Elementos** | Fogo (queimadura), Gelo (lentidão), Raio (corrente), Veneno (empilha 12×), Vazio (amplia dano) |
 | **Progressão** | 39 melhorias de ouro, 36 talentos em 3 ramos, 500 níveis de torre |
@@ -126,6 +126,17 @@ registrar ao **ver**, não ao guardar. Duplicata deixa de ser lixo e vira
 micro-progresso, e o medo de descartar não existe — porque descartar não perde
 nada. Imune a todos os prestígios.
 
+**A Gramática das Cepas.** O jogo tinha 23 inimigos e 9 modificadores de elite,
+um por vez: 230 formas, e a medição mostrou o catálogo esgotado em poucas horas.
+Em vez de escrever o inimigo 24, o jogo passou a ter um **compositor**. Uma cepa
+é um traço autoral — um jeito de aguentar, um jeito de chegar, uma marca rara —
+e um inimigo carrega até três, uma de cada eixo. São 2.534 combinações por base,
+**58.282 formas nomeadas** a partir de 38 traços escritos à mão. A segunda cepa
+só aparece depois da onda 60 e a terceira depois da 200: o Enxame que ataca na
+hora 200 é feito de coisas que não podiam existir na hora 2. O jogo conta quantas
+formas você já viu — e **nunca mostra um denominador**, de propósito: um
+"347/58.282" transformaria descoberta em tarefa.
+
 **Adaptação do Enxame.** O mundo cria resistência ao elemento que você mais usa
 (até 62%) e esquece o que você abandona. A build ótima muda sozinha; você nunca
 chega ao "já resolvi, agora é só esperar".
@@ -149,11 +160,12 @@ sobrepõem, e a única coisa que você compra o tempo todo — velocidade de mat
 em que você está apanhando. Isso é bom, mas é o contrário de perseguir o limite.
 
 ### Números
-- **23** tipos de inimigo · **9** modificadores de elite · **10** chefes · **2** super-chefes
+- **23** tipos de inimigo · **38** cepas em 3 eixos · **10** chefes · **2** super-chefes
+- **58.282** formas nomeadas de inimigo, compostas por gramática a partir de 38 traços escritos à mão
 - **40** entradas de lore em 8 capítulos · **30** dicas
 - **6** moedas · **6** raridades · **39** atributos de torre
-- **1.058** chaves de interface e **1.286** textos de conteúdo, em português e inglês
-- **794** testes da simulação · **0** arquivo de som · a única imagem do repositório é `icon.svg`, o ícone do projeto
+- **1.064** chaves de interface e **1.286** textos de conteúdo, em português e inglês
+- **848** testes da simulação · **0** arquivo de som · a única imagem do repositório é `icon.svg`, o ícone do projeto
 
 ---
 

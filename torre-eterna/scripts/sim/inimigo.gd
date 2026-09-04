@@ -30,6 +30,16 @@ var super_chefe := false
 var elite := false
 var dourado := false
 var elite_mod := ""
+
+## AS CEPAS QUE ESTE CORPO CARREGA. Ver `scripts/sim/cepas.gd`.
+##
+## `cepas` guarda as definicoes so para desenhar e nomear — nada quente le
+## daqui. Quem pergunta "este inimigo devolve dano?" no meio de um impacto le
+## `cepa_bits`, que responde com um E de inteiros. Antes a mesma pergunta era
+## uma comparacao de string (`elite_mod == "espinhoso"`) em seis lugares
+## quentes; agora sao tres tracos por inimigo e ainda assim custa menos.
+var cepas: Array = []
+var cepa_bits := 0
 var segmento := false
 var dividido := false
 var peregrino := false
@@ -114,6 +124,8 @@ func limpar() -> void:
 	peregrino = false
 	saiu = false
 	elite_mod = ""
+	cepas = Cepas.VAZIO
+	cepa_bits = 0
 	def = {}
 	queimadura = 0
 	veneno = 0

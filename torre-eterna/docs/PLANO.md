@@ -43,7 +43,7 @@ precisar de nenhum dos dois.
 | Motor de atributos: flat + pct + mult, com multiplicadores gigantes | teste de agregação |
 | Arena com pooling e grade espacial | `perf.gd` com 500 inimigos |
 | Combate: crítico, armadura, perfuração, ricochete, área, execução, elementos | testes de dano |
-| Diretor de ondas, economia, níveis, saque, prestígio, offline | 794 testes |
+| Diretor de ondas, economia, níveis, saque, prestígio, offline | 848 testes |
 
 **Erro achado pelo simulador nº 1:** a onda travava para sempre se um inimigo
 alcançasse a torre — a condição de vitória contava abates, não inimigos
@@ -54,7 +54,7 @@ sobrevivência, porque o dano de contato era uma fração da vida MÁXIMA da
 torre. Toda a linha defensiva do jogo era decorativa.
 
 ### Fase 2 · Conteúdo ✅
-23 inimigos · 9 elites · 10 chefes · 2 super-chefes · 39 melhorias · 36
+23 inimigos · 38 cepas · 10 chefes · 2 super-chefes · 39 melhorias · 36
 talentos · 30 cartas · 4 conjuntos · 26 relíquias · 85 conquistas · 36 missões
 · 40 níveis de temporada · 20 eventos · 14 desafios · 10 eras · 40 entradas de
 lore · 10 habilidades.
@@ -78,7 +78,7 @@ Ecos**, **Adaptação do Enxame**, **O Peregrino**, **O Panteão**, **A
 Retomada**, **Aglomeração**, **Caixa da Vigília**. Ver `README.md`.
 
 ### Fase 5 · Portões ✅
-`verificar` · `lint` · `validar_dados` · `testes` (794) · `perf` · `soak` ·
+`verificar` · `lint` · `validar_dados` · `testes` (848) · `perf` · `soak` ·
 `agent_verify` — todos por linha de comando, todos no CI.
 
 ---
