@@ -1,4 +1,4 @@
-# CRUZADA
+# PLACARD
 
 Roguelike de pôquer em grade 5×5. Godot 4.7.2, GDScript, arte 100% por código.
 
@@ -48,7 +48,7 @@ estouro de `Control`. Em 3D, "ficou bonito" não tem teste.
 ## Os oito temas
 
 **O padrão é o Feltro e ouro** — o único dos oito em que uma pessoa que nunca ouviu falar do
-CRUZADA sabe que é um jogo de cartas antes de ler qualquer palavra.
+PLACARD sabe que é um jogo de cartas antes de ler qualquer palavra.
 
 Os outros são desbloqueáveis, **exceto os dois de fundo claro**, que ficam liberados desde o
 início: fundo claro é afordância de acessibilidade e não cosmético de recompensa. O Neon arcade é

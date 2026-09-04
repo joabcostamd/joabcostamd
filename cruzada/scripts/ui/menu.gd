@@ -50,7 +50,7 @@ func _em(ponto: Vector2) -> int:
 
 ## Cinco cartas em leque, entre a frase e os botões. Um menu de jogo de cartas
 ## sem carta nenhuma desperdiça o argumento mais forte do tema escolhido: quem
-## nunca ouviu falar do CRUZADA sabe que é um jogo de cartas antes de ler
+## nunca ouviu falar do PLACARD sabe que é um jogo de cartas antes de ler
 ## qualquer palavra. É o mesmo meio segundo que decidiu o tema padrão.
 ## Uma Sequência com os quatro naipes: mostra a paleta inteira do tema e,
 ## de quebra, uma das mãos que o jogo paga.

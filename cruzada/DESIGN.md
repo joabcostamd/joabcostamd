@@ -1,4 +1,4 @@
-# CRUZADA — as regras
+# PLACARD — as regras
 
 > **Cada carta pontua em duas mãos de pôquer: a linha e a coluna onde você a colocar.**
 
@@ -113,7 +113,7 @@ virou o comum (71% dos eventos):
 | **CRUZ TOTAL** | quatro linhas | 0,85% |
 
 A CRUZ TOTAL custa 17 posicionamentos e cabe **exatamente** numa mesa Grande. É o melhor jogo
-do CRUZADA e precisa ter nome na tela.
+do PLACARD e precisa ter nome na tela.
 
 ---
 

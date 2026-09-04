@@ -1,6 +1,6 @@
 extends Node
 class_name Som
-## O som do CRUZADA, sintetizado em tempo real. Nenhum arquivo de áudio.
+## O som do PLACARD, sintetizado em tempo real. Nenhum arquivo de áudio.
 ##
 ## Tudo aqui é onda gerada por código num `AudioStreamGenerator`: senoide com
 ## envelope, ruído filtrado para o baque, e uma escada de semitons para o Tear.

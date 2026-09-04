@@ -1,5 +1,34 @@
 # Briefing para nomear o jogo
 
+> ## ✅ RESOLVIDO: o jogo se chama **PLACARD**
+>
+> Encerrado em 4 de setembro de 2026, depois de seis rodadas de busca e
+> dezoito nomes queimados.
+>
+> **Por que PLACARD ganhou.** É a única palavra achada em que a coisa que o
+> jogador segura está *escrita dentro do nome* — **CARD** — e em que a leitura
+> do nome é a mecânica: **place a card**. Foi o que o jogo pede de você, turno
+> após turno, virado em substantivo.
+>
+> Passa nas quatro restrições duras: não lê como kart, não tem cheiro de
+> cassino, descreve a mecânica em vez de anunciar "isto tem cartas", e a
+> checagem de colisão não achou jogo nenhum com esse título.
+>
+> **As duas manchas, ditas na cara.** A piada é visual, não sonora — fala-se
+> *PLÁK-ard*, não *pleiss-a-card*. E em francês e em espanhol *placard* é
+> **armário**. Nenhuma das duas é fatal: CARD aparece intacto em qualquer
+> língua de alfabeto latino, e nenhum outro sobrevivente juntava as duas
+> coisas que importam.
+>
+> **A jogada continua se chamando CRUZADA.** Colher fileira e coluna de uma vez
+> é o que a palavra-cruzada faz, e em português a palavra está certa. O que
+> precisava ser universal era o título, nunca a jogada.
+>
+> *O resto do documento fica como registro da busca — e de por que os outros
+> dezoito não serviram.*
+
+---
+
 *Cole este arquivo inteiro numa conversa com qualquer IA. Ele é autocontido: quem
 o receber não precisa de nenhum outro contexto.*
 

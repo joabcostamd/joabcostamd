@@ -1,6 +1,6 @@
 extends RefCounted
 class_name Mesa
-## Uma mesa do CRUZADA, inteira, sem uma linha de interface.
+## Uma mesa do PLACARD, inteira, sem uma linha de interface.
 ##
 ## Tudo que acontece numa partida acontece aqui: o turno, a Parcela, o Tear, a
 ## Janela da Colheita, o Avesso, o fecho e a vitória. A tela lê este objeto e
@@ -411,7 +411,7 @@ func _relato_vazio() -> Dictionary:
 const GRAUS: PackedStringArray = ["", "colheita", "DUPLA", "TRIPLA", "CRUZ TOTAL"]
 
 ## A CRUZADA DO CENTRO: as quatro linhas que passam pela casa central colhidas de
-## uma vez. É o melhor jogo do CRUZADA, e a conquista mais difícil.
+## uma vez. É o melhor jogo do PLACARD, e a conquista mais difícil.
 func _pelo_centro(linhas: Array) -> bool:
     if linhas.size() < 4:
         return false

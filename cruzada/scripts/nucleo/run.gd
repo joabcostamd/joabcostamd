@@ -232,7 +232,7 @@ func _marcar_o_estado() -> void:
             _marcar("run_limpa", 1)
 
 ## A CRUZADA DO CENTRO: um evento que colhe as quatro linhas que passam pela
-## casa central. É o melhor jogo do CRUZADA e o desbloqueio mais difícil.
+## casa central. É o melhor jogo do PLACARD e o desbloqueio mais difícil.
 static func e_cruzada_do_centro(relato: Dictionary) -> bool:
     if not bool(relato.get("colheita", false)):
         return false

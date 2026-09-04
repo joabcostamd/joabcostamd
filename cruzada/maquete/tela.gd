@@ -1,6 +1,6 @@
 extends Control
 class_name TelaMaquete
-## A tela de partida do CRUZADA, montada com um estado fixo e realista.
+## A tela de partida do PLACARD, montada com um estado fixo e realista.
 ##
 ## Não é o jogo: é a maquete que existe para o tema ser escolhido olhando, e
 ## não lendo adjetivo. O estado desenhado é o momento canônico do design — uma

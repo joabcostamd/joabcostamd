@@ -1,4 +1,4 @@
-# CRUZADA — estudo de HUD
+# PLACARD — estudo de HUD
 
 Documento de decisão da tela de partida. Cada número aqui foi conferido com o layout rodando,
 não estimado. Escrito antes das regras do jogo porque a direção de arte define a estrutura de
@@ -124,7 +124,7 @@ tela, e a escala mora em `temas.gd` junto das cores — o validador só confere.
 | `T_ROTULO` | **14** | PONTOS, MÃOS, RODADA, VIDAS, MESA — caixa alta | — |
 | `T_CORPO` | **17** | nomes das mãos, frases, botões, contadores | ×1,21 |
 | `T_NUMERO` | **21** | fichas e multiplicadores da tabela | ×1,24 |
-| `T_TITULO` | **26** | CRUZADA | ×1,24 |
+| `T_TITULO` | **26** | PLACARD | ×1,24 |
 | `T_HEROI` | **52** | a pontuação e o multiplicador da mesa | ×2,00 |
 
 O salto de `TITULO` para `HEROI` é ×2 **de propósito**: não é degrau da escala, é quebra de

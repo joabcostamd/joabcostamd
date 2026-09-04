@@ -7,7 +7,7 @@ class_name Conquistas
 ## colher juntas, e quem a lê descobre um jogo que estava lá o tempo todo.
 ##
 ## Nenhuma delas pede grind. Não há "jogue 500 mesas" — contagem alta sem decisão
-## nova é trabalho, não conquista, e o CRUZADA já mede quantas mesas foram
+## nova é trabalho, não conquista, e o PLACARD já mede quantas mesas foram
 ## jogadas para desbloquear tema.
 
 ## Onde a conta olha. Uma conquista por linha, e a linha diz o que ela mede.

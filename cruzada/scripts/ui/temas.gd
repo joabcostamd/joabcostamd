@@ -1,6 +1,6 @@
 extends RefCounted
 class_name Temas
-## Os oito temas do CRUZADA. Um tema é uma linha de dados, nunca um caminho de
+## Os oito temas do PLACARD. Um tema é uma linha de dados, nunca um caminho de
 ## código: toda cor e todo parâmetro de brilho que a tela desenha sai daqui.
 ##
 ## Além das cores, cada tema carrega os seus parâmetros de juice. É esse segundo
@@ -25,7 +25,7 @@ static var escala_de_cinza := false
 const T_ROTULO := 14   ## PONTOS, MÃOS, RODADA — caixa alta
 const T_CORPO := 17    ## nomes das mãos, frases, botões
 const T_NUMERO := 21   ## fichas e multiplicadores da tabela
-const T_TITULO := 26   ## CRUZADA
+const T_TITULO := 26   ## PLACARD
 const T_HEROI := 52    ## a pontuação e o multiplicador da mesa
 
 const TEMAS: Array[Dictionary] = [
@@ -178,7 +178,7 @@ const TEMAS: Array[Dictionary] = [
 ]
 
 ## O tema padrão. Escolhido pelo Joab olhando as oito telas renderizadas: é o
-## único dos oito em que uma pessoa que nunca ouviu falar do CRUZADA sabe que é
+## único dos oito em que uma pessoa que nunca ouviu falar do PLACARD sabe que é
 ## um jogo de cartas ANTES de ler qualquer palavra. Meio segundo de compreensão
 ## que os outros sete gastam explicando.
 const PADRAO := 1   ## índice do Feltro e ouro

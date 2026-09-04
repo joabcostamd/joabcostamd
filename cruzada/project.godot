@@ -1,9 +1,9 @@
-; CRUZADA — roguelike de pôquer em grade 5×5. Godot 4.7
+; PLACARD — roguelike de pôquer em grade 5×5. Godot 4.7
 config_version=5
 
 [application]
 
-config/name="CRUZADA"
+config/name="PLACARD"
 config/description="Cada carta pontua em duas mãos de pôquer: a linha e a coluna onde você a colocar."
 run/main_scene="res://cenas/jogo.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")

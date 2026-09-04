@@ -97,7 +97,7 @@ func _init() -> void:
     falhas += banda("conservação quebrada", float(conservacao_quebrou), 0.0, 0.0, "", 0.0)
 
     ## A promessa ao jogador: existe um lugar onde o jogo TERMINA. Se a Estufa
-    ## deixar de fechar a run, o CRUZADA passou a ser um jogo que ninguém acaba —
+    ## deixar de fechar a run, o PLACARD passou a ser um jogo que ninguém acaba —
     ## e isso é regressão, não dificuldade.
     var estufa := Desafio.estufa()
     var completadas := 0.0
