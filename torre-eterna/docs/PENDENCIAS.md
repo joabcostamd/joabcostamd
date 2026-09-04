@@ -160,24 +160,25 @@ Para não repetir trabalho — cada um com teste que reprova se voltar:
 
 ---
 
-## 7. O que a escolha do nome deixou aberto — 🟡 EM ABERTO
+## 7. O que a escolha do nome deixou aberto — ✅ FECHADO
 
-O nome do jogo fechou (**TOWER ZERO**, ver `docs/NOMES.md` seção 9) e a troca
-correu pelo projeto inteiro. Ficaram dois itens, e os dois esperam a **mesma
-decisão que falta: o nome da desenvolvedora**.
+O nome do jogo é **TOWER ZERO** e a desenvolvedora é **Innerbloom Games**
+(`docs/NOMES.md`, seções 9 e 11). Os dois campos que esperavam a decisão do
+estúdio fecharam junto:
 
-| Item | Onde | O que falta |
+| Item | Onde | Valor |
 |---|---|---|
-| Identificador do pacote Android | `export_presets.cfg` → `package/unique_name` | Ainda é `com.example.jogo`, e a Play Store recusa `example`. O formato é domínio ao contrário: `com.<estudio>.towerzero`. |
-| Nome da empresa no executável | `export_presets.cfg` → `application/company_name` | Vazio. Aparece nas propriedades do arquivo no Windows. |
+| Identificador do pacote Android | `export_presets.cfg` → `package/unique_name` | `com.innerbloomgames.towerzero` |
+| Nome da empresa no executável | `export_presets.cfg` → `application/company_name` | Innerbloom Games |
 
-O campo `estudio.nome` em `data/marca.json` está com **`Estrato Games`** como
-valor provisório, e os créditos já leem de lá. Os candidatos estão medidos na
-seção 5 de `docs/NOMES.md`.
-
-**Fechado junto com o nome:** `application/product_name` e `package/name`
-(ambos "Tower Zero"), `config/name` no `project.godot`, a pasta do save
+Fechado com o nome do jogo: `application/product_name` e `package/name` (ambos
+"Tower Zero"), `config/name` no `project.godot`, a pasta do save
 (`user://tower_zero.*`), a pasta do Steam Cloud e catorze documentos.
+
+**Não sobrou nenhum campo de exportação esperando decisão.** O que resta é fora
+do código e está listado em `docs/NOMES.md` 11.4: registrar o domínio, a busca
+de marca no INPI/USPTO/EUIPO e a abertura da empresa — nenhum deles bloqueia
+build, teste ou portão.
 
 ### Um bug caro que a renomeação revelou
 

@@ -891,3 +891,72 @@ esta decisão — está registrado em `docs/PENDENCIAS.md`, seção 7:
 
 Fechar o nome resolve os dois de uma vez. Nada mais no jogo depende disto.
 
+---
+
+# 11. DECISÃO FINAL — Innerbloom Games
+
+**A desenvolvedora se chama Innerbloom Games.** Gravado em `data/marca.json` em
+2026-09-04, pelo titular.
+
+## 11.1. De onde vem
+
+De **Innerbloom**, de RÜFÜS DU SOL (2016) — a música da vida de quem assina o
+jogo. Não é uma escolha de marketing e não deveria ser tratada como uma: é a
+única razão que sobrevive a dez anos de empresa sem cansar, porque não depende
+de o mercado continuar concordando.
+
+E ela cai bem por acidente, o que ajuda. *Innerbloom* é uma faixa longa — nove
+minutos e meio — construída para desabrochar devagar em vez de entregar tudo no
+primeiro minuto. **É exatamente a forma de um jogo idle.** Um estúdio de
+incrementais chamado "florescer por dentro" descreve o gênero sem nunca dizer o
+nome dele.
+
+## 11.2. O que a busca achou, e por que `Games` entrou no nome
+
+| O que existe | Onde | Classe |
+|---|---|---|
+| **INNERBLOOM** (marca viva) | Innerbloom Beverages LLC, Delaware · série 99286095 | Bebidas |
+| **INNERBLOOM** (abandonada) | Brands of Britain, 2017 · série 87619031 | Suplementos |
+| **Innerbloom Studios** | Eugene, Oregon — produtora de vídeo comercial | Serviços criativos |
+| **InnerBloom** | Honolulu — estúdio criativo de produção | Serviços criativos |
+| *Innerbloom* | RÜFÜS DU SOL, 2016 | Música |
+
+**Nenhum é jogo**, e a marca viva é de bebida — classe distante o bastante de
+software e entretenimento (9 e 41) para não bloquear. Título de música, por si
+só, não vira marca: a homenagem é livre.
+
+Sobraram dois problemas de verdade, e o sufixo resolve os dois de uma vez:
+
+1. **Dois estúdios já usam a palavra sozinha.** `Innerbloom Studios` está
+   ocupado; `Innerbloom Games` não. Sem o sufixo, seríamos o terceiro
+   "Innerbloom" criativo na mesma busca.
+2. **A palavra sozinha some atrás da música.** Buscar "Innerbloom" devolve
+   RÜFÜS DU SOL para sempre — e isso não vai mudar. Buscar **"Innerbloom
+   Games"** é uma consulta diferente, com resultado próprio.
+
+Note que isto contradiz a regra 2 da seção 10.5, que dizia que o sufixo é
+decoração. Ela vale quando a primeira palavra aguenta sozinha. Esta não aguenta
+— e é por isso que a regra virou "o sufixo é opcional", e não "o sufixo é
+inútil".
+
+## 11.3. O que fechou junto
+
+| Campo | Valor |
+|---|---|
+| `data/marca.json` → `estudio.nome` | **Innerbloom Games** |
+| `export_presets.cfg` → `application/company_name` | Innerbloom Games |
+| `export_presets.cfg` → `package/unique_name` | `com.innerbloomgames.towerzero` |
+
+Com isso a seção 7 de `docs/PENDENCIAS.md` fecha: não sobrou nenhum campo de
+exportação esperando decisão.
+
+## 11.4. O que ainda depende de você, e não de código
+
+- **Registrar `innerbloomgames.com`** (ou `.games`) antes de anunciar qualquer
+  coisa. Nome anunciado sem domínio é nome que alguém compra na sua frente.
+- **Busca no INPI, USPTO e EUIPO nas classes 9 e 41** antes de encomendar a arte
+  final — o mesmo item 6 desta página, que vale para o jogo e para o estúdio.
+- **A empresa em si.** Enquanto não existir CNPJ, a Steam aceita cadastro de
+  pessoa física, e `Innerbloom Games` continua sendo o nome que aparece na loja
+  e nos créditos. Nada no jogo depende disso.
+
