@@ -26,9 +26,15 @@ cd "$DESTINO"
 
 # Fica só o que é do jogo. O README da raiz é a PÁGINA DE PERFIL do Joab e não
 # vem junto — o repositório do jogo precisa de porta própria.
+# As pastas se chamaram cruzada/ até o jogo ser rebatizado. Sem os nomes antigos
+# aqui, o filtro descarta 34 dos 41 commits: eles tocam caminhos que não existem
+# mais. Com o --path-rename, a história inteira passa a falar placard/.
 git filter-repo --force \
+    --path cruzada --path cruzada-pesquisa \
     --path placard --path placard-pesquisa --path PROMPT-JOGO-DE-CARTAS.md \
-    --path .claude --path .gitignore --path .mcp.json
+    --path .claude --path .gitignore --path .mcp.json \
+    --path-rename cruzada-pesquisa/:placard-pesquisa/ \
+    --path-rename cruzada/:placard/
 
 git branch -m main
 
