@@ -5,7 +5,7 @@ Roguelike de pôquer em grade 5×5. Godot 4.7.2, GDScript, arte 100% por código
 > **Cada carta pontua em duas mãos de pôquer: a linha e a coluna onde você a colocar.**
 
 O design foi medido antes de ser construído — a pesquisa está em
-[`../cruzada-pesquisa/`](../cruzada-pesquisa/), e `DECISOES.md` de lá é o livro-razão
+[`../placard-pesquisa/`](../placard-pesquisa/), e `DECISOES.md` de lá é o livro-razão
 de tudo o que foi aprovado e reprovado, com o número atrás de cada decisão.
 
 ## Estado: jogável, do menu ao fim da travessia

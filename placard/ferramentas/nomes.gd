@@ -8,7 +8,7 @@ extends Node
 ##
 ##     xvfb-run -a godot res://ferramentas/nomes.tscn -- URDA ORDO TESSERA
 
-const PADRAO := ["CRUZADA", "URDA", "URDIA", "TESSERA", "ORDO", "AXIA"]
+const PADRAO := ["PLACARD"]  ## a busca acabou; ver NOME.md
 
 func _ready() -> void:
     var candidatos := OS.get_cmdline_user_args()

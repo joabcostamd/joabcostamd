@@ -3,7 +3,7 @@
 > **Cada carta pontua em duas mãos de pôquer: a linha e a coluna onde você a colocar.**
 
 Este documento é normativo: o código implementa o que está aqui, e o que não está aqui não
-existe no jogo. Toda regra abaixo tem uma medição atrás dela em `../cruzada-pesquisa/`, e a
+existe no jogo. Toda regra abaixo tem uma medição atrás dela em `../placard-pesquisa/`, e a
 referência está citada no fim de cada seção. Quando um número não foi medido, está escrito
 **não medido** — nunca preenchido por estimativa.
 
@@ -497,7 +497,7 @@ se 100 jogadas legais *parecem* paralisantes mesmo sendo equivalentes.
 
 ## 8. IDEIAS JÁ TESTADAS E MORTAS
 
-Antes de propor, procure em `../cruzada-pesquisa/DECISOES.md` §3. Metade das boas ideias deste
+Antes de propor, procure em `../placard-pesquisa/DECISOES.md` §3. Metade das boas ideias deste
 projeto já foi testada e morreu com um número específico. As cinco maiores:
 
 | Ideia | O número que matou |

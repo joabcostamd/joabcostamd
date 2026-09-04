@@ -1,4 +1,4 @@
-# CRUZADA — O NÚCLEO POLIDO
+# PLACARD — O NÚCLEO POLIDO
 
 Tudo aqui tem número medido atrás. Fonte: bancadas 1, 2 e 3 (Godot 4.7.2 headless,
 1.002 a 2.000 mesas por célula, sementes pareadas). Li os três `resultado.json` na fonte,
@@ -149,15 +149,15 @@ poder de loja ligado é território virgem. Não invente número aqui.
 **Contra o Balatro, só o honesto** (não medi o Balatro; o que segue é estrutural, não
 medição minha): lá o print é notação científica; aqui o maior evento é **10.260 pontos,
 4,19× a meta no máximo medido**. São ordens de grandeza diferentes e não adianta fingir — a
-aposta do CRUZADA é que **o print não é o número, é o tabuleiro**. No ritmo a comparação é
-justa: no Balatro toda mão jogada pontua; o CRUZADA saiu de 14,3% para **65,7%**. Os 34% de
+aposta do PLACARD é que **o print não é o número, é o tabuleiro**. No ritmo a comparação é
+justa: no Balatro toda mão jogada pontua; o PLACARD saiu de 14,3% para **65,7%**. Os 34% de
 turnos mudos que sobram são a distância que falta.
 
 ---
 
 ## 6. O QUE FOI TESTADO E REPROVADO (a seção que vale ouro)
 
-**1. A CRUZADA — o evento que dá nome ao jogo — não é consertável por carta, por preço nem
+**1. A CRUZADA — o evento que na época dava nome ao jogo — não é consertável por carta, por preço nem
 por cascata. As três bancadas atacaram por três caminhos diferentes e as três mediram zero.**
 - Em **30.944 turnos de jogo guloso não existiu UMA ÚNICA vez** uma jogada que fechasse duas
   linhas — com coringa na mão (3.614 turnos com Agulha, 7.410 com Avesso) e sem.

@@ -17,7 +17,7 @@ jogada, não sobra do nome antigo. Não "conserte".
 
 ## Regra antes de código
 
-`cruzada/DESIGN.md` é **normativo**, não descritivo. As regras têm número (R01 a
+`placard/DESIGN.md` é **normativo**, não descritivo. As regras têm número (R01 a
 R46) e o código as cita. Mudou o comportamento? Muda a regra primeiro, no
 DESIGN, e só depois o `.gd`. Se código e DESIGN discordam, o DESIGN está certo e
 o código tem bug.
@@ -73,16 +73,16 @@ o que **não** é suficiente para commitar.
 
 | Pasta | O que é |
 |---|---|
-| `cruzada/scripts/nucleo/` | o jogo **sem uma linha de interface**. Roda no terminal |
-| `cruzada/scripts/ui/` | as telas, o som sintetizado, o juice |
-| `cruzada/testes/` | 522 asserções |
-| `cruzada/ferramentas/` | aferição, calibração, capturas, validadores |
-| `cruzada/maquete/` | a maquete que decidiu o visual antes da primeira regra |
-| `cruzada-pesquisa/` | as medições. **`DECISOES.md` é o livro-razão** |
+| `placard/scripts/nucleo/` | o jogo **sem uma linha de interface**. Roda no terminal |
+| `placard/scripts/ui/` | as telas, o som sintetizado, o juice |
+| `placard/testes/` | 522 asserções |
+| `placard/ferramentas/` | aferição, calibração, capturas, validadores |
+| `placard/maquete/` | a maquete que decidiu o visual antes da primeira regra |
+| `placard-pesquisa/` | as medições. **`DECISOES.md` é o livro-razão** |
 
 ## Antes de propor mudança de balanceamento
 
-Leia `cruzada-pesquisa/DECISOES.md`. Ele tem uma seção inteira de **dials que são
+Leia `placard-pesquisa/DECISOES.md`. Ele tem uma seção inteira de **dials que são
 código morto** — parâmetros já provados inertes por medição. Aumentar o prêmio da
 cruzada, por exemplo, foi testado em 4×, 20× e 100× e não moveu nada. §7 lista o
 que está em aberto, com número.
@@ -120,7 +120,7 @@ carregado por nenhuma cena do jogo. Não o remova achando que é sujeira.
 ## Instalar
 
 1. `uv` instalado (o servidor roda por `uvx`)
-2. Baixe uma **release publicada** e ponha o add-on em `cruzada/addons/godot_ai/`,
+2. Baixe uma **release publicada** e ponha o add-on em `placard/addons/godot_ai/`,
    com o `plugin.cfg` dentro dessa pasta. **Não copie um snapshot do código-fonte
    do repositório** — a documentação deles é explícita nisso
 3. No Godot: *Project → Project Settings → Plugins → Godot AI*

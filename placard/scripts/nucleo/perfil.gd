@@ -6,7 +6,11 @@ class_name Perfil
 ## Gravação atômica — escreve num arquivo temporário, fecha, e só então renomeia.
 ## Um save cortado no meio por queda de energia não pode virar perfil zerado.
 
-const CAMINHO := "user://cruzada.save"
+const CAMINHO := "user://placard.save"
+## O jogo já se chamou CRUZADA, e quem jogou naquela época tem o save no nome
+## velho. Renomear sem migrar zeraria temas, conquistas e dificuldade dessa
+## pessoa em silêncio — que é a pior forma de perder progresso.
+const CAMINHO_ANTIGO := "user://cruzada.save"
 const VERSAO := 1
 
 var tema := Temas.PADRAO
@@ -125,6 +129,12 @@ func gravar(caminho := CAMINHO) -> bool:
 static func ler(caminho := CAMINHO) -> Perfil:
     var p := Perfil.new()
     if not FileAccess.file_exists(caminho):
+        ## Só o save no caminho padrão migra: um caminho passado à mão (teste,
+        ## ferramenta) que não existe é perfil novo, e não um save velho a resgatar.
+        if caminho == CAMINHO and FileAccess.file_exists(CAMINHO_ANTIGO):
+            var antigo := ler(CAMINHO_ANTIGO)
+            antigo.gravar(CAMINHO)
+            return antigo
         return p
     var f := FileAccess.open(caminho, FileAccess.READ)
     if f == null:

@@ -1,4 +1,4 @@
-# AUDITORIA FINAL — CRUZADA
+# AUDITORIA FINAL — PLACARD
 
 Li a sonda com meus próprios olhos, conferi o número que sustenta cada leitura dos analistas, e
 rodei um **experimento novo** (1.200 mesas, política gulosa, Godot headless) para *medir* as
@@ -60,7 +60,7 @@ descarte resolveria um problema que não existe.
 
 ## 3. O QUE O JOGO REALMENTE É
 
-**Como está escrito hoje, o CRUZADA é um quebra-cabeça de território excelente e exigente. Não é
+**Como está escrito hoje, o PLACARD é um quebra-cabeça de território excelente e exigente. Não é
 uma máquina de dopamina. São motores diferentes e você pediu o segundo.**
 
 A diferença, sem jargão: numa **máquina de dopamina** (Balatro, caça-níquel) **toda ação paga** —
@@ -68,7 +68,7 @@ A diferença, sem jargão: numa **máquina de dopamina** (Balatro, caça-níquel
 the Breach) **a ação não paga, a solução paga** — o prazer vem de *achar* a jogada, e acontece na
 sua cabeça, não na tela.
 
-No CRUZADA você não joga uma mão. Você **assenta um tijolo**, e o muro só paga no 5º. Medido:
+No PLACARD você não joga uma mão. Você **assenta um tijolo**, e o muro só paga no 5º. Medido:
 **1 recompensa a cada 6 tijolos**, e em **6 de cada 7 turnos a tela não devolve nada** — nem número,
 nem som, nem partícula. Numa mesa de 17 turnos você toma 17 decisões de 100 opções e recebe **2,3
 respostas**; dessas, só o decil superior tem margem que muda algo (m6 p90 = 63,9%). O jogo cobra 17

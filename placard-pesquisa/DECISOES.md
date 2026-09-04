@@ -1,4 +1,4 @@
-# CRUZADA — livro-razão das decisões
+# PLACARD — livro-razão das decisões
 
 Toda linha deste documento tem um **número medido** atrás. Nada aqui é opinião de designer.
 
@@ -182,7 +182,7 @@ que precisa ser lida rápido) e, o que mais pesa: em 2D a qualidade **tem númer
 alvo de toque, estouro de `Control` — enquanto em 3D "ficou bonito" não tem teste.
 
 **Tema padrão: Feltro e ouro.** Escolhido pelo Joab entre os oito renderizados de verdade, pelo
-argumento mais forte que ele tem: é o único em que uma pessoa que nunca ouviu falar do CRUZADA
+argumento mais forte que ele tem: é o único em que uma pessoa que nunca ouviu falar do PLACARD
 sabe que é um jogo de cartas **antes de ler qualquer palavra**. Meio segundo de compreensão que os
 outros sete gastam explicando — e para um indie que vive de miniatura em página de loja, isso vale
 mais que qualquer refinamento de paleta.
@@ -431,7 +431,7 @@ Registrados de propósito. Errar de novo custa mais caro que admitir.
 |---|---|
 | ~~**Planejar deixou de pagar**~~ ✅ RESOLVIDO pela BC_rec (§3c) | com a Janela, quem planeja a cruz cai de **62,7% para 30,7%** de vitória, enquanto quem joga no impulso sobe de 31,2% para **36,1%**. O gradiente de perícia inverteu. Alvo da próxima bancada: devolver retorno ao planejamento **sem** aumentar o prêmio da cruzada (já provado inerte em 4×, 20× e 100×) |
 | **A cruzada virou o comum** | **71% dos eventos** agora são cruzada (banda saudável 0,35–0,55 por evento); eventos por mesa 2,21 → 1,17; explosão 15,6× → 10,0×. Proposta: mover o clímax um degrau acima, para a escada **DUPLA (9 posic, 2×) · TRIPLA (13, 3×) · CRUZ TOTAL (17, 4×)** — a Tripla é 18,2% dos eventos e a Total 0,85%, e a Cruz Total cabe **exata** numa mesa Grande |
-| **A pasta ainda se chama `cruzada/`** | o jogo virou **PLACARD** e o título trocou em todo lugar — `Marca.NOME`, `config/name`, DESIGN, README, HUD. A pasta não. Renomear é seguro (os caminhos `res://` são relativos à raiz do projeto e não mudam), mas é diff grande e decisão do Joab. `cruzada-pesquisa/` **não** renomeia: é registro do que se decidiu quando o jogo tinha o outro nome |
+| **A pasta ainda se chama `placard/`** | o jogo virou **PLACARD** e o título trocou em todo lugar — `Marca.NOME`, `config/name`, DESIGN, README, HUD. A pasta não. Renomear é seguro (os caminhos `res://` são relativos à raiz do projeto e não mudam), mas é diff grande e decisão do Joab. `placard-pesquisa/` **não** renomeia: é registro do que se decidiu quando o jogo tinha o outro nome |
 | **A jogada continua se chamando CRUZADA** | de propósito — em português é o que a palavra-cruzada faz. Se algum dia o jogo for traduzido, é a jogada que precisa de nome novo em inglês, não o título |
 | **Ergonomia do Avesso na tela** | não medido — desenhar uma carta de duas caras que se lê de relance é **condição de corte** do coringa |
 | **Ensinar a recusa** | nenhuma bancada achou mecanismo que ensine o jogador a *não* fechar uma linha. É a habilidade central e ninguém a ensina |

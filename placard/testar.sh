@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Suíte do CRUZADA. O núcleo primeiro: é o mais rápido e o que mais quebra.
+# Suíte do PLACARD. O núcleo primeiro: é o mais rápido e o que mais quebra.
 set -e
 cd "$(dirname "$0")"
 

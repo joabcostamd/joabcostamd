@@ -1,4 +1,4 @@
-# NOTAS DA SONDA — CRUZADA
+# NOTAS DA SONDA — PLACARD
 
 Protótipo headless **descartável** do núcleo, em GDScript, rodado em Godot 4.7.2 headless.
 Não é o jogo. É um instrumento de medição.
@@ -74,7 +74,7 @@ estou travado" — e ela **nunca disparou uma vez em 8.000 mesas**. O motivo é 
 registrar: **no núcleo puro não existe estado de travamento.** Qualquer carta entra em qualquer
 casa vazia, e uma linha fecha por ter 5 cartas, não por ter as cartas *certas*. Então sempre que
 uma linha está em 4/5 alguma jogada pontua, e nunca há o momento "minha mão não serve".
-O descarte no CRUZADA não é um escape, é só **qualidade de mão** (trocar lixo por carta que
+O descarte no PLACARD não é um escape, é só **qualidade de mão** (trocar lixo por carta que
 melhora a categoria da linha). Reescrevi a regra assim: troca quando nenhuma jogada pontua,
 ainda restam ≥ 4 posicionamentos, e há ≥ 2 cartas "mortas" (rendem menos de 35% do que a melhor
 carta da mão rende em potencial). O uso medido está em `extra_descartes_usados_por_mesa`.
@@ -186,7 +186,7 @@ Três coisas ficaram evidentes na escrita do código, antes mesmo de medir:
 1. **A pontuação é rara por construção, e isso é estrutural, não ajustável por número.**
    Em Balatro você joga uma mão e ela pontua — sempre, toda vez, 100% das ações. Aqui você
    coloca uma carta e, na esmagadora maioria dos turnos, **nada acontece**. Você está enchendo
-   uma linha. A recompensa vem no 5º tijolo. O núcleo do CRUZADA tem uma razão de
+   uma linha. A recompensa vem no 5º tijolo. O núcleo do PLACARD tem uma razão de
    ação-para-recompensa medida de **1 recompensa a cada 6 ações** (mediana; p90 = 9 ações,
    pior caso 15), com teto duro de 3 recompensas por mesa e apenas **14% dos turnos** oferecendo
    sequer a possibilidade de pontuar. Isso não é um problema de tuning: vem direto da conservação de

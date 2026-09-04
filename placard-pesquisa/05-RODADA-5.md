@@ -1,4 +1,4 @@
-# CRUZADA — RODADA 5
+# PLACARD — RODADA 5
 
 Três bancadas (81 células) e uma especificação de interface. Números conferidos nos
 `resultado.json`, não nos resumos dos agentes.

@@ -75,9 +75,15 @@ A simulação mede frequência, não emoção. Ela não sabe se o jogador **grit
 
 **Sim, o jogo mantém o nome CRUZADA — mas o nome muda de sentido, e é preciso dizer isso em voz alta.**
 
+> **Superado depois.** O jogo passou a se chamar **PLACARD**; CRUZADA ficou sendo
+> só o nome da jogada, que é o que esta seção de fato resolveu. O motivo da troca
+> está em `placard/NOME.md`: CRUZADA significa *guerra santa* em três línguas
+> latinas e nada nas outras, e o título precisava ser universal. A decisão de
+> sentido registrada abaixo continua valendo inteira.
+
 Sem a janela o nome era falso: **0,000 cruzada em 100% das mesas** da política gulosa, em 30.944 turnos e em cinco bancadas independentes. Com a janela, 83,1% das mesas têm pelo menos uma cruzada mesmo para o jogador distraído, e o teto aritmético 2/1/2 é atingido por quem planeja. A cruzada existe.
 
-O que ela deixou de ser é o **clímax**. Com 0,710 cruzada por evento, a cruzada dupla é agora o **verbo** do jogo, não o seu ponto alto. Fingir o contrário é mentir para o jogador na primeira hora. A resposta não é frear a regra (os dois freios foram medidos e não existem): é **mover o clímax um degrau acima**, para a escada que já está nas regras e que nenhuma bancada tinha nomeado — **DUPLA (9 posicionamentos, 2×) · TRIPLA (13, 3×) · CRUZ TOTAL (17, 4×)**. A TRIPLA é 18,2% dos eventos gulosos e a TOTAL, 0,85%: essas duas são raras de verdade. E a CRUZ TOTAL cabe **exatamente** numa mesa Grande — 17 células, 17 posicionamentos — com 88,2% de sucesso e **85,4% de vitória**. É o melhor jogo do CRUZADA e não tem nome na tela. Dê nome.
+O que ela deixou de ser é o **clímax**. Com 0,710 cruzada por evento, a cruzada dupla é agora o **verbo** do jogo, não o seu ponto alto. Fingir o contrário é mentir para o jogador na primeira hora. A resposta não é frear a regra (os dois freios foram medidos e não existem): é **mover o clímax um degrau acima**, para a escada que já está nas regras e que nenhuma bancada tinha nomeado — **DUPLA (9 posicionamentos, 2×) · TRIPLA (13, 3×) · CRUZ TOTAL (17, 4×)**. A TRIPLA é 18,2% dos eventos gulosos e a TOTAL, 0,85%: essas duas são raras de verdade. E a CRUZ TOTAL cabe **exatamente** numa mesa Grande — 17 células, 17 posicionamentos — com 88,2% de sucesso e **85,4% de vitória**. É o melhor jogo do PLACARD e não tem nome na tela. Dê nome.
 
 **Uma condição, sem a qual a decisão se anula:** fixar a leitura como **SOMA dos mults × Tear**, com o teto `24+4×rodada` **removido**. Sob PRODUTO o teto morderia **57,5%** das cruzadas e **78,5% das TOTAIS**, e a escada 2×/3×/4× colapsaria em silêncio.
 

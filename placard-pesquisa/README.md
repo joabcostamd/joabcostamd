@@ -1,4 +1,10 @@
-# CRUZADA — pesquisa de design medida
+# PLACARD — pesquisa de design medida
+
+> **Sobre o nome.** Esta pesquisa foi feita quando o jogo se chamava CRUZADA.
+> Ele hoje se chama **PLACARD** — as referências ao *jogo* foram atualizadas, e as
+> referências à **jogada** (colher fileira e coluna de uma vez) continuam sendo
+> *cruzada*, que é o nome dela e não mudou. Métricas como `0,146 cruzada/mesa` são
+> a jogada. O porquê da troca está em `placard/NOME.md`.
 
 Documentos de pesquisa produzidos **antes** de escrever o jogo, para decidir se o
 design do `PROMPT-JOGO-DE-CARTAS.md` merecia ser construído.

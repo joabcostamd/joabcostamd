@@ -2,7 +2,7 @@ extends RefCounted
 class_name Nucleo
 
 # ---------------------------------------------------------------------------
-# SONDA CRUZADA - nucleo descartavel. Secoes 4, 5 e 6 do PROMPT-JOGO-DE-CARTAS.md
+# SONDA PLACARD - nucleo descartavel. Secoes 4, 5 e 6 do PROMPT-JOGO-DE-CARTAS.md
 # ---------------------------------------------------------------------------
 
 # Categorias (5.1) - ordem normativa

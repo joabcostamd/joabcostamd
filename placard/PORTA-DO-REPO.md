@@ -6,7 +6,7 @@ Roguelike de pôquer numa grade 5×5. Godot 4.7.2, GDScript, **arte 100% por
 código e som sintetizado em tempo real** — não há um arquivo de imagem nem de
 áudio de conteúdo neste repositório.
 
-![O menu do PLACARD](cruzada/capturas-do-jogo/menu.png)
+![O menu do PLACARD](placard/capturas-do-jogo/menu.png)
 
 ## Começar
 
@@ -43,14 +43,14 @@ recusar pontos.
 
 | Onde | O que |
 |---|---|
-| `cruzada/scripts/nucleo/` | o jogo **sem uma linha de interface** — mesa, mãos, geometria, metas, economia, loja, itens, conquistas. Roda no terminal |
-| `cruzada/scripts/ui/` | as 7 telas, o som sintetizado e o juice |
-| `cruzada/testes/` | 522 asserções |
-| `cruzada/ferramentas/` | aferição, calibração, capturas e os validadores |
-| `cruzada/DESIGN.md` | **as regras, R01 a R46** — normativo, não descritivo |
-| `cruzada/HUD.md` | as três zonas, a proporção 5:7 e os números que fecham |
-| `cruzada/NOME.md` | por que o jogo se chama PLACARD, e os dezoito nomes que morreram antes |
-| `cruzada-pesquisa/` | as medições. `DECISOES.md` é o livro-razão |
+| `placard/scripts/nucleo/` | o jogo **sem uma linha de interface** — mesa, mãos, geometria, metas, economia, loja, itens, conquistas. Roda no terminal |
+| `placard/scripts/ui/` | as 7 telas, o som sintetizado e o juice |
+| `placard/testes/` | 522 asserções |
+| `placard/ferramentas/` | aferição, calibração, capturas e os validadores |
+| `placard/DESIGN.md` | **as regras, R01 a R46** — normativo, não descritivo |
+| `placard/HUD.md` | as três zonas, a proporção 5:7 e os números que fecham |
+| `placard/NOME.md` | por que o jogo se chama PLACARD, e os dezoito nomes que morreram antes |
+| `placard-pesquisa/` | as medições. `DECISOES.md` é o livro-razão |
 | `CLAUDE.md` | como se trabalha aqui |
 
 ## Como este jogo foi feito
@@ -58,7 +58,7 @@ recusar pontos.
 O número veio antes da regra, e a regra veio antes do código.
 
 Cada decisão de balanceamento passou por uma bancada de simulação antes de
-virar linha de GDScript, e `cruzada-pesquisa/DECISOES.md` guarda todas — as
+virar linha de GDScript, e `placard-pesquisa/DECISOES.md` guarda todas — as
 aprovadas **e as reprovadas**, com o número que matou cada uma. Tem até uma
 seção de reguladores que são código morto: parâmetros que a medição provou
 inertes, para ninguém tentar de novo.

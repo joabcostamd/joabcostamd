@@ -1,4 +1,4 @@
-# A sonda — protótipo headless do núcleo do CRUZADA
+# A sonda — protótipo headless do núcleo do PLACARD
 
 Implementação do núcleo em GDScript puro, rodada no **Godot 4.7.2** headless. Não é o jogo:
 é o **instrumento de medição** que respondeu se valia a pena construir o jogo.

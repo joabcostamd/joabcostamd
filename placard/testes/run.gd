@@ -235,6 +235,35 @@ func _perfil() -> void:
     var ausente := Perfil.ler("user://nao-existe-mesmo.save")
     igual(ausente.mesas_jogadas, 0, "save ausente vira perfil zerado")
 
+    ## A migração do nome antigo. O jogo já se chamou CRUZADA e gravava em
+    ## user://cruzada.save; quem jogou naquela época não pode perder temas,
+    ## conquistas e dificuldade só porque o título mudou.
+    DirAccess.remove_absolute(ProjectSettings.globalize_path(Perfil.CAMINHO))
+    DirAccess.remove_absolute(ProjectSettings.globalize_path(Perfil.CAMINHO_ANTIGO))
+    var velho := Perfil.new()
+    velho.mesas_jogadas = 42
+    velho.runs_vencidas = 3
+    velho.destravar("neon")
+    velho.conquistas["cruz_total"] = true
+    ok(velho.gravar(Perfil.CAMINHO_ANTIGO), "grava no caminho antigo")
+
+    var migrado := Perfil.ler()
+    igual(migrado.mesas_jogadas, 42, "a migração traz as mesas jogadas")
+    igual(migrado.runs_vencidas, 3, "a migração traz as runs vencidas")
+    ok(migrado.destravados.has("neon"), "a migração traz os temas destravados")
+    ok(migrado.conquistas.has("cruz_total"), "a migração traz as conquistas")
+    ok(FileAccess.file_exists(Perfil.CAMINHO),
+       "e regrava no caminho novo, para migrar uma vez só")
+
+    ## Save novo presente manda: quem já jogou o PLACARD não volta ao save velho.
+    var atual := Perfil.new()
+    atual.mesas_jogadas = 7
+    atual.gravar(Perfil.CAMINHO)
+    igual(Perfil.ler().mesas_jogadas, 7,
+       "com os dois presentes, o save novo é que vale")
+    DirAccess.remove_absolute(ProjectSettings.globalize_path(Perfil.CAMINHO))
+    DirAccess.remove_absolute(ProjectSettings.globalize_path(Perfil.CAMINHO_ANTIGO))
+
     DirAccess.remove_absolute(ProjectSettings.globalize_path(caminho))
 
 # ────────────────────────── os desbloqueios ──────────────────────────

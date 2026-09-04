@@ -306,7 +306,7 @@ e "até o fim" o mínimo é o mesmo 7 — o travamento não foi o modo de falha 
 
 ## 6. A ESCADA 9 / 13 / 17 — o que ninguém tinha medido
 
-O enunciado avisa que, se ninguém medir a escada, o melhor jogo do CRUZADA fica sem ser
+O enunciado avisa que, se ninguém medir a escada, o melhor jogo do PLACARD fica sem ser
 descoberto. Escrevi mais duas planejadoras (TRIPLA: centro em (r,r) ou (r,4−r), r≠2, 12 braços +
 1 gatilho = 13 posicionamentos; CRUZ TOTAL: centro obrigatoriamente (2,2), 16 braços + 1 = 17) e
 rodei as três figuras sobre a base polida, 800 mesas por célula. Os números estão na segunda
@@ -320,7 +320,7 @@ tabela acima. O resumo, na BASE (gulosa de referência: razão 0,825, vitória 3
 
 A escada existe, é monótona, e **a CRUZ TOTAL cabe exatamente numa mesa Grande** — 17 células,
 17 posicionamentos — com 88,2% de sucesso e vitória de 85,4%. A coincidência aritmética do
-enunciado é real e é o melhor jogo do CRUZADA. O ganho medido (3,07×) é menor que o 5,6×
+enunciado é real e é o melhor jogo do PLACARD. O ganho medido (3,07×) é menor que o 5,6×
 projetado na CONTA (a), pela razão simples de que as duas diagonais pagam 60% e os turnos que
 sobram depois do disparo são desperdiçados.
 
@@ -442,7 +442,7 @@ um mult ou uma carta a mais.
   motivo para esperar, que cria mais estado para esperar. Por isso o antídoto condicionado
   (`só com perpendicular em 4/5`) devolve exatamente a base: ele exige o produto do laço como
   condição de partida do laço.
-- **A CRUZ TOTAL cabe mesmo na mesa Grande e é o melhor jogo do CRUZADA**: 17 células, 17
+- **A CRUZ TOTAL cabe mesmo na mesa Grande e é o melhor jogo do PLACARD**: 17 células, 17
   posicionamentos, 88,2% de sucesso, razão pontos/meta **2,537** e **85,4% de vitória** — 3,07×
   a gulosa. A escada 9/13/17 é um sistema de dificuldade inteiro que já está nas regras.
 - **O teto do mult (R15) morde de verdade e só na cruzada**: 1,0% dos eventos na base, 28,8% das

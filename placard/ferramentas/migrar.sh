@@ -27,18 +27,18 @@ cd "$DESTINO"
 # Fica só o que é do jogo. O README da raiz é a PÁGINA DE PERFIL do Joab e não
 # vem junto — o repositório do jogo precisa de porta própria.
 git filter-repo --force \
-    --path cruzada --path cruzada-pesquisa --path PROMPT-JOGO-DE-CARTAS.md \
+    --path placard --path placard-pesquisa --path PROMPT-JOGO-DE-CARTAS.md \
     --path .claude --path .gitignore --path .mcp.json
 
 git branch -m main
 
-# A raiz do repositório novo: os arquivos que moram em cruzada/ aqui porque
+# A raiz do repositório novo: os arquivos que moram em placard/ aqui porque
 # aqui eles dividiriam a raiz com outros três projetos.
-git mv cruzada/PORTA-DO-REPO.md README.md
-git mv cruzada/CLAUDE.md CLAUDE.md
-git mv cruzada/setup.sh setup.sh
+git mv placard/PORTA-DO-REPO.md README.md
+git mv placard/CLAUDE.md CLAUDE.md
+git mv placard/setup.sh setup.sh
 # O migrar.sh não vem: ele migra DAQUI para lá, e lá não tem de onde migrar.
-git rm -q cruzada/ferramentas/migrar.sh
+git rm -q placard/ferramentas/migrar.sh
 git add -A
 
 git -c user.email="joabcosta_md@hotmail.com" -c user.name="Joab Costa" \
@@ -53,4 +53,4 @@ O histórico veio junto, filtrado para as pastas do jogo."
 
 echo
 echo "Pronto em $DESTINO — $(git rev-list --count HEAD) commits."
-echo "Confira antes de empurrar:  cd $DESTINO/cruzada && ./testar.sh"
+echo "Confira antes de empurrar:  cd $DESTINO/placard && ./testar.sh"

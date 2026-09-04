@@ -6,10 +6,10 @@ Medicao, nao opiniao. Tudo aqui tem numero atras; onde nao ha medicao esta escri
 
 ## 0. Motor e base
 
-O briefing mandou copiar `cruzada/c4`. Copiei — e **c4 nao reproduz a base citada**: com o K do
+O briefing mandou copiar `placard/c4`. Copiei — e **c4 nao reproduz a base citada**: com o K do
 proprio c4 (4,3922) ela da cruzada **0,826**, vitoria **37,1**, m5 **67,4**. Os numeros do briefing
 (0,831 / 36,1 / 68,2) sao os da bancada **fusao**, com **K = 4,40**. Como o briefing manda parar e
-consertar se a base nao bater, troquei a base de codigo para `cruzada/fusao`, que e superconjunto
+consertar se a base nao bater, troquei a base de codigo para `placard/fusao`, que e superconjunto
 de c4 (mesmo nucleo, mesmas politicas, mais cfg). Reproduzido em 1.000 mesas pareadas:
 
 | | citado | medido aqui |

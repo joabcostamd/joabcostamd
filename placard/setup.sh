@@ -53,7 +53,7 @@ msg "Pronto"
 godot --version
 python3 --version
 echo
-echo "  cd cruzada && ./testar.sh        # a suíte inteira"
-echo "  cd cruzada && godot --path . res://cenas/jogo.tscn   # jogar"
+echo "  cd placard && ./testar.sh        # a suíte inteira"
+echo "  cd placard && godot --path . res://cenas/jogo.tscn   # jogar"
 echo
 echo "Godot AI (IA dentro do editor, opcional): ver a seção no CLAUDE.md."

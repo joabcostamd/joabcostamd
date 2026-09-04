@@ -1,21 +1,21 @@
-# MEGA-PROMPT — CRUZADA (roguelike de pôquer em grade, Godot 4.7.2)
+# MEGA-PROMPT — PLACARD (roguelike de pôquer em grade, Godot 4.7.2)
 
 ## 0. CABEÇALHO DE USO
 
 1. Abra o Claude Code na raiz deste repositório e cole **tudo entre as duas linhas de três tis (`~~~`)**, precedido da palavra **ultracode**.
-2. A frota trabalha sozinha: escreve `DESIGN.md` antes de qualquer código, constrói em 12 etapas e roda `cruzada/testar.sh` ao fim de cada uma.
+2. A frota trabalha sozinha: escreve `DESIGN.md` antes de qualquer código, constrói em 12 etapas e roda `placard/testar.sh` ao fim de cada uma.
 3. Você **não precisa responder nada** — o prompt proíbe parar para perguntar; toda ambiguidade vira decisão registrada em `AUDITORIA.md`.
 4. O escopo é grande e o prompt declara **mínimo inegociável** (Etapas 1–7) e **ordem de sacrifício** (§16.1). Se o tempo acabar, a frota corta na ordem escrita e registra o corte — nunca afrouxa teste, nunca para. Jogável já na Etapa 5.
-5. No fim você recebe a pasta `cruzada/`, três documentos, capturas em `capturas/` e commit na branch `feat/cruzada` (push, se houver remoto).
+5. No fim você recebe a pasta `placard/`, três documentos, capturas em `capturas/` e commit na branch `feat/cruzada` (push, se houver remoto).
 
 ~~~
-# ORDEM DE SERVIÇO — CONSTRUIR "CRUZADA"
+# ORDEM DE SERVIÇO — CONSTRUIR "PLACARD"
 
 ## 1. MISSÃO
 
-Você vai construir, do zero até pronto-para-jogar, um roguelike deckbuilder de cartas chamado **CRUZADA**, em **Godot 4.7.2 / GDScript**, dentro da pasta `cruzada/` na raiz deste repositório. Baralho francês de 52 cartas, toda pontuação vem de mãos de pôquer, mas a mesa é uma grade 5×5 e **cada carta posicionada pertence ao mesmo tempo à mão da linha e à mão da coluna** (e às diagonais, quando cai nelas). Mesa de 60 a 110 segundos, run de 18 mesas em ~30 minutos, loja entre mesas vendendo selos que grudam em **casas específicas** — a build tem formato, não é uma lista. Viciante sem ser frustrante: nenhuma matemática escondida, nenhuma mão vale zero, nenhum travamento possível, nenhuma derrota sem explicação numérica. Toda arte é desenhada por código e todo áudio é sintetizado por script Python no repositório; nenhum binário é baixado.
+Você vai construir, do zero até pronto-para-jogar, um roguelike deckbuilder de cartas chamado **PLACARD**, em **Godot 4.7.2 / GDScript**, dentro da pasta `placard/` na raiz deste repositório. Baralho francês de 52 cartas, toda pontuação vem de mãos de pôquer, mas a mesa é uma grade 5×5 e **cada carta posicionada pertence ao mesmo tempo à mão da linha e à mão da coluna** (e às diagonais, quando cai nelas). Mesa de 60 a 110 segundos, run de 18 mesas em ~30 minutos, loja entre mesas vendendo selos que grudam em **casas específicas** — a build tem formato, não é uma lista. Viciante sem ser frustrante: nenhuma matemática escondida, nenhuma mão vale zero, nenhum travamento possível, nenhuma derrota sem explicação numérica. Toda arte é desenhada por código e todo áudio é sintetizado por script Python no repositório; nenhum binário é baixado.
 
-**Condição de término, sem negociação:** você só termina quando o jogo estiver **jogável** (abre, joga uma run inteira do tutorial ao fim de run, salva e retoma), **testado** (`cruzada/testar.sh` sai com código 0 e `cruzada/testar.sh --completo` sai com código 0 ou registra em `AUDITORIA.md` as bandas não atingidas com valor medido ao lado) e **documentado** (`DESIGN.md`, `README.md`, `AUDITORIA.md` escritos e coerentes com o código), com commit feito. Parar antes é entrega reprovada — **com três exceções nomeadas, todas registradas em `AUDITORIA.md` e nenhuma delas reprovação**: motor ausente (§3.2, modo degradado), templates de export ausentes (§15) e `git push` sem remoto (§20.8).
+**Condição de término, sem negociação:** você só termina quando o jogo estiver **jogável** (abre, joga uma run inteira do tutorial ao fim de run, salva e retoma), **testado** (`placard/testar.sh` sai com código 0 e `placard/testar.sh --completo` sai com código 0 ou registra em `AUDITORIA.md` as bandas não atingidas com valor medido ao lado) e **documentado** (`DESIGN.md`, `README.md`, `AUDITORIA.md` escritos e coerentes com o código), com commit feito. Parar antes é entrega reprovada — **com três exceções nomeadas, todas registradas em `AUDITORIA.md` e nenhuma delas reprovação**: motor ausente (§3.2, modo degradado), templates de export ausentes (§15) e `git push` sem remoto (§20.8).
 
 ---
 
@@ -44,7 +44,7 @@ Você vai construir, do zero até pronto-para-jogar, um roguelike deckbuilder de
 
 **Workflows encadeados.** Cada fase produz a entrada literal da seguinte: F1 escreve `DESIGN.md` → F2 implementa só o que está lá → F3 produz validadores que grepam o `DESIGN.md` → F4 consome a **fita de eventos** e nunca recalcula regra → F5 autora JSON validado pelos esquemas de F3 → F6 mede → F7 fecha. Faltando algo da fase anterior, o agente **não improvisa**: registra a lacuna em `AUDITORIA.md`, implementa o mínimo com o padrão declarado aqui e marca a dívida com o teste que a cobre.
 
-**Rodar o jogo é obrigação.** A cada etapa da seção 16 execute, nesta ordem: `"$GODOT_BIN" --headless --path cruzada --import`, `"$GODOT_BIN" --headless --path cruzada res://cenas/testes.tscn`, `"$GODOT_BIN" --headless --path cruzada res://cenas/fluxo.tscn`, `bash cruzada/testar.sh`. **Uma etapa só acaba quando `testar.sh` sai 0** para as verificações que aquela etapa exige (tabela em §15.2). Não avance com vermelho, não comente teste para passar. Se o teste é difícil, o difícil é o código.
+**Rodar o jogo é obrigação.** A cada etapa da seção 16 execute, nesta ordem: `"$GODOT_BIN" --headless --path placard --import`, `"$GODOT_BIN" --headless --path placard res://cenas/testes.tscn`, `"$GODOT_BIN" --headless --path placard res://cenas/fluxo.tscn`, `bash placard/testar.sh`. **Uma etapa só acaba quando `testar.sh` sai 0** para as verificações que aquela etapa exige (tabela em §15.2). Não avance com vermelho, não comente teste para passar. Se o teste é difícil, o difícil é o código.
 
 **Fim do trabalho:** `git add`, `git commit` e, havendo remoto, `git push` em `feat/cruzada`, criada a partir da branch atual; **nunca** commit direto na branch padrão. `push` que falha por ausência de remoto ou de credencial vira `PUSH — falhou — <motivo>` em `AUDITORIA.md`, o commit local permanece e o item do DoD conta como cumprido.
 
@@ -625,7 +625,7 @@ As 36 do Lote 2 (Maestria 16, Curiosidade 12, Piadas 8) reaproveitam os nomes j�
 
 ### 8.10 Diário, Infinito e Zen
 
-**Diário, sem servidor:** `data = ano*10000 + mes*100 + dia` em **UTC** (`Time.get_datetime_dict_from_system(true)`) e `semente_dia = fnv1a64("CRUZADA-D1|" + str(data))` — FNV-1a 64 bits (offset `0xcbf29ce484222325`, primo `0x100000001b3`), com estouro natural do inteiro do GDScript, em `scripts/nucleo/semente.gd`, com **teste de vetor conhecido**. Dela saem os 6 fluxos por `mix(semente_dia, indice_do_fluxo)`. 1 tentativa oficial por dia (baralho e Tabuleiro fixos, Compras Assistidas desligadas) + **Treino ilimitado** na mesma seed, sem registro. Placar local em `user://cruzada_diario.json` (90 dias) com selo **"Limpo"** se a oficial veio antes de qualquer treino. **Replay:** base32 de `data + versão de regras + lista de (carta, casa)`; colar o código reproduz a partida e o jogo confere o hash final.
+**Diário, sem servidor:** `data = ano*10000 + mes*100 + dia` em **UTC** (`Time.get_datetime_dict_from_system(true)`) e `semente_dia = fnv1a64("PLACARD-D1|" + str(data))` — FNV-1a 64 bits (offset `0xcbf29ce484222325`, primo `0x100000001b3`), com estouro natural do inteiro do GDScript, em `scripts/nucleo/semente.gd`, com **teste de vetor conhecido**. Dela saem os 6 fluxos por `mix(semente_dia, indice_do_fluxo)`. 1 tentativa oficial por dia (baralho e Tabuleiro fixos, Compras Assistidas desligadas) + **Treino ilimitado** na mesma seed, sem registro. Placar local em `user://placard_diario.json` (90 dias) com selo **"Limpo"** se a oficial veio antes de qualquer treino. **Replay:** base32 de `data + versão de regras + lista de (carta, casa)`; colar o código reproduz a partida e o jogo confere o hash final.
 
 **Infinito** (desbloqueado na 1ª vitória): rodadas 7+ com `meta(r) = 5.975 × 1,42^(r-6) × (1 + 0,06 × (r-6))` — superlinearidade leve que mata a run entre as rodadas **12 e 18**. O `teto_do_evento` continua `24 + 4 × min(rodada, 12)`. O **Tear decai 50% entre mesas em vez de zerar**. Cada rodada sorteia +1 modificador (máx. 2 por mesa) e, a cada 3 rodadas, 1 de 3 Fardos permanentes. Perder congela e registra a **Marca d'Água** ("rodada 13 · 4,1M"); acima de 1e6, notação compacta. **Zen:** sem meta nem derrota, um recorde só — a maior cruzada da sua vida, exibida no menu.
 
@@ -844,7 +844,10 @@ Godot não parametriza o overshoot de `TRANS_BACK`: onde ele precisa ser control
 
 ## 13. IDENTIDADE VISUAL
 
-**Nome: CRUZADA** — a única palavra que **nomeia a jogada**: o jogador diz o nome do jogo ao fazer a melhor jogada do jogo. Três sílabas, sete letras, sem acento; cabe em título, pasta (`cruzada/`) e executável. Subtítulo fixo: **"Cada carta pontua duas vezes."** O nome **nunca é traduzido**. **TEAR é rótulo permanente e discreto do HUD; CRUZADA nunca é rótulo** — só aparece como **estampa de clímax**, no máximo uma vez por evento, e **nunca** em botão, menu ou tooltip. (A regra antiga, "as duas palavras nunca aparecem na mesma tela", era impossível: o HUD mostra TEAR o tempo todo e a §11 estampa CRUZADA por cima dele.)
+**Nome: PLACARD** — a palavra traz **CARD** escrita dentro dela, e a leitura do nome é a mecânica: *place a card*. Três sílabas, sete letras, sem acento; cabe em título, pasta (`placard/`) e executável.
+
+> **O nome mudou depois deste briefing.** A escolha original era **CRUZADA**, pela razão de que nomeava a jogada. Ela caiu porque significa *guerra santa* em três línguas latinas e nada nas outras, e o título tinha que ser universal sem tradução. A jogada continua se chamando cruzada. Os dezoito nomes testados e o motivo de cada queda estão em `placard/NOME.md`.
+ Subtítulo fixo: **"Cada carta pontua duas vezes."** O nome **nunca é traduzido**. **TEAR é rótulo permanente e discreto do HUD; PLACARD nunca é rótulo** — só aparece como **estampa de clímax**, no máximo uma vez por evento, e **nunca** em botão, menu ou tooltip. (A regra antiga, "as duas palavras nunca aparecem na mesma tela", era impossível: o HUD mostra TEAR o tempo todo e a §11 estampa PLACARD por cima dele.)
 
 **Estética: feltro e papel.** Fundo fosco, casas rebaixadas, cartas como papel elevado; tudo `StyleBoxFlat` + `_draw` + um shader.
 
@@ -904,7 +907,7 @@ A  : (C,6)×1,9        2 : (C,0)(C,12)          3 : (C,0)(C,6)(C,12)
 ## 14. ARQUITETURA TÉCNICA
 
 ```
-cruzada/
+placard/
 ├─ project.godot  export_presets.cfg  testar.sh  .gitignore
 ├─ DESIGN.md  README.md  AUDITORIA.md
 ├─ cenas/     abertura menu modos partida loja mapa colecao conquistas estatisticas
@@ -1028,7 +1031,7 @@ func rebobinar(fluxo: StringName, passos: int) -> void  # re-semeia e reconsome
 func instantaneo() -> Dictionary                        # {semente, cursores}
 ```
 
-**`project.godot`:** `config/name="CRUZADA"`; `run/main_scene="res://cenas/abertura.tscn"`; `config/features=PackedStringArray("4.7","GL Compatibility")` (ajustado à versão real, §3.2); autoloads na ordem acima; `viewport_width=1280`, `viewport_height=720`, `stretch/mode="canvas_items"`, `stretch/aspect="expand"`, `handheld/orientation="sensor"`; **`rendering/renderer/rendering_method="gl_compatibility"`** e a chave `.mobile` correspondente — **a chave é essa, com o prefixo `rendering/` completo; confirme no `--doctool`**; `anti_aliasing/quality/msaa_2d=1`; `locale/translations` com os três `.translation`. Ações: `posicionar`, `cancelar`, `cima|baixo|esquerda|direita`, `carta_1..carta_6`, `descartar`, `voltar_atras`, `turbo`, `foco`, `receituario`, `pausa`, `baralho_aberto`.
+**`project.godot`:** `config/name="PLACARD"`; `run/main_scene="res://cenas/abertura.tscn"`; `config/features=PackedStringArray("4.7","GL Compatibility")` (ajustado à versão real, §3.2); autoloads na ordem acima; `viewport_width=1280`, `viewport_height=720`, `stretch/mode="canvas_items"`, `stretch/aspect="expand"`, `handheld/orientation="sensor"`; **`rendering/renderer/rendering_method="gl_compatibility"`** e a chave `.mobile` correspondente — **a chave é essa, com o prefixo `rendering/` completo; confirme no `--doctool`**; `anti_aliasing/quality/msaa_2d=1`; `locale/translations` com os três `.translation`. Ações: `posicionar`, `cancelar`, `cima|baixo|esquerda|direita`, `carta_1..carta_6`, `descartar`, `voltar_atras`, `turbo`, `foco`, `receituario`, `pausa`, `baralho_aberto`.
 
 **Desempenho.** Alvo 60 fps em GL Compatibility com vídeo integrado modesto. Orçamento por quadro (16,6 ms): núcleo 0,2 ms mediana / 1,0 ms teto; prévia fantasma ≤ 0,05 ms; UI ≤ 4 ms. `partida.tscn` ≤ **260 nós**. Carta é **um** `Control` com `_draw`, sem sub-nós de textura. Pools no `_ready`: 24 fichas voadoras, 12 emissores, 6 rótulos flutuantes. **Nenhum script de carta tem `_process`** — um único diretor avança a fita. `Contador` só escreve `text` quando o inteiro muda. Rótulos ficam em cache invalidado **apenas** em posicionar/colher: **nunca reavaliar 25 casas por quadro.** `nucleo_testes` mede 10.000 posicionamentos e falha se a média passar de **0,3 ms** — **este é o número que orçamenta toda a §15**; `fluxo_testes` falha se a contagem de nós de qualquer tela passar do teto declarado.
 
@@ -1065,7 +1068,7 @@ func instantaneo() -> Dictionary                        # {semente, cursores}
 
 ### 15.2 O `testar.sh` cresce com as etapas — "verde" é determinístico
 
-`testar.sh` abre com `set -euo pipefail` e **`cd "$(dirname "$0")"`** (obrigatório: o §2 o invoca da raiz do repositório como `bash cruzada/testar.sh`; sem isso todos os caminhos relativos quebram). **Dois modos:**
+`testar.sh` abre com `set -euo pipefail` e **`cd "$(dirname "$0")"`** (obrigatório: o §2 o invoca da raiz do repositório como `bash placard/testar.sh`; sem isso todos os caminhos relativos quebram). **Dois modos:**
 
 - **`testar.sh`** — rápido, **alvo ≤ 3 min**, sem simulação de balanceamento pesada. É a barreira das **Etapas 1–10**.
 - **`testar.sh --completo`** — inclui `--runs=10000`, a varredura de travamento e `relatorio_balanceamento.py --exigir` integral. **Alvo ≤ 30 min.** É barreira só das **Etapas 11 e 12** e do DoD.
@@ -1089,7 +1092,7 @@ O bloco abaixo é a **forma final** do script, na Etapa 12; nas etapas anteriore
 
 ```bash
 #!/usr/bin/env bash
-# Suíte do CRUZADA. Sem argumento: modo rápido (barreira das Etapas 1-10).
+# Suíte do PLACARD. Sem argumento: modo rápido (barreira das Etapas 1-10).
 # Com --completo: balanceamento integral e varredura (Etapas 11-12 e DoD).
 set -euo pipefail
 cd "$(dirname "$0")"
@@ -1138,12 +1141,12 @@ fi
 A barreira da Etapa 6 **não é uma imagem julgada por humano**; é:
 
 ```
-"$GODOT_BIN" --headless --path cruzada res://cenas/fluxo.tscn -- --matriz-layout
+"$GODOT_BIN" --headless --path placard res://cenas/fluxo.tscn -- --matriz-layout
 ```
 
 que instancia **toda tela** em **360×800, 720×1280 e 1280×720 × 3 idiomas × escala de UI {100%, 150%} × fonte {+0, +8}** e **FALHA** se: algum `Control` ultrapassar o retângulo do pai; algum texto do loop de turno ficar abaixo de **12 px lógicos**; algum alvo primário ficar abaixo de **64 px** no menor lado; algum rótulo de linha ficar sem os dois campos; ou a carta da grade não couber na casa. **Esse comando é a definição operacional de "legível".** A checagem de estouro roda sob `xvfb-run` **quando disponível**, porque em `--headless` as métricas de fonte podem vir zeradas — e o resultado dos dois modos vai para o `AUDITORIA.md`.
 
-**Capturas:** `--headless` usa renderizador nulo e não desenha nada — captura exige display virtual: `xvfb-run -a "$GODOT_BIN" --resolution 1280x720 --path cruzada res://cenas/capturas.tscn`, gerando `capturas/{menu,modos,partida,partida_retrato,previa,colheita,cruzada,motor,loja,mapa,colecao,postmortem,fim_de_run,opcoes,alto_contraste,en,es}.png`, e uma segunda passada em `--resolution 360x800` para `capturas/partida_360x800.png`. **Se `xvfb-run` não existir, registre `CAPTURAS — puladas — xvfb ausente` em `AUDITORIA.md` e siga; capturas nunca bloqueiam etapa.**
+**Capturas:** `--headless` usa renderizador nulo e não desenha nada — captura exige display virtual: `xvfb-run -a "$GODOT_BIN" --resolution 1280x720 --path placard res://cenas/capturas.tscn`, gerando `capturas/{menu,modos,partida,partida_retrato,previa,colheita,cruzada,motor,loja,mapa,colecao,postmortem,fim_de_run,opcoes,alto_contraste,en,es}.png`, e uma segunda passada em `--resolution 360x800` para `capturas/partida_360x800.png`. **Se `xvfb-run` não existir, registre `CAPTURAS — puladas — xvfb ausente` em `AUDITORIA.md` e siga; capturas nunca bloqueiam etapa.**
 
 ### 15.5 Pares de itens: cobertura **gerada**, borda **escrita**
 
@@ -1221,30 +1224,30 @@ Cada linha precisa da prova executável ao lado. "Está bom" não é prova. **To
 
 | # | Item | Comando ou asserção que prova |
 |---|---|---|
-| 1 | Motor resolvido, versão conferida e não presumida | `python3 cruzada/ferramentas/verificar_godot.py` → imprime binário e versão reais |
+| 1 | Motor resolvido, versão conferida e não presumida | `python3 placard/ferramentas/verificar_godot.py` → imprime binário e versão reais |
 | 2 | API conferida na build instalada, não de memória | `ls /tmp/apidocs` não vazio + seção `API CONFERIDA` em `AUDITORIA.md` com os 15 suspeitos da §3.3 |
-| 3 | Suíte rápida verde | `bash cruzada/testar.sh; echo $?` → `0` |
-| 4 | Suíte completa verde (ou bandas registradas) | `bash cruzada/testar.sh --completo; echo $?` → `0` |
-| 5 | ≥ 220 asserções nomeadas + suíte gerada ≥ 1.000 | `"$GODOT_BIN" --headless --path cruzada res://cenas/testes.tscn` → contagem impressa |
-| 6 | 100% das cenas instanciam, navegam e voltam | `"$GODOT_BIN" --headless --path cruzada res://cenas/fluxo.tscn` |
+| 3 | Suíte rápida verde | `bash placard/testar.sh; echo $?` → `0` |
+| 4 | Suíte completa verde (ou bandas registradas) | `bash placard/testar.sh --completo; echo $?` → `0` |
+| 5 | ≥ 220 asserções nomeadas + suíte gerada ≥ 1.000 | `"$GODOT_BIN" --headless --path placard res://cenas/testes.tscn` → contagem impressa |
+| 6 | 100% das cenas instanciam, navegam e voltam | `"$GODOT_BIN" --headless --path placard res://cenas/fluxo.tscn` |
 | 7 | Determinismo com 20 "Voltar" (seis cursores) | asserção `_determinismo_com_voltar` |
-| 8 | Zero travamento em 16 mod × 8 baralhos × 9 presets × 30 seeds | `"$GODOT_BIN" --headless --path cruzada res://cenas/simulacao.tscn -- --varredura-travamento` |
+| 8 | Zero travamento em 16 mod × 8 baralhos × 9 presets × 30 seeds | `"$GODOT_BIN" --headless --path placard res://cenas/simulacao.tscn -- --varredura-travamento` |
 | 9 | Nunca existe mão morta (R19b) | asserção `_nunca_mao_morta` |
 | 10 | **A prévia nunca mente** | asserção `_previa_igual_ao_resultado` (5.000 posicionamentos, divergência de 1 ponto reprova) |
 | 11 | O jogo não se resolve sozinho pela UI | banda 7 da §7.4: `gulosa` ≥ `anel1` + 12 p.p.; < 4 p.p. reprova |
-| 12 | Nenhum item morto (< 3%) nem dominante (> 45%) | `python3 cruzada/ferramentas/relatorio_balanceamento.py --exigir` nomeia o item |
+| 12 | Nenhum item morto (< 3%) nem dominante (> 45%) | `python3 placard/ferramentas/relatorio_balanceamento.py --exigir` nomeia o item |
 | 13 | Bandas de balanceamento da §7.4 | `relatorio_balanceamento.py --exigir` → 0, ou `BALANCEAMENTO — bandas não atingidas` com valor medido |
-| 14 | Curva de metas idêntica à fórmula da R21 | `python3 cruzada/ferramentas/validar_dados.py` (recomputa e compara) |
-| 15 | Núcleo não conhece apresentação | `python3 cruzada/ferramentas/validar_camadas.py` |
-| 16 | Tipagem 100%, zero número mágico, zero literal de UI, zero `TODO` | `python3 cruzada/ferramentas/validar_estilo.py` |
-| 17 | Todo item de dado com os **15 campos** (`id, nome, familia, raridade, custo, alvo, efeito_txt, opcode, params, eixo_de_efeito, icone, borda, sinergia, desbloqueio, testes`), opcode da §8.0 e cota de geometria ≤ 40% numérico | `python3 cruzada/ferramentas/validar_dados.py` |
-| 18 | Contraste dentro dos limiares nos 2 temas, com a tabela reescrita pelo medido | `python3 cruzada/ferramentas/validar_contraste.py` |
-| 19 | 3 idiomas sem chave órfã nem estouro de caixa | `python3 cruzada/ferramentas/gerar_traducoes.py --verificar` |
-| 20 | Todo `.wav` reproduzível pelo script que o gera, e a música ≤ 4,5 MB | `python3 cruzada/ferramentas/gerar_audio.py --verificar` |
-| 21 | Zero rede, zero telemetria | `grep -rnE "HTTPRequest\|HTTPClient\|WebSocketPeer\|UPNP" cruzada/scripts/` **está errado** — com `-E`, `\|` é pipe literal e o item passaria vazio para sempre. Use: `! grep -rnE "HTTPRequest|HTTPClient|WebSocketPeer|UPNP" cruzada/scripts/` |
-| 22 | Legibilidade em 3 tamanhos × 3 idiomas × 2 escalas × 2 fontes | `"$GODOT_BIN" --headless --path cruzada res://cenas/fluxo.tscn -- --matriz-layout` |
-| 23 | 18 capturas geradas e validadas (ou pulo registrado) | `xvfb-run -a "$GODOT_BIN" --resolution 1280x720 --path cruzada res://cenas/capturas.tscn` + `python3 cruzada/ferramentas/capturas.py` |
-| 24 | Presets de export válidos; builds geradas ou pulo registrado | `python3 cruzada/ferramentas/construir.py --validar-presets` e `python3 cruzada/ferramentas/construir.py --todos` → 0 (gerando **ou** registrando `EXPORT — pulado`) |
+| 14 | Curva de metas idêntica à fórmula da R21 | `python3 placard/ferramentas/validar_dados.py` (recomputa e compara) |
+| 15 | Núcleo não conhece apresentação | `python3 placard/ferramentas/validar_camadas.py` |
+| 16 | Tipagem 100%, zero número mágico, zero literal de UI, zero `TODO` | `python3 placard/ferramentas/validar_estilo.py` |
+| 17 | Todo item de dado com os **15 campos** (`id, nome, familia, raridade, custo, alvo, efeito_txt, opcode, params, eixo_de_efeito, icone, borda, sinergia, desbloqueio, testes`), opcode da §8.0 e cota de geometria ≤ 40% numérico | `python3 placard/ferramentas/validar_dados.py` |
+| 18 | Contraste dentro dos limiares nos 2 temas, com a tabela reescrita pelo medido | `python3 placard/ferramentas/validar_contraste.py` |
+| 19 | 3 idiomas sem chave órfã nem estouro de caixa | `python3 placard/ferramentas/gerar_traducoes.py --verificar` |
+| 20 | Todo `.wav` reproduzível pelo script que o gera, e a música ≤ 4,5 MB | `python3 placard/ferramentas/gerar_audio.py --verificar` |
+| 21 | Zero rede, zero telemetria | `grep -rnE "HTTPRequest\|HTTPClient\|WebSocketPeer\|UPNP" placard/scripts/` **está errado** — com `-E`, `\|` é pipe literal e o item passaria vazio para sempre. Use: `! grep -rnE "HTTPRequest|HTTPClient|WebSocketPeer|UPNP" placard/scripts/` |
+| 22 | Legibilidade em 3 tamanhos × 3 idiomas × 2 escalas × 2 fontes | `"$GODOT_BIN" --headless --path placard res://cenas/fluxo.tscn -- --matriz-layout` |
+| 23 | 18 capturas geradas e validadas (ou pulo registrado) | `xvfb-run -a "$GODOT_BIN" --resolution 1280x720 --path placard res://cenas/capturas.tscn` + `python3 placard/ferramentas/capturas.py` |
+| 24 | Presets de export válidos; builds geradas ou pulo registrado | `python3 placard/ferramentas/construir.py --validar-presets` e `python3 placard/ferramentas/construir.py --todos` → 0 (gerando **ou** registrando `EXPORT — pulado`) |
 | 25 | Save sobrevive a corte de energia e a migração | `_save_atomico` e `_migracao_v1_v2_v3` |
 | 26 | 10.000 posicionamentos < 0,3 ms de média; `partida` ≤ 260 nós | `_desempenho_nucleo` e `_teto_de_nos` |
 | 27 | Invariante da Estante, "último gole" e acervo derivado | `_estante_tres_cartoes`, `_fim_de_run_tem_item_positivo`, `_acervo_esgota_em_60_runs` |
@@ -1310,13 +1313,13 @@ Cada cenário vira um roteiro em `fluxo_testes.gd` ou uma captura conferida.
 
 ## 20. ENTREGÁVEIS FINAIS
 
-1. **`cruzada/`** — o jogo completo, rodando com `"$GODOT_BIN" --path cruzada res://cenas/abertura.tscn`.
-2. **`cruzada/DESIGN.md`** — escrito **antes** do código e atualizado ao fim: as 48 regras, o pipeline R40, a **tabela de opcodes da §8.0**, os **contratos congelados da §14.9**, todas as regras de borda por selo e por par de selos, os cortes declarados (Funil, relíquia Nível, modificador Enxuta, curva `1,6^n`, redução 60/35 da cruzada) **com o motivo**, as bandas de aceite, a prova numérica da razão da cruzada (**1,63**), a semântica completa da R14b e a prova do invariante anti-travamento.
+1. **`placard/`** — o jogo completo, rodando com `"$GODOT_BIN" --path placard res://cenas/abertura.tscn`.
+2. **`placard/DESIGN.md`** — escrito **antes** do código e atualizado ao fim: as 48 regras, o pipeline R40, a **tabela de opcodes da §8.0**, os **contratos congelados da §14.9**, todas as regras de borda por selo e por par de selos, os cortes declarados (Funil, relíquia Nível, modificador Enxuta, curva `1,6^n`, redução 60/35 da cruzada) **com o motivo**, as bandas de aceite, a prova numérica da razão da cruzada (**1,63**), a semântica completa da R14b e a prova do invariante anti-travamento.
 3. **`cruzada/README.md`** — o jogo em 5 linhas, como rodar, como testar (`bash testar.sh` e `bash testar.sh --completo`), como exportar, o que existe (Lotes 0 e 1) e o que **não** existe (Lote 2, itens cortados pela §16.1, limitação do preset Windows, ausência de rede, `metricas.csv` local e apagável).
 4. **`cruzada/AUDITORIA.md`** — motor resolvido e versão real; seção `API CONFERIDA` com os 15 suspeitos da §3.3; tabela de **decisões** tomadas sem perguntar, com critério e data; tabela do **DoD** com os 30 itens, o comando executado e a saída colada; relatório de balanceamento com as métricas medidas (e as bandas não atingidas, se houver); `CORTE POR ESCOPO` para cada item cortado pela §16.1; `EXPORT — pulado`, `CAPTURAS — puladas`, `PUSH — falhou` e `BLOQUEIO EXTERNO`, quando aplicáveis; dívidas conhecidas, cada uma com o teste que a cobre.
 5. **`cruzada/capturas/`** — as 18 capturas (17 em 1280×720 + `partida_360x800.png`), versionadas, mais um cartão de partida de exemplo. `balanceamento.csv` e `sensacao.csv` são gerados e ficam fora do git.
 6. **`cruzada/SENSACAO.md`** — as 5 respostas da Etapa 11b.
-7. **`cruzada/testar.sh`** saindo com código **0** numa execução limpa, do zero, nos dois modos.
+7. **`placard/testar.sh`** saindo com código **0** numa execução limpa, do zero, nos dois modos.
 8. **Três presets de export versionados** em `export_presets.cfg`, com as builds em `construidos/` (fora do git) quando os templates existirem.
 9. **Commit** em `feat/cruzada`, criada a partir da branch atual — **nunca** commit direto na branch padrão. `push` quando houver remoto; falhando, `PUSH — falhou — <motivo>` em `AUDITORIA.md` e o item conta como cumprido. Mensagem descrevendo o entregue, os cortes da §16.1 e o resultado dos dois modos do `testar.sh`.
 
