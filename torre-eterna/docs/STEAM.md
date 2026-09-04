@@ -3,9 +3,10 @@
 Tudo o que precisa ser preenchido antes de publicar, e a configuração do lado da
 Steamworks que o código já espera encontrar.
 
-> **O nome do jogo e o da desenvolvedora ainda não foram escolhidos.** Onde este
-> documento escreve `{JOGO}` e `{ESTÚDIO}`, entra o que for decidido em
-> `docs/NOMES.md`. Tudo o mais aqui é definitivo.
+> **O nome do jogo é ETERNAL TOWER** (decidido em 2026-09-04, ver
+> `docs/NOMES.md` seção 8 — inclusive o risco de colisão declarado). O nome da
+> **desenvolvedora ainda não foi escolhido**: onde este documento escreve
+> `{ESTÚDIO}`, entra o que for decidido. Tudo o mais aqui é definitivo.
 
 ---
 
@@ -242,10 +243,16 @@ A sincronização é por Auto-Cloud, **sem uma linha de código**. Configurar em
 
 | SO | Root path | Subdirectory | Pattern |
 |---|---|---|---|
-| Windows | `WinAppDataRoaming` | `Godot/app_userdata/{JOGO}` | `*.save` |
-| Windows | `WinAppDataRoaming` | `Godot/app_userdata/{JOGO}` | `*.json` |
-| macOS | `MacAppSupport` | `Godot/app_userdata/{JOGO}` | `*.save` |
-| Linux | `LinuxHome` | `.local/share/godot/app_userdata/{JOGO}` | `*.save` |
+| Windows | `WinAppDataRoaming` | `Godot/app_userdata/Torre Eterna` | `*.save` |
+| Windows | `WinAppDataRoaming` | `Godot/app_userdata/Torre Eterna` | `*.json` |
+| macOS | `MacAppSupport` | `Godot/app_userdata/Torre Eterna` | `*.save` |
+| Linux | `LinuxHome` | `.local/share/godot/app_userdata/Torre Eterna` | `*.save` |
+
+> **`Torre Eterna` na pasta não é erro de digitação.** A pasta do save vem de
+> `application/config/name` no `project.godot`, não do nome comercial. Ela ficou
+> com o nome de projeto de propósito: se seguisse o nome da loja, qualquer
+> renomeação futura faria todo mundo que já joga perder o progresso. Copie a
+> tabela como está.
 
 Quota sugerida: **10 MB / 40 arquivos**. O save tem ~100 KB; a folga cobre o
 backup e a quarentena que o `save_system.gd` mantém.

@@ -96,7 +96,7 @@ func rodar(cena: SceneTree) -> void:
 	var minimo_por_grupo := {
 		"Acessibilidade": 22, "Alcancavel": 8, "Big": 12,
 		"Chaves dinamicas": 3, "Combate": 9, "Defesa": 27,
-		"Dicas": 5, "Economia": 9, "Cepas": 40, "Formas": 18, "Editos": 26, "Repouso": 13, "Marca": 8, "Versao": 17, "Tipografia": 15, "Idiomas": 33, "Sem fim": 26, "Steam": 20, "Exportacao": 16, "Vibracao": 16,
+		"Dicas": 5, "Economia": 9, "Cepas": 40, "Formas": 18, "Editos": 26, "Repouso": 13, "Marca": 11, "Versao": 17, "Tipografia": 15, "Idiomas": 33, "Sem fim": 26, "Steam": 20, "Exportacao": 16, "Vibracao": 16,
 		"Eventos": 12, "Feedback": 2, "Ferramentas": 3, "Daltonismo": 9, "Tempo": 5, "Conteudo lido": 21, "Fmt": 6,
 		"Habilidades": 17, "Icones": 2, "Integridade": 9,
 		"Longo prazo": 7, "Mecânicas": 69, "Mira": 6,
@@ -2087,17 +2087,75 @@ func t_marca() -> void:
 		and linha.contains(Marca.titular()), linha)
 
 	# NINGUÉM ESCREVE O NOME À MÃO. Este é o portão que faz a fonte única valer:
-	# sem ele, alguém acrescenta um "Torre Eterna" literal num painel e a troca
-	# de nome deixa esse painel para trás, em silêncio.
-	var nome_pt := Marca.nome(false)
+	# sem ele, alguém acrescenta um nome literal num painel e a troca de nome
+	# deixa esse painel para trás, em silêncio.
+	#
+	# A PRIMEIRA VERSÃO DESTE TESTE PASSOU VERDE COM O BUG DENTRO. Ela procurava
+	# só o nome ATUAL escrito à mão. Quando o nome mudou, o literal antigo
+	# ("TORRE ETERNA") deixou de casar com a busca — e continuou desenhado, em
+	# tamanho 54, no meio da tela de título, aprovado pela suíte. Um teste que só
+	# proíbe o nome de hoje não protege a troca de nome, que é a única coisa que
+	# ele existe para proteger.
+	#
+	# Agora são duas provas, e a segunda é a que pega o caso acima:
+	#   1. NEGATIVA — nenhum destes arquivos escreve um nome de produto à mão,
+	#      nem o atual, nem o nome de projeto que ficou no `project.godot`.
+	#   2. POSITIVA — quem DESENHA o nome tem de chamar `Marca.nome(`. Sem isto,
+	#      apagar a chamada e pôr qualquer outro literal volta a passar.
+	var proibidos: Array[String] = [Marca.nome(false), Marca.nome(true)]
+	var proj = ProjectSettings.get_setting("application/config/name", "")
+	if str(proj) != "":
+		proibidos.append(str(proj))
+		proibidos.append(str(proj).to_upper())
 	var fora: Array = []
 	for arq in ["res://scripts/ui/tela_titulo.gd", "res://scripts/ui/panel_config.gd",
 			"res://scripts/ui/hud.gd", "res://scripts/ui/tela_final.gd",
 			"res://scripts/ui/tela_pausa.gd", "res://scripts/core/save_system.gd"]:
 		var codigo := FileAccess.get_file_as_string(arq)
-		if codigo.contains("\"%s\"" % nome_pt):
-			fora.append(arq)
+		for termo in proibidos:
+			if codigo.contains("\"%s\"" % termo):
+				fora.append("%s <- %s" % [arq, termo])
 	ok("nenhum script escreve o nome do jogo a mao", fora.is_empty(), str(fora))
+
+	var mudos: Array = []
+	for arq2 in ["res://scripts/ui/tela_titulo.gd", "res://scripts/ui/panel_config.gd"]:
+		if not FileAccess.get_file_as_string(arq2).contains("Marca.nome("):
+			mudos.append(arq2)
+	ok("quem desenha o nome pergunta a Marca", mudos.is_empty(), str(mudos))
+
+	# NEM O TEXTO TRADUZIDO ESCREVE O NOME. Este é o caso mais caro dos três,
+	# porque ele se multiplica: o rodapé da tela de título dizia
+	# "Torre Eterna · feito sem uma única imagem", e essa frase estava traduzida
+	# em 20 idiomas — então o nome antigo ficou gravado em 20 arquivos e
+	# continuou aparecendo em 20 telas depois da troca de nome. Nome dentro de
+	# frase traduzida é o nome multiplicado pelo número de idiomas.
+	#
+	# A regra que saiu daqui: texto traduzível nunca contém o nome do produto. O
+	# nome entra na hora de desenhar, com `%s`, vindo da Marca.
+	var nomes: Array[String] = [Marca.nome(false), Marca.nome(true)]
+	var pn = ProjectSettings.get_setting("application/config/name", "")
+	if str(pn) != "":
+		nomes.append(str(pn))
+	var sujos: Array = []
+	for pasta in ["res://data/i18n", "res://data/i18n/idiomas", "res://data/i18n/conteudo"]:
+		var dir := DirAccess.open(pasta)
+		if dir == null:
+			continue
+		for arq3 in dir.get_files():
+			if not arq3.ends_with(".json") or arq3.begins_with("_"):
+				continue
+			var bruto := FileAccess.get_file_as_string(pasta + "/" + arq3)
+			for n in nomes:
+				if bruto.contains(n):
+					sujos.append("%s/%s <- %s" % [pasta.get_file(), arq3, n])
+	ok("nenhum texto traduzivel carrega o nome do jogo", sujos.is_empty(), str(sujos))
+
+	# A VERSÃO TAMBÉM TINHA DUAS VERDADES: o mesmo painel mostrava
+	# `Versao.numero()` numa linha e uma constante `"0.9.0"` na outra. Elas
+	# concordavam no dia em que foram escritas, que é sempre o caso.
+	var cfg := FileAccess.get_file_as_string("res://scripts/ui/panel_config.gd")
+	ok("nenhum painel guarda a versao numa constante",
+		not cfg.contains("VERSAO_JOGO"))
 
 func t_versao() -> void:
 	g("Versao")

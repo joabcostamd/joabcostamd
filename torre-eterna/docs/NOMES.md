@@ -306,15 +306,14 @@ Nada aqui está travado. `data/marca.json` é a fonte única do nome do jogo, do
 subtítulo, do estúdio e do titular: **escolher o nome é editar esse arquivo**, e
 existe um teste que reprova se algum script voltar a escrever o nome à mão.
 
-O campo `traduzir_nome` decide se o título ganha versão por idioma. Para
-**TOWER ZERO** ele deve ir para `false`: o nome fica igual nos 20 idiomas e só o
-subtítulo é traduzido.
+O campo `traduzir_nome` decide se o título ganha versão por idioma. Ele está em
+`false`: o nome fica igual nos 20 idiomas e só o subtítulo é traduzido.
 
 ```json
 {
   "jogo": {
-    "nome": "TOWER ZERO",
-    "nomeEn": "TOWER ZERO",
+    "nome": "ETERNAL TOWER",
+    "nomeEn": "ETERNAL TOWER",
     "subtitulo": "A torre que lembra",
     "subtituloEn": "The tower that remembers",
     "traduzir_nome": false,
@@ -326,3 +325,49 @@ subtítulo é traduzido.
 > `id_curto` **não muda junto**. Ele nomeia o arquivo de save: se seguisse o nome
 > comercial, todo mundo que já joga perderia o progresso na atualização que
 > renomeia o jogo.
+
+---
+
+## 8. Decisão tomada
+
+**O nome do jogo é ETERNAL TOWER.** Gravado em `data/marca.json` em
+2026-09-04, por escolha do titular, depois de ver esta análise inteira e as
+alternativas limpas.
+
+Este documento recomendava outra coisa, e continua recomendando: pela pontuação
+medida, **TOWER ZERO** e **SELFSIEGE** empataram em 23 e ETERNAL TOWER ficou em
+13 na tabela de risco. A recomendação fica registrada aqui de propósito — um
+documento que se reescreve para concordar com a decisão não serve para nada
+depois.
+
+### O risco, dito com todas as letras
+
+Existe **Eternal Towers** na Steam (app 4036730): defesa de torre com roguelite,
+"segure ondas de máquinas hostis". Mesmo gênero, mesma temática, diferença de
+um `s` no final. Isso significa, na prática:
+
+- **Busca da Steam** — quem procurar pelo nosso jogo vai encontrar os dois, e o
+  que tiver mais avaliações aparece primeiro.
+- **Marca** — um pedido de registro em classe 9/41 pode ser indeferido por
+  colidência fonética, mesmo com a escrita diferente. Isso não impede vender o
+  jogo; impede registrar o nome.
+- **Notificação extrajudicial** — possível se o outro título tiver marca
+  registrada. O item 6 acima (busca no INPI/USPTO/EUIPO) deixa de ser
+  recomendação e passa a ser obrigatório **antes** de encomendar a arte final.
+
+### As mitigações que já estão no código
+
+1. **`traduzir_nome: false`** — uma marca só no mundo inteiro. Marca única é mais
+   fácil de defender juridicamente, gera uma logo só e um nome só para imprensa.
+2. **Subtítulo forte e traduzido** — *A torre que lembra* / *The tower that
+   remembers*. Na loja e na logo o par sempre aparece junto, e é o subtítulo que
+   separa nós deles em qualquer lista de resultados.
+3. **`id_curto` continua `torre_eterna`** — nomeia o arquivo de save e não segue
+   o nome comercial. Se o nome mudar amanhã, ninguém perde progresso.
+
+### Se um dia precisar trocar
+
+Trocar é editar `data/marca.json` e rodar os portões. Nenhum script escreve o
+nome à mão — existe um teste que reprova se algum voltar a escrever. O custo de
+renomear **antes** do lançamento é uma linha; **depois** do lançamento é a página
+da loja, o histórico de avaliações, os links de imprensa e o SEO acumulado.

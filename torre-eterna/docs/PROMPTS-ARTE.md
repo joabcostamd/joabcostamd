@@ -12,7 +12,8 @@ colecionáveis, ícones de loja e material de imprensa.
 
 ## Como usar
 
-1. Substitua `{JOGO}` pelo nome escolhido (ver `docs/NOMES.md`).
+1. O nome do jogo já está escrito nos prompts: **ETERNAL TOWER**. Só o
+   `{ESTÚDIO}` continua em aberto (ver `docs/NOMES.md`).
 2. Cole um prompt por vez. Não junte dois — a IA mistura as composições.
 3. Peça sempre a proporção exata; recortar depois estraga o enquadramento.
 4. Se o resultado vier com textura, ruído ou pincelada, repita acrescentando:
@@ -43,7 +44,7 @@ diferente.
 ## 1.1 Logo 3D principal (o pedido central)
 
 ```
-A 3D logotype of the word "{JOGO}" rendered as glowing neon tubing, floating in
+A 3D logotype of the word "ETERNAL TOWER" rendered as glowing neon tubing, floating in
 absolute darkness, seen straight on with a very slight low angle.
 
 The letters are wide, geometric and generously spaced — built from perfect
@@ -74,7 +75,7 @@ Transparent-friendly: keep the background pure black so it can be keyed out.
 ## 1.2 Logo com subtítulo
 
 ```
-Same 3D neon logotype of "{JOGO}" as before. Below it, in much smaller and
+Same 3D neon logotype of "ETERNAL TOWER" as before. Below it, in much smaller and
 thinner letters, the subtitle "{SUBTÍTULO}" — not neon tubing, but flat pale
 grey-blue type (#93a3c4) with generous letter-spacing, as if silk-screened onto
 the dark surface behind the neon.
@@ -149,7 +150,7 @@ Aspect ratio 616:353. No text in the image.
 > Esta é lida a 231×87 numa lista. Só a logo cabe.
 
 ```
-The 3D neon logotype "{JOGO}" on a near-black background, occupying the left
+The 3D neon logotype "ETERNAL TOWER" on a near-black background, occupying the left
 60% of a wide horizontal frame. On the right, the glowing cyan tower silhouette,
 small and simple, with a faint violet glow behind it.
 
@@ -368,7 +369,7 @@ Same as the square icon (1.3), delivered at:
 ## 6.1 Imagem de anúncio (1200×630, para redes)
 
 ```
-The 3D neon logotype "{JOGO}" on the left half. On the right half, the tower
+The 3D neon logotype "ETERNAL TOWER" on the left half. On the right half, the tower
 under attack from a dense tide of enemies. A single line of empty dark space
 between them.
 

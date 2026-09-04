@@ -1,14 +1,21 @@
-# 🗼 Torre Eterna
+# 🗼 ETERNAL TOWER
 
 > Um idle/incremental de tower defense em **Godot 4**. Uma torre no centro, ondas
 > infinitas vindo de todos os lados, e três camadas de prestígio para você
 > recomeçar mais forte — de novo, e de novo, e de novo.
 
+> **`torre-eterna` é o nome do projeto, `ETERNAL TOWER` é o nome do produto.** A
+> pasta, o `config/name` do `project.godot` e o arquivo de save continuam com o
+> nome de projeto de propósito: se seguissem o nome comercial, cada troca de nome
+> apagaria o progresso de quem já joga. O nome do produto vive num lugar só,
+> `data/marca.json`, e há teste reprovando quem escrever qualquer um dos dois à
+> mão. Ver `docs/NOMES.md`.
+
 ![Godot](https://img.shields.io/badge/Godot-4.7%2B-478CBF?logo=godot-engine&logoColor=white)
 ![GDScript](https://img.shields.io/badge/GDScript-2.0-478CBF)
 ![Arte](https://img.shields.io/badge/Arte-100%25%20procedural-a855f7)
 ![Áudio](https://img.shields.io/badge/Áudio-sintetizado-f472b6)
-![Testes](https://img.shields.io/badge/Testes-1053%2F1053-4ade80)
+![Testes](https://img.shields.io/badge/Testes-1056%2F1056-4ade80)
 ![Idiomas](https://img.shields.io/badge/Idiomas-PT--BR%20%C2%B7%20EN-38bdf8)
 
 ---
@@ -44,7 +51,7 @@ cd torre-eterna
 # Verificação estrutural (todo script compila? dados presentes?)
 godot --headless --path . -s res://tools/verificar.gd
 
-# Suíte de testes da simulação — 1053 testes, sem mocks
+# Suíte de testes da simulação — 1056 testes, sem mocks
 godot --headless --path . -s res://tools/testes.gd
 
 # Convenções do projeto (emoji na interface, print solto, painel órfão, mídia)
@@ -192,7 +199,7 @@ em que você está apanhando. Isso é bom, mas é o contrário de perseguir o li
 - **40** entradas de lore em 8 capítulos · **30** dicas
 - **6** moedas · **6** raridades · **39** atributos de torre
 - **1.098** chaves de interface e **1.286** textos de conteúdo, em português e inglês
-- **1053** testes da simulação · **0** arquivo de som · a única imagem do repositório é `icon.svg`, o ícone do projeto
+- **1056** testes da simulação · **0** arquivo de som · a única imagem do repositório é `icon.svg`, o ícone do projeto
 
 ---
 

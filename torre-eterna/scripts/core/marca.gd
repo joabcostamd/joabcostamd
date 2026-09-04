@@ -42,11 +42,19 @@ static func _bloco(chave: String) -> Dictionary:
 	return b if b is Dictionary else {}
 
 ## O nome do jogo, na língua da pessoa.
+##
+## O padrão de emergência (JSON faltando ou corrompido) vem do `project.godot`,
+## não de um literal aqui. Um literal seria a terceira verdade sobre o nome — e
+## a que só aparece quando algo já deu errado, que é quando ninguém a confere.
 static func nome(ingles: bool = false) -> String:
 	var j := _bloco("jogo")
 	if not bool(j.get("traduzir_nome", true)):
-		return str(j.get("nome", "Torre Eterna"))
+		return str(j.get("nome", _do_projeto()))
 	return Ux.txt(j, "nome", ingles)
+
+static func _do_projeto() -> String:
+	var v = ProjectSettings.get_setting("application/config/name", "")
+	return str(v)
 
 static func subtitulo(ingles: bool = false) -> String:
 	return Ux.txt(_bloco("jogo"), "subtitulo", ingles)

@@ -12,9 +12,6 @@ extends "res://scripts/ui/panel_base.gd"
 ## A aba SAVE é a única com poder destrutivo, então ela pede confirmação duas
 ## vezes e oferece um backup em texto antes de deixar você fazer besteira.
 
-const NOME_JOGO := "TORRE ETERNA"
-const VERSAO_JOGO := "0.9.0"
-
 ## Notações: pares de CHAVES de texto (nome, explicação). O texto sai do Txt.
 const NOTACOES := [
 	["cfg_not_mista", "cfg_not_mista_d"],
@@ -546,7 +543,7 @@ func _aba_sobre() -> void:
 	h.add_child(ic)
 	var vt := UI.vbox(2)
 	h.add_child(vt)
-	var t := UI.titulo(NOME_JOGO, 30)
+	var t := UI.titulo(Marca.nome(), 30)
 	vt.add_child(t)
 	vt.add_child(UI.rotulo(Txt.t("cfg_subtitulo"), 14, UI.TEXTO2))
 	v.add_child(h)
@@ -561,7 +558,7 @@ func _aba_sobre() -> void:
 	g.columns = 4
 	g.add_theme_constant_override("h_separation", 18)
 	g.add_theme_constant_override("v_separation", 4)
-	_info(g, Txt.t("c_jogo")).text = "v" + VERSAO_JOGO
+	_info(g, Txt.t("c_jogo")).text = "v" + Versao.numero()
 	_info(g, Txt.t("cfg_formato_save")).text = Txt.f("cfg_versao_n", {"n": SaveSys.VERSAO})
 	var vi: Dictionary = Engine.get_version_info()
 	_info(g, Txt.t("cfg_motor")).text = "Godot %s" % str(vi.get("string", "4.4"))
