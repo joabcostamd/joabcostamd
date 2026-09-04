@@ -12,6 +12,9 @@ const VERSAO := 1
 var tema := Temas.PADRAO
 var quatro_cores := true
 var escala_de_cinza := false
+## O som é sintetizado, mas nem todo mundo quer som. Guardado como VOLUME e não
+## como liga/desliga: quem baixa para 0,3 quer o jogo baixinho, não mudo.
+var volume := 0.7
 var mesas_jogadas := 0
 var runs_vencidas := 0
 var destravados := {}          ## id do tema -> true
@@ -82,7 +85,8 @@ func conferir(run: Run, ultimo_relato := {}) -> Array[String]:
 func para_dicionario() -> Dictionary:
     return {
         "versao": VERSAO, "tema": tema, "quatro_cores": quatro_cores,
-        "escala_de_cinza": escala_de_cinza, "mesas_jogadas": mesas_jogadas,
+        "escala_de_cinza": escala_de_cinza, "volume": volume,
+        "mesas_jogadas": mesas_jogadas,
         "runs_vencidas": runs_vencidas, "maior_evento": maior_evento,
         "destravados": destravados.keys(), "desafio": desafio.para_dicionario(),
         "conquistas": conquistas.keys(),
@@ -92,6 +96,7 @@ func de_dicionario(d: Dictionary) -> void:
     tema = clampi(int(d.get("tema", Temas.PADRAO)), 0, Temas.total() - 1)
     quatro_cores = bool(d.get("quatro_cores", true))
     escala_de_cinza = bool(d.get("escala_de_cinza", false))
+    volume = clampf(float(d.get("volume", 0.7)), 0.0, 1.0)
     mesas_jogadas = int(d.get("mesas_jogadas", 0))
     runs_vencidas = int(d.get("runs_vencidas", 0))
     maior_evento = int(d.get("maior_evento", 0))

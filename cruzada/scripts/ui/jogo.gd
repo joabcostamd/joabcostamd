@@ -16,12 +16,16 @@ var run: Run
 var _onde := MENU
 var _tela: Control
 var _poeira: Array[Vector3] = []
+var som: Som
 var _anuncios: Array[String] = []      ## temas destravados esperando anúncio
 var _conquistas: Array[String] = []    ## conquistas recém-caídas, esperando anúncio
 
 func _ready() -> void:
     _poeira = Pintura.semear_poeira()
+    som = Som.new()
+    add_child(som)
     perfil = Perfil.ler(caminho_do_perfil)
+    som.volume = perfil.volume
     Temas.quatro_cores = perfil.quatro_cores
     Temas.usar(perfil.tema, perfil.escala_de_cinza)
     _acompanhar()
@@ -42,6 +46,7 @@ func _ir(onde: int) -> void:
             var p: Partida = preload("res://cenas/partida.tscn").instantiate()
             p.run = run
             p.mesa = run.mesa
+            p.volume = perfil.volume
             p.mesa_terminada.connect(_mesa_terminada)
             _tela = p
         TEMAS:
@@ -51,6 +56,7 @@ func _ir(onde: int) -> void:
         LOJA:
             _tela = preload("res://cenas/loja.tscn").instantiate()
             _tela.set("run", run)
+            _tela.set("som", som)
             _tela.connect("seguir", _sair_da_loja)
         CONQUISTAS:
             _tela = preload("res://cenas/conquistas.tscn").instantiate()
@@ -90,6 +96,7 @@ func _voltar_ao_menu() -> void:
     perfil.tema = Temas.atual
     perfil.quatro_cores = Temas.quatro_cores
     perfil.escala_de_cinza = Temas.escala_de_cinza
+    som.volume = perfil.volume
     perfil.gravar(caminho_do_perfil)
     _ir(MENU)
 
@@ -114,6 +121,7 @@ func _mesa_terminada(_venceu: bool) -> void:
     for id in perfil.conferir_conquistas(run):
         if not _conquistas.has(id):
             _conquistas.append(id)
+            som.conquista()
     perfil.gravar(caminho_do_perfil)
 
     if run.acabou:

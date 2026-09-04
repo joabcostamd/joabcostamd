@@ -31,6 +31,11 @@ var _poeira: Array[Vector3] = []
 ## O último relato da mesa, guardado só para desenhar o que acabou de acontecer.
 var _relato := {}
 var _realce := 0.0
+## O peso: tremor, fagulhas, cartas voando e a pausa que faz o golpe acertar.
+var juice := Juice.new()
+var som: Som
+var volume := 0.7
+var _tear_mostrado := 0
 var _pontos_mostrados := 0.0  ## o número corre até o valor real, não salta
 
 ## Retângulos calculados no desenho e usados no toque. A tela é desenhada em modo
@@ -38,6 +43,9 @@ var _pontos_mostrados := 0.0  ## o número corre até o valor real, não salta
 var _r_casas: Array[Rect2] = []
 var _r_mao: Array[Rect2] = []
 var _r_regras := Rect2()
+## A barra de progresso da meta. É para lá que as cartas colhidas voam: elas
+## caem sobre o que estão enchendo, e não sobre o número que precisa ser lido.
+var _r_placar := Rect2()
 var _regras_abertas := false
 var _regras_de := 0      ## primeiro verbete da página aberta
 var _regras_ate := 0     ## onde a próxima página começa
@@ -46,6 +54,9 @@ signal mesa_terminada(venceu: bool)
 
 func _ready() -> void:
     _poeira = Pintura.semear_poeira()
+    som = Som.new()
+    som.volume = volume
+    add_child(som)
     set_process(true)
     _acompanhar()
     get_viewport().size_changed.connect(_acompanhar)
@@ -77,10 +88,15 @@ func vidas() -> int:
     return run.vidas if run != null else VIDAS_POR_RUN
 
 func _process(delta: float) -> void:
-    var mudou := false
+    var mudou := juice.avancar(delta)
     if _realce > 0.0:
         _realce = maxf(0.0, _realce - delta)
         mudou = true
+    ## Durante a pausa o placar NÃO corre: é justamente a separação entre o
+    ## impacto e o pagamento que faz o número parecer merecido.
+    if juice.pausa > 0.0:
+        queue_redraw()
+        return
     if mesa != null and absf(_pontos_mostrados - float(mesa.pontos)) > 0.5:
         ## Corre 12% da distância por quadro: rápido no começo, suave no fim, e
         ## sem depender da taxa de quadros para chegar ao mesmo lugar.
@@ -163,14 +179,73 @@ func _unhandled_key_input(evento: InputEvent) -> void:
         queue_redraw()
 
 func jogar(indice: int, casa: int) -> void:
+    var tear_antes := mesa.tear
     var r := mesa.posicionar(indice, casa)
     if not bool(r["valido"]):
         return
     _relato = r
+    _reagir(r, casa, tear_antes)
     if bool(r["colheita"]) or int(r["pontos_parcela"]) > 0:
         _realce = TEMPO_DO_REALCE
     _selecionada = mini(_selecionada, mesa.mao.size() - 1)
     queue_redraw()
+
+## Traduz o relato da mesa em som e peso. Um lugar só: espalhar gatilho de
+## efeito pelo código é como se ganha um som que toca duas vezes e um tremor que
+## nunca para.
+func _reagir(r: Dictionary, casa: int, tear_antes: int) -> void:
+    ## O mapa das casas vem do traçado do quadro anterior. Antes do primeiro
+    ## desenho ele não existe, e efeito sem posição vira fagulha na quina da
+    ## tela — então o som toca e o peso espera o próximo turno.
+    if _r_casas.is_empty() or casa >= _r_casas.size():
+        som.carta()
+        return
+    var caixa := _r_casas[casa]
+    juice.pousou(caixa)
+    som.carta()
+
+    if not r["parcelas"].is_empty():
+        juice.parcelou(caixa, r["parcelas"].size())
+        for p in r["parcelas"]:
+            som.parcela(int(p["cartas"]))
+
+    if bool(r["colheita"]):
+        ## As cartas voam das casas colhidas para o placar. É o único momento em
+        ## que o jogador vê PARA ONDE os pontos foram.
+        var caixas := []
+        var cartas := []
+        for linha in r["linhas"]:
+            for c in Geometria.CELULAS[int(linha["linha"])]:
+                if c < _r_casas.size():
+                    caixas.append(_r_casas[c])
+                    cartas.append([1, 0])
+        for i in mini(caixas.size(), r["linhas"].size() * 5):
+            var linha: Dictionary = r["linhas"][i / 5]
+            var cs: Array = linha["cartas"]
+            if i % 5 < cs.size():
+                cartas[i] = [Cartas.figura(int(cs[i % 5])), Cartas.naipe(int(cs[i % 5]))]
+        juice.colheu(caixas, _destino_dos_pontos(), cartas, r["linhas"].size(),
+                     int(r["fator"]))
+        som.colheita(r["linhas"].size(), int(r["tear_do_evento"]))
+        if bool(r.get("fianca_pagou", false)):
+            juice.fianca(_destino_dos_pontos())
+            som.fianca()
+
+    if mesa.tear > tear_antes:
+        juice.tear_subiu()
+        som.tear(mesa.tear)
+
+    if bool(r["acabou"]):
+        if bool(r["venceu"]):
+            som.vitoria()
+        else:
+            som.derrota()
+
+## Para onde as cartas colhidas voam: a barra da meta, que é o que elas enchem.
+func _destino_dos_pontos() -> Vector2:
+    if _r_placar.size.x <= 0.0:
+        return size * Vector2(0.15, 0.25)
+    return _r_placar.get_center()
 
 func descartar_selecionada() -> void:
     if _selecionada < 0 or mesa.descartes_restantes <= 0:
@@ -194,9 +269,14 @@ func _carta_em(ponto: Vector2) -> int:
 # ─────────────────────────────── o desenho ───────────────────────────────
 
 func _draw() -> void:
+    ## O tremor desloca TUDO menos o fundo: fundo tremendo lê como falha de
+    ## renderização, tabuleiro tremendo lê como impacto.
     Pintura.fundo(self, size, _poeira)
     if mesa == null:
         return
+    var abalo := juice.deslocamento()
+    if abalo != Vector2.ZERO:
+        draw_set_transform(abalo, 0.0, Vector2.ONE)
     _r_casas.clear()
     _r_casas.resize(Geometria.CASAS)
     _r_mao.clear()
@@ -204,6 +284,11 @@ func _draw() -> void:
         _retrato()
     else:
         _paisagem()
+    ## As fagulhas e as cartas voando ficam por cima do tabuleiro e por baixo do
+    ## que o jogador precisa ler.
+    juice.desenhar(self)
+    if abalo != Vector2.ZERO:
+        draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
     if mesa.acabou:
         _fim_de_mesa()
     if _regras_abertas:
@@ -342,6 +427,7 @@ func _painel_estado(r: Rect2) -> void:
                 HORIZONTAL_ALIGNMENT_LEFT, -1, Temas.T_CORPO, Temas.TEXTO_SUAVE)
 
     var trilho := Rect2(x, r.position.y + 128, larg, 10)
+    _r_placar = trilho
     Pintura.pilula(self, trilho, Color(Temas.BORDA, 0.8))
     var fracao := clampf(_pontos_mostrados / float(maxi(1, mesa.meta)), 0.0, 1.0)
     if fracao > 0.0:
@@ -355,8 +441,11 @@ func _painel_estado(r: Rect2) -> void:
 
     draw_string(ff, Vector2(x, r.position.y + 196), "TEAR",
                 HORIZONTAL_ALIGNMENT_LEFT, -1, Temas.T_ROTULO, Temas.TEXTO_SUAVE)
+    ## O Tear cresce por um instante quando sobe. Não é enfeite: ele muda muitas
+    ## vezes por mesa e sem o pulso a mudança passa despercebida.
+    var tam_tear := Temas.T_HEROI + int(juice.pulso_do_tear * 14.0)
     draw_string(ff, Vector2(x, r.position.y + 252), "×%d" % mesa.tear,
-                HORIZONTAL_ALIGNMENT_LEFT, -1, Temas.T_HEROI, Temas.DESTAQUE)
+                HORIZONTAL_ALIGNMENT_LEFT, -1, tam_tear, Temas.DESTAQUE)
     var frase := "sobe e nunca desce"
     if mesa.tear >= Metas.TEAR_TETO:
         frase = "no teto"
@@ -418,7 +507,8 @@ func _contadores(r: Rect2) -> void:
 func _faixa_estado(r: Rect2) -> void:
     Pintura.caixa(self, r, 12, 0.72)
     var col := r.size.x / 3.0
-    Pintura.numero(self, Rect2(r.position.x, r.position.y + 8, col, 44), "PONTOS",
+    _r_placar = Rect2(r.position.x, r.position.y + 8, col, 44)
+    Pintura.numero(self, _r_placar, "PONTOS",
                    Pintura.milhar(int(_pontos_mostrados)), Temas.TEXTO, 26)
     Pintura.numero(self, Rect2(r.position.x + col, r.position.y + 8, col, 44), "META",
                    Pintura.milhar(mesa.meta), Temas.TEXTO_SUAVE, 26)

@@ -38,6 +38,10 @@ echo "── conquistas: o catálogo, as marcas e a conta ──"
 "$GODOT" --headless --script res://testes/conquistas.gd 2>&1 | limpar
 
 echo
+echo "── juice: limites do peso, vazamento e som ──"
+"$GODOT" --headless --script res://testes/juice.gd 2>&1 | limpar
+
+echo
 echo "── fluxo: menu, partida, run inteira, fecho ──"
 # Roda como cena: o `_ready` das telas só acontece depois que o laço principal
 # começa, e sob `--script` o teste mediria um jogo que ainda não nasceu.

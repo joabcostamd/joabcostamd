@@ -9,6 +9,7 @@ class_name TelaLoja
 signal seguir
 
 var run: Run
+var som: Som
 var _poeira: Array[Vector3] = []
 var _r_vagas: Array[Rect2] = []
 var _r_seguir := Rect2()
@@ -46,7 +47,9 @@ func _gui_input(evento: InputEvent) -> void:
     if _escolhendo >= 0:
         for i in _r_alvos.size():
             if _r_alvos[i].has_point(ponto):
-                run.loja.comprar(_escolhendo, run.poderes, _alvos[i])
+                if not run.loja.comprar(_escolhendo, run.poderes, _alvos[i]).is_empty() \
+                        and som != null:
+                    som.moeda()
                 _escolhendo = -1
                 queue_redraw()
                 return
@@ -59,7 +62,8 @@ func _gui_input(evento: InputEvent) -> void:
         emit_signal("seguir")
         return
     if _r_rerrolar.has_point(ponto):
-        run.loja.rerrolar(run.poderes)
+        if run.loja.rerrolar(run.poderes) and som != null:
+            som.toque()
         queue_redraw()
         return
     for i in _r_vagas.size():
@@ -71,6 +75,8 @@ func _gui_input(evento: InputEvent) -> void:
             _escolhendo = i
         else:
             run.loja.comprar(i, run.poderes)
+            if som != null:
+                som.moeda()
         queue_redraw()
         return
 

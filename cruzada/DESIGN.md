@@ -373,6 +373,56 @@ antes de fechar a regra. Se não couber legível, entra o coringa clássico úni
 
 ---
 
+## 5b. O JUICE — enfeite com regra
+
+**R36 — TRÊS REGRAS PARA TODO EFEITO.** Nenhum pode **esconder informação**, **atrasar o próximo
+clique** ou **durar mais que o gesto que o causou**. Tremor que continua depois do impacto é
+enjoo, não impacto; partícula que cobre a carta é ruído com cara de produção.
+
+**R37 — O PESO ESCALA COM O EVENTO.** Tremor, pausa e fagulhas saem do número de linhas colhidas
+e do fator. Uma colheita de uma linha treme de leve; uma CRUZ TOTAL sacode a tela. **A diferença
+entre as duas é a própria informação, sentida antes de lida.** O que acontece a todo turno —
+pousar uma carta — quase não treme: efeito constante vira irritação em dez minutos.
+
+Tetos duros: tremor **9 px** (acima disso a tela deixa de ser legível justamente quando mudou) e
+pausa **0,14 s** (meio segundo é peso, um segundo é travamento).
+
+**R38 — A PAUSA SEPARA O IMPACTO DO PAGAMENTO.** Durante ela, o placar **não corre** e nada mais
+anda. É a separação que faz o número parecer merecido em vez de aparecer.
+
+**R39 — AS CARTAS VOAM PARA A BARRA DA META**, em arco, não em linha reta — linha reta lê como
+deslize, arco lê como objeto arremessado. Elas caem sobre o que estão enchendo, e não sobre o
+número que precisa ser lido.
+
+**R40 — O SOM É SINTETIZADO, SEM UM ARQUIVO DE ÁUDIO.** Onda gerada por código: senoide com
+envelope, ruído filtrado para o baque. Mesma escolha da arte — o jogo inteiro cabe no repositório
+porque nada dele é asset.
+
+**A escada do Tear é a peça central:** cada degrau toca **um semitom acima** do anterior. Subir o
+Tear deixa de ser um número mudando num painel e passa a ser uma nota mais alta, e o ouvido
+entende "está crescendo" antes de o olho ler. A colheita é um acorde cuja altura vem do Tear e
+cuja largura vem do número de linhas — cada linha a mais é literalmente uma nota a mais.
+
+O volume é uma régua de quatro degraus, não um liga/desliga: quem quer o jogo baixinho não quer
+escolher entre alto e mudo.
+
+---
+
+## 5c. AS CONQUISTAS
+
+**R41 — CONQUISTA ENSINA REGRA, NUNCA PEDE GRIND.** Metade delas nomeia algo que o jogo já faz e
+o jogador ainda não notou: quem lê *"colha as quatro linhas que passam por C3"* descobre um jogo
+que estava ali o tempo todo. Nenhuma pede contagem alta sem decisão nova — o teste reprova quem
+tentar pôr uma.
+
+**R42 — TODAS VISÍVEIS DESDE O COMEÇO.** A conquista escondida não puxa ninguém.
+
+**R43 — QUEM CONTA É QUEM ACONTECE.** As marcas ficam na **Mesa**, não na tela: uma partida
+jogada por teste, simulação ou replay conta igual à jogada com a tela aberta. `marcas` guarda o
+maior valor visto, `contas` soma — confundir os dois quebra metade da lista.
+
+---
+
 ## 6. AS DICAS — assistência honesta
 
 Três níveis, desligáveis, com uma régua trocada por medição:

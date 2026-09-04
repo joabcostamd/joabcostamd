@@ -16,6 +16,7 @@ var _sob_o_dedo := -1
 var _r_voltar := Rect2()
 var _r_cinza := Rect2()
 var _r_cores := Rect2()
+var _r_som := Rect2()
 
 func _ready() -> void:
     _poeira = Pintura.semear_poeira()
@@ -40,6 +41,12 @@ func _gui_input(evento: InputEvent) -> void:
     if _r_cores.has_point(evento.position):
         Temas.quatro_cores = not Temas.quatro_cores
         Temas.usar(Temas.atual, Temas.escala_de_cinza)
+        queue_redraw()
+        return
+    if _r_som.has_point(evento.position) and perfil != null:
+        ## Quatro degraus, não liga/desliga: quem quer o jogo baixinho não quer
+        ## escolher entre alto e mudo.
+        perfil.volume = 0.0 if perfil.volume >= 0.99 else minf(1.0, perfil.volume + 0.35)
         queue_redraw()
         return
     var i := _em(evento.position)
@@ -85,10 +92,14 @@ func _draw() -> void:
     ## As duas chaves de acessibilidade ficam com os temas, não num submenu:
     ## quem precisa delas está exatamente aqui, escolhendo como enxergar o jogo.
     var y := y0 + ceilf(float(Temas.total()) / colunas) * (alt + vao) + 8.0
-    _r_cores = Rect2(margem, y, minf(util * 0.5 - 8.0, 320.0), 44)
-    _r_cinza = Rect2(_r_cores.end.x + 16, y, minf(util * 0.5 - 8.0, 320.0), 44)
+    var larg_chave := minf((util - 32.0) / 3.0, 300.0)
+    _r_cores = Rect2(margem, y, larg_chave, 44)
+    _r_cinza = Rect2(_r_cores.end.x + 16, y, larg_chave, 44)
+    _r_som = Rect2(_r_cinza.end.x + 16, y, larg_chave, 44)
     _chave(_r_cores, "QUATRO CORES DE NAIPE", Temas.quatro_cores, ff)
     _chave(_r_cinza, "ESCALA DE CINZA", Temas.escala_de_cinza, ff)
+    var vol := perfil.volume if perfil != null else 0.7
+    _chave(_r_som, "SOM  %d%%" % int(round(vol * 100.0)), vol > 0.0, ff)
 
 func _cartao(i: int, c: Rect2, ff: FontFile, f: FontFile) -> void:
     var t := Temas.dados(i)

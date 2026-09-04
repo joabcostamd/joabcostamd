@@ -32,6 +32,9 @@ func _ready() -> void:
     sub.add_child(tela)
     tela.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
+    ## Um quadro antes de jogar: a tela precisa ter desenhado uma vez para saber
+    ## onde ficam as casas, e sem isso o peso da colheita não tem para onde ir.
+    await RenderingServer.frame_post_draw
     for i in turnos:
         if tela.mesa.acabou:
             break
@@ -46,6 +49,10 @@ func _ready() -> void:
             break
     if nome.begins_with("regras"):
         tela._regras_abertas = true
+    ## Deixa o juice a meio caminho: é a foto que mostra fagulha e carta voando.
+    if nome.begins_with("colheita"):
+        tela.juice.pausa = 0.0
+        tela.juice.avancar(0.16)
     tela._selecionada = 0
     var vazias := tela.mesa.casas_vazias()
     if not vazias.is_empty():
