@@ -31,6 +31,7 @@ SaveSys="*res://scripts/core/save_system.gd"
 Audio="*res://scripts/audio/audio_engine.gd"
 Jogo="*res://scripts/sim/game.gd"
 SteamCola="*res://scripts/core/steam_cola.gd"
+Vibracao="*res://scripts/core/vibracao.gd"
 
 [display]
 

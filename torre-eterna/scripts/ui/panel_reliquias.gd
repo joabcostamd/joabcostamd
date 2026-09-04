@@ -190,7 +190,20 @@ func _cartao(def: Dictionary) -> Control:
 	h.add_child(v)
 
 	var linha_nome := UI.hbox(6)
+	# O NOME TAMBEM QUEBRA LINHA, e essa e a linha que faltava.
+	#
+	# Todos os textos da ficha tinham `autowrap` e teto de 235 px; o NOME nao
+	# tinha nenhum dos dois, entao ele crescia livre. Em portugues e em ingles os
+	# nomes sao curtos e ninguem percebia. Em alemao, "Krone des geschmolzenen
+	# Königs" mede 241 px e em russo "Корона расплавленного короля" mede 242: um
+	# unico rotulo empurrava a ficha, a ficha empurrava a coluna, e o painel
+	# inteiro ganhava barra de rolagem horizontal — com o conteudo em 1.121 px
+	# num espaco de 1.048. Achado pela varredura de layout depois que os vinte
+	# idiomas entraram, e nao a olho.
 	var lnome := UI.rotulo(txt(def, "nome"), 15, UI.TEXTO)
+	lnome.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	lnome.custom_minimum_size.x = 150
+	lnome.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	linha_nome.add_child(lnome)
 	linha_nome.add_child(UI.espacador())
 	var lnivel := UI.rotulo("", 13, UI.TEXTO2)

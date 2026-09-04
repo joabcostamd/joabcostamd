@@ -281,11 +281,11 @@ real no save (ver `scripts/core/save_system.gd`, `_tem_nao_finito`).
 
 ```
 $ godot --headless --path . -s res://tools/verificar.gd
-===VERIFICAR=== scripts=102 falhas=0 dados_faltando=[]
+===VERIFICAR=== scripts=103 falhas=0 dados_faltando=[]
 ===STATUS=== PASS
 
 $ godot --headless --path . -s res://tools/lint.gd
-===LINT=== arquivos=88 linhas=37795 erros=0 avisos=0
+===LINT=== arquivos=88 linhas=37982 erros=0 avisos=0
 ===STATUS=== PASS
 
 $ godot --headless --path . -s res://tools/validar_dados.gd
@@ -309,7 +309,7 @@ $ godot --headless --path . -s res://tools/validar_dados.gd
 ===STATUS=== PASS
 
 $ godot --headless --path . -s res://tools/testes.gd
-===TESTES=== passou=1035 falhou=0
+===TESTES=== passou=1053 falhou=0
 ===STATUS=== PASS
 
 $ godot --headless --path . -s res://tools/perf.gd -- 412
@@ -410,9 +410,9 @@ STATUS: PASS   (3418 ms)
 
 | | |
 |---|---:|
-| Scripts GDScript | 102 |
-| Linhas de código | 37.795 |
-| Testes da simulação | 1035 |
+| Scripts GDScript | 103 |
+| Linhas de código | 37.982 |
+| Testes da simulação | 1053 |
 | Chaves de interface PT/EN | 1.098 |
 | Textos de conteúdo PT/EN | 1.286 |
 | Imagens no repositório | 1 (`icon.svg`, o ícone do projeto — nenhuma no jogo) |

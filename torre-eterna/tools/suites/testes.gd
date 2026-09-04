@@ -53,6 +53,7 @@ func rodar(cena: SceneTree) -> void:
 	t_sem_fim()
 	t_steam()
 	t_exportacao()
+	t_vibracao()
 	t_mira()
 	t_fim_de_sessao()
 	t_celebracao()
@@ -95,7 +96,7 @@ func rodar(cena: SceneTree) -> void:
 	var minimo_por_grupo := {
 		"Acessibilidade": 22, "Alcancavel": 8, "Big": 12,
 		"Chaves dinamicas": 3, "Combate": 9, "Defesa": 27,
-		"Dicas": 5, "Economia": 9, "Cepas": 40, "Formas": 18, "Editos": 26, "Repouso": 13, "Marca": 8, "Versao": 17, "Tipografia": 15, "Idiomas": 33, "Sem fim": 26, "Steam": 20, "Exportacao": 16,
+		"Dicas": 5, "Economia": 9, "Cepas": 40, "Formas": 18, "Editos": 26, "Repouso": 13, "Marca": 8, "Versao": 17, "Tipografia": 15, "Idiomas": 33, "Sem fim": 26, "Steam": 20, "Exportacao": 16, "Vibracao": 16,
 		"Eventos": 12, "Feedback": 2, "Ferramentas": 3, "Daltonismo": 9, "Tempo": 5, "Conteudo lido": 21, "Fmt": 6,
 		"Habilidades": 17, "Icones": 2, "Integridade": 9,
 		"Longo prazo": 7, "Mecânicas": 69, "Mira": 6,
@@ -2598,6 +2599,61 @@ func t_exportacao() -> void:
 	for portao in ["verificar", "lint", "validar_dados", "traducoes", "testes"]:
 		ok("o build roda o portao %s" % str(portao), sh.contains(str(portao)))
 	ok("ele baixa as fontes antes de exportar", sh.contains("baixar_fontes"))
+
+
+## ------------------------------------------------------------- vibração
+## `"vibracao": true` existia na configuração, aparecia no painel, era salva e
+## carregada — e NENHUMA linha do jogo a lia. A pessoa desligava uma coisa que
+## nunca esteve ligada. É o mesmo defeito que esta auditoria já achou nos
+## modificadores de elite e na Adaptação do Enxame, e o teste que impede a volta
+## é este.
+func t_vibracao() -> void:
+	g("Vibracao")
+	var v := root.get_node_or_null("Vibracao")
+	ok("a vibracao existe como autoload", v != null)
+	if v == null:
+		return
+
+	# A opção precisa ser LIDA. Sem isto, ela volta a ser enfeite.
+	var codigo := _ler("res://scripts/core/vibracao.gd")
+	ok("o codigo le a opcao do jogador", codigo.contains('Cfg.get_v("vibracao"'))
+	ok("vale para celular", codigo.contains("vibrate_handheld"))
+	ok("e para controle", codigo.contains("start_joy_vibration"))
+
+	# VIBRAÇÃO EM JOGO IDLE É PERIGOSA. O jogo fica horas aberto: um aparelho
+	# que treme a cada abate esvazia a bateria e vira intolerável em dez
+	# minutos. Só vibra o que aconteceu COM VOCÊ.
+	ok("dano na torre vibra", codigo.contains("torre_atingida"))
+	ok("queda da torre vibra", codigo.contains("torre_caiu"))
+	ok("conquista vibra", codigo.contains("conquista_desbloqueada"))
+	# E o que acontece dezenas de vezes por minuto NÃO vibra. A checagem é pela
+	# CONEXÃO e não pela palavra: o arquivo cita "tiro" num comentário dizendo
+	# justamente que ele não vibra, e procurar a palavra reprovava o texto que
+	# explica a regra.
+	for barulhento in ["inimigo_morreu", "onda_limpa", "ouro_ganho", "tiro_disparado"]:
+		ok("%s nao vibra" % str(barulhento),
+			not codigo.contains("Bus.%s.connect" % str(barulhento)))
+	# Só a Purga PERFEITA: a comum acontece a cada 26 s, e vibrar nela treinaria
+	# a pessoa a desligar a opção.
+	ok("so a Purga perfeita vibra", codigo.contains("if perfeita:"))
+
+	# Dois toques colados viram um zumbido.
+	ok("existe intervalo minimo entre vibracoes", v.INTERVALO_MIN_MS >= 50,
+		"ms=%d" % v.INTERVALO_MIN_MS)
+	# Nenhuma vibração pode durar tempo de alarme: o toque é pontuação.
+	for ms in [v.MS_DANO, v.MS_PERFEITA, v.MS_CONQUISTA]:
+		ok("a vibracao de evento e curta (%d ms)" % int(ms), int(ms) <= 100)
+	ok("so a queda da torre dura mais", v.MS_QUEDA > v.MS_CONQUISTA)
+
+	# Com a opção desligada, chamar não pode estourar nem tocar.
+	var antes = Cfg.get_v("vibracao", true)
+	Cfg.set_v("vibracao", false)
+	v._ao_dano(0.0, 1.0, 1.0)
+	v._ao_cair()
+	v._ao_purga(1.0, true)
+	v._ao_conquista("x")
+	ok("desligada, nada estoura", true)
+	Cfg.set_v("vibracao", antes)
 
 ## ------------------------------------------------------------- mira
 ## `alvo_ids` é a busca mais quente do jogo (todo impacto de perfuração e todo

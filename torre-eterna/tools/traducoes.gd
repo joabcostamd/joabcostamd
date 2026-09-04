@@ -145,6 +145,48 @@ func _varrer(o, arquivo: String, fora: Dictionary) -> void:
 
 # ------------------------------------------------------------------ conferir
 
+## O MESMO TEXTO FONTE PRECISA VIRAR O MESMO TEXTO TRADUZIDO.
+##
+## Esta conferência nasceu de um achado real: o vietnamita traduzia "carta" como
+## "thẻ" em setenta e cinco lugares e como "lá bài" em sete, e "Singularidade"
+## de dois jeitos diferentes. Nada no portão pegava — completude, marcadores,
+## comprimento e formatação estavam todos verdes, e mesmo assim o jogo falava
+## duas línguas dentro da mesma língua.
+##
+## A regra é exata e não depende de heurística: cinquenta e três textos fonte
+## aparecem em mais de uma chave (a mesma frase de condição serve conquista e
+## codex, por exemplo). Se duas chaves têm o MESMO português, elas têm que ter a
+## mesma tradução — não é questão de estilo, é a mesma frase.
+##
+## O que ela NÃO cobre, e vale dizer: um termo que aparece dentro de frases
+## diferentes ("cinquenta cartas" e "carta lendária") não é comparável assim,
+## porque línguas flexionam. Esse caso continua sendo trabalho de revisão humana.
+func _conferir_coerencia(cod: String, ui: Dictionary, ct: Dictionary,
+		chaves_ui: Array, fonte_conteudo: Dictionary) -> void:
+	var por_fonte := {}
+	for chave in chaves_ui:
+		var k := str(chave)
+		var pt := Txt.fonte(k).strip_edges()
+		if pt.length() < 3 or not ui.has(k):
+			continue
+		if not por_fonte.has(pt):
+			por_fonte[pt] = {}
+		por_fonte[pt][str(ui[k])] = k
+	for chave2 in fonte_conteudo.keys():
+		var k2 := str(chave2)
+		var pt2 := str((fonte_conteudo[k2] as Dictionary).get("pt", "")).strip_edges()
+		if pt2.length() < 3 or not ct.has(k2):
+			continue
+		if not por_fonte.has(pt2):
+			por_fonte[pt2] = {}
+		por_fonte[pt2][str(ct[k2])] = k2
+	for pt3 in por_fonte.keys():
+		var variantes: Dictionary = por_fonte[pt3]
+		if variantes.size() > 1:
+			avisos.append("%s: \"%s\" tem %d traduções diferentes (%s)" % [
+				cod, str(pt3).substr(0, 34), variantes.size(),
+				str(variantes.values()).substr(0, 60)])
+
 func _conferir() -> void:
 	var chaves_ui := Txt.todas_as_chaves()
 	var fonte_conteudo := _fonte_conteudo()
@@ -247,6 +289,8 @@ func _conferir_idioma(cod: String, chaves_ui: Array, fonte_conteudo: Dictionary)
 	if not sobra.is_empty():
 		avisos.append("%s: %d chaves de interface que não existem mais: %s" % [
 			cod, sobra.size(), str(sobra.slice(0, 4))])
+
+	_conferir_coerencia(cod, ui, ct, chaves_ui, fonte_conteudo)
 
 func _ler(caminho: String) -> Dictionary:
 	if not FileAccess.file_exists(caminho):
