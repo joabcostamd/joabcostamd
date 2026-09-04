@@ -44,6 +44,8 @@ func _ready() -> void:
         tela.jogar(int(j[0]), int(j[1]))
         if nome.begins_with("colheita") and bool(tela._relato.get("colheita", false)):
             break
+    if nome.begins_with("regras"):
+        tela._regras_abertas = true
     tela._selecionada = 0
     var vazias := tela.mesa.casas_vazias()
     if not vazias.is_empty():

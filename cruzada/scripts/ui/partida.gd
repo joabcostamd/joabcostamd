@@ -39,6 +39,9 @@ var _pontos_mostrados := 0.0  ## o número corre até o valor real, não salta
 var _r_casas: Array[Rect2] = []
 var _r_mao: Array[Rect2] = []
 var _r_regras := Rect2()
+var _regras_abertas := false
+var _regras_de := 0      ## primeiro verbete da página aberta
+var _regras_ate := 0     ## onde a próxima página começa
 
 signal mesa_terminada(venceu: bool)
 
@@ -100,6 +103,21 @@ func _mover(ponto: Vector2) -> void:
         queue_redraw()
 
 func _tocar(ponto: Vector2) -> void:
+    if _regras_abertas:
+        ## Tocar vira a página; na última, fecha. Rolagem seria pior: quem abriu
+        ## REGRAS está travado no meio de um turno e quer terminar de ler.
+        if _regras_ate < REGRAS.size():
+            _regras_de = _regras_ate
+        else:
+            _regras_abertas = false
+            _regras_de = 0
+        queue_redraw()
+        return
+    if _r_regras.has_point(ponto):
+        _regras_abertas = true
+        _regras_de = 0
+        queue_redraw()
+        return
     if mesa.acabou:
         emit_signal("mesa_terminada", mesa.venceu)
         return
@@ -131,6 +149,9 @@ func _unhandled_key_input(evento: InputEvent) -> void:
         queue_redraw()
     elif tecla == KEY_D:
         descartar_selecionada()
+    elif tecla == KEY_R or tecla == KEY_ESCAPE:
+        _regras_abertas = not _regras_abertas and tecla == KEY_R
+        queue_redraw()
 
 func jogar(indice: int, casa: int) -> void:
     var r := mesa.posicionar(indice, casa)
@@ -176,6 +197,8 @@ func _draw() -> void:
         _paisagem()
     if mesa.acabou:
         _fim_de_mesa()
+    if _regras_abertas:
+        _regras()
 
 func _paisagem() -> void:
     var util := size.x - MARGEM * 2.0
@@ -656,6 +679,85 @@ func _linha_do_evento(r: Rect2) -> void:
     else:
         texto = "sem pontos neste turno"
     Pintura.centrado(self, ff, r, texto, Temas.T_CORPO, cor)
+
+## AS REGRAS, atrás de um botão fixo no alto à direita.
+##
+## O jogo inteiro cabe em dez frases, e é assim que ele precisa ser explicado —
+## quem abre REGRAS está travado no meio de um turno e quer a resposta, não um
+## manual. Cada linha começa pelo nome que aparece na tela: o jogador chegou aqui
+## depois de ver a palavra, e é por ela que ele procura.
+##
+## Os nomes foram testados com dois leitores cegos, e 10 de 33 reprovaram. Estes
+## são os que passaram; nenhum deles se troca sem repetir o teste.
+const REGRAS: Array[Array] = [
+    ["", "Cada carta pontua em duas mãos de pôquer: a fileira e a coluna onde você a colocar."],
+    ["O TURNO", "Coloque uma carta numa casa vazia e compre de volta. A carta fica ali."],
+    ["PARCELA", "Ao chegar a 3 e a 4 cartas, a linha já paga um troco. Sem gastar turno."],
+    ["MADURA", "Linha com 5 cartas não colhe na hora: fica madura e colhe no próximo posicionamento."],
+    ["CRUZADA", "Colher duas ou mais de uma vez soma os multiplicadores de TODAS elas — e o Tear multiplica a soma. É por isso que vale esperar."],
+    ["DUPLA · TRIPLA · CRUZ TOTAL", "Duas, três e quatro linhas no mesmo evento. A Cruz Total cabe exata numa mesa Grande."],
+    ["TEAR", "Sobe +1 a cada colheita e +1 a cada 4 cartas, até 8. Multiplica o evento inteiro."],
+    ["AVESSO", "Toda colheita prensa as duas maiores cartas da linha numa carta de duas caras. Uma vale na fileira, a outra na coluna. Toque de novo para girar."],
+    ["DIAGONAIS", "As duas diagonais também são mãos, e pagam 60%."],
+    ["LINHA FRACA", "Carta Alta e Par devolvem +1 Tear, +2 descartes e +1 na mão. E ganham fichas por quase-flush e quase-escada."],
+    ["O FIM", "Bateu a meta, venceu na hora. Acabaram as jogadas, cada linha com 3 ou 4 cartas ainda paga metade."],
+]
+
+func _regras() -> void:
+    draw_rect(Rect2(Vector2.ZERO, size), Color(Temas.FUNDO, 0.90))
+    var larg := minf(size.x - 48.0, 980.0)
+    var caixa := Rect2((size.x - larg) * 0.5, 24.0, larg, size.y - 48.0)
+    Pintura.caixa(self, caixa, 14, 0.97)
+
+    var f := Temas.fonte_do_tema()
+    var ff := Temas.fonte_do_tema(true)
+    var margem := 26.0
+    var y0 := caixa.position.y + 40.0
+
+    draw_string(ff, Vector2(caixa.position.x + margem, y0), "REGRAS",
+                HORIZONTAL_ALIGNMENT_LEFT, -1, Temas.T_TITULO, Temas.TEXTO)
+    y0 += 26.0
+    draw_rect(Rect2(caixa.position.x + margem, y0, caixa.size.x - margem * 2, 1),
+              Color(Temas.FILETE, 0.25))
+    y0 += 22.0
+
+    ## Duas colunas quando há largura; uma quando não há. E o que não couber vai
+    ## para a página seguinte — texto cortado no rodapé é o defeito clássico de
+    ## painel de regra, e ele só aparece quando alguém olha.
+    var colunas := 2 if caixa.size.x >= 700.0 else 1
+    var vao := 28.0
+    var col_larg := (caixa.size.x - margem * 2 - vao * (colunas - 1)) / float(colunas)
+    var fundo_util := caixa.end.y - 52.0
+
+    var i := _regras_de
+    for col in colunas:
+        var x := caixa.position.x + margem + col * (col_larg + vao)
+        var y := y0
+        while i < REGRAS.size():
+            var titulo := str(REGRAS[i][0])
+            var corpo := str(REGRAS[i][1])
+            var alt_corpo := f.get_multiline_string_size(
+                corpo, HORIZONTAL_ALIGNMENT_LEFT, col_larg, Temas.T_CORPO).y
+            var altura := alt_corpo + 16.0 + (22.0 if titulo != "" else 0.0)
+            if y + altura > fundo_util:
+                break
+            if titulo != "":
+                draw_string(ff, Vector2(x, y + 14), titulo, HORIZONTAL_ALIGNMENT_LEFT,
+                            -1, Temas.T_ROTULO, Temas.DESTAQUE)
+                y += 22.0
+            draw_multiline_string(f, Vector2(x, y + 14), corpo,
+                                  HORIZONTAL_ALIGNMENT_LEFT, col_larg, Temas.T_CORPO,
+                                  -1, Temas.TEXTO if titulo == "" else Temas.TEXTO_SUAVE)
+            y += alt_corpo + 16.0
+            i += 1
+    _regras_ate = i
+
+    var rodape := "toque em qualquer lugar para voltar"
+    if _regras_ate < REGRAS.size():
+        rodape = "toque para ver o resto"
+    Pintura.centrado(self, f, Rect2(caixa.position.x, caixa.end.y - 40,
+                                    caixa.size.x, 26), rodape, Temas.T_ROTULO,
+                     Temas.TEXTO_SUAVE)
 
 func _fim_de_mesa() -> void:
     ## O véu escurece a mesa sem escondê-la: o jogador precisa ver o tabuleiro
