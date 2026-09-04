@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "godot": {
+      "command": "${MCP_GODOT_PYTHON:-python3}",
+      "args": ["${MCP_GODOT_DIR:-../mcp-godot-desenvolvimento}/server.py"]
+    }
+  }
+}
