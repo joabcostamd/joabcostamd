@@ -139,7 +139,117 @@ não vira logo: são duas letras sem forma própria no meio de um nome.
 
 ---
 
-## 4. Comparação final
+## 3-bis. Segunda rodada de candidatos
+
+Pedido: **memorável, lendário, que explique o jogo, e curto.** Esses quatro
+brigam entre si — descritivo explica e não é lendário; mítico é lendário e não
+explica. O ponto de equilíbrio é um **composto**: uma palavra concreta do gênero
+colada numa palavra de peso.
+
+### Campos que já estão queimados (não insistir)
+
+| Raiz | O que existe |
+|---|---|
+| **Spire** | *Spirefall* (Steam), *Everspire*, *Evershire* (Steam), *Nullspire*, *Spire*, *Spire: The City Must Fall* |
+| **Endless Tower** | *Monos: The Endless Tower*, *Endless Tower*, *Endless Tower Survivors*, *Adventurer Manager – Endless Tower* |
+| **Eternal Tower** | *Eternal Towers* (Steam, mesmo gênero) |
+| **Infinite/Infinity + TD** | *Infinitode 2*, *Tower Defense: Infinite War*, *Geometry Defense: Infinite* |
+| **Aeterna** | Sete jogos e um estúdio |
+
+### Campos limpos
+
+Nada encontrado em nenhuma busca — Steam, itch.io, IGDB, lojas de celular:
+
+**SELFSIEGE** · **AEONHOLD** · **TOWERWAKE** · **LASTHOLD** · **TOWER ZERO**
+
+---
+
+### ★★ SELFSIEGE
+
+> **SELFSIEGE**
+> *You are the siege* / *O cerco é você*
+
+Nove letras, uma palavra, e **o jogo inteiro cabe nela**: o Enxame são as
+versões anteriores da torre, então quem te cerca é você. É a revelação do final
+virando o título — a pessoa só entende o nome depois de jogar, e aí ele fica.
+
+`siege` sinaliza o gênero (defesa) sem ser descritivo. O som é estranho e duro,
+que é o que faz um nome grudar.
+
+| Critério | Nota |
+|---|---|
+| Memorável | **5** — palavra inventada, ninguém esquece |
+| Lendário | **5** — soa a mito, não a produto |
+| Explica | **3** — diz "cerco", não diz "torre" nem "idle" |
+| Curto | **5** — 9 letras, uma palavra |
+| Logo | **5** — duas metades simétricas, ótimo para neon |
+
+---
+
+### ★ AEONHOLD
+
+> **AEONHOLD**
+> *The hold that outlasts* / *O baluarte que sobra*
+
+Oito letras. `aeon` é a eternidade — a parte infinita — e `hold` é ao mesmo tempo
+o baluarte e o ato de segurar. **Um baluarte eterno**, dito em duas sílabas.
+
+Explica melhor que SELFSIEGE e é menos original: `aeon` é palavra muito usada em
+fantasia, então ele soa familiar. Familiar é bom para entender e ruim para
+lembrar.
+
+| Critério | Nota |
+|---|---|
+| Memorável | 4 · Lendário | **5** · Explica | 4 · Curto | **5** · Logo | 4 |
+
+---
+
+### ★ TOWERWAKE
+
+> **TOWERWAKE**
+> *Nothing sleeps here* / *Aqui nada dorme*
+
+Nove letras, e `wake` faz três trabalhos ao mesmo tempo: **velar** (o jogo é
+idle, você fica acordado junto), **o rastro** que algo deixa ao passar (as torres
+anteriores), e **despertar**. Contém `TOWER`, que é a palavra que o público do
+gênero digita na busca.
+
+É o mais completo dos três em "explica o jogo". Perde em som: a junção
+`er`+`wa` trava um pouco na boca.
+
+| Critério | Nota |
+|---|---|
+| Memorável | 4 · Lendário | 4 · Explica | **5** · Curto | **5** · Logo | 4 |
+
+---
+
+## 3-ter. Comparação de todos os limpos
+
+| Nome | Memorável | Lendário | Explica | Curto | Logo | **Soma** |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|
+| **SELFSIEGE** | 5 | 5 | 3 | 5 | 5 | **23** |
+| **TOWERWAKE** | 4 | 4 | 5 | 5 | 4 | **22** |
+| **TOWER ZERO** | 4 | 4 | 5 | 5 | 5 | **23** |
+| **AEONHOLD** | 4 | 5 | 4 | 5 | 4 | **22** |
+| LASTHOLD | 3 | 4 | 4 | 5 | 4 | 20 |
+
+*(5 = melhor)*
+
+**Empate no topo, e os dois vencedores querem coisas diferentes:**
+
+**TOWER ZERO** é a escolha segura. Contém a palavra do gênero, sai da lore, e
+qualquer pessoa entende que é sobre uma torre antes de ler uma linha.
+
+**SELFSIEGE** é a escolha com ambição. Ele não explica o gênero — ele explica a
+IDEIA, e é a única das cinco que alguém repetiria numa conversa. Nome assim faz
+o jogo ser lembrado; nome descritivo faz o jogo ser achado.
+
+Se o plano é depender da busca da Steam, TOWER ZERO. Se o plano é depender de
+boca a boca e de imprensa, SELFSIEGE.
+
+---
+
+## 4. Comparação final (primeira rodada)
 
 | Nome | Colisão | Achável | Sinal de gênero | 20 idiomas | Logo | **Soma** |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|
