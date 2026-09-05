@@ -1,0 +1,29 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh\"",
+            "timeout": 180
+          }
+        ]
+      }
+    ]
+  },
+  "env": {
+    "GODOT_VERSAO": "4.7.2-stable"
+  },
+  "permissions": {
+    "allow": [
+      "Bash(godot --headless:*)",
+      "Bash(./testar.sh)",
+      "Bash(.claude/scripts/novo-jogo.sh:*)",
+      "Bash(.claude/scripts/preparar-ambiente.sh)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)"
+    ]
+  }
+}
