@@ -112,7 +112,7 @@ Cada tema declara o seu **estilo de fundo**, não só a sua cor:
 |---|---|---|
 | `brilho` | brilho radial em 18 camadas fracas | Casino, Veludo, Ameixa |
 | `grade` | linhas acesas ortogonais + horizonte | Neon |
-| `tecido` | trama cruzada de 4 px quase invisível | Feltro |
+| `tecido` | trama cruz de 4 px quase invisível | Feltro |
 
 ## 9. A escala tipográfica
 

@@ -2,7 +2,7 @@ extends SceneTree
 ## Suíte da mesa — o turno inteiro, das regras R03 a R22.
 ##
 ## Onde a suíte do núcleo verifica aritmética, esta verifica COMPORTAMENTO: se a
-## linha cheia realmente espera, se a cruzada realmente paga mais, se a carta
+## linha cheia realmente espera, se a cruz realmente paga mais, se a carta
 ## não some da conta, se o fecho realmente vira a mesa.
 ##
 ##     godot --headless --script res://testes/mesa.gd
@@ -13,7 +13,7 @@ var _falhou := 0
 func _init() -> void:
     _nascimento()
     _janela()
-    _cruzada()
+    _cruz()
     _parcela()
     _tear()
     _avesso()
@@ -120,7 +120,7 @@ func _janela() -> void:
     ok(seguinte["colheita"], "o posicionamento seguinte colhe")
     igual(seguinte["linhas"].size(), 1, "colheu uma linha")
     igual(int(seguinte["linhas"][0]["linha"]), 0, "colheu a fileira 1")
-    igual(seguinte["grau"], "colheita", "uma linha só é 'colheita', não CRUZADA")
+    igual(seguinte["grau"], "colheita", "uma linha só é 'colheita', não CRUZ")
     ok(m.linhas_maduras().is_empty(), "não sobrou linha madura")
     ok(m.conservacao(), "a conta fecha depois de colher")
 
@@ -142,10 +142,10 @@ func _janela() -> void:
             ok(bool(ultimo["acabou"]),
                "o último posicionamento encerra a mesa")
 
-# ─────────────────────── R12 — a cruzada ───────────────────────
+# ─────────────────────── R12 — a cruz ───────────────────────
 
-func _cruzada() -> void:
-    secao("a CRUZADA (R09/R12)")
+func _cruz() -> void:
+    secao("a CRUZ (R09/R12)")
     var m := Mesa.new(Metas.CHEFE, 1, 3)
 
     ## A ordem importa, e é ela que o jogador precisa aprender: com a janela de
@@ -163,7 +163,7 @@ func _cruzada() -> void:
     var evento := qualquer(m, 9)
     ok(evento["colheita"], "completar a fileira 2 dispara a colheita")
     igual(evento["linhas"].size(), 2, "as duas fileiras colhem no mesmo evento")
-    ok(bool(evento["cruzada"]), "e isso é uma CRUZADA")
+    ok(bool(evento["cruz"]), "e isso é uma CRUZ")
     igual(evento["grau"], "DUPLA", "duas linhas se chamam DUPLA")
 
     ## R12 — o fator é a SOMA dos multiplicadores, vezes o Tear, e é COMUM.
@@ -189,7 +189,7 @@ func _cruzada() -> void:
     igual(int(evento["pontos_evento"]),
           int(evento["linhas"][0]["pontos"]) + int(evento["linhas"][1]["pontos"]),
           "o evento é a soma das linhas")
-    ok(m.conservacao(), "a conta fecha depois da cruzada")
+    ok(m.conservacao(), "a conta fecha depois da cruz")
 
     ## E o Tear subiu uma vez por linha colhida.
     igual(m.tear, 1 + 2 + int(m.posicionamentos_usados / Metas.TEAR_POR_TIQUE)
@@ -371,7 +371,7 @@ func _mesas_inteiras() -> void:
     var invalidos := 0
     var vitorias := 0
     var mesas := 0
-    var com_cruzada := 0
+    var com_cruz := 0
     var com_avesso := 0
 
     for s in 60:
@@ -396,8 +396,8 @@ func _mesas_inteiras() -> void:
                 if not bool(r["valido"]):
                     invalidos += 1
                     break
-                if bool(r["cruzada"]):
-                    com_cruzada += 1
+                if bool(r["cruz"]):
+                    com_cruz += 1
                 if not r["avessos"].is_empty():
                     com_avesso += 1
             if not m.conservacao():
@@ -410,7 +410,7 @@ func _mesas_inteiras() -> void:
           "a conta 52 = mão + grade + colhida + baralho + descarte nunca quebrou")
     igual(mao_morta, 0, "nunca faltou casa vazia nem carta na mão")
     igual(invalidos, 0, "nenhum posicionamento inválido")
-    ok(com_cruzada > 0, "cruzadas aconteceram (%d)" % com_cruzada)
+    ok(com_cruz > 0, "cruzes aconteceram (%d)" % com_cruz)
     ok(com_avesso > 0, "Avessos foram forjados (%d)" % com_avesso)
     ok(vitorias >= 0, "vitórias contadas: %d de 180" % vitorias)
 

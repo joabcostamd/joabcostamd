@@ -156,7 +156,7 @@ func _geometria() -> void:
     igual(int(punido.conta_do_evento([0])["soma_dos_mults"]),
           Maos.MULTIPLICADOR[Maos.FLUSH], "a fileira segue inteira")
 
-    ## Grau 6 — a cruzada só soma mults de categorias diferentes.
+    ## Grau 6 — a cruz só soma mults de categorias diferentes.
     var g6 := Desafio.tabuleiro(6)
     var normal := Mesa.new(Metas.CHEFE, 1, 5, 1)
     var exigente := Mesa.new(Metas.CHEFE, 1, 5, 1, g6)

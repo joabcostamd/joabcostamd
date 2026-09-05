@@ -23,7 +23,7 @@ núcleo cru: 14,3 / seca 7 / 0,43 / Tear 2 / 10,9%). **O motor está certo; o al
 
 **A base COMBINADA real (PULSO 0,35 + TIQUE 4), medida aqui pela primeira vez em 2.000 mesas:**
 
-`recompensa 65,5% · gap mediano 1 · seca 2/4 · eventos 2,30 · cruzadas 0,000 (100% das mesas sem)
+`recompensa 65,5% · gap mediano 1 · seca 2/4 · eventos 2,30 · cruzes 0,000 (100% das mesas sem)
 · pontos 1.346 · pontos/meta 0,944 · maior evento 2.736 · pico/mediana 8,44× · Tear 6 (máx 7)
 · vitória 39,9% (R1 95,8 · R2 78,4 · R3 45,6 · R4 13,8 · R5 4,8 · R6 0,3) · m5 = 57,7%`
 
@@ -47,9 +47,9 @@ porque o elo 2 nunca acontece. Por isso a coluna "Prumo" é uma só.
 | mesas com cadeia 2+ | 0,0% | **0,0%** | 3,4% | 55–70% ✘ |
 | mesas com cadeia 3+ | 0,0% | **0,0%** | 0,07% | 8–15% ✘ |
 | maior cadeia observada | 1 | **1** | 3 | — |
-| cruzadas/mesa (gulosa) | 0,000 | **0,000** | 0,031 | ≥0,25 ✘ |
-| cruzadas por POUSO | 0,000 | **0,000** | 0,000 | maioria ✘ |
-| pct. mesas com zero cruzada | 100% | **100%** | 96,9% | — |
+| cruzes/mesa (gulosa) | 0,000 | **0,000** | 0,031 | ≥0,25 ✘ |
+| cruzes por POUSO | 0,000 | **0,000** | 0,000 | maioria ✘ |
+| pct. mesas com zero cruz | 100% | **100%** | 96,9% | — |
 | cartas consumidas por evento | 5,00 | **4,32** | 4,34 | 5→4 ✔ |
 | eventos/mesa | 2,30 | **2,47** | 2,46 | — |
 | turnos com recompensa | 65,5% | **68,5%** | 69,4% | ≥65% ✔ |
@@ -90,9 +90,9 @@ no instante da queda.
 
 1. **A pista quase nunca existe.** Para a gulosa: **zero vezes em 3.866 quedas.** Nunca. A gulosa
    nunca deixa uma linha parada em 4/5 — fechar é sempre localmente correto. É *literalmente o mesmo
-   diagnóstico* que a auditoria deu para a cruzada. O Prumo foi vendido como "a rampa de acesso que
+   diagnóstico* que a auditoria deu para a cruz. O Prumo foi vendido como "a rampa de acesso que
    ensina a segurar uma linha em 4/5"; ele **pressupõe** essa habilidade em vez de ensiná-la. A pista
-   de pouso é a cruzada com outro nome, e por isso herda o problema inteiro dela.
+   de pouso é a cruz com outro nome, e por isso herda o problema inteiro dela.
 2. **Quando a pista existe, a queda erra.** A grade tem ~9 cartas em 25 casas; a primeira casa vazia
    abaixo está a 1,1 linha de distância e quase nunca é o buraco único de uma linha em 4/5.
    `primeira_vazia_abaixo` erra 78% das pistas. Uma regra de MIRA (pousar na primeira casa vazia
@@ -103,7 +103,7 @@ no instante da queda.
 E há um terceiro fato estrutural que o documento não registra: **a viajante nunca pode fechar a
 própria coluna** (ela sai de uma casa e entra em outra da mesma coluna, a contagem não muda), então
 das 12 linhas vivas só **5 horizontais + 2 diagonais** podem ser fechadas por pouso — e a horizontal
-de destino precisa estar em 4/5 com o buraco exatamente na coluna certa. A "cruzada de pouso", que
+de destino precisa estar em 4/5 com o buraco exatamente na coluna certa. A "cruz de pouso", que
 era o argumento central da proposta, mediu **0,000 em todas as políticas, inclusive na caçadora**.
 
 ---
@@ -117,7 +117,7 @@ teto duro de 3 eventos do C03, e ele funciona: eventos/mesa 2,30 → 2,47, turno
 não mais.
 
 Mas isso é um **buff de conservação disfarçado de mecânica de pico**. Ele custa 40 linhas, não
-produz um único momento novo, não move a cruzada de 0,000, não move o fator explosão (8,44 → 8,29)
+produz um único momento novo, não move a cruz de 0,000, não move o fator explosão (8,44 → 8,29)
 e empurra pontos/meta para **1,003** — quebrando o teto que o próprio painel escreveu.
 
 ---
@@ -143,7 +143,7 @@ Três coisas que eu recomendo que sobrevivam:
    conservação — mas ele deve ser julgado como **economia de cartas**, não como dopamina.
 3. **A habilidade "segurar uma linha em 4/5" continua órfã.** O Prumo foi escolhido pelo painel
    como a rampa pedagógica para ela; a medição mostra que ele exige a habilidade em vez de ensiná-la.
-   Quem for atacar a cruzada tem de atacá-la de frente (preço, como a Proposta 5; ou risco, como
+   Quem for atacar a cruz tem de atacá-la de frente (preço, como a Proposta 5; ou risco, como
    Avesso/Agulha), não por via oblíqua.
 
 ---

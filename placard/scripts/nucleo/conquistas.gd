@@ -21,7 +21,7 @@ const LISTA: Array[Dictionary] = [
     # ── o loop, aprendido ──
     {"id": "primeira_colheita", "nome": "A primeira linha", "onde": EVENTO,
      "como": "colha uma linha", "chave": "colheitas", "alvo": 1},
-    {"id": "dupla", "nome": "Cruzada", "onde": EVENTO,
+    {"id": "dupla", "nome": "Cruz", "onde": EVENTO,
      "como": "colha duas linhas de uma vez", "chave": "linhas_no_evento", "alvo": 2},
     {"id": "tripla", "nome": "Tripla", "onde": EVENTO,
      "como": "colha três linhas de uma vez", "chave": "linhas_no_evento", "alvo": 3},
@@ -29,7 +29,7 @@ const LISTA: Array[Dictionary] = [
      "como": "colha quatro linhas de uma vez", "chave": "linhas_no_evento", "alvo": 4},
     {"id": "cruz_do_centro", "nome": "O centro do tabuleiro", "onde": EVENTO,
      "como": "colha as quatro linhas que passam por C3",
-     "chave": "cruzada_do_centro", "alvo": 1},
+     "chave": "cruz_do_centro", "alvo": 1},
 
     # ── as mãos ──
     {"id": "quadra", "nome": "Quatro iguais", "onde": EVENTO,

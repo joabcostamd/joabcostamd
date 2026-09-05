@@ -1,4 +1,4 @@
-# BANCADA DO CANDIDATO 1 — "SÓ A CRUZADA LEVANTA O TEAR"
+# BANCADA DO CANDIDATO 1 — "SÓ A CRUZ LEVANTA O TEAR"
 
 ## VEREDITO: **REPROVADA**
 
@@ -20,7 +20,7 @@ gulosa, e todas as outras políticas pioram. Ela cobra Tear e espetáculo e não
   ele "perderia" só por ficar mais difícil).
 - AVESSO ligado, AGULHA desligada em tudo.
 - **Asserção de teto duro no código** (`push_error` acima de `floor((posic+sementes)/9)`
-  cruzadas: 2 / 1 / 2). Disparou **0 vezes em 36.072 mesas**.
+  cruzes: 2 / 1 / 2). Disparou **0 vezes em 36.072 mesas**.
 - 1.002 mesas por célula por política, sementes pareadas; m5 em 200 mesas.
 
 ---
@@ -29,9 +29,9 @@ gulosa, e todas as outras políticas pioram. Ela cobra Tear e espetáculo e não
 
 | métrica | declarado no briefing | medido aqui |
 |---|---|---|
-| cruzadas/mesa gulosa | 0,000 | **0,0000** |
-| cruzadas/mesa caçadora b1 | 0,146 | **0,1457** |
-| cruzadas/mesa profunda | 0,015 | **0,015** |
+| cruzes/mesa gulosa | 0,000 | **0,0000** |
+| cruzes/mesa caçadora b1 | 0,146 | **0,1457** |
+| cruzes/mesa profunda | 0,015 | **0,015** |
 | % mesas com zero (gulosa) | 100% | **100,0%** |
 | % turnos com recompensa | 65,7% | **64,8%** |
 | seca mediana / p90 | 2 / 4 | **2 / 4** |
@@ -58,7 +58,7 @@ Não é a caçadora da b1 (que é gulosa com veto e nunca escolhe alvo). Esta es
 braços**; nunca colhe de lado durante a montagem; usa os descartes só para a qualidade das
 duas linhas alvo; troca de alvo quando `braços_faltantes + 1 > orçamento restante`.
 
-Na BASE: **1,4511 cruzadas/mesa, 0,0% de mesas com zero, máximo 2.**
+Na BASE: **1,4511 cruzes/mesa, 0,0% de mesas com zero, máximo 2.**
 Por tipo de mesa: **Pequena 1,616 · Grande 1,000 (100% das mesas, teto absoluto 1) · Chefe
 1,742**. Ela resolve o tabuleiro: encosta no teto aritmético do briefing em todas as três mesas.
 
@@ -93,7 +93,7 @@ a da gulosa — e ela marca 0,0000 em tudo.
 | % colheitas adiadas (plan) | 63,2 | 63,6 | 63,6 | 63,8 | 63,8 | 63,5 | 63,6 | 63,2 | 63,4 |
 | asserção de teto quebrada | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 
-`+nlin` = a cruzada dá +1 por linha (como a base); `+1/+2/+3` = valor fixo; `tqN` = TIQUE do
+`+nlin` = a cruz dá +1 por linha (como a base); `+1/+2/+3` = valor fixo; `tqN` = TIQUE do
 Tear a cada N posicionamentos (`tq0` = desligado). Em todas as variantes
 `tear_ganho_simples = 0`, que é a regra do candidato.
 
@@ -103,7 +103,7 @@ Tear a cada N posicionamentos (`tq0` = desligado). Em todas as variantes
    30,5–36,7%. A reprovação não é por dano lateral.
 2. **A gulosa é 0,0000 em todas as 9 células**, exatamente como a base. O critério declarado
    pedia > 0,25.
-3. **Todo delta de cruzada é negativo.** Profunda 0,015 → 0,010–0,017. Caçadora 0,1457 →
+3. **Todo delta de cruz é negativo.** Profunda 0,015 → 0,010–0,017. Caçadora 0,1457 →
    0,1397–0,1427. Planejadora 1,4511 → 1,3144–1,4351. A regra não melhorou uma única política.
 4. **A DISTÂNCIA encolhe pelo lado errado.** O briefing avisou que a métrica boa é
    planejadora − gulosa, e que encolher é bom. Aqui ela encolhe (1,4511 → 1,3144) porque a
@@ -116,7 +116,7 @@ Tear a cada N posicionamentos (`tq0` = desligado). Em todas as variantes
    evento 1.710 (16,7% da base) e explosão 7,92× (metade). Isso é abaixo do "cai abaixo de 4 e
    a regra se autodestrói" por uma margem larga. V1/V2/V5/V6 ficam em Tear médio **4,43** —
    raspando o limiar. Só V8 (TIQUE a cada 2) recupera o Tear, e recupera pelo TIQUE, não pela
-   cruzada: é a regra financiando-se com aquilo que ela dizia substituir.
+   cruz: é a regra financiando-se com aquilo que ela dizia substituir.
 
 ### Prova de que a regra é inerte por construção, não por falta de tuning
 
@@ -134,9 +134,9 @@ acontecido com o experimento de 4×/20×/100×.
 
 ### Dial morto
 
-`tear_ganho_cruzada` ∈ {+1 por linha, +1, +2, +3} devolve números **idênticos até a quarta
+`tear_ganho_cruz` ∈ {+1 por linha, +1, +2, +3} devolve números **idênticos até a quarta
 casa** para gulosa, profunda e caçadora (V1 = V2 = V5 = V6). Só a planejadora os distingue, por
-0,004 cruzada/mesa — ruído. É mais um dial de zero bit, na mesma prateleira dos já reprovados na
+0,004 cruz/mesa — ruído. É mais um dial de zero bit, na mesma prateleira dos já reprovados na
 seção 6.5 do núcleo polido. **Não vire parâmetro.**
 
 ---
@@ -145,8 +145,8 @@ seção 6.5 do núcleo polido. **Não vire parâmetro.**
 
 **Nenhum.** Se a regra tiver de entrar por razão narrativa (ela já existe como o chefe 6,
 *O Tear Preso*), a única versão que não demole o núcleo é a **V8** — `tear_ganho_simples=0`,
-`tear_ganho_cruzada=2`, TIQUE a cada **2** posicionamentos, K=3,04 — que devolve Tear mediano 8
-e maior evento 13.680. Mas ela compra isso com o TIQUE e continua entregando 0,0000 cruzada
+`tear_ganho_cruz=2`, TIQUE a cada **2** posicionamentos, K=3,04 — que devolve Tear mediano 8
+e maior evento 13.680. Mas ela compra isso com o TIQUE e continua entregando 0,0000 cruz
 gulosa. **Como modificador de chefe: serve. Como regra do núcleo: não.**
 
 ---
@@ -156,7 +156,7 @@ gulosa. **Como modificador de chefe: serve. Como regra do núcleo: não.**
 **(a) A escada 9/13/17 existe, é a estratégia dominante, e ninguém a tinha medido.**
 Planejadora dedicada, 1.002 mesas, na BASE:
 
-| figura | posic. | cruzadas/mesa | % mesas sem | razão pts/meta | vitória | maior evento | teto morderia |
+| figura | posic. | cruzes/mesa | % mesas sem | razão pts/meta | vitória | maior evento | teto morderia |
 |---|---|---|---|---|---|---|---|
 | DUPLA | 9 | 1,451 | 0,0% | 1,188 | 64,2% | 33.516 | 12,4% |
 | TRIPLA | 13 | 1,000 | 0,0% | 2,185 | 79,6% | 74.752 | 57,6% |
@@ -173,7 +173,7 @@ Cruzes Totais**, e o fator cai de 2,313 / 5,417 / 12,403 para **2,085 / 3,134 / 
 com o teto ligado, a **Cruz TOTAL (17 posicionamentos) passa a valer MENOS que a TRIPLA (13)**.
 Pagar mais passa a render menos. É o colapso silencioso que o briefing previu, agora com número.
 
-**(c) A escada 2×/3×/4× não existe em leitura nenhuma.** Fator medido da cruzada sobre as
+**(c) A escada 2×/3×/4× não existe em leitura nenhuma.** Fator medido da cruz sobre as
 mesmas mãos colhidas em separado:
 
 | leitura | dupla | tripla | total | teto mordeu |
@@ -192,10 +192,10 @@ escrito, não herdado.** (Também confirmado: sob a leitura SOMA o teto realment
 que montar uma dupla é só 17% mais seco que o jogo guloso. Medido: durante a montagem a
 planejadora paga em **47,5% dos turnos** contra 64,8% da gulosa, com **seca mediana 4 e p90 8**
 contra 2 e 4. A conta de "4 pulsos em 9 posicionamentos" ignorava o `pulso_max_linha = 2` e os
-turnos de montagem que não geram pulso nenhum. **Caçar cruzada continua sendo um deserto.**
+turnos de montagem que não geram pulso nenhum. **Caçar cruz continua sendo um deserto.**
 
 **(e) O critério intencional × acidental proposto no briefing não funciona.** Ele classifica
-**99,7% das cruzadas da planejadora como acidentais**, porque no instante do gatilho fechar duas
+**99,7% das cruzes da planejadora como acidentais**, porque no instante do gatilho fechar duas
 linhas *é* sempre a melhor jogada gulosa. O critério olha o último turno; a intenção está nos
 oito anteriores. O substituto barato que funciona é `pct_colheitas_adiadas_de_propósito`:
 **0,0% na gulosa, 52,1% na profunda, 63,2% na planejadora.**
@@ -213,12 +213,12 @@ deflacionário vai produzir, e que engana quem comparar vitória sem olhar pico/
   o valor de fechar agora com o valor do Tear depois. Nenhuma política de 1 nível faz isso, e o
   Tear é fator comum — a gulosa não tem como enxergar o incentivo nem que quisesse. `hold 4/5`
   ficou em 1,0 em todas as células: **ninguém segurou nada.**
-- **Desligar o TIQUE** (V3/V4) para "forçar" a cruzada a ser a única fonte de Tear. Como a
-  cruzada não acontece, o Tear congela em 1, o evento máximo cai 83% e o jogo perde a escalada.
+- **Desligar o TIQUE** (V3/V4) para "forçar" a cruz a ser a única fonte de Tear. Como a
+  cruz não acontece, o Tear congela em 1, o evento máximo cai 83% e o jogo perde a escalada.
   É exatamente o risco declarado, e ele se realizou.
 - **Compensar com TIQUE mais rápido** (V7 tq3, V8 tq2). Recupera o Tear e o espetáculo, mas
-  por uma via que não tem nada a ver com a cruzada. É trocar a regra por outra e chamar de a mesma.
-- **Aumentar o prêmio da cruzada via Tear** (V6, +3 por cruzada). Zero bits. Pela quarta vez
+  por uma via que não tem nada a ver com a cruz. É trocar a regra por outra e chamar de a mesma.
+- **Aumentar o prêmio da cruz via Tear** (V6, +3 por cruz). Zero bits. Pela quarta vez
   neste projeto, mexer no preço de um evento que a política nunca vê não muda nada.
 - **A cláusula "planejadora ≥ 1,0" como critério.** Ela é atendida pela base. Qualquer bancada
   que reporte "PARCIAL" com base nela está reportando a qualidade da própria planejadora.

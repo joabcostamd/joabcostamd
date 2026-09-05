@@ -46,6 +46,21 @@ func _preparar() -> void:
 
 ## Toca uma onda montada agora. `forma` escolhe o timbre; `envelope` decide se é
 ## um toque seco ou uma nota que decai.
+## Cala todas as vozes.
+##
+## Higiene de desligamento: nenhuma voz continua tocando depois que o nó morre.
+##
+## Foi escrito tentando curar uma trava de saída do Godot e NÃO curou — a trava
+## persistiu igual na medição de 30 rodadas. Fica porque é correto de qualquer
+## forma, mas não se engane: não é conserto de nada.
+func silenciar() -> void:
+    for v in _vozes:
+        if is_instance_valid(v) and v.playing:
+            v.stop()
+
+func _exit_tree() -> void:
+    silenciar()
+
 func tocar(frequencia: float, duracao: float, ganho := 0.35, forma := 0,
            deslize := 0.0) -> void:
     if not ligado or volume <= 0.0:

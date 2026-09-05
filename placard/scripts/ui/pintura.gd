@@ -66,7 +66,7 @@ static func _fundo_grade(alvo: CanvasItem, tamanho: Vector2, poeira: Array[Vecto
     alvo.draw_line(Vector2(tamanho.x * 0.5, 0), Vector2(tamanho.x * 0.5, tamanho.y),
               Color(Temas.ACENTO, 0.05), 1.0)
 
-## Trama fina de feltro. Linhas cruzadas quase invisíveis: de perto some, de
+## Trama fina de feltro. Linhas cruzes quase invisíveis: de perto some, de
 ## longe dá textura de pano.
 static func _fundo_tecido(alvo: CanvasItem, tamanho: Vector2, poeira: Array[Vector3]) -> void:
     var passo := 4.0

@@ -54,9 +54,9 @@ func _initialize() -> void:
 	var fichas := (40 + 48) + (100 + 40)
 	var teto := 24 + 4 * 4
 	var mult: int = min(teto, 4 + 8 + 1)
-	ok("§4.4 fichas da cruzada", fichas, 228)
-	ok("§4.4 mult da cruzada", mult, 13)
-	ok("§4.4 pontos da cruzada", fichas * mult, 2964)
+	ok("§4.4 fichas da cruz", fichas, 228)
+	ok("§4.4 mult da cruz", mult, 13)
+	ok("§4.4 pontos da cruz", fichas * mult, 2964)
 	ok("§4.4 total", 1180 + fichas * mult, 4144)
 
 	# --- §6.2 prova do teto da rodada 6
@@ -64,7 +64,7 @@ func _initialize() -> void:
 	var fichas_sc := (100 + 2 * 35) + 40
 	ok("§6.2 fichas full nivel 3", fichas_full, 130)
 	ok("§6.2 fichas seqcor nivel 2", fichas_sc, 210)
-	ok("§6.2 cruzada tear 4", (fichas_full + fichas_sc) * min(48, 7 + 10 + 4), 7140)
+	ok("§6.2 cruz tear 4", (fichas_full + fichas_sc) * min(48, 7 + 10 + 4), 7140)
 
 	# --- geometria R03b
 	ok("C3 pertence a 4 linhas", Nucleo.CELL_LINHAS[12].size(), 4)

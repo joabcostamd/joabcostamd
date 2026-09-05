@@ -11,25 +11,25 @@ código e som sintetizado em tempo real** — não há um arquivo de imagem nem 
 ## Começar
 
     ./setup.sh                                   # Godot 4.7.2 + xvfb
-    cd cruzada && godot --path . res://cenas/jogo.tscn
+    cd placard && godot --path . res://cenas/jogo.tscn
 
 ## Verificar
 
-    cd cruzada && ./testar.sh
+    cd placard && ./testar.sh
 
-522 asserções, a aferição do motor contra a bancada de simulação, 25 capturas
+529 asserções, a aferição do motor contra a bancada de simulação, 25 capturas
 mais a folha de contato, e os validadores de tipografia, layout e contraste.
 
 ## O jogo
 
 Você recebe cartas e escolhe **onde** colocá-las numa grade 5×5. Cada carta cai
 em uma fileira e em uma coluna ao mesmo tempo, então cada carta joga duas
-partidas de pôquer de uma vez. Fechar as duas juntas é a **cruzada** — e é onde
+partidas de pôquer de uma vez. Fechar as duas juntas é a **cruz** — e é onde
 o jogo paga, porque o evento soma os multiplicadores de todas as mãos colhidas
 e o Tear multiplica a soma.
 
 Daí a tensão inteira: fechar uma linha agora é ponto garantido, mas **queima** a
-carta que faria a cruzada valer o triplo. A habilidade central do jogo é saber
+carta que faria a cruz valer o triplo. A habilidade central do jogo é saber
 recusar pontos.
 
 - **18 mesas** por travessia, dificuldade escolhida por você, com a expectativa
@@ -45,7 +45,7 @@ recusar pontos.
 |---|---|
 | `placard/scripts/nucleo/` | o jogo **sem uma linha de interface** — mesa, mãos, geometria, metas, economia, loja, itens, conquistas. Roda no terminal |
 | `placard/scripts/ui/` | as 7 telas, o som sintetizado e o juice |
-| `placard/testes/` | 522 asserções |
+| `placard/testes/` | 529 asserções |
 | `placard/ferramentas/` | aferição, calibração, capturas e os validadores |
 | `placard/DESIGN.md` | **as regras, R01 a R46** — normativo, não descritivo |
 | `placard/HUD.md` | as três zonas, a proporção 5:7 e os números que fecham |

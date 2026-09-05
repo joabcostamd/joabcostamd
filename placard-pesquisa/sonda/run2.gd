@@ -27,7 +27,7 @@ func celula(grupo: String, nome: String, over: Dictionary, n: int, n_m5: int, po
 	salvar()
 	log_linha(grupo + "/" + nome + " dt=" + str(Time.get_ticks_msec() - t0) + "ms m5=" + str(r["m5_pct"])
 		+ " rec=" + str(r["pct_turnos_com_recompensa"]) + " razao=" + str(r["razao_pontos_meta_mediana"])
-		+ " vit=" + str(r["vitoria_pct"]) + " cruz=" + str(r["cruzadas_por_mesa_media"])
+		+ " vit=" + str(r["vitoria_pct"]) + " cruz=" + str(r["cruzes_por_mesa_media"])
 		+ " cor/mesa=" + str(r["coringas_criados_por_mesa"]) + " postos=" + str(r["coringas_por_mesa_media"]))
 
 func _init() -> void:

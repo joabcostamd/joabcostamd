@@ -42,7 +42,7 @@ const GEO_CASAS_LACRADAS := 2
 const GEO_COLUNA_PAGA_MENOS := 3
 const GEO_COLHIDA_NAO_VOLTA := 4
 const GEO_LOJA_PERDE_VAGA := 5
-const GEO_CRUZADA_SO_DIFERENTES := 6
+const GEO_CRUZ_SO_DIFERENTES := 6
 const GEO_LINHA_MORTA_POR_RODADA := 7
 const GEO_METAS_MAIORES := 8
 
@@ -53,7 +53,7 @@ const GEO_NOMES: PackedStringArray = [
     "colunas pagam um multiplicador a menos",
     "a pilha colhida não volta para a mesa seguinte",
     "a loja perde uma vaga",
-    "a cruzada só soma mults de categorias diferentes",
+    "a cruz só soma mults de categorias diferentes",
     "uma linha morre de vez a cada rodada",
     "as metas sobem 25%",
 ]
@@ -112,7 +112,7 @@ func expectativa() -> String:
         % [int(m["run"]), Pintura.decimal(float(m["mesas"]))]
 
 ## A ESTUFA. Não é versão de mentira: a coleção desbloqueia igual, e é onde o
-## jogo se aprende. Quem nunca viu uma cruzada não decide nada sobre ela.
+## jogo se aprende. Quem nunca viu uma cruz não decide nada sobre ela.
 static func estufa() -> Desafio:
     var d := Desafio.new()
     d.orcamento = 4

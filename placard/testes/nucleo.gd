@@ -204,7 +204,7 @@ func _pontos() -> void:
     var junto: int = (Maos.pontos_da_linha(fichas_t, fator_junto, false)
                       + Maos.pontos_da_linha(fichas_f, fator_junto, false))
     ok(junto > separado,
-       "a CRUZADA paga mais que as duas colheitas separadas — a razão da R08")
+       "a CRUZ paga mais que as duas colheitas separadas — a razão da R08")
     ok(float(junto) / float(separado) > 1.5,
        "e paga bem mais: pelo menos uma vez e meia")
 

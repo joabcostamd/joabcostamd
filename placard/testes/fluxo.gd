@@ -18,7 +18,12 @@ var _vitrines := 0
 
 const PERFIL_DO_TESTE := "user://teste-fluxo.save"
 
+## Segundos até o cão de guarda matar o teste. Generoso: uma run inteira jogada
+## pela política gulosa leva ~20 s numa máquina lenta.
+const TETO_DE_SEGUNDOS := 180.0
+
 func _ready() -> void:
+    _armar_cao_de_guarda()
     Temas.usar(Temas.PADRAO)
     Jogo.caminho_do_perfil = PERFIL_DO_TESTE
     DirAccess.remove_absolute(ProjectSettings.globalize_path(PERFIL_DO_TESTE))
@@ -35,6 +40,28 @@ func _ready() -> void:
     print("FLUXO OK — %d asserções" % _passou)
     get_tree().quit(0)
 
+## Um teste que trava é pior que um teste que falha: não dá diagnóstico, e ainda
+## segura a suíte inteira. Este projeto já perdeu 2,6 horas com um `fluxo` órfão
+## girando o laço principal a 100% de CPU.
+##
+## O buraco é estrutural, não de um laço específico: `_ready` é corrotina, e se
+## algo estourar dentro de um `await`, ela morre calada — o `quit()` no fim nunca
+## roda e o Godot headless gira para sempre. Nenhum limite de iteração pega isso,
+## porque o problema é justamente a linha que nunca chega.
+func _armar_cao_de_guarda() -> void:
+    var t := Timer.new()
+    t.wait_time = TETO_DE_SEGUNDOS
+    t.one_shot = true
+    t.timeout.connect(func() -> void:
+        print("")
+        print("FLUXO TRAVOU — %d s sem terminar, com %d asserções feitas."
+              % [int(TETO_DE_SEGUNDOS), _passou + _falhou])
+        print("   O fluxo é assíncrono: um erro dentro de um await mata a")
+        print("   corrotina em silêncio e o quit() final nunca acontece.")
+        get_tree().quit(1))
+    add_child(t)
+    t.start()
+
 func ok(condicao: bool, descricao: String) -> void:
     if condicao:
         _passou += 1
@@ -49,6 +76,23 @@ func igual(obtido: Variant, esperado: Variant, descricao: String) -> void:
         _falhou += 1
         print("   FALHA  %s — obtive %s, esperava %s"
               % [descricao, str(obtido), str(esperado)])
+
+## Desmonta a cena em vez de fuzilá-la.
+##
+## `jogo.free()` cru, com o nó ainda na árvore, deixou **170** instâncias
+## vazadas na saída; tirar da árvore, deixar um quadro passar e só então liberar
+## deixa **3**. Isso é higiene, e só.
+##
+## NÃO cura a trava de desligamento: medido em 30 rodadas depois desta mudança,
+## o Godot continua não saindo em parte delas, sempre DEPOIS de imprimir
+## FLUXO OK. A trava é do motor, não do teste — quem lida com ela é o `rodar()`
+## do testar.sh.
+func fechar(jogo: Jogo) -> void:
+    if is_instance_valid(jogo) and jogo.som != null:
+        jogo.som.silenciar()
+    remove_child(jogo)
+    await get_tree().process_frame
+    jogo.free()
 
 func abrir() -> Jogo:
     var jogo: Jogo = preload("res://cenas/jogo.tscn").instantiate()
@@ -118,7 +162,7 @@ func _a_travessia_pela_tela() -> void:
     ok(jogo._onde == Jogo.LOJA or jogo._onde == Jogo.PARTIDA,
        "a tela volta para a loja ou para a mesa")
     igual(jogo.run.rodada, Metas.RODADAS + 1, "na rodada 7")
-    jogo.free()
+    await fechar(jogo)
 
 func _uma_run_inteira() -> void:
     print("── uma run inteira, do menu ao fecho")
@@ -157,7 +201,7 @@ func _uma_run_inteira() -> void:
     ok(jogo.run.mesa.conservacao(), "a conta das cartas fecha no fim da run")
     jogo._pode_continuar = false
 
-    jogo.free()
+    await fechar(jogo)
 
 func _niveis(jogo: Jogo) -> int:
     var n := 0
@@ -180,4 +224,4 @@ func _derrota_gasta_as_vidas() -> void:
     igual(jogo._onde, Jogo.FIM_DA_RUN, "a terceira derrota encerra a run")
     ok(not jogo.run.venceu, "e a run está perdida")
     igual(jogo.run.vidas, 0, "sem vidas sobrando")
-    jogo.free()
+    await fechar(jogo)

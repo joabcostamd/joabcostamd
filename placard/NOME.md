@@ -20,8 +20,8 @@
 > língua de alfabeto latino, e nenhum outro sobrevivente juntava as duas
 > coisas que importam.
 >
-> **A jogada continua se chamando CRUZADA.** Colher fileira e coluna de uma vez
-> é o que a palavra-cruzada faz, e em português a palavra está certa. O que
+> **A jogada continua se chamando CRUZ.** Colher fileira e coluna de uma vez
+> é o que uma grade de palavras cruzando faz, e em português a palavra está certa. O que
 > precisava ser universal era o título, nunca a jogada.
 >
 > *O resto do documento fica como registro da busca — e de por que os outros
@@ -85,13 +85,13 @@ casa pertence a duas, três ou quatro linhas ao mesmo tempo.
 Esta é a descoberta mais útil de todas as tentativas anteriores, e ela é a
 direção mais fértil que existe:
 
-> ### É uma palavra-cruzada feita de mãos de pôquer.
+> ### É um crossword feito de mãos de pôquer.
 
-Numa palavra-cruzada, **cada letra pertence a duas palavras** — uma na
+Num crossword, **cada letra pertence a duas palavras** — uma na
 horizontal, uma na vertical — e é isso que torna o quebra-cabeça difícil e
 bonito. Aqui, **cada carta pertence a duas mãos**: a fileira e a coluna.
 
-É exatamente a mesma estrutura. E o vocabulário de palavra-cruzada — cruzar,
+É exatamente a mesma estrutura. E o vocabulário do crossword — cruzar,
 horizontal, vertical, grade, entrelaçar — é entendido no mundo inteiro.
 
 **Trabalhe essa imagem.** É o território menos explorado.
@@ -180,7 +180,7 @@ Não sugira estes. Use os motivos como calibragem.
 
 | Nome | Por que caiu |
 |---|---|
-| **CRUZADA** (nome atual) | significa *guerra santa medieval* em português, espanhol e italiano; e não significa nada nas outras línguas |
+| **CRUZ** (nome atual) | significa *guerra santa medieval* em português, espanhol e italiano; e não significa nada nas outras línguas |
 | **TELA** | perfeito em latim (a urdidura do tear), mas significa *tela de TV* em português e *pano* em espanhol |
 | **CARDO / KARDO** | conceito lindo (na cidade romana, o eixo norte-sul que cruza o decumano), mas é *a planta espinhosa* em três línguas latinas, e gíria pejorativa na Espanha. O K não resolve: a colisão é fonética |
 | **CARTA** | empresa americana de US$ 1,2 bilhão; e é *papel* em italiano, *carta de motorista* em português |
@@ -219,7 +219,7 @@ do tabuleiro pontuam). Se você for para tecelagem, vá além de TWILL ou não v
 
 **O território que ninguém explorou ainda é o do PERTENCIMENTO DUPLO** — uma coisa que
 pertence a duas estruturas ao mesmo tempo. Cruzamento, interseção, junção, confluência,
-sobreposição, casa marcada. É de lá que sai a palavra-cruzada, e é lá que está a
+sobreposição, casa marcada. É de lá que sai o crossword, e é lá que está a
 mecânica.
 
 ## 6. Uma instrução sobre a FORMA da sua resposta
@@ -234,7 +234,7 @@ Isso é um gerador de fonemas, não alguém pensando.
 **Não faça isso.** Prefiro **12 ideias de origens diferentes** a 200 variações de
 uma. Se duas sugestões suas têm a mesma raiz, mantenha só a melhor.
 
-Busque em fontes distintas: a palavra-cruzada, a tecelagem, a geometria, o
+Busque em fontes distintas: o crossword, a tecelagem, a geometria, o
 pôquer, línguas mortas, línguas construídas, palavras inventadas do zero,
 compostos curtos de inglês, e o que mais te ocorrer que eu não listei.
 

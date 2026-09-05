@@ -839,7 +839,7 @@ func _mao(r: Rect2, largura: float, vao: float) -> void:
 ## DICA 2 — a conta dos dois lados, colada na casa sob o dedo. É o único
 ## mecanismo que a pesquisa achou capaz de ENSINAR A RECUSA: uma lista ordenada
 ## por ganho imediato sempre manda fechar a linha em 4/5, e era isso que impedia
-## a cruzada. Mostrar o preço perpendicular é o que permite escolher não fechar.
+## a cruz. Mostrar o preço perpendicular é o que permite escolher não fechar.
 ##
 ## Ela flutua junto do cursor em vez de ocupar uma faixa fixa. A faixa custaria
 ## 18 px de altura da grade, e a medição mostrou que isso derruba a casa de 64
@@ -932,7 +932,7 @@ const REGRAS: Array[Array] = [
     ["O TURNO", "Coloque uma carta numa casa vazia e compre de volta. A carta fica ali."],
     ["PARCELA", "Ao chegar a 3 e a 4 cartas, a linha já paga um troco. Sem gastar turno."],
     ["MADURA", "Linha com 5 cartas não colhe na hora: fica madura e colhe no próximo posicionamento."],
-    ["CRUZADA", "Colher duas ou mais de uma vez soma os multiplicadores de TODAS elas — e o Tear multiplica a soma. É por isso que vale esperar."],
+    ["CRUZ", "Colher duas ou mais de uma vez soma os multiplicadores de TODAS elas — e o Tear multiplica a soma. É por isso que vale esperar."],
     ["DUPLA · TRIPLA · CRUZ TOTAL", "Duas, três e quatro linhas no mesmo evento. A Cruz Total cabe exata numa mesa Grande."],
     ["TEAR", "Sobe +1 a cada colheita e +1 a cada 4 cartas, até 8. Multiplica o evento inteiro."],
     ["AVESSO", "Toda colheita prensa as duas maiores cartas da linha numa carta de duas caras. Uma vale na fileira, a outra na coluna. Toque de novo para girar."],

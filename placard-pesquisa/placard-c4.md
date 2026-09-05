@@ -8,7 +8,7 @@ Nada mais foi tocado.
 
 **32 asserções passando**: as 17 originais da b1 (`testes2.gd`, intactas) mais 15 novas
 (`testes4.gd`) escritas para a janela: a linha cheia fica na grade e não pontua no turno em que
-enche; colhe no posicionamento seguinte; a cruzada por janela acontece num único evento com n=2;
+enche; colhe no posicionamento seguinte; a cruz por janela acontece num único evento com n=2;
 o último posicionamento colhe na hora (regra 5); o antídoto "só a primeira madura" força a
 segunda a colher imediatamente; **conservação de FACES com a janela ligada** nas três durações
 (1, 2, até o fim) — o estado novo "cheia mas ainda na grade" não quebra a R04b; nada maduro
@@ -28,8 +28,8 @@ A minha está em `resultado.json → _LEITURA_DA_FORMULA_FIXADA_ANTES_DE_MEDIR`.
 > declara como alvo de valor). Teto do evento `24+4×rodada` **removido**, como no núcleo polido.
 
 **Por que essa escolha não contamina a comparação:** para n=1 linha as duas leituras
-(soma × Tear e produto × Tear) são **idênticas**. A BASE tem 0,000 cruzada, logo a BASE é
-byte-a-byte a mesma sob qualquer leitura. As leituras só divergem dentro da cruzada. Medi a
+(soma × Tear e produto × Tear) são **idênticas**. A BASE tem 0,000 cruz, logo a BASE é
+byte-a-byte a mesma sob qualquer leitura. As leituras só divergem dentro da cruz. Medi a
 outra leitura na célula **J1_PROD** (mults multiplicam entre si). Resultado adiante: ela muda o
 **preço** e não muda a **frequência** — mais uma confirmação de que preço não é o problema.
 
@@ -49,7 +49,7 @@ sementes das bancadas anteriores (`31337 + t·7919`, rodada `t%6+1`, tipo `(t/6)
 |---|---|---|
 | base **aditiva** da b1 (PULSO 0,35 + TIQUE 4, K=1) | rec 66,1% · seca 2/4 · razão 0,962 · vitória 40,5% · Tear 6/7 · maior evento **2.394** | b1: 65,7 / 2/4 / 0,990 / 40,75 / 6/7 / 2.394 |
 | núcleo **polido** da b3 (PRODUTO, K=2,25, sem Avesso) | razão 0,763 · vitória 27,67% · Tear **7/8** · maior evento **10.260** · pico/mediana **15,83×** · m5 57,9% | b3: 0,770 / 28,0 / 7/8 / 10.260 / 15,8× / 58,7% |
-| caçadora da b1 sobre a base polida | **0,146** cruzada/mesa · **85,4%** de mesas com zero | enunciado: 0,146 / 86% |
+| caçadora da b1 sobre a base polida | **0,146** cruz/mesa · **85,4%** de mesas com zero | enunciado: 0,146 / 86% |
 
 Os três batem. **O instrumento está calibrado nos três números que o enunciado cita.**
 
@@ -111,16 +111,16 @@ cruzamento, mas **nunca escolhe um alvo e nunca constrói na direção dele**. P
 5. reavalia o alvo quando `braços_faltantes + 1 > posicionamentos restantes`, e cai na gulosa
    quando nenhum alvo é viável.
 
-**Validação na BASE (obrigatória pelo enunciado):** 1,483 cruzada/mesa, **0,0% das mesas com
+**Validação na BASE (obrigatória pelo enunciado):** 1,483 cruz/mesa, **0,0% das mesas com
 zero**, contra 0,000 da gulosa e 0,146 da caçadora da b1. Por tipo de mesa: Pequena **1,601**,
 Grande **1,000**, Chefe **1,852** — **89,0% do teto aritmético 2/1/2** declarado no enunciado
 (com a janela ela chega a **97,7%**: 1,911 / 1,000 / 1,976). O teto da Grande é atingido
 exatamente e nunca ultrapassado: nas **334 mesas Grandes** de cada célula, **100% têm uma
-cruzada e nenhuma tem duas**. A planejadora funciona, e ela **confirma a CONTA 4 por medição**.
+cruz e nenhuma tem duas**. A planejadora funciona, e ela **confirma a CONTA 4 por medição**.
 
 E ela confirma a CONTA (a): na BASE, jogar para a cruz **paga**. Razão pontos/meta da
 planejadora **1,122** contra 0,825 da gulosa — **+36%** com o mesmo material e as mesmas metas.
-A cruzada nunca foi cara. Ela era invisível.
+A cruz nunca foi cara. Ela era invisível.
 
 ---
 
@@ -130,19 +130,19 @@ A cruzada nunca foi cara. Ela era invisível.
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | K da meta (recalibrado) | 2,1475 | 4,3922 | 2,3582 | 4,3922 | 4,4268 | 5,0435 | 6,3494 | 5,8969 | 2,1731 | 4,4044 | 2,3582 |
 | razao pontos/meta (gulosa) | 0,825 | 0,814 | 0,818 | 0,814 | 0,813 | 0,793 | 0,790 | 0,805 | 0,799 | 0,828 | 0,818 |
-| **cruzadas/mesa GULOSA** | 0,000 | 0,826 | 0,098 | 0,817 | 0,820 | 0,849 | 0,897 | 0,817 | 0,000 | 0,832 | 0,098 |
-| **cruzadas/mesa PROFUNDA** | 0,018 | 0,825 | 0,015 | 0,815 | 0,762 | 0,938 | 0,960 | 0,828 | 0,023 | 0,818 | 0,015 |
-| **cruzadas/mesa PLANEJADORA** | 1,483 | 1,628 | 1,506 | 1,628 | 1,629 | 1,637 | 1,000 | 1,631 | 1,484 | 1,628 | 1,506 |
+| **cruzes/mesa GULOSA** | 0,000 | 0,826 | 0,098 | 0,817 | 0,820 | 0,849 | 0,897 | 0,817 | 0,000 | 0,832 | 0,098 |
+| **cruzes/mesa PROFUNDA** | 0,018 | 0,825 | 0,015 | 0,815 | 0,762 | 0,938 | 0,960 | 0,828 | 0,023 | 0,818 | 0,015 |
+| **cruzes/mesa PLANEJADORA** | 1,483 | 1,628 | 1,506 | 1,628 | 1,629 | 1,637 | 1,000 | 1,631 | 1,484 | 1,628 | 1,506 |
 | **DISTANCIA planej. - gulosa** | 1,483 | 0,802 | 1,408 | 0,811 | 0,809 | 0,788 | 0,103 | 0,814 | 1,484 | 0,796 | 1,408 |
-| cruzadas/mesa cacadora b1 | 0,146 | 0,847 | — | — | — | — | — | — | — | — | — |
-| mesas com ZERO cruzada (gulosa) | 100,0% | 17,4% | 90,2% | 18,3% | 18,0% | 15,1% | 10,3% | 18,3% | 100,0% | 16,8% | 90,2% |
-| mesas com ZERO cruzada (planej.) | 0,0% | 0,0% | 0,0% | 0,0% | 0,0% | 0,0% | 0,0% | 0,0% | 0,0% | 0,0% | 0,0% |
-| cruzadas/mesa MAX (gulosa/planej.) | 0 / 2 | 1 / 2 | 1 / 2 | 1 / 2 | 1 / 2 | 1 / 2 | 1 / 1 | 1 / 2 | 0 / 2 | 1 / 2 | 1 / 2 |
+| cruzes/mesa cacadora b1 | 0,146 | 0,847 | — | — | — | — | — | — | — | — | — |
+| mesas com ZERO cruz (gulosa) | 100,0% | 17,4% | 90,2% | 18,3% | 18,0% | 15,1% | 10,3% | 18,3% | 100,0% | 16,8% | 90,2% |
+| mesas com ZERO cruz (planej.) | 0,0% | 0,0% | 0,0% | 0,0% | 0,0% | 0,0% | 0,0% | 0,0% | 0,0% | 0,0% | 0,0% |
+| cruzes/mesa MAX (gulosa/planej.) | 0 / 2 | 1 / 2 | 1 / 2 | 1 / 2 | 1 / 2 | 1 / 2 | 1 / 1 | 1 / 2 | 0 / 2 | 1 / 2 | 1 / 2 |
 | violacoes do teto duro 2/1/2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| **cruzadas por EVENTO (gulosa)** | 0,000 | 0,701 | 0,046 | 0,687 | 0,682 | 0,759 | 0,897 | 0,702 | 0,000 | 0,727 | 0,046 |
+| **cruzes por EVENTO (gulosa)** | 0,000 | 0,701 | 0,046 | 0,687 | 0,682 | 0,759 | 0,897 | 0,702 | 0,000 | 0,727 | 0,046 |
 | eventos por mesa (gulosa) | 2,22 | 1,18 | 2,14 | 1,19 | 1,20 | 1,12 | 1,00 | 1,16 | 2,20 | 1,15 | 2,14 |
-| % cruzadas perpendiculares (gulosa) | — | 93,8 | 99,0 | 99,3 | 93,9 | 95,8 | 97,7 | 93,8 | — | 94,0 | 100,0 |
-| % cruzadas acidentais (planej.) | 96,5 | 41,4 | 96,5 | 41,4 | 41,0 | 45,9 | 100,0 | 41,5 | 96,1 | 42,0 | 96,5 |
+| % cruzes perpendiculares (gulosa) | — | 93,8 | 99,0 | 99,3 | 93,9 | 95,8 | 97,7 | 93,8 | — | 94,0 | 100,0 |
+| % cruzes acidentais (planej.) | 96,5 | 41,4 | 96,5 | 41,4 | 41,0 | 45,9 | 100,0 | 41,5 | 96,1 | 42,0 | 96,5 |
 | turnos com recompensa (gulosa) | 64,8% | 75,8% | 65,5% | 75,9% | 75,4% | 76,8% | 79,2% | 76,0% | 64,8% | 75,8% | 65,5% |
 | seca mediana / p90 (gulosa) | 2 / 4 | 2 / 3 | 2 / 4 | 2 / 3 | 2 / 3 | 2 / 3 | 2 / 3 | 2 / 3 | 2 / 4 | 2 / 3 | 2 / 4 |
 | **GUARDA m5 (banda 45-75%)** | 59,0% | 67,4% | 60,8% | 67,4% | 68,0% | 76,3% | 77,8% | 67,5% | 57,3% | 67,7% | 60,7% |
@@ -153,9 +153,9 @@ A cruzada nunca foi cara. Ela era invisível.
 | **turnos segurando 4/5** | 0,000 | 3,529 | 0,566 | 3,534 | 3,470 | 3,595 | 3,657 | 3,543 | 0,000 | 3,537 | 0,566 |
 | colheitas adiadas (planej.) | 62,7% | 63,5% | 62,6% | 63,5% | 62,4% | 64,2% | 60,5% | 63,4% | 62,9% | 63,4% | 62,6% |
 | casas vazias min (mediana/min) | 16 / 11 | 9 / 7 | 16 / 7 | 9 / 7 | 9 / 7 | 9 / 7 | 8 / 7 | 9 / 7 | 16 / 11 | 9 / 7 | 16 / 7 |
-| % cruzadas em que o teto do mult morderia | — | 28,8 | 24,5 | 28,3 | 28,7 | 36,3 | 53,8 | 58,3 | — | 29,3 | 24,5 |
+| % cruzes em que o teto do mult morderia | — | 28,8 | 24,5 | 28,3 | 28,7 | 36,3 | 53,8 | 58,3 | — | 29,3 | 24,5 |
 
-### por tipo de mesa (cruzadas/mesa, % mesas com >=1)
+### por tipo de mesa (cruzes/mesa, % mesas com >=1)
 | variante | politica | Pequena | Grande | Chefe |
 |---|---|---|---|---|
 | BASE | gulosa | 0,000 (0,0%) | 0,000 (0,0%) | 0,000 (0,0%) |
@@ -182,7 +182,7 @@ A cruzada nunca foi cara. Ela era invisível.
 | J1_CONDPERP_JUNTA | planejadora | 1,649 (100,0%) | 1,000 (100,0%) | 1,873 (100,0%) |
 
 
-| figura (custo em posicionamentos) | mesa | cruzadas/mesa | % mesas com >=1 | n=2 | n=3 | n=4 | razao pontos/meta | vitoria % | maior evento | % em que o teto do mult morderia |
+| figura (custo em posicionamentos) | mesa | cruzes/mesa | % mesas com >=1 | n=2 | n=3 | n=4 | razao pontos/meta | vitoria % | maior evento | % em que o teto do mult morderia |
 |---|---|---|---|---|---|---|---|---|---|---|
 | DUPLA (9) | BASE | 1,485 | 100,0% | 93,6% | 0,0% | 0,0% | 1,127 | 62,75 | 16786 | 5,3% |
 | CRUZ TOTAL (17) | BASE | 0,882 | 88,2% | 0,0% | 0,0% | 79,0% | 2,537 | 85,38 | 31540 | 78,5% |
@@ -224,14 +224,14 @@ A métrica que o enunciado declarou como a única que importa — **a distância
 e a gulosa** — cai de 1,483 para 0,802. E há uma segunda medição da mesma coisa, mais bonita:
 **a caçadora da b1 perde a razão de existir.** Na base ela batia a gulosa por 0,146 a 0,000;
 com a janela ela faz 0,847 contra 0,826 da gulosa — uma vantagem de **0,021**. A política
-escrita para caçar cruzada deixa de ter vantagem sobre quem não está caçando nada. Isso é o
+escrita para caçar cruz deixa de ter vantagem sobre quem não está caçando nada. Isso é o
 horizonte 9 virando horizonte 3, medido de dois jeitos independentes.
 
 `turnos_segurando_4_5` vai de **0,000 → 3,529**. O termômetro que o enunciado pediu sai do zero.
 
 ### 5.2 A geometria se autorregula — a restrição "só linhas que compartilham carta" é código morto
 
-**93,8% das cruzadas gulosas já são perpendiculares** sem nenhuma restrição, e a célula
+**93,8% das cruzes gulosas já são perpendiculares** sem nenhuma restrição, e a célula
 `J1_JUNTA` (restringir a colheita conjunta a linhas que compartilham uma carta) devolve
 0,817 contra 0,826 — **−1%**, dentro do ruído. O piso de 70% que o proponente colocou como
 gatilho para restringir **não é atingido de baixo em nenhum ponto da varredura**.
@@ -243,13 +243,13 @@ O proponente pré-declarou dois freios para o caso de a regra ir longe demais. *
 medidos e os dois são inúteis, em direções contrárias.**
 
 **(a) "janela só para a primeira linha madura de cada mesa" (`J1_PRIMEIRA`) é um no-op.**
-Exige K=4,4268 contra 4,3922 do J1 livre, e entrega 0,820 cruzada/mesa contra 0,826.
+Exige K=4,4268 contra 4,3922 do J1 livre, e entrega 0,820 cruz/mesa contra 0,826.
 O motivo é geométrico e eu não tinha previsto: com a janela os eventos por mesa desabam de
 2,22 para 1,18, ou seja **a mesa típica já só tem uma maturação**. Limitar a uma por mesa não
 limita coisa alguma.
 
 **(b) "janela apenas quando a perpendicular já estiver em 4/5" (`J1_CONDPERP`) desliga a regra.**
-Gulosa **0,098** cruzada/mesa (90,2% das mesas com zero), profunda **0,015** — literalmente o
+Gulosa **0,098** cruz/mesa (90,2% das mesas com zero), profunda **0,015** — literalmente o
 número da BASE. `turnos_segurando_4_5` volta de 3,529 para 0,566.
 
 A explicação de (b) é a coisa mais interessante que esta bancada encontrou, e ela é dinâmica,
@@ -259,28 +259,28 @@ linha → a gulosa passa a ter motivo para *segurar* linhas em 4/5 (seg45 de 0,0
 mais linhas em 4/5 aumentam a chance de a próxima maturação encontrar uma perpendicular pronta.
 A condição de (b) exige que o estado final do laço já exista antes de o laço começar. Ela mata a
 partida do motor. **A janela é liga/desliga: não existe meio-termo nesta varredura.** Quem
-achar 0,826 cruzada/mesa demais não tem, por enquanto, um dial para baixar — tem de desenhar
+achar 0,826 cruz/mesa demais não tem, por enquanto, um dial para baixar — tem de desenhar
 outro freio (por exemplo: a janela vale só nas mesas Chefe, ou só uma vez por run).
 
 ### 5.4 A leitura do multiplicador muda o preço e não muda a frequência
 
-`J1_PROD` (mults multiplicam entre si na cruzada) exige K=5,90 contra 4,39 — o prêmio da cruzada
-sobe muito — e entrega **0,817 cruzada/mesa contra 0,826**. Idêntico. É a terceira confirmação
+`J1_PROD` (mults multiplicam entre si na cruz) exige K=5,90 contra 4,39 — o prêmio da cruz
+sobe muito — e entrega **0,817 cruz/mesa contra 0,826**. Idêntico. É a terceira confirmação
 independente, nesta bancada, da tese que as três bancadas anteriores já tinham medido com
-4×/20×/100×: **o preço da cruzada não move a frequência dela.** Só a ordem move.
+4×/20×/100×: **o preço da cruz não move a frequência dela.** Só a ordem move.
 
 ### 5.5 O AVESSO não interage
 
-`BASE_SEMAV` × `BASE` e `J1_SEMAV` × `J1`: a diferença em cruzadas/mesa fica dentro do ruído.
-O Avesso não ajuda nem atrapalha a cruzada, com ou sem janela. A previsão do enunciado
+`BASE_SEMAV` × `BASE` e `J1_SEMAV` × `J1`: a diferença em cruzes/mesa fica dentro do ruído.
+O Avesso não ajuda nem atrapalha a cruz, com ou sem janela. A previsão do enunciado
 ("o Avesso pode fechar a linha num turno e a coluna no seguinte, dentro da janela") **não se
 materializa em número**: o Avesso é 1,7 carta por mesa e a janela já produz o estado sozinha.
 
-### 5.6 O teto do multiplicador (R15) morde — e só na cruzada, exatamente como o aviso previa
+### 5.6 O teto do multiplicador (R15) morde — e só na cruz, exatamente como o aviso previa
 
 Com o teto `24+4×rodada` **removido** (núcleo polido), medi quantos eventos o teto **teria**
 cortado. Na base gulosa: **1,0% dos eventos**. Com a janela: **21,5% dos eventos e 28,8% das
-cruzadas**. Na CRUZ TOTAL da escada: **78,5% das cruzadas**. Se alguém reintroduzir o teto,
+cruzes**. Na CRUZ TOTAL da escada: **78,5% das cruzes**. Se alguém reintroduzir o teto,
 a escada 2×/3×/4× colapsa em silêncio e a bancada seguinte vai concluir "a tripla não compensa"
 quando o culpado é o teto. **O teto tem de ficar removido, e isso agora tem número.**
 
@@ -288,7 +288,7 @@ quando o culpado é o teto. **O teto tem de ficar removido, e isso agora tem nú
 
 `maior_evento_unico` vai de **10.260 para 32.600** (×3,2) — o teto emocional que a b3 tinha
 conquistado triplica de novo. Mas a **razão pico/mediana**, que a b3 declarou como patrimônio
-(15,8×), **cai para 10,39×**: como quase todo evento vira cruzada, o evento mediano sobe junto
+(15,8×), **cai para 10,39×**: como quase todo evento vira cruz, o evento mediano sobe junto
 com o pico e a explosão relativa encolhe 34%. O jogador vê números maiores e sente menos
 diferença entre um turno normal e o clímax. Isso não estoura nenhuma banda declarada — a lista
 de métricas obrigatórias pede a razão mas não fixa piso para ela — e eu registro como perda.
@@ -312,7 +312,7 @@ descoberto. Escrevi mais duas planejadoras (TRIPLA: centro em (r,r) ou (r,4−r)
 rodei as três figuras sobre a base polida, 800 mesas por célula. Os números estão na segunda
 tabela acima. O resumo, na BASE (gulosa de referência: razão 0,825, vitória 30,7%):
 
-| figura | custo | cruzadas/mesa | razão pontos/meta | vitória | ganho sobre a gulosa |
+| figura | custo | cruzes/mesa | razão pontos/meta | vitória | ganho sobre a gulosa |
 |---|---|---|---|---|---|
 | DUPLA | 9 posicionamentos | 1,485 | **1,127** | 62,8% | **1,37×** |
 | TRIPLA | 13 posicionamentos | 1,000 | **1,386** | 66,4% | **1,68×** |
@@ -332,10 +332,10 @@ Nomeiem: DUPLA / TRIPLA / TOTAL, custo 9 / 13 / 17, valor 2× / 3× / 4×.
 ## 7. O QUE NÃO FUNCIONOU (a seção que eu não vou suavizar)
 
 **1. `janela = 2` está REPROVADA pela guarda de profundidade.** m5 = **76,3%**, acima da banda
-45–75%. Cruzadas por evento 0,759, acima do 0,75 que o próprio proponente declarou como
+45–75%. Cruzes por evento 0,759, acima do 0,75 que o próprio proponente declarou como
 "falhou por sucesso". O jogo passa a ser resolvido pela UI.
 
-**2. `janela = até o fim` está REPROVADA duas vezes.** m5 = **77,8%**; cruzadas por evento
+**2. `janela = até o fim` está REPROVADA duas vezes.** m5 = **77,8%**; cruzes por evento
 **0,897** na gulosa e **1,000** na planejadora — literalmente **um único evento por mesa**.
 A previsão do proponente ("até o fim degenera") está certa e agora tem número.
 
@@ -347,13 +347,13 @@ está mudando uma regra: está reescrevendo a economia inteira e depois recalibr
 não estava previsto em nenhum dos cinco riscos declarados. Na BASE, a planejadora tem razão
 pontos/meta **1,122** contra 0,825 da gulosa: planejar **paga +36%**. Com a janela e o K
 recalibrado, a planejadora cai para **0,660** contra 0,814 da gulosa: planejar **custa −19%**.
-A regra socializa a cruzada — e ao socializá-la, mais a recalibração que ela obriga, ela
+A regra socializa a cruz — e ao socializá-la, mais a recalibração que ela obriga, ela
 **taxa quem a persegue de propósito**. O clímax deixa de ser o prêmio da perícia e vira a
 paisagem. Isso não estoura nenhuma banda declarada, e por isso não reprova a regra pelo critério
 escrito; mas é uma perda de profundidade que nenhuma métrica da lista captura, e o painel
 precisa decidir se aceita.
 
-**5. A métrica `pct_cruzadas_acidentais` é degenerada para a gulosa.** O critério operacional do
+**5. A métrica `pct_cruzes_acidentais` é degenerada para a gulosa.** O critério operacional do
 enunciado — "o posicionamento-gatilho também era a melhor jogada da gulosa?" — dá **100% por
 construção** quando a política É a gulosa. O número informativo é o da planejadora: **41,4%
 acidentais / 58,6% intencionais** com janela, contra 96,5% acidentais na base (na base, o
@@ -381,9 +381,9 @@ turnos pagos e o dobro da seca de cauda.
 carta"), teto do multiplicador removido.** É a célula `J1`.
 
 - `janela = 2` e `até o fim` estão **reprovadas** pela guarda de profundidade (m5 76,3% e 77,8%,
-  acima de 75%) e por cruzadas/evento (0,759 e 0,897, acima do 0,75 que o próprio proponente
+  acima de 75%) e por cruzes/evento (0,759 e 0,897, acima do 0,75 que o próprio proponente
   declarou como "falhou por sucesso"). A previsão do enunciado estava certa: 1 é o ponto.
-- a restrição "compartilham carta" é **desnecessária**: 93,8% das cruzadas já são perpendiculares
+- a restrição "compartilham carta" é **desnecessária**: 93,8% das cruzes já são perpendiculares
   sem ela, e ligá-la muda o resultado em −1%. Duas frases valem mais que três.
 - os dois antídotos declarados (`só a primeira madura`, `só com perpendicular em 4/5`) **não
   servem como dial**: um não faz nada, o outro desliga a regra (5.3).
@@ -393,13 +393,13 @@ carta"), teto do multiplicador removido.** É a célula `J1`.
 ### O veredito, pelo critério que eu declarei ANTES de medir
 
 O critério era: **APROVADA** se, sem estourar nenhuma banda, a planejadora fizer ≥ 1,0
-cruzada/mesa com < 40% de mesas em zero **e** a gulosa passar de 0,25/mesa.
+cruz/mesa com < 40% de mesas em zero **e** a gulosa passar de 0,25/mesa.
 
 | exigência | limiar | J1 medido | |
 |---|---|---|---|
-| planejadora, cruzadas/mesa | ≥ 1,0 | **1,628** | ✔ |
+| planejadora, cruzes/mesa | ≥ 1,0 | **1,628** | ✔ |
 | planejadora, mesas com zero | < 40% | **0,0%** | ✔ |
-| gulosa, cruzadas/mesa | > 0,25 | **0,826** | ✔ |
+| gulosa, cruzes/mesa | > 0,25 | **0,826** | ✔ |
 | turnos com recompensa | ≥ 60% | 75,8% | ✔ |
 | seca mediana | ≤ 3 | 2 | ✔ |
 | guarda de profundidade m5 | 45–75% | 67,4% | ✔ |
@@ -421,7 +421,7 @@ um mult ou uma carta a mais.
    A falsificação nº 4 do próprio proponente ("razão sobe < +0,10") **falhou por 6×**. Quem
    comparar os quatro candidatos com o mesmo K vai ver a JANELA "ganhar" por inflação — o
    enunciado avisou disso e o aviso se materializou aqui, no meu candidato.
-2. **O clímax deflaciona.** Cruzadas por evento **0,701** (banda saudável declarada: 0,35–0,55);
+2. **O clímax deflaciona.** Cruzes por evento **0,701** (banda saudável declarada: 0,35–0,55);
    eventos por mesa caem de **2,22 para 1,18**; só **29,9%** dos eventos ainda são de uma linha
    só. A colheita simples quase desaparece. Não estoura o 0,75 declarado como falha, mas passa
    folgado da banda saudável, e **não há dial para trazê-la de volta** (5.3). Junto com isso, a
@@ -429,7 +429,7 @@ um mult ou uma carta a mais.
    menor em contraste.
 3. **Planejar deixa de pagar.** Na BASE a planejadora tem razão 1,122 contra 0,825 da gulosa
    (**+36%**); com a janela e o K recalibrado, 0,660 contra 0,814 (**−19%**). A regra socializa a
-   cruzada e, junto com a recalibração que ela obriga, taxa quem a persegue de propósito.
+   cruz e, junto com a recalibração que ela obriga, taxa quem a persegue de propósito.
    Nenhuma banda declarada captura isso, e é a coisa que eu mais recomendaria o painel olhar
    antes de aprovar.
 
@@ -445,8 +445,8 @@ um mult ou uma carta a mais.
 - **A CRUZ TOTAL cabe mesmo na mesa Grande e é o melhor jogo do PLACARD**: 17 células, 17
   posicionamentos, 88,2% de sucesso, razão pontos/meta **2,537** e **85,4% de vitória** — 3,07×
   a gulosa. A escada 9/13/17 é um sistema de dificuldade inteiro que já está nas regras.
-- **O teto do mult (R15) morde de verdade e só na cruzada**: 1,0% dos eventos na base, 28,8% das
-  cruzadas com janela, **78,5% das cruzadas TOTAIS**. Se ele voltar, a escada colapsa em silêncio.
+- **O teto do mult (R15) morde de verdade e só na cruz**: 1,0% dos eventos na base, 28,8% das
+  cruzes com janela, **78,5% das cruzes TOTAIS**. Se ele voltar, a escada colapsa em silêncio.
 - **A leitura do multiplicador não muda a frequência** (J1_PROD: 0,817 contra 0,826), só o preço.
   Quarta confirmação independente de que preço não é o gargalo.
 

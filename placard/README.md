@@ -18,7 +18,7 @@ na loja, tira vida, dá conquista e volta ao menu.
 | `scripts/nucleo/` | o jogo **sem uma linha de interface** — mesa, mãos, geometria, metas, economia, loja, itens, conquistas, run. Roda no terminal |
 | `scripts/ui/` | as telas — menu, partida, loja, temas, conquistas, desafio — mais o som sintetizado e o juice |
 | `cenas/` | as 7 cenas do Godot |
-| `testes/` | 522 asserções em 8 arquivos |
+| `testes/` | 529 asserções em 8 arquivos |
 | `ferramentas/` | aferição contra a bancada, calibração do K, capturas, e os validadores de contraste, tipografia e layout |
 | `maquete/` | a maquete que decidiu o visual **antes** da primeira regra. Fica de pé: é o registro de por que a arte é essa |
 | `DESIGN.md` | as regras, R01 a R46. Regra antes de código |
@@ -33,7 +33,7 @@ Para verificar tudo:
 
     ./testar.sh
 
-522 asserções, a aferição do motor contra a bancada, 25 capturas da maquete mais
+529 asserções, a aferição do motor contra a bancada, 25 capturas da maquete mais
 a folha de contato, e os validadores de tipografia, layout e contraste. Sem Godot
 no PATH, roda em modo degradado só com os validadores em Python.
 

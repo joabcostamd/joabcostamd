@@ -135,7 +135,7 @@ func _init(p_rodada: int, p_tipo: int, semente: int, p_cfg: Dictionary) -> void:
 		"quinas": 0, "reais": 0, "n_eventos": 0,
 		"turno_1o_achado": -1, "viu_coringa": false, "residuo_morto": 0, "carimbos": 0,
 		"giros": 0, "duplo_pulso": 0, "pulsos": 0, "espera_forja_uso": [],
-		"forjado_no_turno": {}, "cruzada_outs_com": 0, "cruzada_outs_sem": 0,
+		"forjado_no_turno": {}, "cruz_outs_com": 0, "cruz_outs_sem": 0,
 		"turnos_amostra_outs": 0, "c3_coringa": 0, "pontos_pulso": 0,
 		"teto_mordeu": 0, "cruz_n": 0, "cruz_perp": 0, "cruz_teto_mordeu": 0,
 		"cruz_nlinhas": []}

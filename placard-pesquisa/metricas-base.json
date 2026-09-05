@@ -1,6 +1,6 @@
 {
   "_meta_da_sonda": {
-    "escopo": "somente nucleo: baralho, mao, grade 5x5, posicionamento, colheita, cruzada, tear, meta, orcamento, R14b, R42. SEM loja, selos, reliquias, modificadores, niveis de mao, chefes, vidas, Fianca.",
+    "escopo": "somente nucleo: baralho, mao, grade 5x5, posicionamento, colheita, cruz, tear, meta, orcamento, R14b, R42. SEM loja, selos, reliquias, modificadores, niveis de mao, chefes, vidas, Fianca.",
     "godot": "4.7.2",
     "mesas_m5": 500,
     "mesas_por_politica": 2000,
@@ -144,7 +144,7 @@
         "n": 2000,
         "p90": 276
       },
-      "eventos_cruzada": {
+      "eventos_cruz": {
         "max": 736,
         "media": 269.58,
         "mediana": 255,
@@ -169,7 +169,7 @@
         "n": 2225,
         "p90": 144
       },
-      "razao_mediana_cruzada_sobre_simples": 3.64
+      "razao_mediana_cruz_sobre_simples": 3.64
     },
     "m6_margem_do_topo": {
       "nota": "pct_pontos so existe nos turnos em que a melhor jogada pontua > 0; nos demais a diferenca e so de potencial posicional",
@@ -287,8 +287,8 @@
         "vitorias": 0
       }
     },
-    "m8_cruzada": {
-      "pct_mesas_com_zero_cruzada": 94.4,
+    "m8_cruz": {
+      "pct_mesas_com_zero_cruz": 94.4,
       "por_mesa": {
         "max": 1,
         "media": 0.056,
@@ -311,7 +311,7 @@
     "mesas_simuladas": 2000,
     "politica": "aleatoria"
   },
-  "cacadora_de_cruzada": {
+  "cacadora_de_cruz": {
     "extra_descartes_usados_por_mesa": {
       "max": 3,
       "media": 2.392,
@@ -442,7 +442,7 @@
         "n": 2000,
         "p90": 261
       },
-      "eventos_cruzada": {
+      "eventos_cruz": {
         "max": 3068,
         "media": 700.018,
         "mediana": 625,
@@ -467,7 +467,7 @@
         "n": 4271,
         "p90": 498
       },
-      "razao_mediana_cruzada_sobre_simples": 2.67
+      "razao_mediana_cruz_sobre_simples": 2.67
     },
     "m6_margem_do_topo": {
       "nota": "pct_pontos so existe nos turnos em que a melhor jogada pontua > 0; nos demais a diferenca e so de potencial posicional",
@@ -585,8 +585,8 @@
         "vitorias": 1
       }
     },
-    "m8_cruzada": {
-      "pct_mesas_com_zero_cruzada": 86.1,
+    "m8_cruz": {
+      "pct_mesas_com_zero_cruz": 86.1,
       "por_mesa": {
         "max": 1,
         "media": 0.139,
@@ -607,7 +607,7 @@
       }
     },
     "mesas_simuladas": 2000,
-    "politica": "cacadora_de_cruzada"
+    "politica": "cacadora_de_cruz"
   },
   "cenario_proxy_de_poder": {
     "descricao": "APROXIMACAO fora do nucleo: todas as categorias com nivel de mao = min(3, rodada-1). Nao e o jogo do documento (nao ha selos, reliquias, motores); serve so para mostrar quanto do gap de meta vem da ausencia de progressao.",
@@ -775,7 +775,7 @@
         "n": 2000,
         "p90": 250
       },
-      "eventos_cruzada": {
+      "eventos_cruz": {
         "max": null,
         "media": null,
         "mediana": null,
@@ -800,7 +800,7 @@
         "n": 4670,
         "p90": 425
       },
-      "razao_mediana_cruzada_sobre_simples": null
+      "razao_mediana_cruz_sobre_simples": null
     },
     "m6_margem_do_topo": {
       "nota": "pct_pontos so existe nos turnos em que a melhor jogada pontua > 0; nos demais a diferenca e so de potencial posicional",
@@ -918,8 +918,8 @@
         "vitorias": 0
       }
     },
-    "m8_cruzada": {
-      "pct_mesas_com_zero_cruzada": 100.0,
+    "m8_cruz": {
+      "pct_mesas_com_zero_cruz": 100.0,
       "por_mesa": {
         "max": 0,
         "media": 0.0,
@@ -948,7 +948,7 @@
       "cartas_semeadas": 0,
       "intervalo_minimo_entre_eventos_segundos_a_4s": 20,
       "intervalo_minimo_entre_eventos_turnos": 5,
-      "max_cruzadas_teorico": 2,
+      "max_cruzes_teorico": 2,
       "max_eventos_de_pontuacao": 3,
       "max_linhas_colhidas": 4,
       "posicionamentos": 19,
@@ -959,19 +959,19 @@
       "cartas_semeadas": 0,
       "intervalo_minimo_entre_eventos_segundos_a_4s": 20,
       "intervalo_minimo_entre_eventos_turnos": 5,
-      "max_cruzadas_teorico": 1,
+      "max_cruzes_teorico": 1,
       "max_eventos_de_pontuacao": 3,
       "max_linhas_colhidas": 3,
       "posicionamentos": 17,
       "tear_maximo_alcancavel": 3
     },
-    "nota": "Derivado da aritmetica das regras, nao da simulacao. Uma colheita manda 5 cartas para a pilha `colhida`, que nunca volta (R04b), e o orcamento de posicionamentos (R09) e fixo. Logo o numero de eventos de pontuacao por mesa tem teto duro de 3, e a banda da secao 7.4 (mediana de 1,5 a 2,5 cruzadas por mesa) exige jogo perfeito em toda mesa - na Grande ela e impossivel (17 cartas < 18 necessarias para 2 cruzadas).",
+    "nota": "Derivado da aritmetica das regras, nao da simulacao. Uma colheita manda 5 cartas para a pilha `colhida`, que nunca volta (R04b), e o orcamento de posicionamentos (R09) e fixo. Logo o numero de eventos de pontuacao por mesa tem teto duro de 3, e a banda da secao 7.4 (mediana de 1,5 a 2,5 cruzes por mesa) exige jogo perfeito em toda mesa - na Grande ela e impossivel (17 cartas < 18 necessarias para 2 cruzes).",
     "pequena": {
       "cartas_que_a_mesa_ve_na_vida_inteira": 18,
       "cartas_semeadas": 3,
       "intervalo_minimo_entre_eventos_segundos_a_4s": 20,
       "intervalo_minimo_entre_eventos_turnos": 5,
-      "max_cruzadas_teorico": 2,
+      "max_cruzes_teorico": 2,
       "max_eventos_de_pontuacao": 3,
       "max_linhas_colhidas": 4,
       "posicionamentos": 15,
@@ -1123,7 +1123,7 @@
         "n": 2000,
         "p90": 228
       },
-      "eventos_cruzada": {
+      "eventos_cruz": {
         "max": 3042,
         "media": 824.448,
         "mediana": 660,
@@ -1148,7 +1148,7 @@
         "n": 4835,
         "p90": 450
       },
-      "razao_mediana_cruzada_sobre_simples": 2.82
+      "razao_mediana_cruz_sobre_simples": 2.82
     },
     "m6_margem_do_topo": {
       "nota": "pct_pontos so existe nos turnos em que a melhor jogada pontua > 0; nos demais a diferenca e so de potencial posicional",
@@ -1266,8 +1266,8 @@
         "vitorias": 0
       }
     },
-    "m8_cruzada": {
-      "pct_mesas_com_zero_cruzada": 98.55,
+    "m8_cruz": {
+      "pct_mesas_com_zero_cruz": 98.55,
       "por_mesa": {
         "max": 1,
         "media": 0.015,

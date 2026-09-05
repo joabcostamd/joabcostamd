@@ -10,9 +10,9 @@ colocar. Grade 5×5, 12 linhas vivas (5 fileiras, 5 colunas, 2 diagonais).
 | Palavra | O que é | Muda? |
 |---|---|---|
 | **PLACARD** | o nome do **jogo** | é o título, em `Marca.NOME` |
-| **CRUZADA** | o nome da **jogada** — colher fileira e coluna de uma vez | **fica** |
+| **CRUZ** | o nome da **jogada** — colher fileira e coluna de uma vez | **fica** |
 
-`CRUZADA DO CENTRO`, `GEO_CRUZADA_SO_DIFERENTES` e a DICA chamada CRUZADA são a
+`CRUZ DO CENTRO`, `GEO_CRUZ_SO_DIFERENTES` e a DICA chamada CRUZ são a
 jogada, não sobra do nome antigo. Não "conserte".
 
 ## Regra antes de código
@@ -51,9 +51,9 @@ que**, não o que — o que já está no código.
 
 ## Sempre rode a suíte
 
-    cd cruzada && ./testar.sh
+    cd placard && ./testar.sh
 
-522 asserções + aferição + tipografia + layout + contraste. Nada entra vermelho.
+529 asserções + aferição + tipografia + layout + contraste. Nada entra vermelho.
 Sem Godot no PATH ela cai em modo degradado e roda só os validadores Python —
 o que **não** é suficiente para commitar.
 
@@ -68,6 +68,21 @@ o que **não** é suficiente para commitar.
    também mede texto como zero sem tela, então a validação de tipografia mente.
 3. **Toda ferramenta precisa de `get_tree().quit()`** no fim. Sem isso ela fica
    viva depois de terminar, segurando a saída no buffer.
+4. **`quit()` nem sempre mata o processo.** Medido: **9 em 30** rodadas do teste
+   de fluxo terminam, imprimem `FLUXO OK — 33 asserções`, chamam `quit(0)` — e o
+   processo continua vivo queimando 100% de CPU. A saída dessas rodadas é **byte
+   a byte igual** à de uma rodada boa, então não há sintoma nenhum além do
+   processo pendurado. Já custou 2,6 horas de um processo órfão neste projeto.
+
+   Tentamos curar: calar o áudio antes de morrer (`Som.silenciar()` no
+   `_exit_tree`) e desmontar a cena com calma em vez de `free()` cru. Isso levou
+   o vazamento de saída de **170 para 3** objetos, e **não mudou a taxa de
+   trava**. É trava do motor, não do jogo.
+
+   Por isso o `rodar()` do `testar.sh` julga pelo que o teste **imprimiu**, não
+   pelo código de saída: resultado impresso = passou (com aviso); nada impresso
+   = travou de verdade e a suíte cai. **Não "simplifique" isso para confiar no
+   código de saída** — a suíte volta a quebrar sozinha em ~30% das rodadas.
 
 ## Onde está o quê
 
@@ -75,7 +90,7 @@ o que **não** é suficiente para commitar.
 |---|---|
 | `placard/scripts/nucleo/` | o jogo **sem uma linha de interface**. Roda no terminal |
 | `placard/scripts/ui/` | as telas, o som sintetizado, o juice |
-| `placard/testes/` | 522 asserções |
+| `placard/testes/` | 529 asserções |
 | `placard/ferramentas/` | aferição, calibração, capturas, validadores |
 | `placard/maquete/` | a maquete que decidiu o visual antes da primeira regra |
 | `placard-pesquisa/` | as medições. **`DECISOES.md` é o livro-razão** |
@@ -84,7 +99,7 @@ o que **não** é suficiente para commitar.
 
 Leia `placard-pesquisa/DECISOES.md`. Ele tem uma seção inteira de **dials que são
 código morto** — parâmetros já provados inertes por medição. Aumentar o prêmio da
-cruzada, por exemplo, foi testado em 4×, 20× e 100× e não moveu nada. §7 lista o
+cruz, por exemplo, foi testado em 4×, 20× e 100× e não moveu nada. §7 lista o
 que está em aberto, com número.
 
 ## O MCP Godot
@@ -146,6 +161,6 @@ rede.
    por tempo ou trava para sempre, ou mede cedo demais e mente.
 2. **Teste que finge o motor não verifica o motor.** A frase deles é "mocks de
    Python não pegam bug de GDScript; um pytest verde não é uma mudança
-   verificada". A nossa versão: 522 asserções verdes não provam que a tela está
+   verificada". A nossa versão: 529 asserções verdes não provam que a tela está
    legível — por isso existem os validadores de contraste, tipografia e layout,
    e por isso as capturas são olhadas.

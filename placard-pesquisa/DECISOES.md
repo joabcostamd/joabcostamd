@@ -24,7 +24,7 @@ Como o jogo estava quando saiu do documento de design, antes de qualquer ajuste.
 | Tempo entre recompensas (mediana) | **24 s** (p90 36 s, máx 60 s) | cadência de quebra-cabeça |
 | Seca (turnos seguidos sem pontuar) | mediana **7**, máx 14 | |
 | Eventos de pontuação por mesa | **2,3** — teto duro de 3 | ver §5 |
-| Cruzadas por mesa | **0,00**, 100% das mesas com zero | o evento que dá nome ao jogo |
+| Cruzes por mesa | **0,00**, 100% das mesas com zero | o evento que dá nome ao jogo |
 | Tear ao fim da mesa | mediana **2**, máx 3 | o teto 8 da regra era ficção |
 | Taxa de vitória | **11,0%** | |
 | Derrotas já decididas aos 2/3 | **72,5%** | tempo jogando partida perdida |
@@ -45,7 +45,7 @@ foi conserto de encanamento em volta de uma boa ideia.
 | **TIQUE DO TEAR** | +1 no Tear a cada 4 posicionamentos, além do +1 por colheita | Tear mediano **2 → 8**; razão pontos/meta **0,442 → 0,794** |
 | **TEAR MULTIPLICA** | o Tear multiplica em vez de somar | maior evento **2.394 → 10.260** (×4,3); explosão **7,2× → 15,8×**; teto passa a morder em 21,2% das mesas (era 0%); derrota decidida aos 2/3 cai **69,9% → 56,6%**; e o código encolhe |
 | **AVESSO** | carta de duas caras forjada pela própria colheita: uma cara vale na linha, a outra na coluna | **1,66/mesa**, 10,8% das jogadas, 37,8% dos pontos; **C3 recebe 28,6%** contra 4,0% do uniforme (**7×**, entropia 0,827); **+2,25 pp** de vitória |
-| **JANELA DA COLHEITA** | a linha cheia não colhe na hora: fica **madura** e colhe no próximo posicionamento, junto com tudo que completou no meio-tempo | **cruzada 0,000 → 0,831 por mesa** em jogo natural; mesas sem nenhuma **100% → 16,9%**; turnos pagos 65,7% → 75,8%; profundidade 58,8% → 68,2% (dentro da banda 45–75) |
+| **JANELA DA COLHEITA** | a linha cheia não colhe na hora: fica **madura** e colhe no próximo posicionamento, junto com tudo que completou no meio-tempo | **cruz 0,000 → 0,831 por mesa** em jogo natural; mesas sem nenhuma **100% → 16,9%**; turnos pagos 65,7% → 75,8%; profundidade 58,8% → 68,2% (dentro da banda 45–75) |
 | **BC_rec** | a mão fraca paga melhor: piso de padrão parcial (+15 fichas em Alta/Par/Dois Pares) e troco não-numérico (+1 no multiplicador, +2 descartes, +1 na mão) | **resolve a dívida do estrategista**: gradiente planejadora−gulosa de **−5,4 → +5,4 pp**, repetido em 3 famílias de sementes (−7,5→+4,8 · −6,8→+5,6) |
 | **Fecho conta para a meta** | correção de motor: hoje a vitória é calculada **antes** da colheita final, então o fecho nunca vira a mesa | **+6,1 pp** de vitória, **zero conceito novo** — mas leva a 40,7%, fora da banda 20–40: exige recalibrar o K |
 | **K = 1,25** na curva de metas | corrige a dificuldade | razão **0,990 → 0,793**; vitória **40,75% → 28,8%** |
@@ -59,12 +59,12 @@ colocar* é uma decisão de verdade, e não teatro — que era a dúvida existen
 
 | Ideia | Por que parecia boa | O número que matou |
 |---|---|---|
-| **AGULHA** (coringa que vem pela compra e resolve como uma carta só) | o momento "veio o coringa!" | resíduo morto **66,7%** (banda 20–40%); é **anti-cruzada**: derruba de 0,087 para **0,032/mesa (−63%)**; leva 61,1% dos pontos; C3 em **4,2%** — indistinguível de aleatório |
+| **AGULHA** (coringa que vem pela compra e resolve como uma carta só) | o momento "veio o coringa!" | resíduo morto **66,7%** (banda 20–40%); é **anti-cruz**: derruba de 0,087 para **0,032/mesa (−63%)**; leva 61,1% dos pontos; C3 em **4,2%** — indistinguível de aleatório |
 | **PRUMO / cascata por gravidade** (a carta sobrevive à colheita e cai) | reação em cadeia é o motor de dopamina do Tetris | **0 elos em 48.000 mesas**; em **3.866 quedas a pista de pouso existiu 0 vezes** |
 | **ESTRELA** (fechar 4 linhas em C3) | a fantasia de quebrar o jogo | **0 ocorrências** em 1.002 gulosas, 402 profundas e 1.002 caçadoras; **99,1%** das Estrelas contêm mão de mult ≤ 2 (o anticlímax é a norma); produto real mediano **24** contra 1.120 prometido — **47× otimista** |
-| **Precificar a cruzada** (pagar muito mais por ela) | se o prêmio for enorme, o jogador persegue | preço ×4, ×20 e ×100: gulosa continuou em **0,0000**, 100% das mesas sem cruzada; a profunda **piorou** (0,0274 → 0,0174) |
-| **Avesso "dobra os outs" da cruzada** | argumento central da proposta | **0,088 com** contra **0,087 sem**. Nulo |
-| **AGULHA + AVESSO juntos** | dois coringas, mais opções | vitória **73,33%**, razão 1,159 — o jogo vira passeio, e ainda com **0,000 cruzada** |
+| **Precificar a cruz** (pagar muito mais por ela) | se o prêmio for enorme, o jogador persegue | preço ×4, ×20 e ×100: gulosa continuou em **0,0000**, 100% das mesas sem cruz; a profunda **piorou** (0,0274 → 0,0174) |
+| **Avesso "dobra os outs" da cruz** | argumento central da proposta | **0,088 com** contra **0,087 sem**. Nulo |
+| **AGULHA + AVESSO juntos** | dois coringas, mais opções | vitória **73,33%**, razão 1,159 — o jogo vira passeio, e ainda com **0,000 cruz** |
 
 ### RESOLVIDO pela Janela da Colheita (rodada 4)
 
@@ -73,8 +73,8 @@ pela aritmética depois de calcular que montar uma cruz custa 9 posicionamentos:
 
 | Candidato | Resultado |
 |---|---|
-| Só a cruzada levanta o Tear | dial de **zero bit**: 0,0000 nas 8 variantes; com a cruzada já acontecendo, 0,831 com e sem — **99,96% de jogadas idênticas** em 4.815 turnos |
-| Maturação do 4/5 | inerte até F=1,0; só 0,012 em F=1,5; somada à Janela **derruba** a cruzada para 0,672 |
+| Só a cruz levanta o Tear | dial de **zero bit**: 0,0000 nas 8 variantes; com a cruz já acontecendo, 0,831 com e sem — **99,96% de jogadas idênticas** em 4.815 turnos |
+| Maturação do 4/5 | inerte até F=1,0; só 0,012 em F=1,5; somada à Janela **derruba** a cruz para 0,672 |
 | Semear mais o tabuleiro | **0,000 a 0,017** para todo S de 3 a 12 com material conservado |
 | **Janela da Colheita** ✅ | **0,000 → 0,831** |
 
@@ -86,7 +86,7 @@ Variantes que estouraram a guarda de profundidade e foram descartadas: `janela=2
 > Em **30.944 turnos de jogo guloso não existiu uma única vez** uma jogada que fechasse duas
 > linhas — com coringa na mão e sem.
 
-A configuração que a cruzada exige (duas linhas em 4/5 compartilhando uma casa vazia)
+A configuração que a cruz exige (duas linhas em 4/5 compartilhando uma casa vazia)
 **não aparece**. Fechar uma linha em 4/5 é sempre a jogada de maior ganho imediato, então
 duas linhas nunca ficam esperando ao mesmo tempo.
 
@@ -105,12 +105,12 @@ ganho imediato coincide com a ótima em apenas **58,8%** dos turnos, e segui-la 
 só **1,4 ponto percentual** de vitória. O jogador assistido não é punido.
 
 **O que a medição diz contra, e é grave:** a política gulosa do simulador *é* um jogador
-seguindo o anel #1, e ela produziu **0,000 cruzada em 30.944 turnos**.
+seguindo o anel #1, e ela produziu **0,000 cruz em 30.944 turnos**.
 
 > A assistência não faz o jogador perder. Faz o jogador **nunca ver o melhor momento do jogo**.
 
 E não é passiva: uma lista ordenada por ganho imediato **sempre** recomenda fechar a linha em
-4/5, que é exatamente o que impede a cruzada. Ordenada assim, a assistência é uma máquina de
+4/5, que é exatamente o que impede a cruz. Ordenada assim, a assistência é uma máquina de
 impedir o clímax — e ensina a jogada errada com ar de autoridade.
 
 **Contradição no próprio documento:** a §15 exige que o jogador pensante vença **12 pp** a mais
@@ -128,7 +128,7 @@ reprovaria o jogo.
 
 **Régua nova do teste de segurança:** medir vitória é medir a coisa errada — o custo da
 assistência não aparece lá (1,4 pp). A pergunta que reprova o build passa a ser:
-**um jogador que segue a dica chega a ver uma cruzada alguma vez?** Hoje a resposta é não.
+**um jogador que segue a dica chega a ver uma cruz alguma vez?** Hoje a resposta é não.
 
 ---
 
@@ -143,7 +143,7 @@ que combina. A multa por planejar estava embutida na pontuação da mão fraca.
 Logo: pagar melhor a linha fraca **reembolsa exatamente quem planeja, e só ele**. Controle
 rodado: pagar mais em *toda* linha infla o K em 33% e move o gradiente só 2,3 pp.
 
-**E o teste de preço que mandamos refazer tinha razão pela metade.** Com a cruzada finalmente
+**E o teste de preço que mandamos refazer tinha razão pela metade.** Com a cruz finalmente
 acontecendo, o preço passou a ter gradiente (−7,2 · −1,2 · +2,5 · +8,6 · +28,2) — o teste
 original de fato media um evento inexistente. Mas o beneficiário foi medido: os +8,6 pp vão para
 um bot que **só** joga a cruz; o jogador atencioso ganha **+1,5 pp** com o K subindo 42%.
@@ -158,8 +158,8 @@ conjunto: **4/10**. As correções que só um leitor frio acha:
 
 | Conceito | Nome testado | Por que falhou | Nome corrigido |
 |---|---|---|---|
-| a tabela dos degraus | ESCADA DA CRUZADA | **"escada" já é sequência no pôquer** | LINHAS DE UMA VEZ |
-| fechar 4 linhas no centro | CRUZADA DE 4 | os dois concluíram que uma carta não toca 4 linhas | CRUZADA DO CENTRO |
+| a tabela dos degraus | ESCADA DA CRUZ | **"escada" já é sequência no pôquer** | LINHAS DE UMA VEZ |
+| fechar 4 linhas no centro | CRUZ DE 4 | os dois concluíram que uma carta não toca 4 linhas | CRUZ DO CENTRO |
 | troco em 3/5 e 4/5 | ADIANTAMENTO | pior par da lista, confundido com "adiada" | PARCELA |
 | as 12 unidades que pontuam | LINHA | 12 > 10 num 5×5 travou os dois | só FILEIRA / COLUNA / DIAGONAL |
 | ajuda em 3 níveis | AJUDA | colide com REGRAS na mesma tela | DICAS |
@@ -199,7 +199,7 @@ de recompensa — quem precisa dele não deve ter que merecê-lo.
 | 2 | Meia-noite | jogue 25 mesas |
 | 3 | Veludo e brasa | faça uma Sequência de Cor |
 | 4 | Ameixa e ouro | vença no Tabuleiro 3 |
-| 5 | Neon arcade | faça uma CRUZADA DO CENTRO |
+| 5 | Neon arcade | faça uma CRUZ DO CENTRO |
 
 O Neon fica por último de propósito: é o mais impressionante nos primeiros dez segundos e o mais
 cansativo no minuto vinte. Tema que grita "uau" vale mais como prêmio que como padrão.
@@ -238,7 +238,7 @@ o mesmo da bancada. Sem isso, "portamos o núcleo" seria afirmação sem prova.
 |---|---|---|---|
 | turnos com recompensa | 75,9% | **75,3%** | ✅ |
 | seca mediana | 2 | **2** | ✅ |
-| cruzadas por mesa | 0,839 | **0,830** | ✅ |
+| cruzes por mesa | 0,839 | **0,830** | ✅ |
 | razão pontos/meta | 0,790 | **0,768** | ✅ |
 | Tear mediano | 7 | **7** | ✅ |
 | eventos por mesa | 1,17 | **1,16** | ✅ |
@@ -388,8 +388,8 @@ Consequências que saem direto das regras e que nenhum balanceamento contorna:
   de **20 segundos** entre recompensas *por regra*, não por ajuste.
 - Uma mesa vê **17 a 19 cartas** das 52 na vida inteira. O baralho nunca esvazia; a regra de
   reembaralhar o descarte praticamente nunca dispara.
-- Teto teórico de cruzadas: **2** na Pequena e no Chefe, **1** na Grande (17 cartas < 18
-  necessárias para duas). A banda "1,5 a 2,5 cruzadas por mesa" do documento original era
+- Teto teórico de cruzes: **2** na Pequena e no Chefe, **1** na Grande (17 cartas < 18
+  necessárias para duas). A banda "1,5 a 2,5 cruzes por mesa" do documento original era
   **aritmeticamente impossível**.
 
 ---
@@ -402,9 +402,9 @@ Registrados de propósito. Errar de novo custa mais caro que admitir.
    medidas em dificuldades diferentes. Produziu o número "vitória 21,8%" que circulou como
    verdade. O correto, pareado, é **28,8%**. → *Toda bancada agora reproduz a base e confere
    antes de medir variante.*
-2. **Medir a cruzada com política gulosa mede o teto errado.** Montar uma cruzada exige
+2. **Medir a cruz com política gulosa mede o teto errado.** Montar uma cruz exige
    planejar ~8 turnos à frente; políticas de 1 e 2 níveis não enxergam isso. Um humano
-   enxerga. → *Toda medição de cruzada exige uma política planejadora.*
+   enxerga. → *Toda medição de cruz exige uma política planejadora.*
 3. **"Maior evento de uma run vencida" foi medido como "de uma mesa vencida".** Escopo
    diferente, número diferente.
 4. **Uma proposta chegou com número inventado no texto** ("produto ~1.120"); o medido foi 24.
@@ -429,10 +429,11 @@ Registrados de propósito. Errar de novo custa mais caro que admitir.
 
 | Questão | Situação |
 |---|---|
-| ~~**Planejar deixou de pagar**~~ ✅ RESOLVIDO pela BC_rec (§3c) | com a Janela, quem planeja a cruz cai de **62,7% para 30,7%** de vitória, enquanto quem joga no impulso sobe de 31,2% para **36,1%**. O gradiente de perícia inverteu. Alvo da próxima bancada: devolver retorno ao planejamento **sem** aumentar o prêmio da cruzada (já provado inerte em 4×, 20× e 100×) |
-| **A cruzada virou o comum** | **71% dos eventos** agora são cruzada (banda saudável 0,35–0,55 por evento); eventos por mesa 2,21 → 1,17; explosão 15,6× → 10,0×. Proposta: mover o clímax um degrau acima, para a escada **DUPLA (9 posic, 2×) · TRIPLA (13, 3×) · CRUZ TOTAL (17, 4×)** — a Tripla é 18,2% dos eventos e a Total 0,85%, e a Cruz Total cabe **exata** numa mesa Grande |
+| ~~**Planejar deixou de pagar**~~ ✅ RESOLVIDO pela BC_rec (§3c) | com a Janela, quem planeja a cruz cai de **62,7% para 30,7%** de vitória, enquanto quem joga no impulso sobe de 31,2% para **36,1%**. O gradiente de perícia inverteu. Alvo da próxima bancada: devolver retorno ao planejamento **sem** aumentar o prêmio da cruz (já provado inerte em 4×, 20× e 100×) |
+| **A cruz virou o comum** | **71% dos eventos** agora são cruz (banda saudável 0,35–0,55 por evento); eventos por mesa 2,21 → 1,17; explosão 15,6× → 10,0×. Proposta: mover o clímax um degrau acima, para a escada **DUPLA (9 posic, 2×) · TRIPLA (13, 3×) · CRUZ TOTAL (17, 4×)** — a Tripla é 18,2% dos eventos e a Total 0,85%, e a Cruz Total cabe **exata** numa mesa Grande |
 | **A pasta ainda se chama `placard/`** | o jogo virou **PLACARD** e o título trocou em todo lugar — `Marca.NOME`, `config/name`, DESIGN, README, HUD. A pasta não. Renomear é seguro (os caminhos `res://` são relativos à raiz do projeto e não mudam), mas é diff grande e decisão do Joab. `placard-pesquisa/` **não** renomeia: é registro do que se decidiu quando o jogo tinha o outro nome |
-| **A jogada continua se chamando CRUZADA** | de propósito — em português é o que a palavra-cruzada faz. Se algum dia o jogo for traduzido, é a jogada que precisa de nome novo em inglês, não o título |
+| **A jogada continua se chamando CRUZ** | de propósito — em português é o que uma grade de palavras cruzando faz. Se algum dia o jogo for traduzido, é a jogada que precisa de nome novo em inglês, não o título |
+| **O Godot não sai depois do `quit()`** | 9 em 30 rodadas do teste de fluxo. O teste passa, imprime, chama `quit(0)` e o processo fica vivo a 100% de CPU, com saída idêntica à de uma rodada boa. Calar o áudio e desmontar a cena com calma derrubou o vazamento de saída de 170 para 3 objetos e **não mexeu na taxa**. Contornado no `testar.sh`, que julga pelo que foi impresso. Não diagnosticado: falta saber o que segura o desligamento |
 | **Ergonomia do Avesso na tela** | não medido — desenhar uma carta de duas caras que se lê de relance é **condição de corte** do coringa |
 | **Ensinar a recusa** | nenhuma bancada achou mecanismo que ensine o jogador a *não* fechar uma linha. É a habilidade central e ninguém a ensina |
 | **AVESSO × PRODUTO** | combinação nunca rodada. Agora rodam juntos no jogo: Avessos vão a 2,19/mesa e a vitória a 39,4% (§3g). Não é regressão — é a soma, medida pela primeira vez |
@@ -447,7 +448,7 @@ Registrados de propósito. Errar de novo custa mais caro que admitir.
 Um simulador guloso não sente dopamina. A ausência de emoção no CSV não prova ausência de
 emoção no jogador. Continuam sem resposta, e só playtest humano responde:
 
-- o prazer de **ver** a cruzada acontecer, com animação e som
+- o prazer de **ver** a cruz acontecer, com animação e som
 - se o Tear subindo de semitom em semitom cria o crescendo prometido
 - se 100 jogadas legais por turno **parecem** paralisantes na tela, mesmo sendo equivalentes
 - se o jogador entende sozinho que às vezes deve recusar pontos

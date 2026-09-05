@@ -5,8 +5,8 @@ func p(nome, r) -> void:
 		" ev=", r["eventos_por_mesa_media"], " razao=", r["razao_pontos_meta_mediana"],
 		" vit=", r["vitoria_pct"], " tear=", r["tear_mediano"], "/", r["tear_max"],
 		" maiorEv=", r["maior_evento_unico"], " pico/med=", r["razao_pico_sobre_mediana"],
-		" cruz=", r["cruzadas_por_mesa_media"], " zero=", r["pct_mesas_com_zero_cruzada"],
-		" max=", r["cruzadas_por_mesa_max"], " m5=", r["m5_pct"], " seg45=", r["turnos_segurando_4_5"],
+		" cruz=", r["cruzes_por_mesa_media"], " zero=", r["pct_mesas_com_zero_cruz"],
+		" max=", r["cruzes_por_mesa_max"], " m5=", r["m5_pct"], " seg45=", r["turnos_segurando_4_5"],
 		" viol=", r["violacoes_teto_duro"])
 
 func _init() -> void:

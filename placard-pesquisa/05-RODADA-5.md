@@ -35,10 +35,10 @@ instrumentação (`metricas.csv`) e cinco critérios de reprovação escritos an
 abrem na mesa 1 · mediana <1,5 s sem trocar de aba · >25% terminam em aba diferente · queda >80%
 de aberturas da rodada 1 à 4 · `mudou_jogada` >60%.
 
-**Conflito não resolvido, e é da casa:** o compêndio proíbe CRUZADA em rótulo (§12 do documento)
+**Conflito não resolvido, e é da casa:** o compêndio proíbe CRUZ em rótulo (§12 do documento)
 e usa DUPLA · TRIPLA · CRUZ TOTAL; a proposta de nomes mata esses três por colidirem com Par e
 Trinca. **Os dois documentos não entram juntos como estão.** O teste decide: DUPLA e TRIPLA não
-foram testados, CRUZADA DE 2 passou 2/2, CRUZADA DE 4 reprovou 0/2. Recomendo a escada contada
+foram testados, CRUZ DE 2 passou 2/2, CRUZ DE 4 reprovou 0/2. Recomendo a escada contada
 em linhas e a §12 revisada.
 
 ### (b) Os nomes novos
@@ -53,12 +53,12 @@ ADIANTAMENTO, que os dois disseram que inverteriam sob pressão. Tabela completa
 
 ### (c) As mecânicas que entram
 
-**Três entram; a mais vistosa da rodada, o bônus de cruzada, fica de fora por medição.**
+**Três entram; a mais vistosa da rodada, o bônus de cruz, fica de fora por medição.**
 
 | Entra | O número | Custo |
 |---|---|---|
 | **BC_rec** — piso do padrão parcial (+15 fichas em ALTA/PAR/DOIS PARES) + troco da linha fraca (+1 Tear, +2 descartes, +1 na mão) | gradiente **−5,4 → +5,4**, repetido em 3 famílias de sementes (−7,5→+4,8 · −6,8→+5,6) | 2 conceitos, ambos na 1ª colheita |
-| **Fecho conta para a meta** — hoje o motor calcula vitória antes de `colheita_final()` | **+6,1 pp** gulosa (34,6→40,7), +5,0 profunda, com K, cruzada, m5 e seca idênticos | **0 conceitos** |
+| **Fecho conta para a meta** — hoje o motor calcula vitória antes de `colheita_final()` | **+6,1 pp** gulosa (34,6→40,7), +5,0 profunda, com K, cruz, m5 e seca idênticos | **0 conceitos** |
 | **Beira B=3** | única com decisão medida: inércia **92,9%** gulosa / **84,1%** profunda (corte 95%); planejadora +1,7 pp, profunda +6,5 pp | 1 conceito, **+41% de cartas na tela** |
 
 Ressalva no fecho: ele leva a vitória a **40,7%**, fora da banda 20–40. Não é "custo zero" como a
@@ -82,12 +82,12 @@ ainda não são uma Cor, e o jogo não paga por promessa. O que muda: o `× 0,5`
 
 ### (e) Como o estrategista volta a ser premiado
 
-**Pagando melhor a mão fraca — não aumentando o prêmio da cruzada.**
+**Pagando melhor a mão fraca — não aumentando o prêmio da cruz.**
 
 A pista do briefing estava certa: refeito com o evento a 0,847/mesa, o preço **tem** gradiente
 monotônico (−7,2 · −3,1 · −1,2 · +2,5 · +7,0 · +8,6 · +11,8 · +28,2 para b de 0 a 0,40). A
 entrada de DECISOES §3 está **obsoleta**, não errada. Mas o beneficiário foi medido: os +8,6 pp
-em b=0,27 são colhidos por um bot que só joga a cruz (1,633 cruzadas/mesa, 92,84% dos eventos são
+em b=0,27 são colhidos por um bot que só joga a cruz (1,633 cruzes/mesa, 92,84% dos eventos são
 dupla, n3 = 0,00%, ignora o Pulso). O proxy de jogador atencioso real (TECELÃ, horizonte 1) ganha
 **+1,5 pp**, e K vai de 4,3922 a 6,25 (**+42%**).
 
@@ -110,10 +110,10 @@ em seis níveis (−4,3 · −2,9 · −2,1 · −1,0 · +0,2 · +2,5). Controle
 | mult que sobe e não desce | TEAR | MULTIPLICADOR DA MESA | MULT x6 | 2/2, confiança 8 — o melhor da lista |
 | +1 a cada 4 posicionamentos | TIQUE DO TEAR | PASSO DO MULT | +1 a cada 4 | 2/2 no formato, **0/2 no referente** → `+1 a cada 4 JOGADAS` |
 | coringa de duas caras | AVESSO | CARTA DUAS CARAS | Duas caras | 2/2, um marcou opaco ("pode ser 'conta em duas linhas'", a regra base) |
-| a tabela dos degraus | A ESCADA | ESCADA DA CRUZADA | 2 - 3 - 4 | **0/2 REPROVADO** — "escada" já é sequência. → **LINHAS DE UMA VEZ** |
-| fecha 2 linhas | DUPLA | CRUZADA DE 2 | 2 LINHAS | 2/2 |
-| fecha 3 linhas | TRIPLA | CRUZADA DE 3 | 3 LINHAS | 1/2 → `3 LINHAS — fileira + coluna + diagonal` |
-| fecha 4 linhas em C3 | CRUZ TOTAL | CRUZADA DE 4 | 4 LINHAS | **0/2 REPROVADO** — os dois concluíram que uma carta não toca 4 linhas. → **CRUZADA DO CENTRO** |
+| a tabela dos degraus | A ESCADA | ESCADA DA CRUZ | 2 - 3 - 4 | **0/2 REPROVADO** — "escada" já é sequência. → **LINHAS DE UMA VEZ** |
+| fecha 2 linhas | DUPLA | CRUZ DE 2 | 2 LINHAS | 2/2 |
+| fecha 3 linhas | TRIPLA | CRUZ DE 3 | 3 LINHAS | 1/2 → `3 LINHAS — fileira + coluna + diagonal` |
+| fecha 4 linhas em C3 | CRUZ TOTAL | CRUZ DE 4 | 4 LINHAS | **0/2 REPROVADO** — os dois concluíram que uma carta não toca 4 linhas. → **CRUZ DO CENTRO** |
 | ajuda em 3 níveis | ASSISTÊNCIA | AJUDA | AJUDA | **0/2 REPROVADO** por coexistir com REGRAS. → **DICAS** |
 | nível 1 | silenciar o ruído | SÓ O QUE MUDA | Só o que muda | 2/2 (soa frase, não botão) |
 | nível 2 | conta dos dois lados | GANHA E PERDE | Ganha e perde | 2/2 |
@@ -143,7 +143,7 @@ em seis níveis (−4,3 · −2,9 · −2,1 · −1,0 · +0,2 · +2,5). Controle
 
 | Ideia | O número que matou |
 |---|---|
-| Bônus de cruzada **dentro** do parêntese | auto-referente: K diverge para **5.492**, razão nunca chega a 0,79; b máximo ≈0,029 |
+| Bônus de cruz **dentro** do parêntese | auto-referente: K diverge para **5.492**, razão nunca chega a 0,79; b máximo ≈0,029 |
 | Bônus **fora**, b=0,27 (o único lever que fecha a lacuna) | fecha para o bot monomaníaco (+8,6) e não para o atencioso (**+1,5**); K +42% |
 | Bônus em fichas absolutas (B=1.000) | **−2,0**: decai ao longo das 6 rodadas |
 | Bônus por linha extra | +3,0 e vitória global cai a 30,6 — pior nos dois eixos |
@@ -173,7 +173,7 @@ em seis níveis (−4,3 · −2,9 · −2,1 · −1,0 · +0,2 · +2,5). Controle
 | DESMANCHE | 0 — nomeia regra que já existe |
 
 **No turno 1: 1 conceito**, dentro do orçamento de 2; somados na mesa: 3. Não corto por excesso
-de conceito — corto por medição: fica de fora o **bônus de cruzada**, o mais vistoso e o mais
+de conceito — corto por medição: fica de fora o **bônus de cruz**, o mais vistoso e o mais
 fraco onde importa.
 
 O custo real da Beira não é conceito, é tela: **+41% de cartas**, jogadas legais de 85 para
@@ -191,7 +191,7 @@ Cada coluna foi medida sozinha, contra a sua própria base. **A combinação nun
 |---|---|---|---|---|---|
 | turnos que pagam | 75,8% | 75,9% | 76,1% | 75,8% | ≥70 |
 | seca mediana | 2 (p90 3) | 2 | 2 | 2 | ≤3 |
-| cruzadas/mesa | 0,831 | 0,839 | 0,836 | 0,831 | ≥0,5 |
+| cruzes/mesa | 0,831 | 0,839 | 0,836 | 0,831 | ≥0,5 |
 | vitória gulosa | 36,1% | 34,1% | 35,7% | **40,7%** | 20–40 |
 | guarda de profundidade | 68,2% | 68,5% | 68,8% | 68,2% | 45–75 |
 | **planejadora − gulosa** | **−5,4 pp** | **+5,4 pp** | −4,1 pp | −9,8 pp | ≥0 |
@@ -206,7 +206,7 @@ A única linha fora de banda é a vitória do fecho (40,7 > 40): exige K novo.
 
 1. **Se BC_rec paga o jogador atencioso ou só o caçador de cruz.** É a pergunta mais importante
    em aberto. b-fracas mediu BC_rec contra a **planejadora**, que b-estrategista mostrou ser um
-   bot monomaníaco (1,633 cruzadas/mesa, n3 = 0,00%, ignora o Pulso). BC_rec **nunca** rodou
+   bot monomaníaco (1,633 cruzes/mesa, n3 = 0,00%, ignora o Pulso). BC_rec **nunca** rodou
    contra a TECELÃ, o proxy de jogador atencioso. Uma célula resolve.
 2. **A combinação.** BC_rec + Beira + fecho nunca rodaram juntos com K único. A Beira muda a
    **ordem** das jogadas (inércia 92,9%) e é o tipo de regra que come folga de m5 — regras de

@@ -7,10 +7,10 @@ class_name Perfil
 ## Um save cortado no meio por queda de energia não pode virar perfil zerado.
 
 const CAMINHO := "user://placard.save"
-## O jogo já se chamou CRUZADA, e quem jogou naquela época tem o save no nome
+## O jogo já se chamou CRUZ, e quem jogou naquela época tem o save no nome
 ## velho. Renomear sem migrar zeraria temas, conquistas e dificuldade dessa
 ## pessoa em silêncio — que é a pior forma de perder progresso.
-const CAMINHO_ANTIGO := "user://cruzada.save"
+const CAMINHO_ANTIGO := "user://cruz.save"
 const VERSAO := 1
 
 var tema := Temas.PADRAO
@@ -83,7 +83,7 @@ func conferir(run: Run, ultimo_relato := {}) -> Array[String]:
     ## sabe jogar", sem inventar um sistema para justificar um prêmio.
     if run.rodada >= Metas.RODADAS and destravar("ameixa"):
         novos.append("ameixa")
-    if Run.e_cruzada_do_centro(ultimo_relato) and destravar("neon"):
+    if Run.e_cruz_do_centro(ultimo_relato) and destravar("neon"):
         novos.append("neon")
     return novos
 

@@ -29,7 +29,7 @@ metas** (devolve razão 0,793 e vitória 28,8%).
 5. **TEAR**: um número que sobe +1 a cada colheita e +1 a cada 4 cartas colocadas, teto 8,
    e **multiplica** o evento inteiro (Tear mediano 6 → 7; encosta no teto em 21,2% das mesas).
 6. Se a mesma carta fecha mais de uma linha, **os multiplicadores das mãos se multiplicam
-   entre si**. Isso é a CRUZADA.
+   entre si**. Isso é a CRUZ.
 7. Toda colheita prensa as duas cartas de maior valor daquela linha num **AVESSO** — uma
    carta de duas caras — que volta para o topo do baralho (chega à mão no turno seguinte:
    espera mediana **1 turno**).
@@ -121,7 +121,7 @@ eventos tardios capazes de virar o placar — nenhuma outra alavanca tocou nesse
 **O que sustenta horas** não são chefes com regras novas — é a mochila de 19 posicionamentos
 disputada por três estratégias que se canibalizam pelo mesmo recurso escasso (as 18/17/19
 cartas que a pilha colhida nunca devolve): colher cedo para subir o Tear, segurar para a
-cruzada, ou fabricar Avessos. A guarda diz que a disputa é real: a concordância entre a jogada
+cruz, ou fabricar Avessos. A guarda diz que a disputa é real: a concordância entre a jogada
 gulosa e a profunda ficou entre **54,1% e 59,7% em todas as 73 células das três bancadas** —
 nenhuma saiu da banda 45–75%, por nenhum lado.
 
@@ -143,8 +143,8 @@ poder de loja ligado é território virgem. Não invente número aqui.
 | maior evento único | 1.881 | — | **10.260** |
 | fator explosão (pico/mediana) | 7,9× | — | **15,8×** |
 | m5 (guarda 45–75%) | 58,8% | 58,8% | **55–59%** |
-| **cruzadas/mesa (gulosa)** | **0,000** | 0,00 | **0,000** |
-| cruzadas/mesa (jogador que caça) | 0,087 | 0,14 | **0,146** |
+| **cruzes/mesa (gulosa)** | **0,000** | 0,00 | **0,000** |
+| cruzes/mesa (jogador que caça) | 0,087 | 0,14 | **0,146** |
 
 **Contra o Balatro, só o honesto** (não medi o Balatro; o que segue é estrutural, não
 medição minha): lá o print é notação científica; aqui o maior evento é **10.260 pontos,
@@ -157,18 +157,18 @@ turnos mudos que sobram são a distância que falta.
 
 ## 6. O QUE FOI TESTADO E REPROVADO (a seção que vale ouro)
 
-**1. A CRUZADA — o evento que na época dava nome ao jogo — não é consertável por carta, por preço nem
+**1. A CRUZ — o evento que na época dava nome ao jogo — não é consertável por carta, por preço nem
 por cascata. As três bancadas atacaram por três caminhos diferentes e as três mediram zero.**
 - Em **30.944 turnos de jogo guloso não existiu UMA ÚNICA vez** uma jogada que fechasse duas
   linhas — com coringa na mão (3.614 turnos com Agulha, 7.410 com Avesso) e sem.
   A configuração "duas linhas em 4/5 compartilhando uma casa vazia" **não aparece**.
-- O argumento central do Avesso ("ele dobra os outs") **caiu**: 0,088 cruzadas/mesa com
+- O argumento central do Avesso ("ele dobra os outs") **caiu**: 0,088 cruzes/mesa com
   Avesso contra 0,087 sem, na política caçadora. Nulo.
-- **A AGULHA é anti-cruzada**: derruba de 0,087 para **0,032/mesa (−63%)**, porque fecha
+- **A AGULHA é anti-cruz**: derruba de 0,087 para **0,032/mesa (−63%)**, porque fecha
   linhas mais cedo e come o material que a caçadora estava montando.
-- **A tese econômica está errada.** Multipliquei o preço da cruzada por 4 a 100× e a gulosa
-  continuou em **0,0000, 100% das mesas sem cruzada**; a profunda **piorou** (0,0274 → 0,0174).
-  A gulosa não recusa a cruzada por achá-la cara: **ela nunca chega a vê-la.**
+- **A tese econômica está errada.** Multipliquei o preço da cruz por 4 a 100× e a gulosa
+  continuou em **0,0000, 100% das mesas sem cruz**; a profunda **piorou** (0,0274 → 0,0174).
+  A gulosa não recusa a cruz por achá-la cara: **ela nunca chega a vê-la.**
 
 **2. O PRUMO (a carta sobrevive à colheita e cai) — reprovado como cascata.**
 Zero elos em 48.000 mesas; as 24 células saíram numericamente idênticas (os três eixos
@@ -193,7 +193,7 @@ acima de 8 (morde **0%**); o desempate do carimbo da Agulha, declarado "a primei
 medir" (53,17 × 52,33). Não vire parâmetro nenhum deles.
 
 **6. Não combinar AGULHA + AVESSO:** vitória **73,33%**, razão **1,159** — e ainda
-**0,000 cruzada**. O jogo vira passeio sem entregar o clímax.
+**0,000 cruz**. O jogo vira passeio sem entregar o clímax.
 
 ---
 
@@ -210,7 +210,7 @@ foi de 2.394 a 10.260 e a explosão dobrou (7,2× → 15,8×). A guarda de profu
 
 - **O jogo não entrega o evento que dá nome a ele.** Jogo natural: 0,000 por mesa. Jogador
   que joga *de propósito* para ela: 0,146/mesa, cerca de **0,9 por run de 6 mesas**. Recomendo
-  assumir isso — a cruzada é a jogada de especialista, não o loop. Mas aí o jogo precisa
+  assumir isso — a cruz é a jogada de especialista, não o loop. Mas aí o jogo precisa
   **ensinar a recusa**, e nenhuma das três bancadas achou um mecanismo que ensine.
 - **O maior momento possível ainda é pequeno.** 4,19× a meta no máximo, p99 de 2,36×. É
   "passei raspando", não "quebrei o jogo".
@@ -220,7 +220,7 @@ foi de 2.394 a 10.260 e a explosão dobrou (7,2× → 15,8×). A guarda de profu
 
 **O que falta, em ordem:** (1) K=1,25, hoje; (2) protótipo do `_draw` do Avesso;
 (3) uma bancada medindo AVESSO × PRODUTO juntos, que nunca foi rodada; (4) uma bancada sobre
-**a ordem em que as linhas fecham** — é ali que a cruzada mora, e nenhuma das seis propostas
+**a ordem em que as linhas fecham** — é ali que a cruz mora, e nenhuma das seis propostas
 do painel atacou isso de frente.
 
 ---
@@ -229,7 +229,7 @@ do painel atacou isso de frente.
 
 A simulação mede decisão. Ela não mede **nada** do que faz alguém jogar de novo à 1 da manhã:
 
-- **O prazer de ver a cruzada acontecer.** Meço 0,146/mesa; não meço se o jogador grita.
+- **O prazer de ver a cruz acontecer.** Meço 0,146/mesa; não meço se o jogador grita.
 - **O giro do Avesso.** Dois futuros impressos, um dedo, escolha irreversível. É a aposta
   central do item e a única coisa que sei dele é que dispara pulso duplo em 9,5% dos casos
   (previsão era ≥20%). Se for confuso, o item cai e nenhum número teria avisado.

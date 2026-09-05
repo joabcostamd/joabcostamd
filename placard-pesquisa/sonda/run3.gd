@@ -13,8 +13,8 @@ func _init() -> void:
 		var cfg := Mesa2.cfg_padrao()
 		for k in e[1].keys(): cfg[k] = e[1][k]
 		var r := b.rodar(cfg, 2000, 0, e[2])
-		res[e[0]] = {"outs_brutos": r["outs_brutos"], "cruzadas_por_mesa_media": r["cruzadas_por_mesa_media"],
-			"pct_mesas_com_zero_cruzada": r["pct_mesas_com_zero_cruzada"],
+		res[e[0]] = {"outs_brutos": r["outs_brutos"], "cruzes_por_mesa_media": r["cruzes_por_mesa_media"],
+			"pct_mesas_com_zero_cruz": r["pct_mesas_com_zero_cruz"],
 			"quinas_por_mesa": r["quinas_por_mesa"], "reais_por_mesa": r["reais_por_mesa"],
 			"n_linhas_por_evento": r["n_linhas_por_evento"], "mesas": r["mesas"]}
 		var f := FileAccess.open("res://resultado_raw3.json", FileAccess.WRITE)
