@@ -4,7 +4,7 @@ config_version=5
 [application]
 config/name="Protótipo Plataforma"
 run/main_scene="res://scenes/main.tscn"
-config/features=PackedStringArray("4.6", "GL Compatibility")
+config/features=PackedStringArray("4.7", "GL Compatibility")
 
 [autoload]
 ConfigInput="*res://scripts/config_input.gd"
