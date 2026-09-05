@@ -47,9 +47,9 @@ jobs:
           .claude/scripts/novo-jogo.sh teste-ci "Jogo de Teste"
 
   exportar:
-    # Provar que o jogo VIRA executavel. Baixa 1,2 GB de templates, entao nao
-    # roda em todo push de branch — so na main, em tag, ou a mao.
-    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+    # Provar que o jogo VIRA executavel — em todo push, senao a prova so
+    # apareceria depois do merge, tarde demais. Os 1,2 GB de templates sao
+    # baixados uma vez e ficam no cache.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
