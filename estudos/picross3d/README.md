@@ -27,6 +27,12 @@ fazem parte da figura**. O símbolo diz como estão distribuídos:
 
 É a regra do Picross 3D, e é o que torna a dedução possível sem chutar.
 
+## Testes
+
+```bash
+./estudos/picross3d/testar.sh      # 7 verificações, < 1 s
+```
+
 ## Decisões medidas
 
 **Gato foi tentado e descartado.** Em isométrica, corpo e cabeça de larguras
@@ -36,3 +42,17 @@ cogumelo (chapéu largo sobre pé fino) lê de longe.
 **Número chapado por cima do cubo não convence.** As pistas são deformadas para
 o plano da face por transformação afim (`voxel.texto_na_face`). Sem isso a
 maquete parece diagrama, não jogo.
+
+**Números boiando durante a resolução.** Dois defeitos, nenhum dava erro:
+
+1. *Pista repetida.* Todo cubo com a face livre desenhava o número da sua
+   fileira. Numa fileira partida ao meio, os dois pedaços expostos mostravam o
+   MESMO número — e o de trás parecia boiar dentro do buraco. Correção: só o
+   cubo mais externo de cada fileira mostra a pista.
+2. *Texto fora da ordem do pintor.* Todo o texto era desenhado depois de todos
+   os cubos, então a pista de um cubo de trás era pintada POR CIMA do cubo da
+   frente que devia escondê-la. Correção: cada pista sai junto do seu cubo, na
+   mesma ordem de pintura.
+
+Os dois viraram teste antes da correção (`teste_pistas.py`): 5 das 7
+verificações falhavam, e passaram a passar.
