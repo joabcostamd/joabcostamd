@@ -1,17 +1,12 @@
-# Godot
-torre-eterna/.godot/
-torre-eterna/android/
-torre-eterna/export_presets.cfg
-*.tmp
-
 # Sistema
 .DS_Store
 Thumbs.db
-node_modules/
+desktop.ini
+*~
 
-# Fontes do jogo: nao versionadas, baixadas por tools/baixar_fontes.sh.
-# Ver torre-eterna/fontes/FONTES.md.
-torre-eterna/fontes/*.ttf
-torre-eterna/fontes/*.otf
-torre-eterna/fontes/*.ttc
-torre-eterna/fontes/*.import
+# Editor
+.idea/
+.vscode/
+
+# Temporarios
+*.tmp
