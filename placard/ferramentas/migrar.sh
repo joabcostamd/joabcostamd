@@ -29,12 +29,23 @@ cd "$DESTINO"
 # As pastas se chamaram cruz/ até o jogo ser rebatizado. Sem os nomes antigos
 # aqui, o filtro descarta 34 dos 41 commits: eles tocam caminhos que não existem
 # mais. Com o --path-rename, a história inteira passa a falar placard/.
+#
+# Os seis renames de arquivo abaixo não são luxo: renomear a PASTA não
+# renomeia o que está dentro dela, e sem eles seis caminhos com o nome
+# antigo continuam vivos em commits antigos — invisíveis na árvore de
+# trabalho, visíveis num `git log --name-only`.
 git filter-repo --force \
     --path cruzada --path cruzada-pesquisa \
     --path placard --path placard-pesquisa --path PROMPT-JOGO-DE-CARTAS.md \
     --path .claude --path .gitignore --path .mcp.json \
     --path-rename cruzada-pesquisa/:placard-pesquisa/ \
-    --path-rename cruzada/:placard/
+    --path-rename cruzada/:placard/ \
+    --path-rename placard-pesquisa/cruzada-c1.md:placard-pesquisa/placard-c1.md \
+    --path-rename placard-pesquisa/cruzada-c2.md:placard-pesquisa/placard-c2.md \
+    --path-rename placard-pesquisa/cruzada-c3.md:placard-pesquisa/placard-c3.md \
+    --path-rename placard-pesquisa/cruzada-c4.md:placard-pesquisa/placard-c4.md \
+    --path-rename placard-pesquisa/cruzada-fusao.md:placard-pesquisa/placard-fusao.md \
+    --path-rename placard-pesquisa/04-REGRA-DA-CRUZADA.md:placard-pesquisa/04-REGRA-DA-CRUZ.md
 
 git branch -m main
 
