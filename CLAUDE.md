@@ -25,6 +25,15 @@ suíte de testes e o portão. Nada de "depois eu arrumo".
 **Antes de escrever GDScript, preencha o `CONCEITO.md`** — em especial a seção
 "O que NÃO tem". É ela que impede o escopo de crescer sozinho.
 
+Dentro de qualquer jogo, quatro comandos dão conta do ciclo inteiro:
+
+```bash
+./testar.sh      portão frio + suíte           sempre, antes de dizer "pronto"
+./simular.sh     balanceamento por Monte Carlo  qualquer pergunta de número
+./exportar.sh    executável Linux/Windows/Web   precisa dos templates
+./publicar.sh    sobe para o itch.io            precisa de BUTLER_API_KEY
+```
+
 ---
 
 ## 2. O ambiente
@@ -35,6 +44,8 @@ suíte de testes e o portão. Nada de "depois eu arrumo".
 | Onde | `~/.local/opt/godot/godot`, com link em `/usr/local/bin/godot` |
 | Quem instala | `.claude/scripts/preparar-ambiente.sh`, chamado pelo hook `SessionStart` |
 | Se sumir | `bash .claude/scripts/preparar-ambiente.sh` (idempotente, ~15 s) |
+| Templates de export | `bash .claude/scripts/preparar-export.sh` — 1,2 GB, **sob demanda**, fora do hook |
+| butler (itch.io) | `bash .claude/scripts/preparar-butler.sh` — **bloqueado na nuvem**, use o CI |
 
 A sessão da nuvem é efêmera: o contêiner some depois de um tempo parado. Por isso o hook
 reinstala sozinho a cada sessão, e **o que não foi commitado se perde**.
@@ -55,6 +66,17 @@ O substituto é o portão frio + a suíte headless. Não finja que rodou. Diga q
 
 O que é seguro fazer na nuvem: regras puras, testes, save, tradução, balanceamento por
 simulação, documentação, estrutura de projeto, CI, export headless.
+
+### O proxy de saída bloqueia dois domínios que importam
+
+Medido nesta sessão: `github.com` passa, mas `kenney.nl` e `broth.itch.zone` levam 403
+no CONNECT. Consequência e saída:
+
+| Quero | Na nuvem | Saída |
+|---|---|---|
+| assets do Kenney | bloqueado | **Actions → Trazer assets** — o runner baixa e commita num branch; a nuvem lê por git |
+| publicar no itch | bloqueado | **tag `<slug>-v<versão>`** dispara `publicar-itch.yml`, que instala o butler no runner |
+| Godot e templates | passa | os scripts baixam direto |
 
 ---
 
@@ -85,6 +107,47 @@ Diagnóstico: `godot --headless --path . -s res://agent_verify.gd -- doctor`.
 
 ---
 
+## 3b. Número de jogo vem da simulação
+
+Pergunta de balanceamento — "está difícil?", "quanto de dano?", "o preço está certo?" —
+**não se responde por intuição**. O modelo já traz um Monte Carlo determinístico que roda
+as **mesmas funções puras** que a tela chama (nunca uma segunda implementação):
+
+```bash
+cd jogos/<slug>
+./simular.sh              2000 partidas nas fases 1, 3, 5 e 10 (< 1 s)
+./simular.sh 500 1 2 3    500 partidas nas fases 1, 2 e 3
+```
+
+Três políticas de habilidade — ruim, médio, bom. O balanceamento tem que fechar para as
+três: se só o bom passa, está duro; se até o ruim gabarita, está fácil. O simulador
+imprime a tabela e **os alertas**, e a mesma semente dá sempre o mesmo resultado.
+
+Os números moram em `scripts/regras/balanceamento.gd`. Mexeu lá, roda `./simular.sh` e
+lê os alertas — esse é o ciclo inteiro.
+
+---
+
+## 3c. Assets: consulte o catálogo, nunca invente o nome
+
+`assets/CATALOGO.md` indexa todo sprite, som, modelo e fonte do projeto, com o caminho
+`res://` exato. É gerado por `ferramentas/catalogo_assets.py` e regerado a cada
+importação de pacote.
+
+**Ache o nome no catálogo antes de escrever o caminho.** Nome inventado não produz erro
+nenhum: o jogo abre, o portão passa, e a textura só não aparece.
+
+Trazer um pacote (Kenney ou qualquer CC0):
+
+```bash
+.claude/scripts/baixar-assets.sh pixel-platformer jogos/meu/assets/kenney --pixel
+```
+
+Na nuvem esse comando falha por bloqueio de rede — use **Actions → Trazer assets**.
+Lista de pacotes em `ferramentas/kenney-packs.md`.
+
+---
+
 ## 4. Regras que não se negociam
 
 1. **Conceito antes de código.** Sem `CONCEITO.md`, nenhuma linha de GDScript.
@@ -97,7 +160,10 @@ Diagnóstico: `godot --headless --path . -s res://agent_verify.gd -- doctor`.
    histórico custa reescrever tudo. O modelo canônico é `ferramentas/gitattributes-godot`,
    com o bloco LFS comentado — descomente antes de trazer png/glb/ogg grande.
 6. **Bug vira teste antes da correção.** O teste falha, aí você conserta.
-7. **O kit `agent_verify.gd` é editado só em `ferramentas/`.** As cópias dentro dos projetos
+7. **Número de balanceamento sai de `./simular.sh`**, não de palpite. Se mudou um número
+   em `balanceamento.gd` e não rodou o simulador, você não sabe o que fez.
+8. **Caminho de asset sai de `assets/CATALOGO.md`**, não de memória.
+9. **O kit `agent_verify.gd` é editado só em `ferramentas/`.** As cópias dentro dos projetos
    são plantadas por `testar-tudo.sh` — editar uma cópia faz as máquinas divergirem.
 
 ---
@@ -116,15 +182,23 @@ Diagnóstico: `godot --headless --path . -s res://agent_verify.gd -- doctor`.
 │   ├── hooks/session-start.sh   prepara o Godot ao abrir a sessão
 │   └── scripts/
 │       ├── preparar-ambiente.sh instala o Godot 4.7.2
+│       ├── preparar-export.sh   templates de export (1,2 GB, sob demanda)
+│       ├── preparar-butler.sh   cliente do itch.io
+│       ├── baixar-assets.sh     traz pacote CC0 e catalogo
 │       └── novo-jogo.sh         cria um jogo já verde
 ├── ferramentas/
 │   ├── agent_verify.gd          kit de verificação (cópia canônica)
 │   ├── gitattributes-godot      .gitattributes canônico
+│   ├── catalogo_assets.py       gera assets/CATALOGO.md
+│   ├── kenney-packs.md          quais pacotes trazer e como
 │   └── mcp-godot.exemplo.json   config do MCP godot-ai (uso local)
 ├── modelo-jogo/                 o esqueleto que todo jogo novo copia
 ├── jogos/                       jogos criados pelo scaffold
 ├── picross/  kit-puzzle/  prototipo-godot/    jogos existentes
-└── .github/workflows/godot.yml  CI: portão + suíte em todo push
+└── .github/workflows/
+    ├── godot.yml                CI: portão + suíte em todo push; export na main
+    ├── assets.yml               traz assets do Kenney (a mão) e commita
+    └── publicar-itch.yml        exporta e publica na tag <slug>-v<versão>
 ```
 
 Dentro de um jogo:
@@ -139,8 +213,10 @@ scripts/
 testes/
   casos/     um .gd por área, estende Mini
   suite.gd   roda todos os casos
-assets/      sprites, sons, modelos
+simulador/   Monte Carlo determinístico sobre as regras
+assets/      sprites, sons, modelos + CATALOGO.md (gerado)
 traducoes/   textos.csv
+export_presets.cfg   Linux, Windows e Web
 ```
 
 ---
@@ -167,7 +243,9 @@ O pedido decide. Roteador curto (as skills completas estão no escopo de usuári
 | juice, polimento, "sem graça" | `godot-game-feel` |
 | tradução, idioma | `godot-localization` |
 | save, checkpoint | `godot-save-system` |
-| exportar, build, Steam, itch | `godot-export`, `godot-steam`, `publicar-itch` |
+| exportar, build, executável | `godot-export` → `./exportar.sh` |
+| publicar, itch, lançar demo | `publicar-itch` → `./publicar.sh` ou a tag |
+| Steam, conquista, ranking | `godot-steam` |
 | aprendeu algo que custou tempo | `aprender` |
 
 Skills que exigem o editor aberto **não funcionam na nuvem** (ver seção 2).

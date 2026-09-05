@@ -28,13 +28,18 @@ fi
 
 mkdir -p "$RAIZ/jogos"
 cp -r "$RAIZ/modelo-jogo" "$DESTINO"
-rm -rf "$DESTINO/.godot" "$DESTINO/.verify"
+rm -rf "$DESTINO/.godot" "$DESTINO/.verify" "$DESTINO/build"
 
 # kit de verificacao sempre vem da copia canonica
 cp "$RAIZ/ferramentas/agent_verify.gd" "$DESTINO/agent_verify.gd"
 cp "$RAIZ/ferramentas/gitattributes-godot" "$DESTINO/.gitattributes"
 
 sed -i "s|^config/name=.*|config/name=\"$NOME\"|" "$DESTINO/project.godot"
+# o executavel sai com o nome do jogo, nao "jogo"
+sed -i "s|build/linux/jogo.x86_64|build/linux/$SLUG.x86_64|; s|build/windows/jogo.exe|build/windows/$SLUG.exe|" "$DESTINO/export_presets.cfg"
+
+# catalogo de assets ja indexado desde o primeiro dia
+python3 "$RAIZ/ferramentas/catalogo_assets.py" "$DESTINO" >/dev/null 2>&1 || true
 
 HOJE="$(date +%Y-%m-%d)"
 cat > "$DESTINO/CONCEITO.md" <<CONC
@@ -79,4 +84,14 @@ RM
 
 echo "criado: jogos/$SLUG"
 echo "validando..."
-( cd "$DESTINO" && ./testar.sh )
+( cd "$DESTINO" && ./testar.sh ) || exit 1
+
+cat <<FIM
+
+Proximos passos:
+  1. preencha jogos/$SLUG/CONCEITO.md (a secao "O que NAO tem" e a mais importante)
+  2. cd jogos/$SLUG
+       ./testar.sh     portao frio + testes
+       ./simular.sh    balanceamento por Monte Carlo
+       ./exportar.sh   executavel (precisa de .claude/scripts/preparar-export.sh)
+FIM

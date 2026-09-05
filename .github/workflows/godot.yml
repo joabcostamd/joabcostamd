@@ -45,3 +45,34 @@ jobs:
         run: |
           export PATH="$HOME/.local/bin:$PATH"
           .claude/scripts/novo-jogo.sh teste-ci "Jogo de Teste"
+
+  exportar:
+    # Provar que o jogo VIRA executavel. Baixa 1,2 GB de templates, entao nao
+    # roda em todo push de branch — so na main, em tag, ou a mao.
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { lfs: true }
+      - name: Cache do Godot
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/opt/godot
+          key: godot-${{ env.GODOT_VERSAO }}-linux
+      - name: Cache dos templates de export
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/godot/export_templates
+          key: godot-templates-${{ env.GODOT_VERSAO }}
+      - name: Instalar Godot e templates
+        run: |
+          bash .claude/scripts/preparar-ambiente.sh
+          bash .claude/scripts/preparar-export.sh
+      - name: Exportar o modelo nos tres alvos
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          cd modelo-jogo && ./exportar.sh
+      - name: O executavel Linux precisa subir
+        run: |
+          timeout 60 modelo-jogo/build/linux/jogo.x86_64 --headless --quit-after 30
+          echo "o binario exportado sobe e sai limpo"
