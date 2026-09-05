@@ -1,0 +1,19 @@
+{
+  "_leia": [
+    "Config do MCP godot-ai — SO PARA A MAQUINA LOCAL, com o editor Godot aberto.",
+    "Na nuvem este servidor nao existe: nao copie para .mcp.json aqui.",
+    "Copie para .mcp.json (ou ~/.claude.json) na maquina do Joab e ajuste o caminho."
+  ],
+  "mcpServers": {
+    "godot-ai": {
+      "command": "python",
+      "args": ["-m", "mcp_godot.servidor"],
+      "cwd": "CAMINHO/PARA/mcp-godot-desenvolvimento",
+      "env": {
+        "GODOT_BIN": "CAMINHO/PARA/Godot_v4.7.2-stable.exe",
+        "GODOT_BRIDGE_WS": "9082",
+        "GODOT_BRIDGE_TCP": "8790"
+      }
+    }
+  }
+}

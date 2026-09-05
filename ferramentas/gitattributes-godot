@@ -1,0 +1,42 @@
+# Fim de linha normalizado no repositorio, LF no disco.
+* text=auto eol=lf
+
+*.gd      text eol=lf
+*.tscn    text eol=lf
+*.tres    text eol=lf
+*.godot   text eol=lf
+*.cfg     text eol=lf
+*.import  text eol=lf
+*.uid     text eol=lf
+*.json    text eol=lf
+*.csv     text eol=lf
+*.md      text eol=lf
+*.sh      text eol=lf
+
+# Diff de cena no Godot e ruido: colapse por padrao.
+*.tscn diff=godot
+*.tres diff=godot
+
+# --- binarios: nunca converter fim de linha ---
+*.png  binary
+*.jpg  binary
+*.webp binary
+*.ogg  binary
+*.wav  binary
+*.mp3  binary
+*.ttf  binary
+*.otf  binary
+*.glb  binary
+*.gltf binary
+*.bin  binary
+*.exe  binary
+*.zip  binary
+*.mp4  binary
+
+# --- Git LFS: descomente ANTES do primeiro asset grande entrar ---
+# *.png  filter=lfs diff=lfs merge=lfs -text
+# *.glb  filter=lfs diff=lfs merge=lfs -text
+# *.gltf filter=lfs diff=lfs merge=lfs -text
+# *.bin  filter=lfs diff=lfs merge=lfs -text
+# *.ogg  filter=lfs diff=lfs merge=lfs -text
+# *.mp4  filter=lfs diff=lfs merge=lfs -text

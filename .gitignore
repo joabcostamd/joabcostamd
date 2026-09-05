@@ -1,0 +1,17 @@
+# Godot
+.godot/
+.verify/
+export_presets.cfg.local
+build/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Sistema
+.DS_Store
+Thumbs.db
+*.tmp
+
+# gerado pelo importador a partir do .csv — muda a cada import
+*.translation
