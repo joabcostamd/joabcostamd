@@ -143,12 +143,12 @@ func melhor_profunda(m: Mesa, lista: Array, rng: Mesa.Rng) -> Array:
 			melhor = mv
 	return melhor
 
-# ------------------- politica cacadora de cruz ---------------------------
+# ------------------- politica cacadora de cruzada ---------------------------
 # Igual a gulosa, mas DESCONTA o valor de fechar uma linha sozinha quando a
-# perpendicular daquela casa esta a caminho de tambem fechar (arma a cruz).
-func melhor_cacadora_de_cruz(m: Mesa, lista: Array) -> Array:
+# perpendicular daquela casa esta a caminho de tambem fechar (arma a cruzada).
+func melhor_cacadora_de_cruzada(m: Mesa, lista: Array) -> Array:
 	var restam: int = m.posic_max - m.posic_usados
-	# 1) se alguma jogada fecha 2+ linhas, e cruz: pega a melhor delas
+	# 1) se alguma jogada fecha 2+ linhas, e cruzada: pega a melhor delas
 	var melhor = null
 	var melhor_v := -1.0e30
 	for mv in lista:
@@ -214,7 +214,7 @@ func jogar(rodada: int, tipo: int, semente: int, politica: int, niveis: Array, c
 	var rng := Mesa.Rng.new(Mesa.mix(semente, 999, politica))
 	var eventos := []
 	var turnos_com_ponto := []
-	var cruzes := 0
+	var cruzadas := 0
 	var turno := 0
 	var marco := int(floor(m.posic_max * 2.0 / 3.0))
 	var pontos_no_marco := -1
@@ -243,7 +243,7 @@ func jogar(rodada: int, tipo: int, semente: int, politica: int, niveis: Array, c
 		elif politica == 0:
 			escolha = melhor_gulosa(mv["lista"])
 		elif politica == 3:
-			escolha = melhor_cacadora_de_cruz(m, mv["lista"])
+			escolha = melhor_cacadora_de_cruzada(m, mv["lista"])
 		else:
 			escolha = melhor_profunda(m, mv["lista"], rng)
 		# margem do topo (sempre pela ordenacao gulosa)
@@ -271,8 +271,8 @@ func jogar(rodada: int, tipo: int, semente: int, politica: int, niveis: Array, c
 			turnos_com_ponto.append(turno)
 			col["m4"].append(g[0])
 			if g[1] >= 2:
-				cruzes += 1
-				col["m4_cruz"].append(g[0])
+				cruzadas += 1
+				col["m4_cruzada"].append(g[0])
 			else:
 				col["m4_simples"].append(g[0])
 		if m.posic_usados == marco:
@@ -305,7 +305,7 @@ func jogar(rodada: int, tipo: int, semente: int, politica: int, niveis: Array, c
 		col["m3_maior_por_mesa"].append(gaps.max())
 	else:
 		col["m3_maior_por_mesa"].append(turno)
-	col["m8"].append(cruzes)
+	col["m8"].append(cruzadas)
 	col["m9"].append(seca)
 	col["m10"].append(m.tear)
 	col["m11"].append(turno)
@@ -334,7 +334,7 @@ func novo_coletor() -> Dictionary:
 		m7.append(linha)
 	return {
 		"m1": [], "m1_por_turno": [], "m2": [], "m3": [], "m3_maior_por_mesa": [],
-		"m4": [], "m4_cruz": [], "m4_simples": [],
+		"m4": [], "m4_cruzada": [], "m4_simples": [],
 		"m6_pontos": [], "m6_score": [],
 		"m5_total": 0, "m5_iguais": 0, "turnos_total": 0, "turnos_com_ganho_possivel": 0,
 		"m7": m7, "m8": [], "m9": [], "m10": [], "m11": [],
@@ -437,8 +437,8 @@ func empacotar(nome: String, r: Dictionary) -> Dictionary:
 			"pontos_por_evento": resumo(col["m4"]),
 			"fator_explosao_max_sobre_mediana": (snappedf(float(mx4) / float(med4), 0.01) if (med4 != null and float(med4) > 0) else null),
 			"eventos_simples": resumo(col["m4_simples"]),
-			"eventos_cruz": resumo(col["m4_cruz"]),
-			"razao_mediana_cruz_sobre_simples": (snappedf(float(pct(col["m4_cruz"], 0.5)) / float(pct(col["m4_simples"], 0.5)), 0.01) if (not col["m4_cruz"].is_empty() and not col["m4_simples"].is_empty() and float(pct(col["m4_simples"], 0.5)) > 0) else null),
+			"eventos_cruzada": resumo(col["m4_cruzada"]),
+			"razao_mediana_cruzada_sobre_simples": (snappedf(float(pct(col["m4_cruzada"], 0.5)) / float(pct(col["m4_simples"], 0.5)), 0.01) if (not col["m4_cruzada"].is_empty() and not col["m4_simples"].is_empty() and float(pct(col["m4_simples"], 0.5)) > 0) else null),
 			"colheita_final_r14b": resumo(col["colheita_final"]),
 		},
 		"m6_margem_do_topo": {
@@ -447,9 +447,9 @@ func empacotar(nome: String, r: Dictionary) -> Dictionary:
 			"nota": "pct_pontos so existe nos turnos em que a melhor jogada pontua > 0; nos demais a diferenca e so de potencial posicional",
 		},
 		"m7_taxa_vitoria": m7_dict(col),
-		"m8_cruz": {
+		"m8_cruzada": {
 			"por_mesa": resumo(col["m8"]),
-			"pct_mesas_com_zero_cruz": snappedf(100.0 * float(zero_cruz) / float(col["m8"].size()), 0.01),
+			"pct_mesas_com_zero_cruzada": snappedf(100.0 * float(zero_cruz) / float(col["m8"].size()), 0.01),
 		},
 		"m9_seca": {"maior_sequencia_sem_pontuar_por_mesa": resumo(col["m9"])},
 		"m10_tear": {"tear_ao_fim_da_mesa": resumo(col["m10"]), "distribuicao": _hist(col["m10"])},
@@ -469,9 +469,9 @@ func _limites() -> Dictionary:
 	var cartas := [15 + 3, 17, 19]
 	for t in range(3):
 		var n: int = cartas[t]
-		# linha simples custa 5 cartas; cruz de 2 linhas custa 9 (a casa e compartilhada)
+		# linha simples custa 5 cartas; cruzada de 2 linhas custa 9 (a casa e compartilhada)
 		var max_simples: int = int(floor(float(n) / 5.0))
-		var max_cruzes: int = int(floor(float(n) / 9.0))
+		var max_cruzadas: int = int(floor(float(n) / 9.0))
 		# maximo de EVENTOS de pontuacao: cada evento consome >= 5 cartas
 		var max_eventos: int = int(floor(float(n) / 5.0))
 		d[nomes[t]] = {
@@ -480,12 +480,12 @@ func _limites() -> Dictionary:
 			"cartas_que_a_mesa_ve_na_vida_inteira": n,
 			"max_linhas_colhidas": int(floor(2.0 * float(n) / 9.0)) if n >= 9 else max_simples,
 			"max_eventos_de_pontuacao": max_eventos,
-			"max_cruzes_teorico": max_cruzes,
+			"max_cruzadas_teorico": max_cruzadas,
 			"intervalo_minimo_entre_eventos_turnos": 5,
 			"intervalo_minimo_entre_eventos_segundos_a_4s": 20,
 			"tear_maximo_alcancavel": min(8, int(floor(2.0 * float(n) / 9.0)) if n >= 9 else max_simples),
 		}
-	d["nota"] = "Derivado da aritmetica das regras, nao da simulacao. Uma colheita manda 5 cartas para a pilha `colhida`, que nunca volta (R04b), e o orcamento de posicionamentos (R09) e fixo. Logo o numero de eventos de pontuacao por mesa tem teto duro de 3, e a banda da secao 7.4 (mediana de 1,5 a 2,5 cruzes por mesa) exige jogo perfeito em toda mesa - na Grande ela e impossivel (17 cartas < 18 necessarias para 2 cruzes)."
+	d["nota"] = "Derivado da aritmetica das regras, nao da simulacao. Uma colheita manda 5 cartas para a pilha `colhida`, que nunca volta (R04b), e o orcamento de posicionamentos (R09) e fixo. Logo o numero de eventos de pontuacao por mesa tem teto duro de 3, e a banda da secao 7.4 (mediana de 1,5 a 2,5 cruzadas por mesa) exige jogo perfeito em toda mesa - na Grande ela e impossivel (17 cartas < 18 necessarias para 2 cruzadas)."
 	return d
 
 func _hist(a: Array) -> Dictionary:
@@ -535,9 +535,9 @@ func _initialize() -> void:
 		"mesas": N_MESAS_M5,
 	}
 	print("  ", Time.get_ticks_msec() - t0, " ms")
-	print("=== cacadora de cruz ===")
+	print("=== cacadora de cruzada ===")
 	var rc := rodar_politica(3, N_MESAS, 600000, sem_niveis, false)
-	out["cacadora_de_cruz"] = empacotar("cacadora_de_cruz", rc)
+	out["cacadora_de_cruzada"] = empacotar("cacadora_de_cruzada", rc)
 	print("  ", Time.get_ticks_msec() - t0, " ms")
 	# limites estruturais (aritmetica pura, nao simulacao)
 	out["limites_estruturais"] = _limites()
@@ -564,7 +564,7 @@ func _initialize() -> void:
 		"mesas_m5": N_MESAS_M5,
 		"profundidade_busca": {"K_candidatos": DEEP_K, "S_amostras_de_compra": DEEP_S, "niveis": 2},
 		"segundos_por_turno_assumidos": 4,
-		"escopo": "somente nucleo: baralho, mao, grade 5x5, posicionamento, colheita, cruz, tear, meta, orcamento, R14b, R42. SEM loja, selos, reliquias, modificadores, niveis de mao, chefes, vidas, Fianca.",
+		"escopo": "somente nucleo: baralho, mao, grade 5x5, posicionamento, colheita, cruzada, tear, meta, orcamento, R14b, R42. SEM loja, selos, reliquias, modificadores, niveis de mao, chefes, vidas, Fianca.",
 		"ms_total": Time.get_ticks_msec() - t0,
 	}
 	var f := FileAccess.open("res://metricas.json", FileAccess.WRITE)

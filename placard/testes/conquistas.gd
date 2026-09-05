@@ -81,7 +81,7 @@ func _a_conta() -> void:
        "o que já foi conquistado não cai de novo")
 
     igual(Conquistas.conferir({"linhas_no_evento": 1}, {}).size(), 0,
-          "uma linha só não é cruz")
+          "uma linha só não é cruzada")
 
 func _as_marcas() -> void:
     secao("as marcas")
@@ -144,7 +144,7 @@ func _numa_run() -> void:
     ok(caiu.size() >= 6, "o jogador simulado conquista várias sem tentar (%d)"
        % caiu.size())
     ok(caiu.has("primeira_colheita"), "a primeira colheita, obviamente")
-    ok(caiu.has("dupla"), "e a cruz, que é o verbo do jogo")
+    ok(caiu.has("dupla"), "e a cruzada, que é o verbo do jogo")
     igual(perfil.quantas_conquistas(), caiu.size(),
           "o perfil guarda exatamente as que caíram")
 

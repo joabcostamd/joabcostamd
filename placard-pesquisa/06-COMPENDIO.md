@@ -1,6 +1,6 @@
 # O COMPÊNDIO — especificação de implementação
 
-Rodada 5 · CRUZ · Godot 4.7.2 · base lógica 1280×720 (paisagem) e 720×1280 (retrato)
+Rodada 5 · CRUZADA · Godot 4.7.2 · base lógica 1280×720 (paisagem) e 720×1280 (retrato)
 
 > **Antes de tudo, o que eu li.** `DECISOES.md` inteiro, `02-NUCLEO-POLIDO.md`,
 > `sonda/nucleo.gd`, `sonda/mesa.gd`, `sonda/mesa2.gd` (fórmulas reais de pontuação, pulso e
@@ -20,9 +20,9 @@ Rodada 5 · CRUZ · Godot 4.7.2 · base lógica 1280×720 (paisagem) e 720×1280
 >    `1`–`6`, setas/`WASD`, `Enter`/`Espaço`, `Shift`, `X`, `Ctrl+Z`, `F`, `T`, `Esc`, `Tab`;
 >    e no gamepad LB/RB, D-pad, stick esq., A, Y, X, LT+B, clique do stick dir., RT, Start.
 >    O atalho do Compêndio tem de sair do que sobrou (§1).
-> 3. **`CRUZ` é proibida como rótulo** pela §12 do documento ("nunca em botão, menu ou
+> 3. **`CRUZADA` é proibida como rótulo** pela §12 do documento ("nunca em botão, menu ou
 >    tooltip; só estampa de clímax"). Nenhuma aba, nenhum botão e nenhum tooltip do Compêndio
->    pode se chamar CRUZ. A escada aparece como **DUPLA · TRIPLA · CRUZ TOTAL**.
+>    pode se chamar CRUZADA. A escada aparece como **DUPLA · TRIPLA · CRUZ TOTAL**.
 
 ---
 
@@ -60,7 +60,7 @@ procura **REGRAS**. O nome poético fica no código, onde só nós lemos.
 
 `scripts/ui/icone.gd`, grade 24×24, traço 2 px, `PackedVector2Array` estática, legível a 16 px
 (mesma regra dos outros 32 ícones): **uma mini-grade 3×3 com um `?` ocupando a casa central.**
-Ela cita o logotipo (duas cartas cruzes) sem repeti-lo, e diz "grade + dúvida" em um glifo.
+Ela cita o logotipo (duas cartas cruzadas) sem repeti-lo, e diz "grade + dúvida" em um glifo.
 Em 16 px descarta as linhas da grade e sobra só o `?` dentro de um quadrado — igual à regra
 já escrita para o `icone.png`.
 
@@ -174,7 +174,7 @@ Derivadas da **frequência com que cada situação ocorre no jogo medido**, não
 | **1** | *"Ganhei pontos e não fechei nada. Por quê?"* | O **PULSO** paga em 3/5 e 4/5 e é o que levou os turnos pagos de 14,3% para 65,1%. Ele é a **maior parte** dos 75,8% de turnos que pagam algo — e é a única recompensa do jogo que acontece **sem nada visível sair da mesa**. É a dúvida mais frequente do jogo, com folga. |
 | **2** | *"Quanto vale essa mão?"* | Toda prévia ambígua. **Em paisagem o Receituário já responde** (0,64,300,532); **em retrato não existe resposta na tela**. |
 | **3** | *"Se eu colher, o que eu perco?"* | O **DESMANCHE** (§7). Ocorre em 100% das colheitas, e são 1,17 eventos por mesa — raro e caríssimo. É a regra mais difícil do jogo e a habilidade central que **nenhuma bancada conseguiu ensinar** (`DECISOES.md` §7). |
-| **4** | *"Essa linha está cheia e não colheu. Bug?"* | A **JANELA DA COLHEITA**. Acontece em toda linha que enche — e é contraintuitiva por construção: a regra que fez a cruz existir (0,000 → 0,831) é a mesma que faz a linha "travar" na tela. Sem explicação, lê-se como defeito. |
+| **4** | *"Essa linha está cheia e não colheu. Bug?"* | A **JANELA DA COLHEITA**. Acontece em toda linha que enche — e é contraintuitiva por construção: a regra que fez a cruzada existir (0,000 → 0,831) é a mesma que faz a linha "travar" na tela. Sem explicação, lê-se como defeito. |
 
 As dúvidas 1 e 4 **não existem em nenhum outro jogo de pôquer** — são invenções deste jogo.
 São exatamente as que ninguém vai deduzir sozinho.
@@ -739,7 +739,7 @@ Ela **não é uma alavanca de balanceamento**. Nada aqui muda um número do jogo
 explicitamente porque a dívida aberta desta rodada — *planejar deixou de pagar* (planejadora
 30,7% × gulosa 36,1%) — **não se conserta com UI**, e o `DECISOES.md` §3 já enterrou a via
 econômica em ×4, ×20 e ×100 (com a ressalva, correta, de que aquele teste precisa ser refeito
-agora que a cruz ocorre 0,831/mesa). **Não é tarefa desta especificação.**
+agora que a cruzada ocorre 0,831/mesa). **Não é tarefa desta especificação.**
 
 O que A CONTA faz pela dívida é **fornecer o instrumento**: com o `metricas.csv` do §10, a
 próxima bancada consegue perguntar, pela primeira vez, se o jogador que abre A CONTA passa a

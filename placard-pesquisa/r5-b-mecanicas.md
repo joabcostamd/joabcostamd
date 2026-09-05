@@ -7,21 +7,21 @@ Medicao, nao opiniao. Tudo aqui tem numero atras; onde nao ha medicao esta escri
 ## 0. Motor e base
 
 O briefing mandou copiar `placard/c4`. Copiei — e **c4 nao reproduz a base citada**: com o K do
-proprio c4 (4,3922) ela da cruz **0,826**, vitoria **37,1**, m5 **67,4**. Os numeros do briefing
+proprio c4 (4,3922) ela da cruzada **0,826**, vitoria **37,1**, m5 **67,4**. Os numeros do briefing
 (0,831 / 36,1 / 68,2) sao os da bancada **fusao**, com **K = 4,40**. Como o briefing manda parar e
 consertar se a base nao bater, troquei a base de codigo para `placard/fusao`, que e superconjunto
 de c4 (mesmo nucleo, mesmas politicas, mais cfg). Reproduzido em 1.000 mesas pareadas:
 
 | | citado | medido aqui |
 |---|---|---|
-| cruzes/mesa (gulosa) | 0,831 | **0,831** |
+| cruzadas/mesa (gulosa) | 0,831 | **0,831** |
 | turnos que pagam algo | 75,8% | **75,8%** |
 | seca mediana / p90 | 2 / 3 | **2 / 3** |
 | razao pontos/meta | 0,800 | **0,801** |
 | vitoria gulosa | 36,1 | **36,1** |
 | guarda de profundidade (m5) | 68,2 | **68,2** |
 | turnos segurando 4/5 | 3,52 | **3,52** |
-| planejadora cruzes / vitoria | 1,636 / 30,7 | **1,636 / 30,8** |
+| planejadora cruzadas / vitoria | 1,636 / 30,7 | **1,636 / 30,8** |
 | distancia planejadora−gulosa | 0,805 | **0,805** |
 | escada n2 / n3 / n4 | 51,9 / 18,2 / 0,85 | **51,92 / 18,19 / 0,85** |
 | violacoes do teto duro 2/1/2 | 0 | **0** |
@@ -63,7 +63,7 @@ Duas correcoes de leitura que o projeto vinha carregando:
 ## 2. TABELA — base x variantes (gulosa 1.000 / profunda 400 / planejadora 1.000)
 
 `inerG/inerP` = % de turnos em que a jogada escolhida e IDENTICA com e sem a mecanica
-(>95% = inerte). `dist` = cruzes planejadora − gulosa. `viol` = violacoes do teto duro 2/1/2.
+(>95% = inerte). `dist` = cruzadas planejadora − gulosa. `viol` = violacoes do teto duro 2/1/2.
 
 | celula | K | vit G | vit P | vit D | P−G pp | cruz G | dist | m5 | inerG | inerP | rec | seca | viol | extra turnos | fecho% | beira% |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -78,7 +78,7 @@ Duas correcoes de leitura que o projeto vinha carregando:
 | R_T3 (teto 3) | 4,65 | 34,0 | 28,3 | 26,0 | −5,7 | 0,831 | 0,810 | 68,2 | **100,0** | **100,0** | 75,4 | 2/3 | 0 | 0,46 | 5,7 | 0 |
 | **R_PTS (o mesmo em PONTOS)** | 4,72 | **33,5** | **27,9** | 26,25 | −5,6 | 0,831 | 0,811 | 68,1 | 100,0 | 100,0 | 75,8 | 2/3 | 0 | (0,46 eq.) | 5,2 | 0 |
 | R_R2 (a DUPLA tambem devolve 1) | 4,91 | 33,4 | **33,8** | 25,75 | **+0,4** | 0,832 | 1,129 | 67,9 | 100,0 | 100,0 | 75,0 | 2/3 | **317** | 1,07 | 6,6 | 0 |
-| R_ALL1 (qualquer cruz devolve 1) | 4,86 | 33,5 | **34,2** | 25,75 | **+0,7** | 0,832 | 1,127 | 67,9 | 100,0 | 100,0 | 75,2 | 2/3 | **316** | 0,83 | 6,5 | 0 |
+| R_ALL1 (qualquer cruzada devolve 1) | 4,86 | 33,5 | **34,2** | 25,75 | **+0,7** | 0,832 | 1,127 | 67,9 | 100,0 | 100,0 | 75,2 | 2/3 | **316** | 0,83 | 6,5 | 0 |
 | R_R2_2 (R2=2,R3=3,R4=4) | 5,18 | 34,6 | 32,4 | 29,25 | −2,2 | 0,840 | 1,134 | 68,1 | 100,0 | 99,9 | 74,7 | 2/3 | **324** | 1,91 | 5,8 | 0 |
 | **P2 ULTIMA COSTURA** (controle = CTRL_FV) | | | | | | | | | | | | | | | | |
 | F_035 (F=0,35) | 5,50 | 37,6 | 24,1 | 32,25 | −13,5 | 0,831 | 0,825 | 68,1 | **100,0** | **100,0** | 75,7 | 2/3 | 0 | 0 | **17,1** | 0 |
@@ -105,7 +105,7 @@ Duas correcoes de leitura que o projeto vinha carregando:
 | O_TD (+1 Tear se o evento tem diagonal) | 4,56 | 35,0 | 29,5 | 27,25 | −5,5 | 0,831 | 0,809 | 68,2 | **100,0** | **100,0** | 75,8 | 2/3 | 0 | 0 | 5,4 | 0 |
 
 Triplas por mesa ficaram em **0,210–0,217** em TODAS as 33 celulas (base 0,213). Cruz Total em
-**0,007–0,011**. m5 em 67,9–69,0. Nenhuma celula estourou rec, seca nem cruz/mesa.
+**0,007–0,011**. m5 em 67,9–69,0. Nenhuma celula estourou rec, seca nem cruzada/mesa.
 
 ---
 
@@ -122,7 +122,7 @@ Triplas por mesa ficaram em **0,210–0,217** em TODAS as 33 celulas (base 0,213
 2. **Zero bits de decisao**: inercia gulosa **100,0%** e profunda **100,0%** em todas as celulas.
    (Aviso honesto: isso e por construcao — as politicas so olham pontos imediatos. Mas e tambem o
    que a UI vai mostrar: a mecanica nunca muda qual casa acende.)
-3. **Cruz, triplas e m5 nao se mexem**: 0,831 / 0,213 / 68,2 em toda a varredura.
+3. **Cruzada, triplas e m5 nao se mexem**: 0,831 / 0,213 / 68,2 em toda a varredura.
 4. **Ela taxa o planejador e paga o improvisador.** A vitoria da gulosa cai 34,6 → 33,2–34,0; a da
    planejadora cai mais, 29,9 → 27,5–28,5. Motivo medido: o premio esta na TRIPLA, e a planejadora
    quase nao faz triplas (92,9% dos eventos dela sao DUPLA); ela paga a inflacao de K sem receber.
@@ -130,7 +130,7 @@ Triplas por mesa ficaram em **0,210–0,217** em TODAS as 33 celulas (base 0,213
    exatamente o erro de 4x/20x/100x ja registrado em DECISOES.md §3.
 5. **A unica configuracao em que o planejador finalmente vence — R_R2 e R_ALL1, +0,4 e +0,7 pp —
    quebra o teto duro.** 317 e 316 violacoes em 1.000 mesas de planejadora, todas na mesa GRANDE:
-   as cruzes por mesa Grande vao de **1,000 (max 1, 44.000 mesas sem uma violacao) para 1,949**.
+   as cruzadas por mesa Grande vao de **1,000 (max 1, 44.000 mesas sem uma violacao) para 1,949**.
    E a fantasia da Grande morrendo, exatamente o risco que a propria proposta nomeou.
    E note: sao as celulas que a proposta ofereceu como CONTROLE NEGATIVO ("para provar que o efeito
    vem do degrau alto"). O efeito vem so do degrau comum, e o degrau comum quebra a aritmetica.
@@ -153,7 +153,7 @@ Triplas por mesa ficaram em **0,210–0,217** em TODAS as 33 celulas (base 0,213
 4. C=4 (F_C4) mata o fecho (1,9% dos pontos) e leva a vitoria a **41,9 — fora da banda**.
 5. **O achado, e ele nao e uma mecanica:** hoje o motor calcula a vitoria ANTES da colheita final
    (`if not venceu: colheita_final()`), entao **o fecho nunca pode virar a mesa**. So permitir que
-   ele conte (celula CTRL_FV, nenhuma outra mudanca, mesmo K, mesma cruz, mesmo m5, mesma seca)
+   ele conte (celula CTRL_FV, nenhuma outra mudanca, mesmo K, mesma cruzada, mesmo m5, mesma seca)
    vale **+6,1 pp para a gulosa (34,6 → 40,7), +5,0 pp para a profunda e +1,0 pp para a
    planejadora**. Isso e um ponto de regra a decidir no documento, nao um numero de balanceamento —
    e ele muda a leitura de qualquer coisa que se meça em cima do fim de mesa daqui pra frente.
@@ -167,7 +167,7 @@ Triplas por mesa ficaram em **0,210–0,217** em TODAS as 33 celulas (base 0,213
    muda a da profunda.
 2. **% de posicionamentos vindos da Beira**: 2,86 (B=1, abaixo da banda, decoracao) · **5,16**
    (B=2) · **7,40** (B=3) · **10,5** (B=5). B=2/3/5 dentro da banda 5–25%.
-3. **Todas as bandas limpas**: m5 68,6–69,0 (banda 45–75), rec 76,0–76,4, seca 2/3, cruz
+3. **Todas as bandas limpas**: m5 68,6–69,0 (banda 45–75), rec 76,0–76,4, seca 2/3, cruzada
    0,834–0,842, vitoria 33,2–35,7, **zero violacoes do teto duro**.
 4. **E o unico lever que estreita o abismo de pericia sem quebrar nada**: planejadora 29,9 →
    **31,6** (B=3) / **32,5** (B=5); profunda 26,25 → **32,75** (B=3). A distancia P−G em vitoria
@@ -191,7 +191,7 @@ Triplas por mesa ficaram em **0,210–0,217** em TODAS as 33 celulas (base 0,213
 1. **A premissa e falsa, e esse e o numero que decide.** As diagonais nao estao esquecidas: elas
    recebem **45,5% dos posicionamentos** (uniforme seria 36,0%) e entram em **47,0% dos eventos**.
 2. Inercia gulosa **100,0 / 100,0 / 99,9** e profunda **100,0** nos tres fatores. Triplas por mesa
-   0,213 → 0,215 / 0,214 / 0,217. Cruz 0,831 em todas. m5 68,2 em todas. Mapa de calor
+   0,213 → 0,215 / 0,214 / 0,217. Cruzada 0,831 em todas. m5 68,2 em todas. Mapa de calor
    inalterado (C3 6,7%, entropia 0,991).
 3. K recalibrado devolve **menos** vitoria: 34,6 → 34,0 / 33,2 / **32,9**; planejadora 29,9 →
    28,6 / 27,9 / **26,7**.

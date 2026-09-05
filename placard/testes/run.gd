@@ -184,20 +184,20 @@ func _contagens() -> void:
     ]})
     igual(int(r.categorias_feitas.get(Maos.SEQ_COR, 0)), 1,
           "a Sequência de Cor foi anotada")
-    igual(r.maior_cruz, 2, "a maior cruz tem duas linhas")
+    igual(r.maior_cruzada, 2, "a maior cruzada tem duas linhas")
     r.anotar_colheita({"colheita": false, "linhas": []})
-    igual(r.maior_cruz, 2, "turno sem colheita não anota nada")
+    igual(r.maior_cruzada, 2, "turno sem colheita não anota nada")
 
-    ## A CRUZ DO CENTRO: as quatro linhas que passam pela casa central.
+    ## A CRUZADA DO CENTRO: as quatro linhas que passam pela casa central.
     var centro := {"colheita": true, "linhas": [
         {"linha": 2}, {"linha": 7}, {"linha": 10}, {"linha": 11},
     ]}
-    ok(Run.e_cruz_do_centro(centro),
-       "fileira 3, coluna C e as duas diagonais é a CRUZ DO CENTRO")
-    ok(not Run.e_cruz_do_centro({"colheita": true, "linhas": [
+    ok(Run.e_cruzada_do_centro(centro),
+       "fileira 3, coluna C e as duas diagonais é a CRUZADA DO CENTRO")
+    ok(not Run.e_cruzada_do_centro({"colheita": true, "linhas": [
         {"linha": 0}, {"linha": 1}, {"linha": 2}, {"linha": 3}]}),
        "quatro fileiras que não passam pelo centro, não é")
-    ok(not Run.e_cruz_do_centro({"colheita": true, "linhas": [
+    ok(not Run.e_cruzada_do_centro({"colheita": true, "linhas": [
         {"linha": 2}, {"linha": 7}, {"linha": 10}]}),
        "três linhas pelo centro ainda não é")
 
@@ -235,8 +235,8 @@ func _perfil() -> void:
     var ausente := Perfil.ler("user://nao-existe-mesmo.save")
     igual(ausente.mesas_jogadas, 0, "save ausente vira perfil zerado")
 
-    ## A migração do nome antigo. O jogo já se chamou CRUZ e gravava em
-    ## user://cruz.save; quem jogou naquela época não pode perder temas,
+    ## A migração do nome antigo. O jogo já se chamou CRUZADA e gravava em
+    ## user://cruzada.save; quem jogou naquela época não pode perder temas,
     ## conquistas e dificuldade só porque o título mudou.
     DirAccess.remove_absolute(ProjectSettings.globalize_path(Perfil.CAMINHO))
     DirAccess.remove_absolute(ProjectSettings.globalize_path(Perfil.CAMINHO_ANTIGO))
@@ -293,5 +293,5 @@ func _desbloqueios() -> void:
     var centro := {"colheita": true, "linhas": [
         {"linha": 2}, {"linha": 7}, {"linha": 10}, {"linha": 11}]}
     ok(p.conferir(r, centro).has("neon"),
-       "a CRUZ DO CENTRO destrava o Neon — o último de propósito")
+       "a CRUZADA DO CENTRO destrava o Neon — o último de propósito")
     igual(p.destravados.size(), Temas.total(), "os oito temas cabem no jogo")

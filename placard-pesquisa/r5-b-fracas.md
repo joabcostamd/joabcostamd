@@ -10,12 +10,12 @@ Volume: **1.000 mesas** gulosa por célula (guarda m5 em 500), **400** profunda,
 
 | | citado no briefing | medido aqui |
 |---|---|---|
-| cruzes/mesa | 0,831 | **0,831** |
+| cruzadas/mesa | 0,831 | **0,831** |
 | turnos que pagam | 75,8% | **75,8%** |
 | seca mediana | 2 | **2** (p90 3) |
 | vitória gulosa | 36,1% | **36,1%** |
 | guarda de profundidade (m5) | 68,2% | **68,2%** |
-| planejadora | 30,7% | **30,7%** (1,636 cruz/mesa) |
+| planejadora | 30,7% | **30,7%** (1,636 cruzada/mesa) |
 
 K = 4,4042, o valor calibrado da fusão. Nenhuma variante entrou antes disso fechar.
 
@@ -93,7 +93,7 @@ Todas as células com K recalibrado até a razão pontos/meta da gulosa voltar a
 | BC_rec20 | 4,89 | 68,5 | 75,9 | 2/3 | 33,9 | 40,7 | +6,8 | 0,841 | 0,443 | 16,7 | 5,07 | PAR ≈ DOIS PARES | REPROVADA |
 
 **Nenhuma das 24 células estourou uma banda.** A guarda de profundidade ficou entre 68,2% e 68,5%
-nas 24, os turnos pagos entre 75,8% e 75,9%, a seca em 2, a cruz entre 0,831 e 0,848, zero violação
+nas 24, os turnos pagos entre 75,8% e 75,9%, a seca em 2, a cruzada entre 0,831 e 0,848, zero violação
 de teto duro. O piso da mão fraca **não é a alavanca dessas cinco métricas** — o que reprova aqui é
 a hierarquia do pôquer, não as bandas.
 
@@ -164,7 +164,7 @@ A inversão se repete nas três. Não é artefato de semente.
 
 Entrega: gradiente **−5,4 → +5,4** (confirmado em 3 famílias de sementes), colheita fraca de **26% → 40%**
 da colheita mediana, hierarquia do pôquer **estritamente monótona** (FULL/ALTA 5,57 contra 7,23 da base),
-todas as bandas dentro (m5 68,5 · pagos 75,9 · seca 2 · vitória gulosa 34,1 · cruz 0,839).
+todas as bandas dentro (m5 68,5 · pagos 75,9 · seca 2 · vitória gulosa 34,1 · cruzada 0,839).
 
 **Ressalva honesta, e não é pequena:** a planejadora sobe para **39,5%** (40,4% e 40,2% nas sementes
 novas). Se a banda de vitória 20–40% vale para a **melhor** política, BC_rec encosta no teto e precisa

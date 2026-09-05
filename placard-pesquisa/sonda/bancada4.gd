@@ -4,7 +4,7 @@ class_name Bancada4
 # =============================================================================
 # BANCADA c4 - JANELA DA COLHEITA. Deriva de bancada.gd (b1) e acrescenta:
 #   - politica PLANEJADORA (alvo de cruz explicito)
-#   - metricas de cruz (perpendicularidade, intencao, teto do mult)
+#   - metricas de cruzada (perpendicularidade, intencao, teto do mult)
 #   - suporte a janela (todas as casas viram criticas quando ha gatilho pendente)
 # =============================================================================
 
@@ -297,7 +297,7 @@ func jogar(rodada: int, tipo: int, semente: int, cfg: Dictionary, politica: int,
 	var plano := Plano.new()
 	var turno := 0
 	var turnos_rec := []
-	var cruzes := 0
+	var cruzadas := 0
 	var eventos := []
 	var marco := int(floor(m.posic_max * 2.0 / 3.0))
 	var pontos_marco := -1
@@ -352,7 +352,7 @@ func jogar(rodada: int, tipo: int, semente: int, cfg: Dictionary, politica: int,
 			eventos.append(int(r[0]))
 			if int(r[0]) > maior_evento: maior_evento = int(r[0])
 			if int(r[1]) >= 2:
-				cruzes += 1
+				cruzadas += 1
 				if era_gulosa: cruz_acidentais += 1
 				else: cruz_intencionais += 1
 			col["eventos_pontos"].append(int(r[0]))
@@ -366,7 +366,7 @@ func jogar(rodada: int, tipo: int, semente: int, cfg: Dictionary, politica: int,
 		eventos.append(int(fj[0]))
 		if int(fj[0]) > maior_evento: maior_evento = int(fj[0])
 		if int(fj[1]) >= 2:
-			cruzes += 1
+			cruzadas += 1
 			cruz_acidentais += 1
 		col["eventos_pontos"].append(int(fj[0]))
 		col["n_por_evento"].append(int(fj[1]))
@@ -374,7 +374,7 @@ func jogar(rodada: int, tipo: int, semente: int, cfg: Dictionary, politica: int,
 	if not venceu: m.colheita_final()
 	# teto duro do enunciado: 2 (Pequena) / 1 (Grande) / 2 (Chefe)
 	var teto_cruz: int = [2, 1, 2][tipo]
-	if cruzes > teto_cruz: col["violacoes_teto"] += 1
+	if cruzadas > teto_cruz: col["violacoes_teto"] += 1
 	var setp := {}
 	for t in turnos_rec: setp[t] = true
 	var seca := 0
@@ -394,7 +394,7 @@ func jogar(rodada: int, tipo: int, semente: int, cfg: Dictionary, politica: int,
 	col["razao"].append(float(m.pontos) / float(m.meta))
 	col["pontos"].append(m.pontos)
 	col["n_eventos"].append(eventos.size())
-	col["cruzes"].append(cruzes)
+	col["cruzadas"].append(cruzadas)
 	col["maior_evento"].append(maior_evento)
 	col["vitorias"] += 1 if venceu else 0
 	col["mesas"] += 1
@@ -416,19 +416,19 @@ func jogar(rodada: int, tipo: int, semente: int, cfg: Dictionary, politica: int,
 	if not col["por_rodada"].has(rodada): col["por_rodada"][rodada] = [0, 0, 0]
 	col["por_rodada"][rodada][0] += 1
 	if venceu: col["por_rodada"][rodada][1] += 1
-	col["por_rodada"][rodada][2] += cruzes
+	col["por_rodada"][rodada][2] += cruzadas
 	if not col["por_tipo"].has(tipo): col["por_tipo"][tipo] = [0, 0, 0, 0]
 	col["por_tipo"][tipo][0] += 1
 	if venceu: col["por_tipo"][tipo][1] += 1
-	col["por_tipo"][tipo][2] += cruzes
-	if cruzes > 0: col["por_tipo"][tipo][3] += 1
+	col["por_tipo"][tipo][2] += cruzadas
+	if cruzadas > 0: col["por_tipo"][tipo][3] += 1
 	if not venceu and pontos_marco >= 0:
 		col["derrotas"] += 1
 		if float(pontos_marco) < 0.45 * float(m.meta): col["derrotas_decididas"] += 1
 
 func novo() -> Dictionary:
 	return {"gaps": [], "seca": [], "tear": [], "turnos": [], "pct_turno_rec": [],
-		"razao": [], "pontos": [], "n_eventos": [], "cruzes": [], "maior_evento": [],
+		"razao": [], "pontos": [], "n_eventos": [], "cruzadas": [], "maior_evento": [],
 		"eventos_pontos": [], "n_por_evento": [], "vazias_min": [], "cruz_nlinhas": [],
 		"vitorias": 0, "mesas": 0, "por_rodada": {}, "por_tipo": {},
 		"seg4": 0, "ent4": 0, "fechar_possivel": 0, "recusou": 0,
@@ -452,8 +452,8 @@ func rodar(cfg: Dictionary, n: int, n_m5: int, politica: int) -> Dictionary:
 		vt[["pequena", "grande", "chefe"][int(k)]] = {
 			"mesas": col["por_tipo"][k][0],
 			"vitoria_pct": snappedf(100.0 * float(col["por_tipo"][k][1]) / float(col["por_tipo"][k][0]), 0.1),
-			"cruzes_por_mesa": snappedf(float(col["por_tipo"][k][2]) / float(col["por_tipo"][k][0]), 0.001),
-			"pct_mesas_com_cruz": snappedf(100.0 * float(col["por_tipo"][k][3]) / float(col["por_tipo"][k][0]), 0.1)}
+			"cruzadas_por_mesa": snappedf(float(col["por_tipo"][k][2]) / float(col["por_tipo"][k][0]), 0.001),
+			"pct_mesas_com_cruzada": snappedf(100.0 * float(col["por_tipo"][k][3]) / float(col["por_tipo"][k][0]), 0.1)}
 	var mediana_ev = pct(col["eventos_pontos"], 0.5)
 	var pico = pct(col["maior_evento"], 1.0)
 	var nn := [0, 0, 0, 0, 0, 0]
@@ -462,7 +462,7 @@ func rodar(cfg: Dictionary, n: int, n_m5: int, politica: int) -> Dictionary:
 	var tot_ev: int = max(1, col["n_por_evento"].size())
 	var zc := 0
 	var maxc := 0
-	for x in col["cruzes"]:
+	for x in col["cruzadas"]:
 		if x == 0: zc += 1
 		if x > maxc: maxc = x
 	var ev_cruz := 0
@@ -477,14 +477,14 @@ func rodar(cfg: Dictionary, n: int, n_m5: int, politica: int) -> Dictionary:
 		"seca_p90": pct(col["seca"], 0.9),
 		"turnos_entre_recompensas_mediana": pct(col["gaps"], 0.5),
 		"eventos_por_mesa_media": snappedf(media(col["n_eventos"]), 0.01),
-		"cruzes_por_mesa_media": snappedf(media(col["cruzes"]), 0.001),
-		"cruzes_por_mesa_max": maxc,
-		"pct_mesas_com_zero_cruz": snappedf(100.0 * float(zc) / float(max(1, col["mesas"])), 0.1),
-		"cruzes_por_evento": snappedf(float(ev_cruz) / float(tot_ev), 0.001),
+		"cruzadas_por_mesa_media": snappedf(media(col["cruzadas"]), 0.001),
+		"cruzadas_por_mesa_max": maxc,
+		"pct_mesas_com_zero_cruzada": snappedf(100.0 * float(zc) / float(max(1, col["mesas"])), 0.1),
+		"cruzadas_por_evento": snappedf(float(ev_cruz) / float(tot_ev), 0.001),
 		"violacoes_teto_duro": col["violacoes_teto"],
-		"pct_cruzes_perpendiculares": (snappedf(100.0 * float(col["cruz_perp"]) / float(col["cruz_n"]), 0.1) if col["cruz_n"] > 0 else null),
-		"pct_cruzes_acidentais": (snappedf(100.0 * float(col["cruz_acidentais"]) / float(max(1, col["cruz_acidentais"] + col["cruz_intencionais"])), 0.1) if (col["cruz_acidentais"] + col["cruz_intencionais"]) > 0 else null),
-		"pct_cruzes_com_teto_do_mult_mordendo": (snappedf(100.0 * float(col["cruz_teto_mordeu"]) / float(col["cruz_n"]), 0.1) if col["cruz_n"] > 0 else null),
+		"pct_cruzadas_perpendiculares": (snappedf(100.0 * float(col["cruz_perp"]) / float(col["cruz_n"]), 0.1) if col["cruz_n"] > 0 else null),
+		"pct_cruzadas_acidentais": (snappedf(100.0 * float(col["cruz_acidentais"]) / float(max(1, col["cruz_acidentais"] + col["cruz_intencionais"])), 0.1) if (col["cruz_acidentais"] + col["cruz_intencionais"]) > 0 else null),
+		"pct_cruzadas_com_teto_do_mult_mordendo": (snappedf(100.0 * float(col["cruz_teto_mordeu"]) / float(col["cruz_n"]), 0.1) if col["cruz_n"] > 0 else null),
 		"pct_eventos_com_teto_do_mult_mordendo": (snappedf(100.0 * float(col["teto_mordeu"]) / float(tot_ev), 0.1) if tot_ev > 0 else null),
 		"n_linhas_por_evento_pct": {"n1": snappedf(100.0*float(nn[1])/float(tot_ev),0.01), "n2": snappedf(100.0*float(nn[2])/float(tot_ev),0.01),
 			"n3": snappedf(100.0*float(nn[3])/float(tot_ev),0.01), "n4": snappedf(100.0*float(nn[4])/float(tot_ev),0.01),
@@ -503,7 +503,7 @@ func rodar(cfg: Dictionary, n: int, n_m5: int, politica: int) -> Dictionary:
 		"tear_mediano": pct(col["tear"], 0.5),
 		"tear_max": pct(col["tear"], 1.0),
 		"vitoria_pct": snappedf(100.0 * float(col["vitorias"]) / float(max(1, col["mesas"])), 0.01),
-		"por_rodada_vitoria_e_cruzes": vr,
+		"por_rodada_vitoria_e_cruzadas": vr,
 		"por_tipo": vt,
 		"derrota_decidida_2_3_pct": (snappedf(100.0 * float(col["derrotas_decididas"]) / float(col["derrotas"]), 0.1) if col["derrotas"] > 0 else null),
 	}

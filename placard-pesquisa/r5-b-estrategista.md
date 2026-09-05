@@ -4,7 +4,7 @@
 propostas devolve retorno ao estrategista sem estourar banda.
 
 **Resposta curta:** o problema **não é** a política. É o jogo. E só **uma** das sete propostas
-fecha a lacuna — o bônus de cruz, mas **fora** do parêntese, não dentro; e quem ele paga
+fecha a lacuna — o bônus de cruzada, mas **fora** do parêntese, não dentro; e quem ele paga
 não é "o jogador atencioso", é o caçador de cruz. Isso está medido e não é opinião.
 
 Volume: 1.000 mesas por célula de decisão, 400 na profunda, m5 a 500 (protocolo c4) com
@@ -20,14 +20,14 @@ K recalibrado por célula na gulosa até razão 0,79 ± 0,006 (secante amortecid
 |---|---|---|---|
 | gulosa, vitória | **37,1%** | 37,1% | 36,1% |
 | gulosa, razão | **0,814** | 0,814 | — |
-| cruzes/mesa | **0,826** | 0,826 | 0,831 |
+| cruzadas/mesa | **0,826** | 0,826 | 0,831 |
 | m5 (n=500 / n=1000) | **67,4 / 68,3** | 67,4 | 68,2 |
 | turnos pagos / seca | **75,8% / 2** | 75,8% / 2 | 75,8% / 2 |
 | planejadora, vitória | **29,9%** | 29,9% | 30,7% |
 
 Reproduz a c4 **dígito a dígito**. Os números do briefing (0,831 / 36,1 / 68,2 / 30,7) vêm da
 bancada de **fusão** — outra rodada da *mesma* configuração. As diferenças são de amostragem
-(cruz ±0,012, vitória ±1,5 pp, m5 ±0,6 pp). Não há bug; adotei os da c4 porque é o código
+(cruzada ±0,012, vitória ±1,5 pp, m5 ±0,6 pp). Não há bug; adotei os da c4 porque é o código
 que rodo, e todas as variantes são pareadas contra ele.
 
 Duas correções de registro: o briefing cita `K = 4,4042` para J1; o valor real em `calib.json`
@@ -44,7 +44,7 @@ introduz viés.
 
 ### 1.1 A "ablação decisiva" da proposta 1 é um no-op, e há contador provando
 
-| coeficiente do veto lateral | vitória | razão | cruzes | pontos/mesa |
+| coeficiente do veto lateral | vitória | razão | cruzadas | pontos/mesa |
 |---|---|---|---|---|
 | 1.0e7 (atual) | 29,9 | 0,660 | 1,628 | 4.938,1 |
 | 1.0e5 | 29,9 | 0,660 | 1,628 | 4.938,1 |
@@ -98,7 +98,7 @@ em `_expirando()`; portanto **qualquer** posicionamento seguinte dispara a colhe
 deixar a primeira linha encher*. É essa que `w_espera` mede, e é a única que paga.
 
 **Melhor TECELÃ:** `w_espera = 0,25`, resto zero. **37,5%** contra 37,1% da gulosa = **+0,4 pp**.
-Pontos 6.576 contra 6.477 (**+1,5%**). Cruzes 0,888 contra 0,826. n1 cai de 29,9% para 21,3%.
+Pontos 6.576 contra 6.477 (**+1,5%**). Cruzadas 0,888 contra 0,826. n1 cai de 29,9% para 21,3%.
 
 A proposta calculou que a planejadora precisa de **+16,9% de pontos** para empatar.
 Medido: **+1,5%**.
@@ -109,7 +109,7 @@ Medido: **+1,5%**.
 
 ---
 
-## 2. O teste obrigatório: o preço da cruz, refeito
+## 2. O teste obrigatório: o preço da cruzada, refeito
 
 O teste antigo (DECISOES §3, "4× / 20× / 100×, inerte") precificava um evento de frequência
 0,000. Refeito com o evento a 0,847/mesa. **Ele tem gradiente**, e ele é o único lever da lista
@@ -147,9 +147,9 @@ vitória global (43,5% > 40%).
 
 **b = 0,27 atinge a meta-alvo (planejadora ≥ gulosa + 8 pp) e passa nas cinco bandas:**
 m5 67,7 (68,6 vs 68,3 da base a n=1000 — Δ **+0,3 pp**, banda 45–75) · turnos pagos 75,9 (≥70) ·
-seca 2 (≤3) · vitória global 33,9 (20–40) · cruzes 0,847 (≥0,5) · violações de teto duro **0**.
+seca 2 (≤3) · vitória global 33,9 (20–40) · cruzadas 0,847 (≥0,5) · violações de teto duro **0**.
 
-Razão de coleta medida: planejadora 1,633 cruzes/mesa contra 0,847 da gulosa = **1,93**.
+Razão de coleta medida: planejadora 1,633 cruzadas/mesa contra 0,847 da gulosa = **1,93**.
 A proposta previu 1,97. Acertou na terceira casa.
 
 **Forma do bônus, medida:**
@@ -168,7 +168,7 @@ n.º 1. Vitória global 37,1 → 33,9 (em banda, mas o jogo fica mais duro).
 
 ### 2.3 A ressalva que decide, e ela é maior que o resultado
 
-Os +8,6 pp são coletados por um **bot que joga só a cruz**: 1,633 cruzes/mesa, 92,84% dos
+Os +8,6 pp são coletados por um **bot que joga só a cruz**: 1,633 cruzadas/mesa, 92,84% dos
 eventos são Dupla, **n3 = 0,00%**, 16 casas vazias, ignora o Pulso, 56,5% de turnos pagos.
 
 O proxy de jogador atencioso **real** — TECELÃ, horizonte 1, sem enumerar baralho — ganha
@@ -197,7 +197,7 @@ O proxy de jogador atencioso **real** — TECELÃ, horizonte 1, sem enumerar bar
 **Proposta 3 — solteira paga menos.** Funciona no sinal, é pequena no tamanho: +0,9 a +1,7 pp.
 Exatamente o que a própria proposta previu ("o risco real é ser pequeno demais"). Empilhada em
 b=0,25 rende **+0,5 pp** — não paga o parágrafo que custa no painel de regras. **O veneno da c2
-não aparece:** `turnos_segurando_4_5` fica em 3,52 (base 3,529) e a cruz da gulosa não cai.
+não aparece:** `turnos_segurando_4_5` fica em 3,52 (base 3,529) e a cruzada da gulosa não cai.
 Benefício colateral real e único: é a única proposta que **desinfla K** (4,392 → 4,121).
 
 **Proposta 4 — escada.** Reprovada nas duas calibragens, com o **mesmo −9,3**. A planejadora faz
@@ -205,7 +205,7 @@ n3 = 0,00% e n4 = 0,00%; a gulosa faz 17,4% e 0,68%. É presente puro ao guloso 
 **piora 2,1 pp**. Rodar contra a TECELÃ (que faz n3 = 19,2%) não salva: +0,6 pp. A proposta
 previu o bloqueio; a medição confirma.
 
-**Proposta 5 — diagonal inteira na Tripla.** Cirúrgica como prometido — m5, cruz, rec e seca
+**Proposta 5 — diagonal inteira na Tripla.** Cirúrgica como prometido — m5, cruzada, rec e seca
 ficam idênticos à base. E **piora** a dívida em 0,7 pp, porque quem faz Tripla é a gulosa. É
 inofensiva, não é conserto. O `% das Triplas que contêm diagonal` que a proposta pediu **não foi
 medido** (`null`): a regra já está reprovada pelo delta, e esse número mudaria o tamanho do
@@ -235,7 +235,7 @@ tabuleiro é o guloso.
 ## 4. Recomendação
 
 1. **Nenhuma das sete devolve retorno ao jogador atencioso.** Uma devolve retorno ao caçador de
-   cruz: **bônus de cruz, b = 0,27 da meta, FORA do parêntese, fixo por evento**.
+   cruz: **bônus de cruzada, b = 0,27 da meta, FORA do parêntese, fixo por evento**.
    Planejadora 42,5 contra gulosa 33,9 (**+8,6 pp**), cinco bandas passadas, zero violação de
    teto duro. Ao jogador: *"Colher duas ou mais linhas de uma vez paga um bônus por cima."*
 2. **Se adotar, adotar sozinha.** Solteira 0,70 por cima rende +0,5 pp e custa uma regra e um
@@ -250,7 +250,7 @@ tabuleiro é o guloso.
 
 ### Correções ao livro-razão
 
-- **DECISOES §3**, "precificar a cruz — inerte em 4×, 20×, 100×": precisa de nota. Mediu um
+- **DECISOES §3**, "precificar a cruzada — inerte em 4×, 20×, 100×": precisa de nota. Mediu um
   evento de frequência 0,000. Com o evento a 0,847/mesa o preço tem gradiente monotônico
   (−7,2 → −3,1 → −1,2 → +2,5 → +7,0 → +8,6 → +11,8 → +28,2). A entrada não está errada; está
   **obsoleta**.
@@ -280,7 +280,7 @@ tabuleiro é o guloso.
 
 | item | razão |
 |---|---|
-| malha cruz completa `w_futuro × w_dens × w_queima` (81 células) | varredura por coordenada; cinco das seis famílias já pioram monotonicamente |
+| malha cruzada completa `w_futuro × w_dens × w_queima` (81 células) | varredura por coordenada; cinco das seis famílias já pioram monotonicamente |
 | cláusula (b) da solteira ligada/desligada; variante progressiva; fatores 0,90 e 0,00 | a curva 0,70/0,50 já fixa o tamanho do efeito em 0,9–1,7 pp |
 | malha E3×E4 completa e o controle 1/2/4/8 | duas calibragens dão o **mesmo** −9,3; sinal estável e negativo |
 | `% das Triplas que contêm diagonal` | a regra já está reprovada pelo delta; o número muda o tamanho, não o sinal |

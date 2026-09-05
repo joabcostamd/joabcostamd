@@ -37,14 +37,14 @@ Política gulosa (jogador competente), 2.000 mesas, núcleo sem loja.
 | m2 — turnos em que alguma jogada pontua | **14,1%** | ≥ 60% | Reprova. Balatro: 100%. |
 | m3 — turnos entre recompensas | **6** (p90 9, máx 15) | 1–2 | Reprova. 24 s a 4 s/turno. |
 | m9 — maior seca por mesa | **7** turnos (28 s) | ≤ 5 | Reprova a própria §16.2 (25 s). |
-| m8 — cruzes por mesa | **0,00**; 100% das mesas sem | 1–2 (§8.11) | Reprova. Especialista: 0,14. |
+| m8 — cruzadas por mesa | **0,00**; 100% das mesas sem | 1–2 (§8.11) | Reprova. Especialista: 0,14. |
 | m10 — Tear ao fim da mesa | **2** (máx 3) | 8 (R39) | Reprova. Teto real: 4/3/4. |
 | m12 — derrota decidida aos 2/3 | **72,5%** das derrotas | ≤ 25% | Reprova. Último terço morto. |
 | razão pontos/meta (mesa mediana) | **0,428** | ~1,0 | Reprova. Modo fácil (×0,70) → 0,61. |
 | m6 — margem da 2ª melhor jogada | **1,49%** score / 5,06% pontos | — | **Aprova.** Intuição não é punida. |
 | m5 — jogada óbvia = jogada certa | **58,76%** | 55–70% | **Aprova.** Profundidade calibrada. |
 | m4 — fator de explosão do prêmio | **8,7×** (12,9× na profunda) | ≥ 8× | **Aprova.** Cauda longa certa. |
-| custo de caçar a cruz | **0,1 pp** (10,85% × 10,95%) | ≤ 2 pp | **Aprova.** Viável — só invisível. |
+| custo de caçar a cruzada | **0,1 pp** (10,85% × 10,95%) | ≤ 2 pp | **Aprova.** Viável — só invisível. |
 
 **Duas correções aos analistas, porque mudam a leitura:**
 
@@ -74,7 +74,7 @@ nem som, nem partícula. Numa mesa de 17 turnos você toma 17 decisões de 100 o
 respostas**; dessas, só o decil superior tem margem que muda algo (m6 p90 = 63,9%). O jogo cobra 17
 decisões de aparência pesada e entrega **~0,24 decisão visivelmente importante por mesa**.
 
-E o clímax não acontece. A cruz — que dá nome ao jogo, que o tutorial mostra aos 30 s, que a
+E o clímax não acontece. A cruzada — que dá nome ao jogo, que o tutorial mostra aos 30 s, que a
 §8.11 pede 1–2 por mesa — ocorre em **0,00%** das mesas com jogador competente, **1,45%** com busca
 de dois níveis, e **86,1%** das mesas terminam sem nenhuma mesmo com a política especialista escrita
 só para caçá-la. Caçá-la é grátis (0,1 pp), então o problema não é a regra proibir: é a habilidade
@@ -103,7 +103,7 @@ A §8.11 pede 3–5 colheitas por mesa; o núcleo entrega 2,3. *Correção medid
 
 **[FATAL 2] O clímax acontece em 0,00% das mesas** (m8). A banda 2 da §7.4 (mediana 1,5–2,5) é
 matematicamente impossível na mesa Grande — 17 cartas disponíveis contra 18 necessárias (C02).
-*Correção: sinalizar (§5.3) e trocar a banda por "≥1 cruz em ≥60% das Pequenas e Chefes, ≥35% das
+*Correção: sinalizar (§5.3) e trocar a banda por "≥1 cruzada em ≥60% das Pequenas e Chefes, ≥35% das
 Grandes" (tetos teóricos 2/1/2).*
 
 **[FATAL 3] Em 72,5% das derrotas o último terço é jogado já perdido** — ~5,7 turnos por mesa, e
@@ -134,7 +134,7 @@ existe. Não é o build que vai reprovar; é o teste que está errado.
 
 ## 5. AS TRÊS MUDANÇAS QUE MAIS AUMENTAM A DOPAMINA
 
-Nenhuma toca a mecânica-núcleo (dupla pertinência, colheita destrutiva, cruz). As duas primeiras
+Nenhuma toca a mecânica-núcleo (dupla pertinência, colheita destrutiva, cruzada). As duas primeiras
 eu **medi**; a terceira não, e digo isso com todas as letras.
 
 **5.1 PULSO DE LINHA (nova R11b) — a maior mudança por esforço.** Quando um posicionamento leva uma
@@ -167,13 +167,13 @@ R2 58% / R3 29%). **Obrigatório depois:** rodar a descida coordenada da §7.4 s
 os pontos por mesa quase dobram (mediana 707 → 1.209). As rodadas 5–6 seguem em 0% **porque o núcleo
 não tem loja** (ressalva D11): isso é escopo, não defeito.
 
-**5.3 "CRUZ ARMADA" — tornar visível a habilidade que ninguém deduz.** Quando uma linha está em
+**5.3 "CRUZADA ARMADA" — tornar visível a habilidade que ninguém deduz.** Quando uma linha está em
 4/5 **e** a perpendicular daquela casa ainda alcança 5 dentro do orçamento, a casa de cruzamento
-recebe halo em cruz e o rótulo "CRUZ ARMADA" (2 palavras, dentro do teto da §13): 1 varredura das
-12 linhas por turno, já feita para os rótulos. **Evidência de que é acessível:** caçar cruz custa
+recebe halo em cruz e o rótulo "CRUZADA ARMADA" (2 palavras, dentro do teto da §13): 1 varredura das
+12 linhas por turno, já feita para os rótulos. **Evidência de que é acessível:** caçar cruzada custa
 **0,1 pp** de vitória. **Honestidade: não medi o efeito da sinalização** — não se simula intenção
 humana. E há um custo medido: a política caçadora tem seca p90 de **13** turnos contra 9 da gulosa.
-Caçar cruz piora o ritmo, **por isso a 5.3 só é segura depois da 5.1.**
+Caçar cruzada piora o ritmo, **por isso a 5.3 só é segura depois da 5.1.**
 
 ---
 
@@ -218,9 +218,9 @@ limiar. **Estimativa: uma semana**, a maior parte remedição na sonda que já e
 2. Descida da base da R21 até a razão pontos/meta voltar a ~0,95–1,05 **com a loja aproximada**, não
    sem ela. E corrigir a banda 1: hoje **17 das 18 células** rodada×tipo reprovam a banda que o
    próprio documento escreveu.
-3. Gatilho da R41 por p95 empírico, "CRUZ ARMADA", estampa do quase-acerto, e 5 strings (Tear
+3. Gatilho da R41 por p95 empírico, "CRUZADA ARMADA", estampa do quase-acerto, e 5 strings (Tear
    "+1 por linha colhida"; "Paga primeiro. Some depois."; "RESTAM 11 DE 19"; "COLHEITAS 1"; faixa
-   CRUZ na prévia com a conta literal da R15 — somar os painéis separados subestima o clímax em
+   CRUZADA na prévia com a conta literal da R15 — somar os painéis separados subestima o clímax em
    42,6%).
 4. **Só então** UI, e antes da Etapa 11, 5 pessoas × 3 mesas num mock de papel com Receituário e
    prévia, cronometrando o turno. O ponto de ruptura é **5,77 s por turno** (acima disso a run

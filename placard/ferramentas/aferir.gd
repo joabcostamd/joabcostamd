@@ -24,7 +24,7 @@ func _init() -> void:
     var vitorias := 0
     var turnos := 0
     var turnos_pagos := 0
-    var cruzes := 0
+    var cruzadas := 0
     var avessos := 0
     var colheitas := 0
     var conservacao_quebrou := 0
@@ -62,8 +62,8 @@ func _init() -> void:
                         seca = 0
                     else:
                         seca += 1
-                    if bool(r["cruz"]):
-                        cruzes += 1
+                    if bool(r["cruzada"]):
+                        cruzadas += 1
                     if r["grau"] != "":
                         graus[r["grau"]] = int(graus[r["grau"]]) + 1
                 if seca > pior_seca:
@@ -89,7 +89,7 @@ func _init() -> void:
     var falhas := 0
     falhas += banda("turnos com recompensa", pagos, 70.0, 100.0, "%", 75.9)
     falhas += banda("seca máxima mediana", mediana(secas), 0.0, 6.0, " turnos", 3.0)
-    falhas += banda("cruzes por mesa", float(cruzes) / float(mesas), 0.5, 3.0, "", 0.839)
+    falhas += banda("cruzadas por mesa", float(cruzadas) / float(mesas), 0.5, 3.0, "", 0.839)
     falhas += banda("razão pontos/meta", mediana(razoes), 0.55, 1.00, "", 0.79)
     falhas += banda("vitória do guloso", vitoria, 15.0, 45.0, "%", 34.1)
     falhas += banda("Tear no fim da mesa", mediana(tears), 4.0, 8.0, "", 7.0)

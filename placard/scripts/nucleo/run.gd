@@ -231,9 +231,9 @@ func _marcar_o_estado() -> void:
         if vidas >= VIDAS:
             _marcar("run_limpa", 1)
 
-## A CRUZ DO CENTRO: um evento que colhe as quatro linhas que passam pela
+## A CRUZADA DO CENTRO: um evento que colhe as quatro linhas que passam pela
 ## casa central. É o melhor jogo do PLACARD e o desbloqueio mais difícil.
-static func e_cruz_do_centro(relato: Dictionary) -> bool:
+static func e_cruzada_do_centro(relato: Dictionary) -> bool:
     if not bool(relato.get("colheita", false)):
         return false
     var linhas: Array = relato["linhas"]

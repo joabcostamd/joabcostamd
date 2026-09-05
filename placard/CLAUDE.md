@@ -10,9 +10,9 @@ colocar. Grade 5×5, 12 linhas vivas (5 fileiras, 5 colunas, 2 diagonais).
 | Palavra | O que é | Muda? |
 |---|---|---|
 | **PLACARD** | o nome do **jogo** | é o título, em `Marca.NOME` |
-| **CRUZ** | o nome da **jogada** — colher fileira e coluna de uma vez | **fica** |
+| **CRUZADA** | o nome da **jogada** — colher fileira e coluna de uma vez | **fica** |
 
-`CRUZ DO CENTRO`, `GEO_CRUZ_SO_DIFERENTES` e a DICA chamada CRUZ são a
+`CRUZADA DO CENTRO`, `GEO_CRUZADA_SO_DIFERENTES` e a DICA chamada CRUZADA são a
 jogada, não sobra do nome antigo. Não "conserte".
 
 ## Regra antes de código
@@ -71,13 +71,12 @@ o que **não** é suficiente para commitar.
 4. **`quit()` nem sempre mata o processo.** Medido: **9 em 30** rodadas do teste
    de fluxo terminam, imprimem `FLUXO OK — 33 asserções`, chamam `quit(0)` — e o
    processo continua vivo queimando 100% de CPU. A saída dessas rodadas é **byte
-   a byte igual** à de uma rodada boa, então não há sintoma nenhum além do
-   processo pendurado. Já custou 2,6 horas de um processo órfão neste projeto.
+   a byte igual** à de uma rodada boa, então não há sintoma além do processo
+   pendurado. Já custou 2,6 horas de um órfão neste projeto.
 
-   Tentamos curar: calar o áudio antes de morrer (`Som.silenciar()` no
-   `_exit_tree`) e desmontar a cena com calma em vez de `free()` cru. Isso levou
-   o vazamento de saída de **170 para 3** objetos, e **não mudou a taxa de
-   trava**. É trava do motor, não do jogo.
+   Tentamos curar — calar o áudio no `_exit_tree` e desmontar a cena em vez de
+   `free()` cru. Levou o vazamento de saída de **170 para 3** objetos e **não
+   mudou a taxa**. É trava do motor, não do jogo.
 
    Por isso o `rodar()` do `testar.sh` julga pelo que o teste **imprimiu**, não
    pelo código de saída: resultado impresso = passou (com aviso); nada impresso
@@ -99,7 +98,7 @@ o que **não** é suficiente para commitar.
 
 Leia `placard-pesquisa/DECISOES.md`. Ele tem uma seção inteira de **dials que são
 código morto** — parâmetros já provados inertes por medição. Aumentar o prêmio da
-cruz, por exemplo, foi testado em 4×, 20× e 100× e não moveu nada. §7 lista o
+cruzada, por exemplo, foi testado em 4×, 20× e 100× e não moveu nada. §7 lista o
 que está em aberto, com número.
 
 ## O MCP Godot

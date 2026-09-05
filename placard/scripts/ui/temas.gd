@@ -75,7 +75,7 @@ const TEMAS: Array[Dictionary] = [
     "fundo": "#050509", "fundo_alto": "#0b0b16", "painel": "#0e0e1f", "borda": "#22e0ff",
     "casa": "#0b0b1a", "casa_borda": "#1d6f88",
     "filete": "#22e0ff",
-    "desbloqueio": 5, "como": "faça uma CRUZ DO CENTRO",
+    "desbloqueio": 5, "como": "faça uma CRUZADA DO CENTRO",
     "texto": "#f2f2ff", "texto_suave": "#8f8fc0",
     "carta": "#fbfbff", "carta_borda": "#c9c9e8", "carta_texto": "#0b0b14",
     "destaque": "#ffd400", "acento": "#22e0ff", "alerta": "#ff4d7d", "sucesso": "#4dffb0",

@@ -3,7 +3,7 @@
 **Veredito: REPROVADA.**
 Nenhuma variante, em nenhum ponto do varrimento, atinge o critério declarado. A regra é
 **exatamente inerte** para a política gulosa nos três valores que o próprio candidato propôs
-(8%, 15%, 25%): 0,0% dos pontos vêm de maturação, 0,0% de colheitas adiadas, 0,000 cruz por
+(8%, 15%, 25%): 0,0% dos pontos vêm de maturação, 0,0% de colheitas adiadas, 0,000 cruzada por
 mesa, e a razão pontos/meta fica em 0,770 — o mesmo número da base, na terceira casa decimal,
 com as mesmas sementes. Não é "efeito pequeno": é zero medido.
 
@@ -15,7 +15,7 @@ O aviso pedia que as quatro bancadas fixassem a mesma leitura do Tear. A minha, 
 do `resultado.json`:
 
 - **O TEAR MULTIPLICA.** `fator_do_evento = (produto dos mults das mãos fechadas, piso 1) × Tear`.
-  Não é soma. Numa cruz dupla de mãos mult 4 e mult 3 com Tear 6, o fator é 4×3×6 = 72,
+  Não é soma. Numa cruzada dupla de mãos mult 4 e mult 3 com Tear 6, o fator é 4×3×6 = 72,
   não 4+3+6 = 13.
 - **O teto `24+4×rodada` está REMOVIDO** — é a única configuração em que o `maior_evento_unico
   = 10.260` do núcleo polido se reproduz. Portanto o teto não se aplica nem à soma nem ao
@@ -40,9 +40,9 @@ do `resultado.json`:
 | Tear mediano / máx | 7 / 8 | **7 / 8** |
 | turnos com recompensa | 64,8–66,1% (faixa do núcleo polido) | **64,8%** |
 | seca mediana / p90 | 2 / 4 | **2 / 4** |
-| cruzes/mesa, gulosa | 0,000 | **0,000** |
-| cruzes/mesa, caçadora b1 | 0,146 (enunciado) | **0,146** |
-| % mesas sem cruz, caçadora | 86% (enunciado) | **85,4%** |
+| cruzadas/mesa, gulosa | 0,000 | **0,000** |
+| cruzadas/mesa, caçadora b1 | 0,146 (enunciado) | **0,146** |
+| % mesas sem cruzada, caçadora | 86% (enunciado) | **85,4%** |
 | GUARDA m5 | 58,65% | **57,4%** |
 
 Uma divergência declarada: **m5 57,4 contra 58,65**. A minha política profunda herda o
@@ -60,7 +60,7 @@ estão em 4/5, e então escolhe um novo alvo.
 
 **Na base, sem tocar em uma única regra:**
 
-| política | cruzes/mesa | % mesas com zero | máx | razão | vitória | %rec |
+| política | cruzadas/mesa | % mesas com zero | máx | razão | vitória | %rec |
 |---|---|---|---|---|---|---|
 | gulosa | 0,000 | 100,0% | 0 | 0,770 | 28,04% | 64,8% |
 | profunda (2 níveis) | 0,019 | 98,1% | 1 | 0,829 | 32,04% | 64,2% |
@@ -71,7 +71,7 @@ estão em 4/5, e então escolhe um novo alvo.
 
 Três coisas saem daqui, e nenhuma delas é mérito do meu candidato:
 
-1. **A cruz já é jogável no núcleo como ele está.** 1,455 por mesa, 0% de mesas sem
+1. **A cruzada já é jogável no núcleo como ele está.** 1,455 por mesa, 0% de mesas sem
    nenhuma, mediana 1, e o teto duro nunca violado (`violacoes_teto_duro = 0` em **todas** as
    66 células). Por tipo de mesa: Pequena máx 2, Grande máx 1, Chefe máx 2 — a aritmética da
    CONTA 4 confirmada por medição, não por argumento.
@@ -96,7 +96,7 @@ gulosa mede, com as mesmas sementes da base:
 - colheitas adiadas de propósito: **0,0%**;
 - turnos segurando 4/5: **1,000** (idêntico à base — "1" significa fechada no turno seguinte);
 - razão 0,770, vitória 28,04%, recompensa 64,8%, seca 2/4: **byte a byte a base**;
-- cruzes: **0,000**. K de calibração: permaneceu **2,25** em todas as variantes, porque não
+- cruzadas: **0,000**. K de calibração: permaneceu **2,25** em todas as variantes, porque não
   há um único ponto para inflacionar.
 
 O motivo é aritmético e não depende de tuning. Uma gulosa de 1 nível compara, no mesmo turno,
@@ -111,23 +111,23 @@ Medi até F = 2,5 para mostrar onde a curva vira, não porque isso seja jogável
 0,60 a gulosa mede **0,0% de pontos por maturação** — inerte por construção, não por
 arredondamento. Em F = 1,0 continua 0,0%. Só em **F = 1,5** a gulosa finalmente espera: adia
 50,6% das colheitas, 37,8% dos pontos passam a vir de maturação, o K de calibração salta de
-2,25 para **3,73** (a meta precisou subir 66% para a dificuldade não desabar) — e as cruzes
+2,25 para **3,73** (a meta precisou subir 66% para a dificuldade não desabar) — e as cruzadas
 chegam a **0,012 por mesa, 98,8% das mesas ainda sem nenhuma**. Quinze centésimos do que o
 critério pede, ao preço de uma regra que paga 150% do valor da linha por turno parado.
 
-**(c) A profunda vê, espera — e continua não fazendo cruz.** É a medição que decide o
+**(c) A profunda vê, espera — e continua não fazendo cruzada.** É a medição que decide o
 candidato. Em F = 1,0 (100% por turno, doze vezes o valor máximo proposto) a profunda passa a
 adiar **73,0%** das colheitas possíveis, segura o 4/5 por 2,27 turnos e enriquece
-(razão 0,829 → 1,040, vitória 32,0% → 56,5%). E as cruzes vão de **0,019 para 0,031**.
+(razão 0,829 → 1,040, vitória 32,0% → 56,5%). E as cruzadas vão de **0,019 para 0,031**.
 Trinta e um milésimos. A distância planejadora − gulosa continua em ~1,3.
 
 Isso é a refutação limpa da tese do candidato: **esperar com uma linha em 4/5 não constrói a
-perpendicular.** Para a cruz, a linha L em 4/5 é metade do trabalho; a outra metade é
+perpendicular.** Para a cruzada, a linha L em 4/5 é metade do trabalho; a outra metade é
 encher as 4 casas da coluna C que passam pela casa vazia de L — quatro casas específicas que
 nenhuma recompensa por espera aponta. A maturação paga a paciência e não paga a direção.
 O horizonte continua sendo 9.
 
-**(d) A maturação é ANTI-cruz para quem já caça.** Efeito monotônico e limpo:
+**(d) A maturação é ANTI-cruzada para quem já caça.** Efeito monotônico e limpo:
 
 | F | caçadora b1 | planejadora dupla | DISTÂNCIA plan − gulosa |
 |---|---|---|---|
@@ -140,7 +140,7 @@ O horizonte continua sendo 9.
 | 1,00 | 0,081–0,094 | 1,316–1,332 | 1,316 |
 
 Segurar um 4/5 para maturar e montar uma cruz disputam o mesmo recurso: turnos e casas.
-Quanto mais a regra paga a espera, **menos** cruz o tabuleiro produz. A regra empurra na
+Quanto mais a regra paga a espera, **menos** cruzada o tabuleiro produz. A regra empurra na
 direção contrária à que o briefing precisa.
 
 **(e) Armadilha de tédio: existe, mas só para quem tem 2 níveis.** O risco declarado ("se
@@ -158,7 +158,7 @@ variantes de teto dão o mesmo número dentro do ruído (ex.: F=0,25 profunda: 0
 **(g) A guarda de profundidade não estourou, mas escorrega.** m5 desce monotonicamente com F:
 57,4 (base) → 56,9 (0,08) → 55,7 (0,15) → 54,8 (0,25) → 54,1 (0,40) → 53,7 (0,60) →
 52,7 (1,0) → **48,5 (1,5)**. Continua dentro da banda
-45–75, mas na direção "a jogada óbvia fica errada mais vezes" — sem entregar cruz em troca.
+45–75, mas na direção "a jogada óbvia fica errada mais vezes" — sem entregar cruzada em troca.
 
 **(h) O teto do mult.** `pct_eventos_com_teto_do_mult_ativo` está reportado em
 todas as células. Como o teto está removido por decisão de topo, o número mede só quantas
@@ -170,9 +170,9 @@ vezes ele morderia se estivesse ligado.
 
 | exigência declarada | alvo | melhor valor medido | passa? |
 |---|---|---|---|
-| planejadora ≥ 1,0 cruz/mesa | ≥ 1,0 | 1,446 (F=0,08) | sim — **mas já era 1,455 na BASE**; a regra só piora |
+| planejadora ≥ 1,0 cruzada/mesa | ≥ 1,0 | 1,446 (F=0,08) | sim — **mas já era 1,455 na BASE**; a regra só piora |
 | planejadora < 40% de mesas com zero | < 40% | 0,0% | sim — idem, é da política, não da regra |
-| **gulosa > 0,25 cruz/mesa** | > 0,25 | **0,012** (só em F=1,5) | **NÃO** — 20× abaixo |
+| **gulosa > 0,25 cruzada/mesa** | > 0,25 | **0,012** (só em F=1,5) | **NÃO** — 20× abaixo |
 | recompensa por turno ≥ 60% (gulosa) | ≥ 60% | 64,8% | sim |
 | seca mediana ≤ 3 (gulosa) | ≤ 3 | 2 | sim |
 | m5 na banda 45–75% | 45–75 | 48,5 a 57,4 | sim, mas descendo com F |
@@ -207,15 +207,15 @@ que "a tripla não compensa". **Não religuem o teto.** (Com ele ligado o maior 
 de 10.260 para 8.208 já na gulosa — número da b3, reconfirmado aqui.)
 
 **(ii) O teto duro aritmético está confirmado por medição, não por argumento.**
-Planejadora dupla, cruzes por mesa **por tipo**: Pequena **1,592 (máx 2)** · Grande
+Planejadora dupla, cruzadas por mesa **por tipo**: Pequena **1,592 (máx 2)** · Grande
 **1,000 (máx 1)** · Chefe **1,779 (máx 2)**. Exatamente os tetos 2/1/2 da CONTA 4.
 `violacoes_teto_duro = 0` nas 66 células. A assercao está no código
 (`bancada.gd`, `TETO_CRUZ = [2,1,2]`), como o aviso pediu.
 
 **(iii) O critério "intencional × acidental" proposto no enunciado está quebrado.**
 O critério operacional era: *o posicionamento-gatilho também era a melhor jogada da gulosa?
-Se sim, foi acidente.* Medido: **100,0% das cruzes da planejadora são classificadas como
-"acidente"** (`pct_cruzes_intencionais = 0,0`), e só 12,3% das da caçadora como intenção.
+Se sim, foi acidente.* Medido: **100,0% das cruzadas da planejadora são classificadas como
+"acidente"** (`pct_cruzadas_intencionais = 0,0`), e só 12,3% das da caçadora como intenção.
 Isso é obviamente falso: a planejadora pagou 8 turnos para chegar àquele estado. O problema é
 que, uma vez que duas linhas estão em 4/5 sobre a mesma casa vazia, disparar é trivialmente a
 melhor jogada de qualquer política — a intenção estava nos 8 turnos anteriores, não no gatilho.
@@ -226,14 +226,14 @@ melhor jogada de qualquer política — a intenção estava nos 8 turnos anterio
 
 **Nenhum.** Não existe ponto do espaço (F × teto), varrido de 0,08 a 1,5 (ou seja, de 8% a
 150% do valor da linha por turno), que passe no critério declarado. Se a regra tiver de
-entrar por outro motivo que não a cruz, o único valor defensável é **F = 0,25 com teto 3** —
+entrar por outro motivo que não a cruzada, o único valor defensável é **F = 0,25 com teto 3** —
 é o maior valor que ainda não move nada na gulosa (razão 0,770 idêntica à base, m5 54,8, seca
 2/4) e o que menos machuca a caçadora. Mas ele também não faz nada: é uma regra que só o
-jogador de 2 níveis lê, e ele a usa para inflar pontos, não para fazer cruz.
+jogador de 2 níveis lê, e ele a usa para inflar pontos, não para fazer cruzada.
 
 ## 5. O que me surpreendeu
 
-1. **A planejadora resolve o problema do briefing sem nenhuma regra nova.** 1,455 cruz/mesa,
+1. **A planejadora resolve o problema do briefing sem nenhuma regra nova.** 1,455 cruzada/mesa,
    0% de mesas sem nenhuma, mediana 1, teto respeitado. O alvo realista do enunciado
    ("mediana 1, ≥1 em 60–75% das mesas") já é atingível **na base**. O gargalo não é o jogo:
    é que nada na tela diz ao jogador que os 8 primeiros passos vão para algum lugar. Isso é
@@ -243,10 +243,10 @@ jogador de 2 níveis lê, e ele a usa para inflar pontos, não para fazer cruz.
    regras e nunca foi nomeado.
 3. **A montagem da cruz dupla fura o piso de ritmo** (51,7% de turnos com recompensa contra o
    mínimo de 60%). A CONTA (c) do enunciado acertou a direção e subestimou o tamanho. Quem
-   implementar a cruz precisa de alguma coisa que pague os 8 passos — e a maturação, medida,
+   implementar a cruzada precisa de alguma coisa que pague os 8 passos — e a maturação, medida,
    não é essa coisa: ela paga por ficar parado, não por avançar.
 4. **A regra é EXATAMENTE zero, não "pouco".** Eu esperava um efeito pequeno. Medi 0,0% de
-   pontos, 0,0% de adiamentos, 0,000 cruz e a mesma razão na terceira decimal. Isso só
+   pontos, 0,0% de adiamentos, 0,000 cruzada e a mesma razão na terceira decimal. Isso só
    acontece quando o desenho tem um erro de altura, não de calibração.
 
 ## 6. O que NÃO funcionou (registro honesto de método)
@@ -382,9 +382,9 @@ jogador de 2 níveis lê, e ele a usa para inflar pontos, não para fazer cruz.
 - **1.002 mesas por célula** (o pedido era 1.000; 1.002 é múltiplo de 6 e de 18 e cobre as 6
   rodadas × 3 tipos exatamente). m5 medido em **402 mesas** por célula. **77 células** medidas ao todo (6 de base + 6 de controle + 65 de variante).
 - **O extremo do varrimento foi cortado por tempo:** de `MAT_F1.5_teto99` só saiu a gulosa
-  (cruzes 0,017, K precisou ir a 3,99, m5 caiu a 47,1 — a beira da banda); `MAT_F2.5_teto99`
+  (cruzadas 0,017, K precisou ir a 3,99, m5 caiu a 47,1 — a beira da banda); `MAT_F2.5_teto99`
   nao rodou. Os dois estão fora do espaço proposto pelo candidato (8–25%) por um fator de 6 a
-  30, e a célula `MAT_F1.5_teto3`, que terminou inteira, já mostra o regime: gulosa 0,012 cruz/mesa com K precisando subir de 2,25 para 3,73. Nenhuma
+  30, e a célula `MAT_F1.5_teto3`, que terminou inteira, já mostra o regime: gulosa 0,012 cruzada/mesa com K precisando subir de 2,25 para 3,73. Nenhuma
   conclusão depende delas. Onde faltam, o `resultado.json` simplesmente não tem a chave —
   **nenhum número foi inventado**.
 - Célula `MAT_F0.6_teto3` e `MAT_F0.6_teto5` não foram rodadas (a grade só levou 0,6 com

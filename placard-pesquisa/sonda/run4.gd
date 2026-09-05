@@ -23,8 +23,8 @@ func celula(nome: String, cfg: Dictionary, pol: String, n: int, n_m5: int, ip: i
 	res[nome][pol] = r
 	salvar()
 	log_linha(nome + "/" + pol + " dt=" + str(Time.get_ticks_msec() - t0) + "ms"
-		+ " cruz=" + str(r["cruzes_por_mesa_media"]) + " zero=" + str(r["pct_mesas_com_zero_cruz"])
-		+ " max=" + str(r["cruzes_por_mesa_max"]) + " cr/ev=" + str(r["cruzes_por_evento"])
+		+ " cruz=" + str(r["cruzadas_por_mesa_media"]) + " zero=" + str(r["pct_mesas_com_zero_cruzada"])
+		+ " max=" + str(r["cruzadas_por_mesa_max"]) + " cr/ev=" + str(r["cruzadas_por_evento"])
 		+ " rec=" + str(r["pct_turnos_com_recompensa"]) + " seca=" + str(r["seca_mediana"]) + "/" + str(r["seca_p90"])
 		+ " razao=" + str(r["razao_pontos_meta_mediana"]) + " vit=" + str(r["vitoria_pct"])
 		+ " m5=" + str(r["m5_pct"]) + " seg45=" + str(r["turnos_segurando_4_5"])

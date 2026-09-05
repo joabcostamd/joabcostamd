@@ -55,7 +55,7 @@ def _balao_quimica():
     t=Tela(20); t.retangulo(8,1,4,6); t.triangulo((10,6),(2,18),(18,18))
     t.retangulo(4,14,12,4,v=0); t.triangulo((10,6),(2,18),(18,18)); t.retangulo(3,13,14,1,v=0); return t
 def _atomo():
-    # Duas elipses cruzes ficavam ambíguas nas pontas; uma órbita
+    # Duas elipses cruzadas ficavam ambíguas nas pontas; uma órbita
     # circular com o elétron destacado lê melhor e fecha por lógica.
     t=Tela(20); t.circulo(10,10,4.0)
     t.circulo(10,10,9.4,cheio=False,espessura=2.4)

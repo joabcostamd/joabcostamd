@@ -56,10 +56,10 @@ TEAR_TETO=8, FATOR_PISO=1, piso diagonal 0,60, **teto do evento removido**, K=2,
 | turnos com recompensa | 65,7% | 64,8% | igual |
 | turnos entre recompensas / seca / p90 | 1 / 2 / 4 | 1 / 2 / 4 | igual |
 | eventos por mesa | 2,39 | 2,22 | igual |
-| **cruzes/mesa (gulosa)** | **0,0000** | **0,0000** | **não mudou nada** |
-| % mesas com zero cruz | 100% | 100% | **não mudou nada** |
-| cruzes/mesa (profunda) | 0,0274 | 0,0174 | **piorou** |
-| cruzes/mesa (caçadora) | 0,0978 | 0,1457 | +49% |
+| **cruzadas/mesa (gulosa)** | **0,0000** | **0,0000** | **não mudou nada** |
+| % mesas com zero cruzada | 100% | 100% | **não mudou nada** |
+| cruzadas/mesa (profunda) | 0,0274 | 0,0174 | **piorou** |
+| cruzadas/mesa (caçadora) | 0,0978 | 0,1457 | +49% |
 | distribuição de n | n1=100% | n1=100% | **critério (b) da própria proposta: falhou** |
 | cascatas/mesa · maior cadeia | 0 · 0 | 0 · 0 | ausência estrutural (é a Proposta 4) |
 | pontos/mesa mediana | 1.436 | 2.533 | |
@@ -117,7 +117,7 @@ Maior evento único, por política, com e sem o teto `24+4×rodada` (K=2,25, par
 | política | soma (base) | produto, teto LIGADO | produto, teto REMOVIDO | % eventos em que o teto morde |
 |---|---|---|---|---|
 | gulosa | 2.394 | 8.208 | **10.260** | 1,28% |
-| caçadora de cruz | 3.066 | 9.936 | **24.840** | 2,67% |
+| caçadora de cruzada | 3.066 | 9.936 | **24.840** | 2,67% |
 | Estrela dedicada (pico/meta) | 6,9× | 3,29× | **121,19×** | **92,58%** |
 
 **Esta é a leitura mais importante da bancada.** Remover o teto do evento é irrelevante para
@@ -154,10 +154,10 @@ intermediário.
 
 ## 5. O QUE **NÃO** FUNCIONOU — e é o achado central
 
-**A tese econômica da Proposta 5 está errada.** Ela afirma: "a cruz não acontece porque
+**A tese econômica da Proposta 5 está errada.** Ela afirma: "a cruzada não acontece porque
 é um mau negócio; a gulosa está certa em recusá-la; corrija o preço e ela passará a caçá-la".
 
-Medido, na mesma semente, com o preço da cruz multiplicado por 4 a 100×:
+Medido, na mesma semente, com o preço da cruzada multiplicado por 4 a 100×:
 
 | política | base | produto | veredito |
 |---|---|---|---|
@@ -167,12 +167,12 @@ Medido, na mesma semente, com o preço da cruz multiplicado por 4 a 100×:
 
 O critério pré-declarado do guardião era explícito: *"se a gulosa continuar em 0,00 com o
 produto ligado, a tese está errada e o problema é comportamental, não econômico."*
-**A gulosa continuou em 0,0000, com 100% das mesas sem cruz.**
+**A gulosa continuou em 0,0000, com 100% das mesas sem cruzada.**
 
-O motivo é estrutural e não se conserta com número: a gulosa não recusa a cruz por achá-la
+O motivo é estrutural e não se conserta com número: a gulosa não recusa a cruzada por achá-la
 cara — ela **nunca a vê**. Fechar uma linha em 4/5 é sempre a jogada de maior ganho imediato,
 então duas linhas nunca ficam simultaneamente em 4/5 compartilhando uma casa vazia. O preço
-da cruz é irrelevante para quem nunca chega ao ponto de decidir sobre ele. Multiplicar
+da cruzada é irrelevante para quem nunca chega ao ponto de decidir sobre ele. Multiplicar
 os mults reprecifica um evento que **não ocorre**.
 
 Corolário duro: **o critério (b) da própria proposta reprova a proposta.** "Se n=1 ficar acima
@@ -222,16 +222,16 @@ vitória idênticas — e entrega três ganhos reais: o maior evento sobe **4,3�
 o fator explosão sobe **2,2×** (7,2× → 15,8×), o Tear vira um número que significa alguma coisa
 (teto morde 21%), e a derrota-decidida-cedo cai 13 pontos. O código **encolhe**. É barato.
 
-**Por quê reprovar a promessa:** a proposta foi vendida como o conserto da cruz e como a
-fantasia de quebrar o jogo. Ela não é nenhum dos dois. Cruz gulosa: 0,00 antes, 0,00 depois.
+**Por quê reprovar a promessa:** a proposta foi vendida como o conserto da cruzada e como a
+fantasia de quebrar o jogo. Ela não é nenhum dos dois. Cruzada gulosa: 0,00 antes, 0,00 depois.
 p99 do print: 2,36× contra os 100× prometidos. **O produto é um amplificador sem sinal para
 amplificar.** Ele multiplica um evento que ninguém produz.
 
 **Consequência para o painel, e é a leitura que eu levaria adiante:** a ordem de execução
 mandava rodar a Proposta 5 primeiro porque ela "recalibra a curva e contamina a base das
 outras". Ela contamina, sim — mas o resultado inverte a prioridade. O produto **só paga** se
-alguma outra coisa fizer a cruz existir. As duas propostas que **fabricam** o evento
-(o PRUMO, que entrega cruz de pouso sem custo de posicionamento, e o AVESSO, que dobra os
+alguma outra coisa fizer a cruzada existir. As duas propostas que **fabricam** o evento
+(o PRUMO, que entrega cruzada de pouso sem custo de posicionamento, e o AVESSO, que dobra os
 outs) passam a ser pré-requisito, não alternativa. A fusão PRUMO × PRODUTO que o júri de
 dopamina guardou para o Lote 2 **é o Lote 1**: o produto sozinho é aritmética à espera de um
 motivo, e o Prumo sozinho paga em soma, que é uma reta curta.

@@ -5,7 +5,7 @@ Não é o jogo. É um instrumento de medição.
 
 Arquivos:
 - `nucleo.gd` — avaliador de mãos (§5.1), geometria das 12 linhas vivas (R03/R03b).
-- `mesa.gd` — grade, pilhas, posicionamento, colheita, cruz, Tear, R14b, R42, RNG próprio.
+- `mesa.gd` — grade, pilhas, posicionamento, colheita, cruzada, Tear, R14b, R42, RNG próprio.
 - `sonda.gd` — políticas e as 12 medições.
 - `testes.gd` — 43 asserções (todas passam), incluindo a matemática do replay da §4.4 e a
   recomputação da curva de metas da §6.2 pela fórmula da R21.
@@ -26,15 +26,15 @@ Rodar: `godot --headless --path . --script testes.gd` e `--script sonda.gd`.
 | m5 gulosa = profunda | **58,8%** | nem resolvido, nem armadilha — profundidade real |
 | m6 margem do topo | mediana **5,1%** (pontos) / 1,5% (score) | a 2ª melhor jogada quase empata |
 | m7 vitória (núcleo sem loja) | global **11,0%**; R1 Pequena 58,9%; R5–R6 **0%** | ver ressalva D11 |
-| m8 cruzes por mesa | **0,00** — 100% das mesas sem cruz | especialista dedicado: 0,14 e 86% sem |
+| m8 cruzadas por mesa | **0,00** — 100% das mesas sem cruzada | especialista dedicado: 0,14 e 86% sem |
 | m9 maior seca por mesa | mediana **7** turnos (28 s), máx 14 | |
 | m10 Tear ao fim da mesa | mediana **2**, máx **3** (teto da regra: 8) | o Tear nunca chega perto do teto |
 | m11 turnos por mesa | mediana **17** | |
 | m12 derrota já decidida aos 2/3 | **72,5%** das derrotas | o último terço é jogado já perdido |
 
-Comparação entre políticas (vitória global / cruzes por mesa / eventos por mesa):
+Comparação entre políticas (vitória global / cruzadas por mesa / eventos por mesa):
 aleatória **0,0% / 0,06 / 1,1** · gulosa **11,0% / 0,00 / 2,3** ·
-profunda **12,4% / 0,015 / 2,4** · caçadora-de-cruz **10,9% / 0,14 / 2,1**.
+profunda **12,4% / 0,015 / 2,4** · caçadora-de-cruzada **10,9% / 0,14 / 2,1**.
 
 ---
 
@@ -60,7 +60,7 @@ ALTA / PAR / DOIS PARES / TRINCA / QUADRA. É a leitura conservadora e a que cas
 a colheita final vale bem mais do que eu medi, e essa é a rede de segurança central do jogo.
 **Decida isso explicitamente antes de construir.**
 
-**D04 — a parcela diagonal dentro da cruz (R15).**
+**D04 — a parcela diagonal dentro da cruzada (R15).**
 "Só a parcela correspondente a ela sofre o piso de 60%" não define parcela. Implementei
 `pontos = Σ_linhas ( fichas_da_linha × mult_efetivo_do_evento × (0,60 se diagonal) )`, com piso
 por parcela. É a única leitura que devolve o valor da R12 quando há uma linha só.
@@ -98,13 +98,13 @@ Busca de 2 níveis: para os 8 melhores candidatos da gulosa, aplica a jogada e a
 possíveis da pilha `baralho+descarte`, medindo a melhor resposta imediata seguinte.
 Valor = ganho imediato + 0,9 × média da melhor resposta.
 
-**D10 — POLÍTICA EXTRA (não pedida, mas necessária): `cacadora_de_cruz`.**
-Descobri que a gulosa faz **zero** cruzes em 2.000 mesas e a busca de 2 níveis faz **29 em
-2.000** (1,5% das mesas). Não porque a cruz seja rara, mas porque ela exige **recusar
+**D10 — POLÍTICA EXTRA (não pedida, mas necessária): `cacadora_de_cruzada`.**
+Descobri que a gulosa faz **zero** cruzadas em 2.000 mesas e a busca de 2 níveis faz **29 em
+2.000** (1,5% das mesas). Não porque a cruzada seja rara, mas porque ela exige **recusar
 pontos agora** por 2–4 turnos, o que uma busca de 2 níveis não enxerga. Para saber se o clímax
 prometido é alcançável **por alguém**, escrevi uma quarta política que proíbe fechar uma linha
 sozinha quando a perpendicular daquela casa ainda dá para armar dentro do orçamento.
-Ela é o *melhor caso*, um jogador especialista que joga para a cruz. Use os números dela como
+Ela é o *melhor caso*, um jogador especialista que joga para a cruzada. Use os números dela como
 **limite superior**, não como jogo típico.
 
 **D11 — fora de escopo (por ordem da tarefa).**
@@ -126,21 +126,21 @@ relíquias carregam quase toda a escalada de 13,3×, ou a base 1,42 da R21 é ag
 Estas não são opinião. São aritmética das próprias regras.
 
 **C01 — o orçamento de animação da §6.1 é aritmeticamente impossível.**
-A §6.1 orça, por mesa Pequena, "3 colheitas × 1,34 s + **1,5 cruzes** × 2,62 s".
+A §6.1 orça, por mesa Pequena, "3 colheitas × 1,34 s + **1,5 cruzadas** × 2,62 s".
 Mas: uma Pequena vê **18 cartas na vida inteira** (15 posicionamentos da R09 + 3 semeadas da R42);
 toda carta colhida vai para a pilha `colhida` e **nunca volta** (R04b). Uma colheita simples
-consome 5 cartas; uma cruz de 2 linhas consome 9 (a casa do cruzamento é compartilhada).
+consome 5 cartas; uma cruzada de 2 linhas consome 9 (a casa do cruzamento é compartilhada).
 `3×5 + 1,5×9 = 28,5 cartas` — contra 18 disponíveis. **Falta 58% de material.**
 O mesmo vale para Grande (17 cartas para 4×5 + 2×9 = 38) e Chefe (19 para 5×5 + 2,5×9 = 47,5).
 Consequência: os alvos de duração de mesa da §6.1 foram calculados sobre um jogo que essas
 regras não produzem.
 
-**C02 — a banda 2 da §7.4 ("mediana de cruzes por mesa 1,5–2,5") é impossível.**
-Teto teórico de cruzes por mesa, com jogo perfeito e zero desperdício:
+**C02 — a banda 2 da §7.4 ("mediana de cruzadas por mesa 1,5–2,5") é impossível.**
+Teto teórico de cruzadas por mesa, com jogo perfeito e zero desperdício:
 Pequena **2** (18 cartas = exatamente 9+9), Grande **1** (17 < 18), Chefe **2** (19).
 Uma *mediana* de 1,5–2,5 exige que a mesa mediana empate com o máximo teórico em toda mesa.
 Na Grande a banda é matematicamente inatingível. Medido: a política especialista chega a
-~0,3 cruz/mesa e as políticas normais a **0,00**.
+~0,3 cruzada/mesa e as políticas normais a **0,00**.
 
 **C03 — teto duro de 3 eventos de pontuação por mesa.**
 Todo evento consome no mínimo 5 cartas que somem para sempre. Com 18/17/19 cartas por mesa,
@@ -192,15 +192,15 @@ Três coisas ficaram evidentes na escrita do código, antes mesmo de medir:
    sequer a possibilidade de pontuar. Isso não é um problema de tuning: vem direto da conservação de
    cartas (R04b + R09 + R11). Para mudar isso é preciso mudar a *regra*, não a tabela.
 
-2. **A cruz — o clímax prometido — exige a habilidade mais avançada do jogo: recusar pontos.**
+2. **A cruzada — o clímax prometido — exige a habilidade mais avançada do jogo: recusar pontos.**
    Foi a coisa mais surpreendente de implementar. Escrevi a gulosa, escrevi a profunda de dois
-   níveis, e a gulosa fez **zero cruzes em 2.000 mesas** (100% das mesas sem clímax) enquanto a
+   níveis, e a gulosa fez **zero cruzadas em 2.000 mesas** (100% das mesas sem clímax) enquanto a
    profunda fez 29 em 2.000 (1,5% das mesas). Não por azar: fechar
-   a linha assim que ela chega a 4/5 é sempre o movimento localmente correto, e a cruz exige
+   a linha assim que ela chega a 4/5 é sempre o movimento localmente correto, e a cruzada exige
    deixar uma linha em 4/5 parada por 2 a 4 turnos enquanto você constrói a perpendicular —
-   arriscando o orçamento inteiro. Escrevi então uma política *dedicada* a caçar cruz — ela
+   arriscando o orçamento inteiro. Escrevi então uma política *dedicada* a caçar cruzada — ela
    chega a 0,14 por mesa e **86% das mesas dela ainda terminam sem nenhuma**, e ela nunca fez duas
-   na mesma mesa. Um jogador novo **nunca** vai ver uma cruz por acidente.
+   na mesma mesa. Um jogador novo **nunca** vai ver uma cruzada por acidente.
    Ou seja: o momento que a §4.1 promete nos "10 primeiros segundos" é, na verdade, conteúdo de
    nível intermediário. Isso é profundidade — é ótimo para um jogo de estratégia — mas é o
    oposto de "dopamina infinita".
@@ -243,8 +243,8 @@ As alavancas que eu vi de dentro do código, na ordem em que mudariam mais o rit
   mesa inteira" sobe duas vezes e para. Ou ele sobe mais rápido, ou o teto 8 é ficção.
 - **Mesas menores e mais numerosas.** 3 mesas de 8 posicionamentos batem melhor que 1 de 19:
   mais fins-de-mesa, mais colheitas finais, mais pagamentos.
-- **Fazer a cruz acontecer sozinha para o novato**, por exemplo dando um bônus explícito por
-  esperar (um selo de tutorial, ou um "aviso de cruz armada" que segure a linha por 1 turno),
+- **Fazer a cruzada acontecer sozinha para o novato**, por exemplo dando um bônus explícito por
+  esperar (um selo de tutorial, ou um "aviso de cruzada armada" que segure a linha por 1 turno),
   em vez de esperar que ele descubra que recusar pontos é bom.
 
 Nada disso é urgente se o jogo aceitar ser o que ele é. **Ele é muito bom no que é.** Mas o Joab
@@ -261,8 +261,8 @@ porque as duas coisas puxam o design para lados opostos.
   trajetória (a busca profunda é cara).
 - RNG próprio (xorshift64*), determinístico e semeado — nada de `randi()` global.
 - Nenhum número neste relatório foi estimado. Os únicos `null` do JSON são amostras de tamanho
-  zero, e são informativos: `gulosa/m4_magnitude/eventos_cruz` é `null` **porque a política
-  gulosa não fez nenhuma cruz em 2.000 mesas**, e `aleatoria/m6_margem_do_topo` é `null` porque
+  zero, e são informativos: `gulosa/m4_magnitude/eventos_cruzada` é `null` **porque a política
+  gulosa não fez nenhuma cruzada em 2.000 mesas**, e `aleatoria/m6_margem_do_topo` é `null` porque
   a política aleatória não ordena jogadas (não há "melhor" nem "segunda melhor" para comparar).
 - **A maior incerteza não é estatística, é de leitura da regra: a decisão D03** (o que conta como
   categoria "garantida" numa linha de 3–4 cartas). Ela move sozinha o valor da colheita final,

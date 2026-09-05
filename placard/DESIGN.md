@@ -26,7 +26,7 @@ passaram (`DECISOES.md` §3d).
 | **PARCELA** | o troco que uma linha paga ao chegar em 3/5 e em 4/5 |
 | **TEAR** | o número que multiplica a colheita inteira |
 | **AVESSO** | a carta de duas caras, forjada pela própria colheita |
-| **CRUZ** | uma colheita que paga duas ou mais mãos de uma vez |
+| **CRUZADA** | uma colheita que paga duas ou mais mãos de uma vez |
 
 Neste documento "linha" é usado como termo técnico coletivo para as 12 unidades. Na tela,
 nunca.
@@ -99,10 +99,10 @@ Casos-limite, todos com asserção no `testes/`:
 única vez** uma jogada que fechasse duas linhas. Fechar uma linha em 4/5 é sempre o maior
 ganho imediato, então duas nunca ficam esperando ao mesmo tempo. O gargalo era de **ordem**,
 não de carta nem de preço: coringa não conserta (mede 0,088 contra 0,087) e preço não conserta
-(×4, ×20 e ×100 mediram 0,0000). Com a janela: **0,831 cruz por mesa**, 83,1% das mesas com
-pelo menos uma. *(`04-REGRA-DA-CRUZ.md`)*
+(×4, ×20 e ×100 mediram 0,0000). Com a janela: **0,831 cruzada por mesa**, 83,1% das mesas com
+pelo menos uma. *(`04-REGRA-DA-CRUZADA.md`)*
 
-**R09 — A ESCADA DA COLHEITA.** O clímax mora um degrau acima da cruz, porque a cruz
+**R09 — A ESCADA DA COLHEITA.** O clímax mora um degrau acima da cruzada, porque a cruzada
 virou o comum (71% dos eventos):
 
 | Nome na tela | O que é | Frequência medida |
@@ -143,7 +143,7 @@ A Quina só existe com Avesso. `A-2-3-4-5` e `10-J-Q-K-A` são sequências; nada
                     + soma_das_fichas_das_5_cartas
                     + piso_do_padrão_parcial        (só em mão fraca — R15)
 
-**R12 — O FATOR DO EVENTO, E POR QUE ELE É UM SÓ.** *Aqui mora a cruz.*
+**R12 — O FATOR DO EVENTO, E POR QUE ELE É UM SÓ.** *Aqui mora a cruzada.*
 
     fator = (Σ multiplicadores de TODAS as mãos colhidas no evento) × Tear
 
@@ -153,10 +153,10 @@ A Quina só existe com Avesso. `A-2-3-4-5` e `10-J-Q-K-A` são sequências; nada
 O fator é **comum a todas as linhas do evento** — não é cada linha com o multiplicador dela.
 Colher uma Trinca (mult 3) sozinha paga `fichas × 3 × Tear`; colher a mesma Trinca junto com
 um Flush (mult 4) paga `fichas × 7 × Tear` **para as duas**. É exatamente essa partilha que faz
-a cruz valer mais que duas colheitas separadas, e é o motivo de a Janela (R08) existir.
+a cruzada valer mais que duas colheitas separadas, e é o motivo de a Janela (R08) existir.
 
 *A leitura é SOMA dos mults, vezes o Tear.* Não é produto: sob produto um teto morderia 57,5%
-das cruzes e 78,5% das CRUZ TOTAIS, e a escada 2×/3×/4× colapsaria em silêncio. E **não
+das cruzadas e 78,5% das CRUZ TOTAIS, e a escada 2×/3×/4× colapsaria em silêncio. E **não
 existe teto de multiplicador** — o antigo `24 + 4×rodada` foi removido: ele mordia 0% e era
 matemática escondida.
 
@@ -258,7 +258,7 @@ difícil que ninguém consegue.
 | 3 | colunas pagam um multiplicador a menos, com piso em 1 |
 | 4 | a pilha colhida não volta — com **piso de 32 cartas** no baralho da run |
 | 5 | a loja perde uma vaga |
-| 6 | a cruz só soma mults de categorias **diferentes** |
+| 6 | a cruzada só soma mults de categorias **diferentes** |
 | 7 | uma linha morre por rodada: ela **colhe normalmente e paga zero** |
 | 8 | as metas sobem 25% |
 
@@ -460,10 +460,10 @@ Três níveis, desligáveis, com uma régua trocada por medição:
 | 3 | recomendação explícita, rotulada **"maior ganho agora"** — nunca "melhor jogada" | medimos: não é a melhor em 41% dos turnos. Rótulo honesto ou nada |
 
 **A armadilha, registrada:** uma lista ordenada por ganho imediato **sempre** recomenda fechar
-a linha em 4/5, que é exatamente o que impedia a cruz. A assistência não faz o jogador
+a linha em 4/5, que é exatamente o que impedia a cruzada. A assistência não faz o jogador
 perder (custa 1,4 ponto percentual) — ela fazia o jogador **nunca ver o melhor momento do jogo**.
 Por isso o teste que reprova o build não é "quem pensa vence mais": é **um jogador que segue a
-dica chega a ver uma cruz alguma vez?**
+dica chega a ver uma cruzada alguma vez?**
 
 **Onde a conta aparece, e por quê.** A conta do nível 2 **flutua junto do cursor**, não numa faixa
 fixa sob a mesa. A faixa custaria 18 px de altura da grade, e a medição mostrou que isso derruba a
@@ -489,7 +489,7 @@ Não invente número nestas áreas — nenhuma delas foi medida:
 | ergonomia do Avesso na tela | condição de corte do item (R25) |
 | se o jogador entende a R08 sem explicação | dez minutos de playtest respondem melhor que 100.000 mesas |
 
-E o que a simulação **por construção** não mede: o prazer de ver a cruz acontecer, se o
+E o que a simulação **por construção** não mede: o prazer de ver a cruzada acontecer, se o
 Tear subindo de semitom em semitom cria o crescendo, se "+2 descartes" soa prêmio ou esmola,
 se 100 jogadas legais *parecem* paralisantes mesmo sendo equivalentes.
 
@@ -502,11 +502,11 @@ projeto já foi testada e morreu com um número específico. As cinco maiores:
 
 | Ideia | O número que matou |
 |---|---|
-| coringa clássico (Agulha) | resíduo morto 66,7% (banda 20–40); **anti-cruz**: −63% |
+| coringa clássico (Agulha) | resíduo morto 66,7% (banda 20–40); **anti-cruzada**: −63% |
 | cascata por gravidade (a carta cai) | **0 elos em 48.000 mesas**; em 3.866 quedas a pista de pouso existiu 0 vezes |
 | fechar 4 linhas no centro como fantasia de quebrar o jogo | 0 ocorrências em 2.406 mesas; 99,1% contêm mão de mult ≤ 2 |
-| precificar a cruz | ×4, ×20, ×100: gulosa em 0,0000, 100% das mesas sem cruz |
-| só a cruz levantar o Tear | 99,96% de jogadas idênticas em 4.815 turnos |
+| precificar a cruzada | ×4, ×20, ×100: gulosa em 0,0000, 100% das mesas sem cruzada |
+| só a cruzada levantar o Tear | 99,96% de jogadas idênticas em 4.815 turnos |
 
 ---
 
@@ -518,7 +518,7 @@ Números do núcleo aprovado. Uma medição fora destas bandas é regressão, n�
 |---|---|---|
 | turnos com recompensa | ≥ 70% | 75,9% |
 | seca mediana / p90 | ≤ 3 | 2 / 3 |
-| cruzes por mesa (jogo natural) | ≥ 0,5 | 0,839 |
+| cruzadas por mesa (jogo natural) | ≥ 0,5 | 0,839 |
 | vitória (jogo natural) | 20–40% | 34,1% |
 | **concordância gulosa × profunda** | **45–75%** | **68,5%** |
 | gradiente planejador − guloso | ≥ 0 | **+5,4 pp** |

@@ -24,12 +24,12 @@ mais a folha de contato, e os validadores de tipografia, layout e contraste.
 
 Você recebe cartas e escolhe **onde** colocá-las numa grade 5×5. Cada carta cai
 em uma fileira e em uma coluna ao mesmo tempo, então cada carta joga duas
-partidas de pôquer de uma vez. Fechar as duas juntas é a **cruz** — e é onde
+partidas de pôquer de uma vez. Fechar as duas juntas é a **cruzada** — e é onde
 o jogo paga, porque o evento soma os multiplicadores de todas as mãos colhidas
 e o Tear multiplica a soma.
 
 Daí a tensão inteira: fechar uma linha agora é ponto garantido, mas **queima** a
-carta que faria a cruz valer o triplo. A habilidade central do jogo é saber
+carta que faria a cruzada valer o triplo. A habilidade central do jogo é saber
 recusar pontos.
 
 - **18 mesas** por travessia, dificuldade escolhida por você, com a expectativa

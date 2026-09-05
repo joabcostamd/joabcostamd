@@ -83,7 +83,7 @@ const FIANCA_LUZES := 3
 ## Números que a tela e a autópsia usam. Não influenciam regra nenhuma.
 var turno := 0
 var colheitas := 0
-var cruzes := 0
+var cruzadas := 0
 var avessos_forjados := 0
 var maior_evento := 0
 
@@ -359,7 +359,7 @@ func posicionar(indice_na_mao: int, casa: int) -> Dictionary:
         _colher(alvo, relato)
 
     ## R13 — a parcela só paga se a linha realmente ficou naquele tamanho. Uma
-    ## colheita cruz pode ter esvaziado a linha no meio do caminho, e aí não
+    ## colheita cruzada pode ter esvaziado a linha no meio do caminho, e aí não
     ## há promessa nenhuma para pagar.
     var pontos_parcela := 0
     for c in candidatas:
@@ -396,7 +396,7 @@ func _relato_vazio() -> Dictionary:
     return {
         "valido": true, "casa": -1, "carta": VAZIA,
         "colheita": false, "linhas": [], "pontos_evento": 0, "fator": 0,
-        "grau": "", "cruz": false,
+        "grau": "", "cruzada": false,
         "maduras_novas": [] as Array[int],
         "parcelas": [], "pontos_parcela": 0,
         "avessos": [], "troco": {},
@@ -410,7 +410,7 @@ func _relato_vazio() -> Dictionary:
 
 const GRAUS: PackedStringArray = ["", "colheita", "DUPLA", "TRIPLA", "CRUZ TOTAL"]
 
-## A CRUZ DO CENTRO: as quatro linhas que passam pela casa central colhidas de
+## A CRUZADA DO CENTRO: as quatro linhas que passam pela casa central colhidas de
 ## uma vez. É o melhor jogo do PLACARD, e a conquista mais difícil.
 func _pelo_centro(linhas: Array) -> bool:
     if linhas.size() < 4:
@@ -501,10 +501,10 @@ func _soma_dos_mults(categorias: Array, linhas: Array) -> int:
             var l := int(linhas[i]["linha"])
             if l >= Geometria.COLUNA_0 and l < Geometria.DIAGONAL_0:
                 m = maxi(1, m - 1)
-        ## Geometria 6 — a cruz só soma mults de categorias DIFERENTES. Duas
+        ## Geometria 6 — a cruzada só soma mults de categorias DIFERENTES. Duas
         ## trincas juntas deixam de valer o dobro; o jogo passa a pedir variedade
         ## de mão, não repetição da mesma.
-        if desafio.tem(Desafio.GEO_CRUZ_SO_DIFERENTES) and vistas.has(cat):
+        if desafio.tem(Desafio.GEO_CRUZADA_SO_DIFERENTES) and vistas.has(cat):
             continue
         vistas[cat] = true
         soma += m
@@ -536,7 +536,7 @@ func _colher(alvo: Array, relato: Dictionary) -> void:
     for linha in conta["linhas"]:
         _marcar("cat_%d" % int(linha["categoria"]), 1)
     if _pelo_centro(conta["linhas"]):
-        _marcar("cruz_do_centro", 1)
+        _marcar("cruzada_do_centro", 1)
 
     relato["colheita"] = true
     relato["pontos_evento"] = total
@@ -551,8 +551,8 @@ func _colher(alvo: Array, relato: Dictionary) -> void:
         _marcar("fianca_pagou", 1)
     relato["grau"] = GRAUS[mini(alvo.size(), 4)]
     if alvo.size() >= 2:
-        cruzes += 1
-        relato["cruz"] = true
+        cruzadas += 1
+        relato["cruzada"] = true
 
     ## R21 — a forja do Avesso, antes de as cartas saírem da grade.
     var avessos := _forjar_avessos(alvo)
@@ -711,7 +711,7 @@ func ganho_de_colheita(carta: int, casa: int) -> int:
 ## É o número que o nível 3 das DICAS mostra, e o rótulo dele é "maior ganho
 ## agora", nunca "melhor jogada": medimos que ele não é o melhor em 41% dos
 ## turnos, e uma lista ordenada por ganho imediato sempre manda fechar a linha em
-## 4/5 — que é exatamente o que impede a cruz.
+## 4/5 — que é exatamente o que impede a cruzada.
 func ganho(indice_na_mao: int, casa: int) -> int:
     if indice_na_mao < 0 or indice_na_mao >= mao.size() or not pode_posicionar(casa):
         return 0
@@ -767,7 +767,7 @@ func girar_na_mao(indice_na_mao: int) -> bool:
 ##
 ## É a dica de nível 2, e a pesquisa é enfática: foi o ÚNICO mecanismo encontrado
 ## que ensina a recusa. Uma lista ordenada por ganho imediato sempre recomenda
-## fechar a linha em 4/5 — que é exatamente o que impedia a cruz. Mostrar o
+## fechar a linha em 4/5 — que é exatamente o que impedia a cruzada. Mostrar o
 ## preço perpendicular é o que permite ao jogador escolher NÃO fechar.
 func a_conta(indice_na_mao: int, casa: int) -> Dictionary:
     var vazio := {"ganha": 0, "fecha": [], "derruba": [], "amadurece": [],

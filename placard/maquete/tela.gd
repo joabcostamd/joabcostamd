@@ -4,7 +4,7 @@ class_name TelaMaquete
 ##
 ## Não é o jogo: é a maquete que existe para o tema ser escolhido olhando, e
 ## não lendo adjetivo. O estado desenhado é o momento canônico do design — uma
-## carta fechando fileira e coluna ao mesmo tempo, que é a CRUZ.
+## carta fechando fileira e coluna ao mesmo tempo, que é a CRUZADA.
 ##
 ## LAYOUT — a regra que organiza tudo: **o centro só tem o que o jogador toca.**
 ## Esquerda é estado (consulta), centro é jogo (manipulação), direita é
@@ -196,8 +196,8 @@ func _barra(r: Rect2) -> void:
     var f := Temas.fonte_do_tema(true)
     var tam := Temas.T_TITULO if r.size.y > 46 else Temas.T_NUMERO
     draw_string(f, Vector2(r.position.x, r.position.y + r.size.y * 0.70),
-                "CRUZ", HORIZONTAL_ALIGNMENT_LEFT, -1, tam, Temas.TEXTO)
-    var largura := f.get_string_size("CRUZ", HORIZONTAL_ALIGNMENT_LEFT, -1, tam).x
+                "CRUZADA", HORIZONTAL_ALIGNMENT_LEFT, -1, tam, Temas.TEXTO)
+    var largura := f.get_string_size("CRUZADA", HORIZONTAL_ALIGNMENT_LEFT, -1, tam).x
     if r.size.x > 420:
         draw_string(Temas.fonte_do_tema(), Vector2(r.position.x + largura + 16,
                     r.position.y + r.size.y * 0.68), "rodada 4 · mesa 2 de 3",

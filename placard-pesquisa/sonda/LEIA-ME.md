@@ -8,7 +8,7 @@ Guardado porque reconstruir isso custa horas, e porque toda medição da pesquis
 | Arquivo | O que faz |
 |---|---|
 | `nucleo.gd` | avaliador de mãos de pôquer + RNG xorshift64* semeado |
-| `mesa.gd` | grade 5×5, posicionamento, colheita, cruz, Tear, colheita final |
+| `mesa.gd` | grade 5×5, posicionamento, colheita, cruzada, Tear, colheita final |
 | `sonda.gd` | as 12 métricas da auditoria e as políticas gulosa/aleatória/profunda/caçadora |
 | `testes.gd` | 43 asserções, incluindo o replay do documento e a curva de metas |
 | `experimento.gd` | bancada das correções (Pulso, Tique do Tear) |

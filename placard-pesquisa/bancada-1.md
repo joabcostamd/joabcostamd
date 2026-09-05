@@ -52,8 +52,8 @@ Política GULOSA, 1.200 mesas, sementes pareadas. m5 em 500 mesas.
 | turnos entre recompensas (med) | 1 | 1 | 1 | 1 | 1 | 1 |
 | seca mediana / p90 | 2 / 4 | 2 / 4 | 2 / 4 | 2 / 4 | 2 / 4 | 2 / 4 |
 | eventos por mesa | 2,30 | 2,41 | 2,26 | 2,40 | 2,54 | 2,39 |
-| **cruzes por mesa** | **0,000** | **0,000** | **0,000** | **0,000** | **0,000** | **0,000** |
-| mesas com zero cruz | 100% | 100% | 100% | 100% | 100% | 100% |
+| **cruzadas por mesa** | **0,000** | **0,000** | **0,000** | **0,000** | **0,000** | **0,000** |
+| mesas com zero cruzada | 100% | 100% | 100% | 100% | 100% | 100% |
 | pontos por mesa (mediana) | 1.368 | 1.568 | 1.428 | 1.214 | 1.445 | 1.234 |
 | **razão pontos/meta** | **0,990** | **1,027** | **1,005** | **0,837** | **1,009** | **0,849** |
 | maior evento único | 2.394 | 2.736 | 2.736 | 2.394 | 2.736 | 2.736 |
@@ -75,11 +75,11 @@ profundidade** — o maior efeito de qualquer coringa sobre a m5 foi **+1,6 pont
 
 ---
 
-## 2. O NÚMERO QUE DECIDE: A CRUZ NÃO É UM PROBLEMA DE CARTA
+## 2. O NÚMERO QUE DECIDE: A CRUZADA NÃO É UM PROBLEMA DE CARTA
 
-Medição direta do argumento central do AVESSO ("ele dobra os outs da cruz"), 2.000 mesas por célula:
+Medição direta do argumento central do AVESSO ("ele dobra os outs da cruzada"), 2.000 mesas por célula:
 
-| trajetória | turnos com coringa na mão | desses, com jogada que fecha 2+ linhas | turnos sem coringa | desses, com jogada de cruz | cruzes/mesa |
+| trajetória | turnos com coringa na mão | desses, com jogada que fecha 2+ linhas | turnos sem coringa | desses, com jogada de cruzada | cruzadas/mesa |
 |---|---|---|---|---|---|
 | base, gulosa | 0 | — | 30.944 | **0 (0,00%)** | 0,000 |
 | agulha, gulosa | 3.614 | **0 (0,00%)** | 25.042 | 0 (0,00%) | 0,000 |
@@ -92,13 +92,13 @@ Leitura, sem rodeio: **em 30.944 turnos de jogo guloso não existiu UMA ÚNICA v
 fechasse duas linhas** — com ou sem coringa na mão. O replay da §4.4 mede "3 outs em 34 = 8,8%"
 supondo a configuração já montada (duas linhas em 4/5 compartilhando uma casa vazia). **Essa
 configuração não aparece.** Uma linha que chega a 4/5 é fechada no turno seguinte, e a R17 demole a
-perpendicular. O gargalo da cruz é de **ORDEM**, não de carta: nenhum coringa conserta isso,
+perpendicular. O gargalo da cruzada é de **ORDEM**, não de carta: nenhum coringa conserta isso,
 porque o coringa responde "qual carta?" e o problema é "quando?".
 
-E há um resultado invertido que ninguém previu: **a AGULHA PIORA a cruz.** Sob a política
-caçadora dedicada, ela derruba as cruzes de 0,087 para **0,032 por mesa** (−63%), porque fecha
+E há um resultado invertido que ninguém previu: **a AGULHA PIORA a cruzada.** Sob a política
+caçadora dedicada, ela derruba as cruzadas de 0,087 para **0,032 por mesa** (−63%), porque fecha
 linhas mais cedo e mais rápido, destruindo as configurações que a caçadora estava montando. O item
-vendido como "a máquina de cruzes" é, medido, um **anti-cruz**.
+vendido como "a máquina de cruzadas" é, medido, um **anti-cruzada**.
 
 ---
 
@@ -169,8 +169,8 @@ recalibrada ele **não estoura o teto de 1,0**, o que a Agulha estoura em qualqu
 
 **O que NÃO funcionou:**
 
-- **O argumento central caiu.** Ver §2: os outs de cruz não dobraram; eles são zero com e sem
-  Avesso na trajetória gulosa, e sob a caçadora o Avesso deixa as cruzes exatamente onde estavam
+- **O argumento central caiu.** Ver §2: os outs de cruzada não dobraram; eles são zero com e sem
+  Avesso na trajetória gulosa, e sob a caçadora o Avesso deixa as cruzadas exatamente onde estavam
   (0,088 × 0,087). O autor pediu que o parâmetro 11 o desmentisse. Desmentiu.
 - **Duplo pulso em 8,4–9,5%** dos posicionamentos de Avesso; o alvo era ≥20%. O "beat pequeno que
   sustenta a mesa" acontece em menos da metade da frequência prevista.
@@ -210,7 +210,7 @@ Por quê, em três números:
 
 **Duas ressalvas que a recomendação não pode esconder:**
 
-- **O Avesso não conserta a cruz, e nenhum coringa conserta.** Se o objetivo do lote era tirar
+- **O Avesso não conserta a cruzada, e nenhum coringa conserta.** Se o objetivo do lote era tirar
   m8 de 0,00, a resposta desta bancada é **negativa para a família inteira**. O gargalo está na
   ordem em que as linhas fecham, não na carta que fecha — o que aponta para as bancadas do PRUMO
   (que muda o que acontece DEPOIS da colheita) e do TEAR-PRODUTO (que muda o PREÇO de esperar),
@@ -219,10 +219,10 @@ Por quê, em três números:
   Ele é seguro e é bonito; ele não é, sozinho, "o núcleo em nível estado da arte". Se o painel
   quiser poder, a forma mais barata e menos deformante que eu medi é **uma Agulha única por mesa,
   sem reposição** (`E_AGULHA_teto1_colheita0`: vitória 50,83%, razão 1,019, m5 56,5%) — mas ela
-  exige recalibrar K e continua sem entregar uma cruz.
+  exige recalibrar K e continua sem entregar uma cruzada.
 
 **Não combinar.** AGULHA + AVESSO na mesma mesa (base recalibrada): vitória **73,33%**, razão/meta
-**1,159**, turnos com recompensa 74,0%, 3,24 eventos por mesa — e **ainda 0,000 cruz por mesa**.
+**1,159**, turnos com recompensa 74,0%, 3,24 eventos por mesa — e **ainda 0,000 cruzada por mesa**.
 O jogo vira passeio sem entregar o clímax. Registrado, não recomendado.
 
 ---
@@ -233,11 +233,11 @@ O jogo vira passeio sem entregar o clímax. Registrado, não recomendado.
    juntas; juntas elas entregam razão/meta 0,99 e 40,75% de vitória, e a rodada 1 já vence 96,5% das
    vezes. **O núcleo já está com o teto de poder estourado antes de qualquer coringa.** Isso muda a
    prioridade do lote inteiro: recalibrar K é mais urgente que escolher item.
-2. **Zero jogadas de cruz em 30.944 turnos.** Eu esperava um número pequeno; encontrei o número
-   zero. Isso reclassifica o problema: a cruz não é rara, é **estruturalmente inexistente** sob
+2. **Zero jogadas de cruzada em 30.944 turnos.** Eu esperava um número pequeno; encontrei o número
+   zero. Isso reclassifica o problema: a cruzada não é rara, é **estruturalmente inexistente** sob
    qualquer política que feche linhas cheias.
-3. **A Agulha reduz cruzes em 63%** na política que as caça. O coringa acelera o fechamento e come
-   o próprio material da cruz.
+3. **A Agulha reduz cruzadas em 63%** na política que as caça. O coringa acelera o fechamento e come
+   o próprio material da cruzada.
 4. **Os coringas criados não chegam à mão.** 3,37 forjados, 1,30 jogados. Todo desenho de suprimento
    por colheita é quase inerte porque o baralho não cicla dentro de 15–19 posicionamentos.
 5. **`duas_maiores_fichas` venceu `extremos`** no eixo geográfico, contra a hipótese explícita do

@@ -218,7 +218,7 @@ static func fichas_da_linha(cartas: Array) -> int:
 ## R12 — o fator do evento: a SOMA dos multiplicadores de todas as mãos colhidas
 ## juntas, vezes o Tear. Um fator só, comum a todas as linhas do evento.
 ##
-## É aqui que a cruz existe. Uma Trinca sozinha paga `fichas × 3 × Tear`;
+## É aqui que a cruzada existe. Uma Trinca sozinha paga `fichas × 3 × Tear`;
 ## a mesma Trinca colhida junto com um Flush paga `fichas × 7 × Tear` — para as
 ## duas. Se cada linha usasse o multiplicador dela, colher junto seria idêntico a
 ## colher separado e a Janela da Colheita (R08) não teria razão de existir.

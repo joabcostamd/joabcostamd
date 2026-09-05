@@ -30,7 +30,7 @@ func _init() -> void:
 	check("_A_pontuou_agora", int(r2[0]) > 0, str(r2[0]))
 	check("_A_madura_limpa", m.madura[0] == 0)
 
-	# ---- B) CRUZ pela janela: linha fecha, coluna vai a 4/5, proxima carta fecha as duas ----
+	# ---- B) CRUZADA pela janela: linha fecha, coluna vai a 4/5, proxima carta fecha as duas ----
 	var m2 := Mesa2.new(1, 1, 501, cfgj(1))
 	m2.grade.fill(-1); m2.conta.fill(0); m2.pontos = 0
 	for x in [[1,1],[2,2],[3,3],[4,4],[5,5],[10,6],[15,7]]:
@@ -39,7 +39,7 @@ func _init() -> void:
 	check("_B_linha_madura_coluna_em_4", m2.madura[0] == 1 and m2.conta[5] == 4 and int(rb[1]) == 0,
 		"col=" + str(m2.conta[5]))
 	var rb2 := m2.posicionar(8, 20, 2)     # fecha a coluna 0 -> as duas colhem juntas
-	check("_B_CRUZ_em_um_evento", int(rb2[1]) == 2, "nlin=" + str(rb2[1]))
+	check("_B_CRUZADA_em_um_evento", int(rb2[1]) == 2, "nlin=" + str(rb2[1]))
 	check("_B_grade_esvaziou_as_9_casas", m2.conta[0] == 0 and m2.conta[5] == 0)
 
 	# ---- C) ultimo posicionamento colhe na hora (regra 5) ----
@@ -107,7 +107,7 @@ func _init() -> void:
 				if mm.madura[li] == 1: sobrou = true
 	check("_F_nada_maduro_sobrevive_ao_fim_da_mesa", not sobrou)
 
-	# ---- G) TETO DURO: cruzes por mesa <= 2 / 1 / 2 ----
+	# ---- G) TETO DURO: cruzadas por mesa <= 2 / 1 / 2 ----
 	var viol := 0
 	for J in [0, 1, 2, 99]:
 		var cj := cfgj(J)

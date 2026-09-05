@@ -222,8 +222,8 @@ func _fim_da_run() -> void:
         ["chegou até", "rodada %d · mesa %s" % [mini(run.rodada, Metas.RODADAS),
                                                 Metas.NOMES[run.indice_da_mesa]]],
         ["maior colheita", Pintura.milhar(run.maior_evento)],
-        ["maior cruz", "%d linha%s de uma vez" % [run.maior_cruz,
-                          "" if run.maior_cruz == 1 else "s"]],
+        ["maior cruzada", "%d linha%s de uma vez" % [run.maior_cruzada,
+                          "" if run.maior_cruzada == 1 else "s"]],
     ]
     var y := caixa.position.y + 92.0
     for linha in linhas:

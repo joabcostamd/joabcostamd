@@ -19,24 +19,24 @@ posicionamentos, teto 8; o PULSO e a colheita final usam `max(1,mult) × Tear`. 
 estética: é a única leitura que reproduz os números declarados da base** — maior evento único
 **10.260** e pico/mediana **15,64×**. A leitura aditiva (`soma_mult + Tear`) dá 2.394 e 7,2×,
 que são os números pré-produto da b1. Consequência que precisa ir para o texto do jogo: sob
-essa leitura uma cruz dupla **não** vale 2× — vale `mult1 × mult2 × Tear`, e a escada medida
+essa leitura uma cruzada dupla **não** vale 2× — vale `mult1 × mult2 × Tear`, e a escada medida
 na seção 4 é 1× / 3,1× / 7,3×, não 2×/3×/4×.
 
 **Colisão de semeadura.** Decidido antes de rodar: linha que nasce cheia é colhida antes do
 turno 1, pontua normal, sobe o Tear, forja Avesso, e é contada em `eventos_fantasma_por_mesa` /
-`cruzes_fantasma_por_mesa` — **fora** de `cruzes_por_mesa`. Cascatas resolvidas em laço.
+`cruzadas_fantasma_por_mesa` — **fora** de `cruzadas_por_mesa`. Cascatas resolvidas em laço.
 Medido: fantasmas ≈ 0,003/mesa no pior caso (S=12 aleatório) — o problema previsto no aviso
 não apareceu neste desenho porque o viés de cruz nunca enche uma linha e o aleatório raramente.
 
 **Material.** Cada S foi medido em dois modos: **conserva** (posicionamentos reduzidos em S,
 cartas/mesa constantes: Pequena 18, Grande 17, Chefe 19 — a única comparação honesta) e
 **solto** (orçamento intacto, material cresce — medido só para exibir o falso positivo).
-`cruzes_por_carta` está em todas as células.
+`cruzadas_por_carta` está em todas as células.
 
 **K recalibrado por célula** até a razão pontos/meta da gulosa voltar a ~0,79, antes de
 qualquer comparação. K da base = **2,173**; K das variantes vai de 0,764 a 3,893.
 
-**Teto duro no código.** `cruzes <= floor((posic + sementes)/9)` com `push_error`.
+**Teto duro no código.** `cruzadas <= floor((posic + sementes)/9)` com `push_error`.
 `violacoes_teto_duro == 0` em **todas** as 136 células-política medidas (30 células × 4 políticas + base × 4 + escada 4 × 3).
 
 ---
@@ -45,8 +45,8 @@ qualquer comparação. K da base = **2,173**; K das variantes vai de 0,764 a 3,8
 
 | métrica | declarado | medido aqui | ok |
 |---|---|---|---|
-| cruzes/mesa gulosa | 0,000 | **0,000** | ✔ |
-| cruzes/mesa caçadora (b1) | 0,146 | **0,144** | ✔ |
+| cruzadas/mesa gulosa | 0,000 | **0,000** | ✔ |
+| cruzadas/mesa caçadora (b1) | 0,146 | **0,144** | ✔ |
 | mesas com zero (caçadora) | 86% | **85,6%** | ✔ |
 | turnos com recompensa | 65,7% | **64,8%** | ✔ |
 | seca mediana / p90 | 2 / 4 | **2 / 4** | ✔ |
@@ -76,13 +76,13 @@ por qualidade das duas linhas alvo. Ela é um planejador de verdade, não a gulo
 | caçadora (b1) | 0,144 | 85,6% | 1 | 0,226 | 0,084 | 0,121 |
 | **planejadora** | **1,437** | **0,0%** | **2** | **1,563** | **1,000** | **1,752** |
 
-A Grande dá **exatamente 1,000 cruz por mesa, em 100% das mesas** — o teto aritmético
+A Grande dá **exatamente 1,000 cruzada por mesa, em 100% das mesas** — o teto aritmético
 declarado (Grande = 1), batido na casa decimal, por 334 mesas independentes. Isso é a
 confirmação empírica da CONTA 1/CONTA 4 do briefing e a validação mais forte que consegui do
 meu próprio planejador.
 
-**E é o resultado que redefine o problema: o núcleo já suporta 1,44 cruzes por mesa e 100%
-de cobertura, hoje, sem uma linha de regra nova.** A cruz não é inalcançável — ela é
+**E é o resultado que redefine o problema: o núcleo já suporta 1,44 cruzadas por mesa e 100%
+de cobertura, hoje, sem uma linha de regra nova.** A cruzada não é inalcançável — ela é
 invisível. Isso significa que o meu candidato entra num tabuleiro que já está no teto: não há
 o que semear que aumente o número da planejadora, só o que estragar.
 
@@ -114,7 +114,7 @@ Modo **conserva** (cartas/mesa constantes). Bandas avaliadas na gulosa.
 | S12 diagonais | 0,764 | 0,000 | 0,000 | 0,002 | **0,462** | 71,0 | 1/2 | **73,8** | 29,7 | REPROVADA |
 
 (As 15 células do modo **solto** estão em `resultado.json`; todas sobem por inflação de
-material — S12 cruz solto chega a 2,653 cruzes/mesa e **máx 3**, que não é bug: com 27 cartas
+material — S12 cruz solto chega a 2,653 cruzadas/mesa e **máx 3**, que não é bug: com 27 cartas
 na Pequena o teto aritmético sobe legitimamente para 3. É exatamente o falso positivo (i) do
 briefing e por isso o modo solto não decide nada.)
 
@@ -123,7 +123,7 @@ briefing e por isso o modo solto não decide nada.)
 Nas quatro células em que a gulosa passa de 0,25 — e só nelas — o jogador **pagou 1,00 das 9
 casas da figura**:
 
-| célula | gulosa cruz/mesa | braços pagos pelo jogador (de 9) | cruzes com ≥8 pagas |
+| célula | gulosa cruz/mesa | braços pagos pelo jogador (de 9) | cruzadas com ≥8 pagas |
 |---|---|---|---|
 | S8 cruz | 1,000 | **1,00** | **0,0%** |
 | S10 cruz | 1,000 | **1,00** | 0,0% |
@@ -131,7 +131,7 @@ casas da figura**:
 | S8 diagonais | 1,000 | **1,00** | 0,0% |
 | — BASE, planejadora | 1,437 | **8,34** | **76,6%** |
 
-Com 8 sementes enviesadas para uma cruz, a semeadura **põe os 8 braços** e a cruz é o
+Com 8 sementes enviesadas para uma cruz, a semeadura **põe os 8 braços** e a cruzada é o
 primeiro clique do turno 1, em 100% das mesas. Isso não é o jogo encurtando o horizonte; é a
 bancada medindo a própria semeadura. O briefing previu esse falso positivo com precisão e ele
 apareceu exatamente onde disse que apareceria.
@@ -143,7 +143,7 @@ planejadora** caem de 8,34 (base) para 7,10 (S3 aleat.), 4,83 (S8 aleat.), 3,27 
 ### 3.2 O experimento limpo do horizonte — e a notícia útil para as outras bancadas
 
 **S6 cruz** é o teste que o critério 1 do briefing pede, sem fabricar a resposta: 6 dos 8
-braços vêm semeados, então a cruz está a **3 turnos** de distância (2 braços + gatilho),
+braços vêm semeados, então a cruzada está a **3 turnos** de distância (2 braços + gatilho),
 com o alvo já desenhado no tabuleiro.
 
 **Gulosa: 0,000. Profunda de 2 níveis: 0,085** (contra 0,005 na base).
@@ -204,7 +204,7 @@ pelo produto, ou por um amortecimento explícito.
    acima de 0,25. Com semeadura aleatória e material constante, a gulosa fica entre **0,000 e
    0,017** em todos os S de 3 a 12. Ele não move a gulosa.
 2. As únicas células em que a gulosa passa de 0,25 têm **1,00 de 9 casas pagas pelo jogador** e
-   **0,0%** de cruzes com ≥8 braços pagos. É o resultado comprado, não produzido.
+   **0,0%** de cruzadas com ≥8 braços pagos. É o resultado comprado, não produzido.
 3. Bandas estouradas: recompensa < 60% em S8 cruz (58,9) e S10 diagonais (59,8); m5 a 73,8%
    em S12 diagonais e a 49,8% em S12 aleatório; Tear 4/5 e seca 0/1 nos S altos.
 4. A distância planejadora−gulosa — a métrica que o briefing manda ler — **não encolhe por
@@ -219,13 +219,13 @@ planejadora 1,437 → 1,438). Isso não justifica uma regra.
 
 ## 6. O QUE ME SURPREENDEU
 
-- **A cruz não precisa de regra nova.** Uma planejadora honesta satura o teto aritmético na
+- **A cruzada não precisa de regra nova.** Uma planejadora honesta satura o teto aritmético na
   base atual: 1,437/mesa, 100% de cobertura, **exatamente 1,000 na Grande**. Todo o gargalo é
   de visibilidade e de gradiente, nenhum é de geometria ou de material. Isso muda o alvo dos
-  outros três candidatos: eles não precisam **permitir** a cruz, precisam **ensiná-la**.
+  outros três candidatos: eles não precisam **permitir** a cruzada, precisam **ensiná-la**.
 - **Horizonte 3 ainda é invisível** (S6 cruz: gulosa 0,000, profunda 0,085). Eu esperava que o
   critério "≤ 3 turnos" fosse suficiente. Não é, se os 3 turnos pagam zero.
-- **O critério intencional × acidental do briefing é degenerado.** ~100% das cruzes saem
+- **O critério intencional × acidental do briefing é degenerado.** ~100% das cruzadas saem
   marcadas como "acidentais" em todas as políticas, inclusive na planejadora que passou 8 turnos
   montando a coisa — porque fechar 2 linhas é sempre o maior ganho imediato do turno, logo o
   gatilho é sempre a jogada gulosa. A intenção mora nos 8 turnos anteriores. Troquem esse
@@ -245,7 +245,7 @@ planejadora 1,437 → 1,438). Isso não justifica uma regra.
   e a partida deixa de ser uma partida. O risco declarado no enunciado ("encurtar demais a
   mesa") está confirmado com número: turnos por mesa medianos caem de **17** (base) para 12 / 10 / 8 / **6** em S=6 / 8 / 10 / 12, e para 5 em S12 cruz.
 - **O modo solto** (semear sem tirar posicionamentos) sobe tudo — gulosa, caçadora, planejadora,
-  vitória — e não conserta nada. `cruzes_por_carta` denuncia: planejadora **0,0799** na base, **0,0762** em S8 aleatório
+  vitória — e não conserta nada. `cruzadas_por_carta` denuncia: planejadora **0,0799** na base, **0,0762** em S8 aleatório
   conserva e **0,0576** em S12 aleatório conserva — normalizado por material, o candidato
   *piora*. No modo solto o mesmo S8 sobe para 0,0864 só porque ganhou cartas. Quem comparar
   por mesa vai achar que funcionou.

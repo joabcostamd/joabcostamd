@@ -184,7 +184,7 @@ func jogar(rodada: int, tipo: int, semente: int, cfg: Dictionary, politica: int,
 	var rng := Mesa2.Rng.new(Mesa2.mix(semente, 999, politica))
 	var turno := 0
 	var turnos_rec := []
-	var cruzes := 0
+	var cruzadas := 0
 	var eventos := []
 	var marco := int(floor(m.posic_max * 2.0 / 3.0))
 	var pontos_marco := -1
@@ -199,7 +199,7 @@ func jogar(rodada: int, tipo: int, semente: int, cfg: Dictionary, politica: int,
 		if talvez_descartar(m, mv):
 			mv = movimentos(m)
 			if mv["lista"].is_empty(): break
-		# outs de cruz: existe jogada que fecha 2+ linhas?
+		# outs de cruzada: existe jogada que fecha 2+ linhas?
 		var tem_out := false
 		for x in mv["lista"]:
 			if x[5] >= 2: tem_out = true; break
@@ -234,7 +234,7 @@ func jogar(rodada: int, tipo: int, semente: int, cfg: Dictionary, politica: int,
 		if int(r[0]) > 0:
 			eventos.append(int(r[0]))
 			if int(r[0]) > maior_evento: maior_evento = int(r[0])
-			if int(r[1]) >= 2: cruzes += 1
+			if int(r[1]) >= 2: cruzadas += 1
 			col["eventos_pontos"].append(int(r[0]))
 			col["n_por_evento"].append(int(r[1]))
 		if int(r[0]) > 0 or int(r[2]) > 0:
@@ -268,7 +268,7 @@ func jogar(rodada: int, tipo: int, semente: int, cfg: Dictionary, politica: int,
 	col["razao"].append(float(m.pontos) / float(m.meta))
 	col["pontos"].append(m.pontos)
 	col["n_eventos"].append(eventos.size())
-	col["cruzes"].append(cruzes)
+	col["cruzadas"].append(cruzadas)
 	col["maior_evento"].append(maior_evento)
 	col["maior_evento_meta"].append(float(maior_evento) / float(m.meta))
 	if venceu: col["maior_evento_venc_meta"].append(float(maior_evento) / float(m.meta))
@@ -309,7 +309,7 @@ func novo() -> Dictionary:
 	h.resize(25)
 	for i in range(25): h[i] = 0
 	return {"gaps": [], "seca": [], "tear": [], "turnos": [], "pct_turno_rec": [],
-		"razao": [], "pontos": [], "n_eventos": [], "cruzes": [], "maior_evento": [],
+		"razao": [], "pontos": [], "n_eventos": [], "cruzadas": [], "maior_evento": [],
 		"maior_evento_meta": [], "maior_evento_venc_meta": [], "eventos_pontos": [],
 		"n_por_evento": [], "coringas_postos": [], "agulhas_criadas": [],
 		"avessos_forjados": [], "espera": [], "turno_1o": [], "pontos_pulso": [],
@@ -340,7 +340,7 @@ func rodar(cfg: Dictionary, n: int, n_m5: int, politica: int) -> Dictionary:
 		else: n4 += 1
 	var tot_ev: int = max(1, col["n_por_evento"].size())
 	var zc := 0
-	for x in col["cruzes"]:
+	for x in col["cruzadas"]:
 		if x == 0: zc += 1
 	return {
 		"mesas": col["mesas"],
@@ -352,8 +352,8 @@ func rodar(cfg: Dictionary, n: int, n_m5: int, politica: int) -> Dictionary:
 		"seca_mediana": pct(col["seca"], 0.5),
 		"seca_p90": pct(col["seca"], 0.9),
 		"eventos_por_mesa_media": snappedf(media(col["n_eventos"]), 0.01),
-		"cruzes_por_mesa_media": snappedf(media(col["cruzes"]), 0.001),
-		"pct_mesas_com_zero_cruz": snappedf(100.0 * float(zc) / float(max(1, col["mesas"])), 0.1),
+		"cruzadas_por_mesa_media": snappedf(media(col["cruzadas"]), 0.001),
+		"pct_mesas_com_zero_cruzada": snappedf(100.0 * float(zc) / float(max(1, col["mesas"])), 0.1),
 		"cascatas_por_mesa_media": 0.0,
 		"maior_cadeia_observada": 0,
 		"pontos_por_mesa_mediana": pct(col["pontos"], 0.5),
@@ -387,9 +387,9 @@ func rodar(cfg: Dictionary, n: int, n_m5: int, politica: int) -> Dictionary:
 		"pct_coringa_duplo_pulso": (snappedf(100.0 * float(col["duplo_pulso"]) / float(col["pos_coringa"]), 0.1) if col["pos_coringa"] > 0 else null),
 		"quinas_por_mesa": snappedf(float(col["quinas"]) / float(max(1, col["mesas"])), 0.001),
 		"reais_por_mesa": snappedf(float(col["reais"]) / float(max(1, col["mesas"])), 0.001),
-		"p_out_cruz_com_coringa": (snappedf(100.0*float(col["outs_com_sim"])/float(col["outs_com_n"]),0.1) if col["outs_com_n"]>0 else null),
-		"p_out_cruz_sem_coringa": (snappedf(100.0*float(col["outs_sem_sim"])/float(col["outs_sem_n"]),0.1) if col["outs_sem_n"]>0 else null),
-		"outs_brutos": {"turnos_com_coringa_na_mao": col["outs_com_n"], "desses_com_jogada_de_cruz": col["outs_com_sim"],
-			"turnos_sem_coringa_na_mao": col["outs_sem_n"], "desses_sem_com_jogada_de_cruz": col["outs_sem_sim"]},
+		"p_out_cruzada_com_coringa": (snappedf(100.0*float(col["outs_com_sim"])/float(col["outs_com_n"]),0.1) if col["outs_com_n"]>0 else null),
+		"p_out_cruzada_sem_coringa": (snappedf(100.0*float(col["outs_sem_sim"])/float(col["outs_sem_n"]),0.1) if col["outs_sem_n"]>0 else null),
+		"outs_brutos": {"turnos_com_coringa_na_mao": col["outs_com_n"], "desses_com_jogada_de_cruzada": col["outs_com_sim"],
+			"turnos_sem_coringa_na_mao": col["outs_sem_n"], "desses_sem_com_jogada_de_cruzada": col["outs_sem_sim"]},
 		"heat": col["heat"],
 	}
