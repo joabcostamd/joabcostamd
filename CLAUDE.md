@@ -173,7 +173,7 @@ Lista de pacotes em `ferramentas/kenney-packs.md`.
 ```
 .
 ├── CLAUDE.md                    este arquivo
-├── AUDITORIA.md                 checklist de auditoria (756 itens, do zero ao gold)
+├── AUDITORIA.md                 checklist de auditoria (872 itens, do zero ao gold)
 ├── PORTFOLIO.md                 o que existe e em que estado
 ├── CONVENCAO.md                 nomes e vocabulário
 ├── README.md                    perfil público do GitHub (não é doc de projeto)

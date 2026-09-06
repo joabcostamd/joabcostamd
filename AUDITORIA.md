@@ -923,7 +923,150 @@ Cada item recebe nota de 0 a 10. `N/A` para o que não se aplica ao gênero.
 
 ---
 
-## AT. Rubrica final — pesos e nota mínima por fase
+## AT. Narrativa, escrita e diálogo
+
+- AT1 `__/10` — Premissa em uma frase
+- AT2 `__/10` — Conflito central definido
+- AT3 `__/10` — Protagonista com desejo claro e obstáculo real
+- AT4 `__/10` — Força de oposição definida
+- AT5 `__/10` — História serve ao gameplay em vez de brigar com ele
+- AT6 `__/10` — Ritmo narrativo casado com o ritmo de jogo
+- AT7 `__/10` — Método de entrega escolhido (cutscene, ambiental, diálogo, texto, áudio)
+- AT8 `__/10` — Cenário conta história sozinho (narrativa ambiental)
+- AT9 `__/10` — Diálogo soa natural quando lido em voz alta
+- AT10 `__/10` — Sem parede de texto
+- AT11 `__/10` — Cada personagem com voz distinta
+- AT12 `__/10` — Tom consistente do início ao fim
+- AT13 `__/10` — Revisão ortográfica e gramatical em 100% do texto
+- AT14 `__/10` — Texto de UI, tutorial e história com a mesma voz
+- AT15 `__/10` — Todos os ramos de diálogo testados
+- AT16 `__/10` — Nenhuma fala órfã ou inalcançável
+- AT17 `__/10` — Diálogo reflete o estado do mundo (não cita quem já morreu)
+- AT18 `__/10` — Sistema de diálogo com histórico, velocidade e avanço manual
+- AT19 `__/10` — Diálogo pulável e reconsultável
+- AT20 `__/10` — Texto escrito pensando na tradução (sem trocadilho sem plano B)
+- AT21 `__/10` — Lore sem contradição interna
+- AT22 `__/10` — Final coerente com as escolhas do jogador
+- AT23 `__/10` — Epílogo e créditos fecham a experiência
+
+## AU. Missões, objetivos e progressão de conteúdo
+
+- AU1 `__/10` — Estrutura de missão definida (linear, hub, aberta)
+- AU2 `__/10` — Objetivo atual sempre claro ou consultável
+- AU3 `__/10` — Diário/registro de missões correto e atualizado
+- AU4 `__/10` — Nenhuma missão entra em estado impossível
+- AU5 `__/10` — Marcador de objetivo útil, sem apontar para o lugar errado
+- AU6 `__/10` — Missão secundária vale o tempo investido
+- AU7 `__/10` — Dependências entre missões sem travamento
+- AU8 `__/10` — Missão não quebra se o jogador fizer fora de ordem
+- AU9 `__/10` — Estado de missão salvo e restaurado corretamente
+- AU10 `__/10` — Recompensa proporcional ao esforço
+- AU11 `__/10` — Sem ida e volta gratuita só para esticar o tempo
+- AU12 `__/10` — Ritmo de desbloqueio de conteúdo medido
+- AU13 `__/10` — Conteúdo repetível não vira tarefa chata
+- AU14 `__/10` — Missão abandonável ou refazível quando faz sentido
+
+## AV. Sensibilidade, representação e conformidade regional
+
+- AV1 `__/10` — Estereótipos revisados por alguém de fora
+- AV2 `__/10` — Representação verificada com quem é representado
+- AV3 `__/10` — Violência, sexo, drogas e linguagem coerentes com a classificação alvo
+- AV4 `__/10` — Símbolos proibidos por país verificados
+- AV5 `__/10` — Variação ou censura regional planejada, se necessária
+- AV6 `__/10` — Nomes reais, marcas e semelhanças com pessoas verificados
+- AV7 `__/10` — Conteúdo religioso ou político avaliado quanto a risco
+- AV8 `__/10` — Aviso de conteúdo antes da exposição
+- AV9 `__/10` — Filtro de palavrão em texto gerado por jogador
+- AV10 `__/10` — Linguagem inclusiva no texto do jogo
+- AV11 `__/10` — Tradução culturalmente adaptada, não literal
+- AV12 `__/10` — Revisão de sensibilidade registrada
+
+## AW. Compatibilidade de hardware, sistema e driver
+
+- AW1 `__/10` — Testado em GPU NVIDIA, AMD e Intel
+- AW2 `__/10` — Testado com driver antigo e com driver recente
+- AW3 `__/10` — Testado em todos os renderizadores suportados
+- AW4 `__/10` — Testado em Windows 10 e 11, Linux comum, macOS Intel e Apple Silicon
+- AW5 `__/10` — Múltiplos monitores, com resoluções e taxas diferentes
+- AW6 `__/10` — 60, 120 e 144 Hz sem quebrar física, animação nem velocidade de jogo
+- AW7 `__/10` — Comportamento aceitável em GPU integrada fraca
+- AW8 `__/10` — Fallback quando um recurso gráfico não é suportado
+- AW9 `__/10` — Sem dependência de extensão gráfica exótica
+- AW10 `__/10` — Layout de teclado regional (ABNT, AZERTY, QWERTZ) tratado
+- AW11 `__/10` — Escala de DPI do sistema em 125%, 150% e 200%
+- AW12 `__/10` — Taxas de amostragem de áudio diferentes sem estouro
+- AW13 `__/10` — Nome de usuário e caminho com acento, espaço e caractere não-ASCII
+
+## AX. Decisões do Godot com custo alto de reversão
+
+- AX1 `__/10` — Linguagem escolhida (GDScript/C#) com as consequências de export entendidas
+- AX2 `__/10` — Versão da engine com plano e custo de atualização avaliados
+- AX3 `__/10` — Templates de export batendo exatamente com a versão da engine
+- AX4 `__/10` — Renderizador escolhido antes da arte, não depois
+- AX5 `__/10` — Resolução base e modo de esticar decididos antes das cenas
+- AX6 `__/10` — Estrutura de pastas e convenção de nomes travadas antes do volume
+- AX7 `__/10` — LFS ligado antes do primeiro binário grande
+- AX8 `__/10` — Formato de save decidido antes do primeiro jogador real
+- AX9 `__/10` — Sistema de tradução instalado antes do primeiro texto
+- AX10 `__/10` — Input map montado antes do primeiro controle
+- AX11 `__/10` — Risco de abandono de addon de terceiro avaliado
+- AX12 `__/10` — Build de debug e de release diferenciados e ambos testados
+- AX13 `__/10` — Carga de recurso externo não executa código arbitrário
+
+## AY. Outras plataformas — console e celular (se aplicável)
+
+- AY1 `__/10` — Requisitos de certificação lidos antes de escrever código
+- AY2 `__/10` — Nomenclatura oficial dos botões por plataforma
+- AY3 `__/10` — Mensagens de sistema tratadas (salvando, perfil, suspender)
+- AY4 `__/10` — Perfis de usuário e troca de conta
+- AY5 `__/10` — Conquistas e troféus da plataforma mapeados
+- AY6 `__/10` — Loja e compras da plataforma integradas
+- AY7 `__/10` — Controles de toque com área de toque suficiente
+- AY8 `__/10` — Área segura, entalhe e gestos do sistema respeitados
+- AY9 `__/10` — Orientação de tela e rotação tratadas
+- AY10 `__/10` — Bateria e aquecimento no celular medidos
+- AY11 `__/10` — Tamanho do pacote dentro do limite da loja
+- AY12 `__/10` — Permissões pedidas com justificativa e no momento certo
+- AY13 `__/10` — Interrupções tratadas (chamada, notificação, tela bloqueada)
+- AY14 `__/10` — Kit de submissão completo antes da data alvo
+
+## AZ. Compartilhamento, comunidade e conteúdo de jogador
+
+- AZ1 `__/10` — Modo foto ou captura, se combina com o jogo
+- AZ2 `__/10` — Replay ou gravação, se combina
+- AZ3 `__/10` — Tela de fim de partida compartilhável
+- AZ4 `__/10` — Semente ou desafio compartilhável entre jogadores
+- AZ5 `__/10` — Suporte a streamer (trilha liberada, modo sem spoiler)
+- AZ6 `__/10` — Mods e Workshop com documentação e exemplo funcional
+- AZ7 `__/10` — Mod não quebra save nem conquista em silêncio
+- AZ8 `__/10` — Conteúdo de jogador moderável e denunciável
+- AZ9 `__/10` — Nome de jogador filtrado
+- AZ10 `__/10` — Canal oficial de comunidade com regras claras
+
+## BA. Conforto, ergonomia e sessão longa
+
+- BA1 `__/10` — Lembrete opcional de pausa
+- BA2 `__/10` — Nenhuma mecânica de esforço físico contínuo sem alternativa
+- BA3 `__/10` — Brilho e contraste confortáveis em ambiente escuro
+- BA4 `__/10` — Volume e faixa de frequência que não fatigam em horas de jogo
+- BA5 `__/10` — Opções de conforto contra enjoo de movimento
+- BA6 `__/10` — Sessão interrompível a qualquer momento sem perda
+- BA7 `__/10` — Duração de sessão típica respeitada pelo design
+- BA8 `__/10` — Sem padrão escuro: nada de pressão artificial de tempo nem culpa
+- BA9 `__/10` — Sem mecânica que pune parar de jogar
+
+## BB. Metas de negócio e definição de sucesso
+
+- BB1 `__/10` — Meta de vendas e de listas de desejos definida antes do lançamento
+- BB2 `__/10` — Ponto de equilíbrio calculado
+- BB3 `__/10` — Custo real do projeto rastreado (horas, assets, ferramentas, serviços)
+- BB4 `__/10` — Preço definido por comparáveis e por duração entregue
+- BB5 `__/10` — Plano de desconto e de participação em promoções
+- BB6 `__/10` — Métrica de sucesso além de dinheiro (portfólio, aprendizado, comunidade)
+- BB7 `__/10` — Critério para continuar ou parar o suporte após o lançamento
+- BB8 `__/10` — Próximo projeto considerado no cronograma
+
+## BC. Rubrica final — pesos e nota mínima por fase
 
 Nota mínima exigida (média do bloco) para o projeto poder passar de fase.
 `—` = não avaliado ainda nessa fase.
@@ -975,31 +1118,44 @@ Nota mínima exigida (média do bloco) para o projeto poder passar de fase.
 | AQ Rede e multijogador | 4 | 2 | 6 | 8 | 9 |
 | AR Pós-lançamento | 4 | — | 2 | 6 | 9 |
 | AS Processo e git | 5 | 6 | 8 | 9 | 9 |
+| AT Narrativa e diálogo | 6 | 2 | 5 | 8 | 9 |
+| AU Missões e objetivos | 5 | 2 | 6 | 9 | 9 |
+| AV Sensibilidade e região | 5 | 1 | 4 | 8 | 10 |
+| AW Compatibilidade de hardware | 6 | 1 | 4 | 8 | 10 |
+| AX Decisões irreversíveis Godot | 6 | 8 | 8 | 9 | 9 |
+| AY Console e celular | 3 | — | 2 | 7 | 9 |
+| AZ Compartilhamento e comunidade | 3 | — | 2 | 6 | 8 |
+| BA Conforto e sessão longa | 4 | 1 | 4 | 8 | 9 |
+| BB Metas de negócio | 4 | 2 | 5 | 8 | 9 |
 
-## AU. Itens de reprovação automática (qualquer nota abaixo reprova o gold)
+## BD. Itens de reprovação automática (qualquer nota abaixo reprova o gold)
 
-- AU1 — Crash reproduzível em caminho normal
-- AU2 — Perda de progresso do jogador
-- AU3 — Softlock sem saída
-- AU4 — Save que não migra entre versões
-- AU5 — Asset sem licença comprovada
-- AU6 — Segredo commitado no repositório
-- AU7 — Jogo não completável só com gamepad
-- AU8 — Flash estroboscópico sem opção de desligar
-- AU9 — Texto ilegível na resolução mínima suportada
-- AU10 — Placeholder visível no build final
-- AU11 — Erro no console durante sessão normal
-- AU12 — Portão estrutural ou suíte de testes vermelhos
-- AU13 — Opção do menu que não faz nada
-- AU14 — Tela sem botão de voltar
-- AU15 — Requisitos de sistema não verificados em máquina real
+- BD1 — Crash reproduzível em caminho normal
+- BD2 — Perda de progresso do jogador
+- BD3 — Softlock sem saída
+- BD4 — Save que não migra entre versões
+- BD5 — Asset sem licença comprovada
+- BD6 — Segredo commitado no repositório
+- BD7 — Jogo não completável só com gamepad
+- BD8 — Flash estroboscópico sem opção de desligar
+- BD9 — Texto ilegível na resolução mínima suportada
+- BD10 — Placeholder visível no build final
+- BD11 — Erro no console durante sessão normal
+- BD12 — Portão estrutural ou suíte de testes vermelhos
+- BD13 — Opção do menu que não faz nada
+- BD14 — Tela sem botão de voltar
+- BD15 — Requisitos de sistema não verificados em máquina real
+- BD16 — Missão ou diálogo em estado impossível de concluir
+- BD17 — Erro de português visível no texto do jogo
+- BD18 — Não roda em GPU de algum dos três fabricantes principais
+- BD19 — Decisão irreversível do Godot tomada sem avaliação (bloco AX abaixo de 5)
 
-## AV. Cálculo da nota final
+## BE. Cálculo da nota final
 
-- AV1 — Nota do bloco = média das notas dos itens aplicáveis (`N/A` fora da conta)
-- AV2 — Nota final = soma de (nota do bloco × peso) ÷ soma dos pesos
-- AV3 — Qualquer bloco abaixo do mínimo da fase reprova a fase, mesmo com média alta
-- AV4 — Qualquer item da lista AU reprova o gold, com nota qualquer
-- AV5 — Veredito: < 5 não vendável · 5-6,9 alpha · 7-7,9 beta · 8-8,9 lançável · ≥ 9 polido
-- AV6 — Toda nota exige evidência anexada (medição, screenshot, log, bloco do portão)
-- AV7 — Nota sem evidência conta como zero
+- BE1 — Nota do bloco = média das notas dos itens aplicáveis (`N/A` fora da conta)
+- BE2 — Nota final = soma de (nota do bloco × peso) ÷ soma dos pesos
+- BE3 — Qualquer bloco abaixo do mínimo da fase reprova a fase, mesmo com média alta
+- BE4 — Qualquer item da lista BD reprova o gold, com nota qualquer
+- BE5 — Veredito: < 5 não vendável · 5-6,9 alpha · 7-7,9 beta · 8-8,9 lançável · ≥ 9 polido
+- BE6 — Toda nota exige evidência anexada (medição, screenshot, log, bloco do portão)
+- BE7 — Nota sem evidência conta como zero
