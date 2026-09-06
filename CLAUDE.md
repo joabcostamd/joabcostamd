@@ -180,6 +180,7 @@ Lista de pacotes em `ferramentas/kenney-packs.md`.
 ├── testar-tudo.sh               portão + suíte de todos os projetos
 ├── .claude/
 │   ├── settings.json            hook de sessão e permissões
+│   ├── skills/auditar-jogo/     auditoria completa + plano de correção
 │   ├── hooks/session-start.sh   prepara o Godot ao abrir a sessão
 │   └── scripts/
 │       ├── preparar-ambiente.sh instala o Godot 4.7.2
@@ -189,6 +190,7 @@ Lista de pacotes em `ferramentas/kenney-packs.md`.
 │       └── novo-jogo.sh         cria um jogo já verde
 ├── ferramentas/
 │   ├── agent_verify.gd          kit de verificação (cópia canônica)
+│   ├── auditar.sh               coleta de evidência para a auditoria (0,3 s)
 │   ├── gitattributes-godot      .gitattributes canônico
 │   ├── catalogo_assets.py       gera assets/CATALOGO.md
 │   ├── kenney-packs.md          quais pacotes trazer e como
@@ -247,6 +249,7 @@ O pedido decide. Roteador curto (as skills completas estão no escopo de usuári
 | exportar, build, executável | `godot-export` → `./exportar.sh` |
 | publicar, itch, lançar demo | `publicar-itch` → `./publicar.sh` ou a tag |
 | Steam, conquista, ranking | `godot-steam` |
+| auditar o jogo, "está pronto?", "o que falta para lançar" | `auditar-jogo` |
 | aprendeu algo que custou tempo | `aprender` |
 
 Skills que exigem o editor aberto **não funcionam na nuvem** (ver seção 2).
