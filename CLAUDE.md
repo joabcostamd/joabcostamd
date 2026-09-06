@@ -165,6 +165,10 @@ Lista de pacotes em `ferramentas/kenney-packs.md`.
 8. **Caminho de asset sai de `assets/CATALOGO.md`**, não de memória.
 9. **O kit `agent_verify.gd` é editado só em `ferramentas/`.** As cópias dentro dos projetos
    são plantadas por `testar-tudo.sh` — editar uma cópia faz as máquinas divergirem.
+10. **A régua e o coletor da auditoria também têm cópia plantada.** `AUDITORIA.md` da raiz e
+   `ferramentas/auditar.sh` são os canônicos; as cópias em `.claude/skills/auditar-jogo/`
+   existem para a skill funcionar fora deste repositório e saem de
+   `bash ferramentas/plantar-skill.sh`. `./testar-tudo.sh` reprova se divergirem.
 
 ---
 
@@ -173,7 +177,7 @@ Lista de pacotes em `ferramentas/kenney-packs.md`.
 ```
 .
 ├── CLAUDE.md                    este arquivo
-├── AUDITORIA.md                 checklist de auditoria (872 itens, do zero ao gold)
+├── AUDITORIA.md                 régua da auditoria (872 itens, do zero ao gold) — canônica
 ├── PORTFOLIO.md                 o que existe e em que estado
 ├── CONVENCAO.md                 nomes e vocabulário
 ├── README.md                    perfil público do GitHub (não é doc de projeto)
@@ -181,6 +185,7 @@ Lista de pacotes em `ferramentas/kenney-packs.md`.
 ├── .claude/
 │   ├── settings.json            hook de sessão e permissões
 │   ├── skills/auditar-jogo/     auditoria completa + plano de correção
+│   │                            (carrega cópias plantadas da régua e do coletor)
 │   ├── hooks/session-start.sh   prepara o Godot ao abrir a sessão
 │   └── scripts/
 │       ├── preparar-ambiente.sh instala o Godot 4.7.2
@@ -190,7 +195,8 @@ Lista de pacotes em `ferramentas/kenney-packs.md`.
 │       └── novo-jogo.sh         cria um jogo já verde
 ├── ferramentas/
 │   ├── agent_verify.gd          kit de verificação (cópia canônica)
-│   ├── auditar.sh               coleta de evidência para a auditoria (0,3 s)
+│   ├── auditar.sh               coleta de evidência para a auditoria (0,3 s) — canônico
+│   ├── plantar-skill.sh         planta régua e coletor dentro da skill auditar-jogo
 │   ├── gitattributes-godot      .gitattributes canônico
 │   ├── catalogo_assets.py       gera assets/CATALOGO.md
 │   ├── kenney-packs.md          quais pacotes trazer e como
