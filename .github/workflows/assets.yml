@@ -1,0 +1,64 @@
+name: Trazer assets
+
+# Roda a mao: Actions → Trazer assets → Run workflow.
+#
+# Existe porque kenney.nl e bloqueado pelo proxy das sessoes de nuvem. O runner
+# do GitHub tem internet aberta: ele baixa, configura, catalogo e commita —
+# e a sessao de nuvem passa a enxergar os assets por git.
+
+on:
+  workflow_dispatch:
+    inputs:
+      fonte:
+        description: "slug do Kenney (ex.: pixel-platformer) ou URL de um .zip"
+        required: true
+      destino:
+        description: "pasta destino (ex.: jogos/meu-jogo/assets/kenney)"
+        required: true
+      pixel:
+        description: "pixel art (liga filtro Nearest)"
+        type: boolean
+        default: true
+      lfs:
+        description: "guardar os binarios em Git LFS"
+        type: boolean
+        default: true
+
+jobs:
+  trazer:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Baixar e configurar
+        run: |
+          EXTRA=""
+          [ "${{ inputs.pixel }}" = "true" ] && EXTRA="--pixel"
+          .claude/scripts/baixar-assets.sh "${{ inputs.fonte }}" "${{ inputs.destino }}" $EXTRA
+
+      - name: Ligar o LFS antes de commitar binario
+        if: inputs.lfs
+        run: |
+          git lfs install
+          PROJ="${{ inputs.destino }}"
+          while [ "$PROJ" != "." ] && [ ! -f "$PROJ/project.godot" ]; do PROJ="$(dirname "$PROJ")"; done
+          if [ -f "$PROJ/.gitattributes" ]; then
+            sed -i 's|^# \(\*\.\(png\|glb\|gltf\|bin\|ogg\|mp4\)  *filter=lfs\)|\1|' "$PROJ/.gitattributes"
+            git add "$PROJ/.gitattributes"
+          fi
+
+      - name: Commitar
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "nada mudou"; exit 0
+          fi
+          git commit -m "Traz assets de ${{ inputs.fonte }} para ${{ inputs.destino }}"
+          git push origin HEAD:refs/heads/assets/${{ github.run_id }}
+          echo "::notice::branch criado: assets/${{ github.run_id }} — abra o PR a partir dele"

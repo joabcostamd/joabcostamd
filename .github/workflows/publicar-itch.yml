@@ -1,0 +1,70 @@
+name: Publicar no itch.io
+
+# Dispara na tag (ex.: picross-v1.2.0) ou a mao.
+# Precisa do segredo BUTLER_API_KEY (itch.io → Settings → API keys).
+
+on:
+  push:
+    tags: ["*-v*"]
+  workflow_dispatch:
+    inputs:
+      projeto:
+        description: "pasta do jogo (ex.: jogos/meu-jogo)"
+        required: true
+      alvo:
+        description: "usuario/nome-do-jogo no itch"
+        required: true
+
+env:
+  GODOT_VERSAO: 4.7.2-stable
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { lfs: true, fetch-depth: 0 }
+
+      - name: Descobrir projeto e alvo
+        id: alvo
+        run: |
+          if [ -n "${{ inputs.projeto }}" ]; then
+            echo "projeto=${{ inputs.projeto }}" >> "$GITHUB_OUTPUT"
+            echo "itch=${{ inputs.alvo }}"       >> "$GITHUB_OUTPUT"
+          else
+            # tag no formato <slug>-v<versao>
+            SLUG="${GITHUB_REF_NAME%-v*}"
+            P="$(find . -name project.godot -path "*$SLUG*" -printf '%h\n' | head -1)"
+            [ -z "$P" ] && { echo "não achei projeto para a tag $GITHUB_REF_NAME"; exit 1; }
+            echo "projeto=${P#./}"                     >> "$GITHUB_OUTPUT"
+            echo "itch=${{ github.repository_owner }}/$SLUG" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Cache do Godot
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/opt/godot
+          key: godot-${{ env.GODOT_VERSAO }}-linux
+
+      - name: Cache dos templates de export
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/godot/export_templates
+          key: godot-templates-${{ env.GODOT_VERSAO }}
+
+      - name: Instalar Godot e templates
+        run: |
+          bash .claude/scripts/preparar-ambiente.sh
+          bash .claude/scripts/preparar-export.sh
+
+      - name: Instalar butler
+        run: bash .claude/scripts/preparar-butler.sh
+
+      - name: Exportar e publicar
+        env:
+          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+          ITCH_ALVO: ${{ steps.alvo.outputs.itch }}
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          cd "${{ steps.alvo.outputs.projeto }}"
+          ./publicar.sh
