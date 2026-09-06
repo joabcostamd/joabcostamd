@@ -9,8 +9,40 @@ description: "Use quando o pedido for auditar um jogo inteiro — 'audita o jogo
 > está sã?". Esta skill responde "**este jogo está pronto para ser vendido?**" — e depois
 > conserta o que não está.
 
-A régua é o `AUDITORIA.md` da raiz do repositório: **872 itens, 55 blocos (A → BB)**, com
-pesos, nota mínima por fase e reprovações automáticas nos blocos BC/BD/BE.
+## Onde estão a régua e o coletor — resolva ANTES de qualquer coisa
+
+A régua é o **`AUDITORIA.md`**: 872 itens, 55 blocos (A → BB), com pesos, nota mínima por
+fase e reprovações automáticas nos blocos BC/BD/BE. Ela **vem junto com esta skill**.
+
+Procure nesta ordem e pare no primeiro que existir:
+
+| # | Régua | Coletor |
+|---|---|---|
+| 1 | `<pasta desta skill>/AUDITORIA.md` | `<pasta desta skill>/auditar.sh` |
+| 2 | `AUDITORIA.md` na raiz do repositório | `ferramentas/auditar.sh` |
+
+```bash
+# resolve cada arquivo por conta propria e VALIDA o conteudo
+R=$(git rev-parse --show-toplevel 2>/dev/null || echo .)   # funciona de dentro de um jogo
+achar() {  # $1 = nome do arquivo, $2 = marca que prova que e o arquivo certo
+  for C in "$1" "$R/$1" "$R/ferramentas/$1" \
+           $(find "$R" ~/.claude/skills -path '*auditar-jogo*' -name "$1" 2>/dev/null); do
+    [ -f "$C" ] && grep -q "$2" "$C" && { echo "$C"; return 0; }
+  done
+  return 1
+}
+REGUA=$(achar AUDITORIA.md '^## BC\. Rubrica final')   || { echo "REGUA NAO ENCONTRADA"; }
+COLETOR=$(achar auditar.sh 'AUDITORIA-COLETA')          || { echo "COLETOR NAO ENCONTRADO"; }
+echo "régua: $REGUA · coletor: $COLETOR"
+```
+
+A validação não é frescura: existe um `picross/AUDITORIA.md` neste ecossistema que é uma
+tabela de puzzles, não a régua. Achar pelo nome pega o arquivo errado; achar pela marca
+`## BC. Rubrica final` não pega.
+
+**Se nenhum dos dois caminhos tiver a régua, PARE e diga que ela sumiu.** Não invente peso,
+não invente nota mínima, não derive rubrica do `CLAUDE.md`. Auditoria com régua inventada é
+pior que auditoria nenhuma, porque parece medida.
 
 ## Regras que não se negociam
 
@@ -40,9 +72,9 @@ A fase alvo escolhe a coluna da tabela de pesos (bloco BC). É ela que decide o 
 ## Fase 1 — Coleta (roda em segundos, só fato)
 
 ```bash
-ferramentas/auditar.sh <caminho-do-jogo>    # 0,3 s — evidência estrutural, sem opinião
-cd <jogo> && ./testar.sh                    # portão frio + suíte — OBRIGATÓRIO
-./simular.sh                                # se existir — alertas de balanceamento
+bash "$COLETOR" <caminho-do-jogo>    # 0,3 s — evidência estrutural, sem opinião
+cd <jogo> && ./testar.sh             # portão frio + suíte — OBRIGATÓRIO
+./simular.sh                         # se existir — alertas de balanceamento
 ```
 
 Guarde a saída em `docs/auditoria/coleta-<AAAA-MM-DD>.txt`. Toda nota depois cita essa saída.
@@ -62,7 +94,7 @@ O que a coleta não vê fica com `LOCAL` ou com nota vinda de outra evidência (
 
 ## Fase 2 — Dar as notas
 
-Percorra o `AUDITORIA.md` bloco a bloco, nesta ordem — do barato para o caro:
+Abra a régua (`$REGUA`) e percorra bloco a bloco, nesta ordem — do barato para o caro:
 
 1. **Objetivos, a coleta já respondeu:** C, E, F, M, AE, AF, AI, AK, AX
 2. **Exigem ler código:** D, G, H, L, O, AU
@@ -138,7 +170,7 @@ Loop, um passo por vez, na ordem do plano:
 4. **Commit** em português, no imperativo, dizendo o que mudou para o jogador
 5. **Marque `[x]`** no PLANO e vá para o próximo
 
-Ao fim de cada onda, rode `ferramentas/auditar.sh` de novo e **atualize as notas dos blocos
+Ao fim de cada onda, rode `$COLETOR` de novo e **atualize as notas dos blocos
 tocados** — o número tem que se mexer, senão o passo não fez nada.
 
 **Pare e reporte** quando: duas tentativas falharem no mesmo passo · o passo exigir decisão
@@ -172,6 +204,12 @@ de design · a correção só for possível com o editor aberto (marque `LOCAL` 
 | AK, AL, AM | `godot-export`, `godot-steam`, `publicar-itch` |
 | AN, BB | `pagina-de-loja` |
 | AT, AU | `game-design-document`, `domain-modeling` |
+
+## Se você estiver dentro do repositório do Joab
+
+A régua canônica é `AUDITORIA.md` da raiz e o coletor canônico é `ferramentas/auditar.sh`.
+As cópias dentro desta pasta são **plantadas** por `ferramentas/plantar-skill.sh` — editar uma
+cópia faz as duas divergirem, e `./testar-tudo.sh` reprova quando isso acontece.
 
 ## O que não roda na nuvem
 

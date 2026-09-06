@@ -59,6 +59,18 @@ while read -r P; do
 done <<< "$PROJETOS"
 
 echo
+echo "════════ copias da skill auditar-jogo ════════"
+for PAR in "AUDITORIA.md:.claude/skills/auditar-jogo/AUDITORIA.md" "ferramentas/auditar.sh:.claude/skills/auditar-jogo/auditar.sh"; do
+  ORIG="${PAR%%:*}"; COPIA="${PAR##*:}"
+  if cmp -s "$ORIG" "$COPIA"; then
+    echo "  $COPIA — igual ao canonico"
+  else
+    echo "  $COPIA — DIVERGIU de $ORIG · rode: bash ferramentas/plantar-skill.sh"
+    FALHOU=1
+  fi
+done
+
+echo
 echo "════════ resumo ════════"
 echo -e "$RESUMO"
 echo
