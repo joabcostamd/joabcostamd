@@ -160,6 +160,37 @@ Lista de pacotes em `ferramentas/kenney-packs.md`.
 
 ---
 
+## 3d. API do Godot: confira, não confie na memória
+
+O erro mais caro de IA em Godot é **inventar API**. O script parece certo, o parser aceita, o
+portão passa — e quebra só em runtime, sem aviso nenhum antes disso.
+
+`ferramentas/api.py` fecha esse buraco lendo o `extension_api.json` que o **próprio Godot
+instalado** gera. Offline, sem editor, sem internet:
+
+```bash
+ferramentas/api.py CharacterBody2D              # lista tudo da classe (com herança)
+ferramentas/api.py CharacterBody2D move_and     # filtra por pedaço do nome
+ferramentas/api.py --tem Node2D get_position    # responde sim/não
+```
+
+Sai com **código 1** quando não existe, então serve dentro de script e de CI:
+
+```
+$ ferramentas/api.py --tem CharacterBody2D move_and_slide
+CharacterBody2D.move_and_slide → EXISTE            (exit 0)
+
+$ ferramentas/api.py --tem CharacterBody2D set_gravidade
+CharacterBody2D.set_gravidade → NÃO EXISTE         (exit 1)
+```
+
+O índice fica em `~/.cache/godot-api/` e é gerado na primeira chamada.
+
+**Antes de escrever qualquer método, propriedade ou sinal que você não leu nesta sessão,
+confira aqui.** É mais barato que descobrir em runtime.
+
+---
+
 ## 4. Regras que não se negociam
 
 1. **Conceito antes de código.** Sem `CONCEITO.md`, nenhuma linha de GDScript.
@@ -177,6 +208,10 @@ Lista de pacotes em `ferramentas/kenney-packs.md`.
 8. **Caminho de asset sai de `assets/CATALOGO.md`**, não de memória.
 9. **O kit `agent_verify.gd` é editado só em `ferramentas/`.** As cópias dentro dos projetos
    são plantadas por `testar-tudo.sh` — editar uma cópia faz as máquinas divergirem.
+10. **A régua e o coletor da auditoria também têm cópia plantada.** `AUDITORIA.md` da raiz e
+   `ferramentas/auditar.sh` são os canônicos; as cópias em `.claude/skills/auditar-jogo/`
+   existem para a skill funcionar fora deste repositório e saem de
+   `bash ferramentas/plantar-skill.sh`. `./testar-tudo.sh` reprova se divergirem.
 
 ---
 
@@ -185,12 +220,15 @@ Lista de pacotes em `ferramentas/kenney-packs.md`.
 ```
 .
 ├── CLAUDE.md                    este arquivo
+├── AUDITORIA.md                 régua da auditoria (872 itens, do zero ao gold) — canônica
 ├── PORTFOLIO.md                 o que existe e em que estado
 ├── CONVENCAO.md                 nomes e vocabulário
 ├── README.md                    perfil público do GitHub (não é doc de projeto)
 ├── testar-tudo.sh               portão + suíte de todos os projetos
 ├── .claude/
 │   ├── settings.json            hook de sessão e permissões
+│   ├── skills/auditar-jogo/     auditoria completa + plano de correção
+│   │                            (carrega cópias plantadas da régua e do coletor)
 │   ├── hooks/session-start.sh   prepara o Godot ao abrir a sessão
 │   └── scripts/
 │       ├── preparar-ambiente.sh instala o Godot 4.7.2
@@ -200,10 +238,16 @@ Lista de pacotes em `ferramentas/kenney-packs.md`.
 │       └── novo-jogo.sh         cria um jogo já verde
 ├── ferramentas/
 │   ├── agent_verify.gd          kit de verificação (cópia canônica)
+│   ├── api.py                   portão de API: o método existe mesmo? (ver §3d)
+│   ├── auditar.sh               coleta de evidência para a auditoria (0,3 s) — canônico
+│   ├── plantar-skill.sh         planta régua e coletor dentro da skill auditar-jogo
 │   ├── gitattributes-godot      .gitattributes canônico
 │   ├── catalogo_assets.py       gera assets/CATALOGO.md
 │   ├── kenney-packs.md          quais pacotes trazer e como
 ├── modelo-jogo/                 o esqueleto que todo jogo novo copia
+├── estudos/                     provas visuais e pesquisa — não são jogos, não entram em build
+│   ├── arte/                    5 técnicas de arte procedural, com PNG e custo medido
+│   └── picross3d/               maquetes e pesquisa do conceito "Esculpir"
 ├── jogos/                       jogos criados pelo scaffold
 ├── picross/  kit-puzzle/  prototipo-godot/    jogos existentes
 └── .github/workflows/
@@ -257,6 +301,7 @@ O pedido decide. Roteador curto (as skills completas estão no escopo de usuári
 | exportar, build, executável | `godot-export` → `./exportar.sh` |
 | publicar, itch, lançar demo | `publicar-itch` → `./publicar.sh` ou a tag |
 | Steam, conquista, ranking | `godot-steam` |
+| auditar o jogo, "está pronto?", "o que falta para lançar" | `auditar-jogo` |
 | aprendeu algo que custou tempo | `aprender` |
 
 Skills que exigem o editor aberto **não funcionam na nuvem** (ver seção 2).
