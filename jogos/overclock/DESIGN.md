@@ -178,7 +178,7 @@ que rodou:
 | aqui (nuvem) | só na máquina local |
 |---|---|
 | regras puras, simulador, testes, save, tradução | tudo que é visual: materiais, shader, luz, pós-processamento |
-| estrutura de projeto, CI, documentação, balanceamento | screenshot, playtest visual, MCP `godot-ai` |
+| estrutura de projeto, CI, documentação, balanceamento | screenshot, playtest visual, assistente de IA no editor |
 | escrever `.tscn` e provar pelo portão | julgar se ficou bonito |
 
 O portão frio (`./testar.sh`) prova que **nada está quebrado**. Ele não prova que está bom — isso

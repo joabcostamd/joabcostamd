@@ -55,13 +55,25 @@ reinstala sozinho a cada sessão, e **o que não foi commitado se perde**.
 | | Nuvem (aqui) | Máquina local do Joab |
 |---|---|---|
 | Editor Godot | **não existe** | aberto |
-| MCP `godot-ai` (287 tools) | **indisponível** | é o caminho principal |
-| Como mexer em `.tscn`/`.tres` | escrever o texto e **provar pelo portão** | tools do MCP contra o editor |
+| **Godot AI** (46 tools, 120+ operações) | **indisponível** | é o caminho principal |
+| Como mexer em `.tscn`/`.tres` | escrever o texto e **provar pelo portão** | tools do Godot AI contra o editor |
 | Screenshot / playtest visual | não dá | `godot-visual-check`, `godot-playtest-loop` |
-| Como verificar | `./testar-tudo.sh` | portão + MCP + visual |
+| Como verificar | `./testar-tudo.sh` | portão + Godot AI + visual |
 
-**Consequência prática:** na nuvem, toda skill que depende do MCP (`godot-mcp-tools`,
-`godot-visual-check`, `godot-playtest-loop`, `godot-visuais`, `godot-particles`…) **não roda**.
+**Qual é a ferramenta local:** [Godot AI](https://github.com/hi-godot/godot-ai) — plugin do
+editor (`addons/godot_ai/`, licença MIT, Godot 4.7+) que sobe um servidor MCP onde o Claude Code
+se conecta. Portas 8000 (Python) e 9500 (WebSocket do editor); anexa com `godot-ai attach`.
+Instala e configura pelo dock do próprio plugin, **não** por um `.mcp.json` copiado à mão.
+
+> ⚠️ **Armadilha de nome — leia antes de confiar em qualquer doc antiga.** O servidor do plugin
+> se chama `godot-ai`, que é **exatamente o mesmo nome** do MCP aposentado do Joab
+> (`joabcostamd/mcp-godot-desenvolvimento`, 287 tools, 74 módulos Python, portas 9082/8790).
+> São projetos **diferentes**. Se você encontrar em qualquer lugar "287 tools", "74 módulos",
+> "30 rollups `_manage`" ou as portas 9082/8790, é resquício do antigo e **está errado** — o
+> atual tem 46 tools. A skill `godot-mcp-tools` (escopo de usuário) já descreve as 46 corretas.
+
+**Consequência prática:** na nuvem, toda skill que depende do editor aberto
+(`godot-visual-check`, `godot-playtest-loop`, `godot-visuais`, `godot-particles`…) **não roda**.
 O substituto é o portão frio + a suíte headless. Não finja que rodou. Diga que é local.
 
 O que é seguro fazer na nuvem: regras puras, testes, save, tradução, balanceamento por
@@ -191,7 +203,6 @@ Lista de pacotes em `ferramentas/kenney-packs.md`.
 │   ├── gitattributes-godot      .gitattributes canônico
 │   ├── catalogo_assets.py       gera assets/CATALOGO.md
 │   ├── kenney-packs.md          quais pacotes trazer e como
-│   └── mcp-godot.exemplo.json   config do MCP godot-ai (uso local)
 ├── modelo-jogo/                 o esqueleto que todo jogo novo copia
 ├── jogos/                       jogos criados pelo scaffold
 ├── picross/  kit-puzzle/  prototipo-godot/    jogos existentes

@@ -6,29 +6,29 @@
 
 ## 🎮 O que eu faço
 
-Sou médico oftalmologista, DJ de Tech House e desenvolvedor de software e jogos. Uso **inteligência artificial** (DeepSeek V4 Pro) para criar ferramentas e jogos profissionais — unindo saúde, música, tecnologia e criatividade.
+Sou médico oftalmologista, DJ de Tech House e desenvolvedor de software e jogos. Uso **inteligência artificial** (Claude Code) para criar ferramentas e jogos profissionais — unindo saúde, música, tecnologia e criatividade.
 
 ---
 
 ## 🚀 Projetos em Destaque
 
-### 🎮 MCP Godot Agent
-Servidor MCP com **287 ferramentas** para criar jogos completos no **Godot 4.7** via linguagem natural.
+### 🎮 Jogos em Godot
+Jogos completos em **Godot 4.7**, com verificação automatizada, balanceamento por simulação e publicação por CI.
 
-![Python](https://img.shields.io/badge/Python-3.12+-3776AB?logo=python&logoColor=white)
 ![Godot](https://img.shields.io/badge/Godot-4.7-478CBF?logo=godot-engine&logoColor=white)
-![MCP](https://img.shields.io/badge/MCP-Spec_2025--11--25-6366F1)
-![DeepSeek](https://img.shields.io/badge/IA-DeepSeek_V4_Pro-4B32C3)
-![Status](https://img.shields.io/badge/Status-v3.4.0-success)
+![GDScript](https://img.shields.io/badge/GDScript-2.0-478CBF?logo=godot-engine&logoColor=white)
+![CI](https://img.shields.io/badge/CI-GitHub_Actions-2088FF?logo=githubactions&logoColor=white)
+![Status](https://img.shields.io/badge/Portão-verde-success)
 
-| Métrica | Valor |
+| Projeto | O que é |
 |---|---|
-| **Ferramentas MCP** | 287 tools · 287 handlers |
-| **Módulos** | 74 módulos Python |
-| **Rollups de domínio** | 30 `_manage` |
-| **Fases de desenvolvimento** | 6 (IDEIA → PRONTO_PARA_LANCAR) |
-| **Bridges** | WebSocket :9082 + TCP :8790 |
-| **Pipeline** | Verificação, Sandbox GDScript, ClassDB, Runtime Bridge |
+| **Picross "Revelar"** | 400 fases, 21 idiomas, conquistas e galeria |
+| **Kit Puzzle** | Sokoban com gerador e solucionador por semente |
+| **Modelo de jogo** | Esqueleto que faz um jogo novo nascer pronto: portão de verificação, save mesclável entre máquinas, tradução pt/en/es e Monte Carlo de balanceamento |
+
+O método: **conceito antes de código**, lógica em funções puras testáveis, número de balanceamento
+que sai de simulação — nunca de intuição — e um portão frio que reprova cena quebrada, script que
+não compila e referência `res://` inexistente antes de qualquer commit.
 
 ### 📱 Registro de Plantões
 App Flutter para trabalhadores de plantão — **69 features em 14 fases**, CLT completa (19 regras), múltiplos empregos, templates de escala, gamificação e freemium.
@@ -66,7 +66,7 @@ Servidor MCP para criação musical — produção de áudio via linguagem natur
 ![MCP](https://img.shields.io/badge/MCP-stdio--JSON--RPC_2.0-6366F1)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)
 ![HTML5](https://img.shields.io/badge/Canvas-HTML5-E34F26?logo=html5&logoColor=white)
-![DeepSeek](https://img.shields.io/badge/IA-DeepSeek_V4-4B32C3)
+![Claude Code](https://img.shields.io/badge/IA-Claude_Code-D97757?logo=anthropic&logoColor=white)
 ![VS Code](https://img.shields.io/badge/Editor-VS_Code-007ACC?logo=visualstudiocode&logoColor=white)
 ![GitHub](https://img.shields.io/badge/DevOps-GitHub_Actions-2088FF?logo=githubactions&logoColor=white)
 
@@ -80,7 +80,6 @@ Servidor MCP para criação musical — produção de áudio via linguagem natur
 
 ## 📫 Contato & Links
 
-- 🎮 **MCP Godot Agent** — [github.com/joabcostamd/mcp-godot-desenvolvimento](https://github.com/joabcostamd/mcp-godot-desenvolvimento)
 - 📱 **Registro de Plantões** — [github.com/joabcostamd/app-registro-de-plant-es](https://github.com/joabcostamd/app-registro-de-plant-es)
 - 🌐 **GitHub** — [github.com/joabcostamd](https://github.com/joabcostamd)
 
