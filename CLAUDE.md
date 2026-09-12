@@ -4,8 +4,15 @@ Este é o repositório central do Joab. Ele guarda o **perfil do GitHub** (`READ
 os **jogos** e a **infraestrutura que faz um jogo novo nascer pronto** — na nuvem ou na
 máquina local.
 
-**Comunicação:** português, linguagem simples, direto ao ponto. Construir > explicar.
-Teste tem que ser rápido e automatizado. Travou em loop, para e reporta.
+## ⚠️ Leia primeiro: `PREFERENCIAS-DE-JOAB.md`
+
+**Antes de qualquer coisa, leia [`PREFERENCIAS-DE-JOAB.md`](PREFERENCIAS-DE-JOAB.md).**
+Ele manda em como falar, como trabalhar, como testar e como entregar — e vale em toda sessão,
+em todo projeto, sem ninguém pedir. Em caso de conflito, ele ganha deste arquivo.
+
+O resumo: português simples, direto ao ponto, construir > explicar. Teste rápido e automático.
+Travou em loop, para e reporta. **Toda fatia sai polida na mesma passada.** Toda resposta
+termina com 3 opções clicáveis.
 
 ---
 

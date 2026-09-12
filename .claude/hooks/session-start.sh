@@ -11,4 +11,11 @@ else
   echo "Godot NAO pode ser preparado. Veja /tmp/preparar-godot.log"
 fi
 
+if [ -f "$RAIZ/PREFERENCIAS-DE-JOAB.md" ]; then
+  echo "LEIA AGORA: PREFERENCIAS-DE-JOAB.md — manda em como falar, trabalhar, testar e entregar."
+  echo "  polir junto sempre - teste rapido - linguagem simples - 3 opcoes clicaveis no fim"
+else
+  echo "AVISO: PREFERENCIAS-DE-JOAB.md nao encontrado na raiz."
+fi
+
 echo "Jogo novo em um comando: .claude/scripts/novo-jogo.sh <slug> \"Nome\""
