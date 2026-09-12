@@ -1,277 +1,234 @@
 #!/usr/bin/env python3
-"""Prova barata: mapa de tower defense gerado a partir de pecas desenhadas a mao.
+"""Prova barata: mapa no formato Thronefall — castelo no meio, varias frentes.
 
     python3 gerador_mapa.py [quantidade] [semente-inicial]
 
 CODIGO DESCARTAVEL. Mora em prototipo/ de proposito — nao entra no jogo final.
-Existe para responder UMA pergunta: da para gerar mapa infinito legivel e valido?
 
-O metodo, em tres passos:
-  1. PECAS DESENHADAS A MAO  — 9 blocos 7x7 escritos em texto, logo abaixo
-  2. MONTAGEM POR MAQUINA    — um passeio da entrada ate a saida escolhe as pecas
-  3. VALIDACAO ANTES DE ENTREGAR — reprovou, joga fora e gera outro
+Corrigido depois que o Joab apontou o erro: a primeira versao fazia mapa de
+Kingdom Rush (uma entrada, uma saida). O Thronefall e outra coisa —
+  Nordfels:    inimigos de nordeste, leste, sudeste, sul e oeste; tres delas so voadores
+  Sturmklamm:  4 pontes ao sul sao as frentes terrestres; morros ao norte, so voador
 
-A semente e o mapa: mesma semente, mesmo mapa, sempre.
+O metodo:
+  1. TERRENO       morros espalhados, que bloqueiam e criam corredores estreitos
+  2. FRENTES       3 a 5 pontos de spawn na borda, mais pontos so de voador
+  3. CAMINHOS      cada frente desce o campo de distancia ate o castelo
+  4. VALIDACAO     toda frente chega? ha pontos de construcao em cada uma? as
+                   frentes sao distintas ou viraram um corredor so?
 """
 from __future__ import annotations
 
 import random
 import sys
+from collections import deque
 from pathlib import Path
 
-# --- 1. as pecas, desenhadas a mao ------------------------------------------
-# '#' caminho por onde o inimigo anda · 'o' ponto de construcao · '.' grama
-# As aberturas ficam sempre no meio da borda (indice 3), para as pecas encaixarem.
+LARG, ALT = 49, 37
+CASTELO_RAIO = 2
+LONGE = 10**9
 
-PECAS: dict[str, tuple[str, ...]] = {
-    # leste-oeste
-    "reta": (
-        ".......",
-        "..o.o..",
-        ".......",
-        "#######",
-        ".......",
-        "..o.o..",
-        ".......",
-    ),
-    "reta_rica": (
-        "..o.o..",
-        ".......",
-        ".o.o.o.",
-        "#######",
-        ".o.o.o.",
-        ".......",
-        "..o.o..",
-    ),
-    # norte-sul
-    "vertical": (
-        ".o.#.o.",
-        "...#...",
-        ".o.#.o.",
-        "...#...",
-        ".o.#.o.",
-        "...#...",
-        ".o.#.o.",
-    ),
-    "vertical_rica": (
-        "oo.#.oo",
-        ".o.#.o.",
-        "oo.#.oo",
-        "...#...",
-        "oo.#.oo",
-        ".o.#.o.",
-        "oo.#.oo",
-    ),
-    # curvas
-    "oeste_sul": (
-        ".......",
-        "..o.o..",
-        ".......",
-        "####...",
-        "...#...",
-        ".o.#.o.",
-        "...#...",
-    ),
-    "oeste_norte": (
-        "...#...",
-        ".o.#.o.",
-        "...#...",
-        "####...",
-        ".......",
-        "..o.o..",
-        ".......",
-    ),
-    "norte_leste": (
-        "...#...",
-        ".o.#.o.",
-        "...#...",
-        "...####",
-        ".......",
-        "..o.o..",
-        ".......",
-    ),
-    "sul_leste": (
-        ".......",
-        "..o.o..",
-        ".......",
-        "...####",
-        "...#...",
-        ".o.#.o.",
-        "...#...",
-    ),
-    # sem caminho: so terreno de construcao
-    "campo": (
-        ".o.o.o.",
-        ".......",
-        "o.o.o.o",
-        ".......",
-        ".o.o.o.",
-        ".......",
-        "o.o.o.o",
-    ),
-}
-
-LADO = 7
-
-# (de onde entra, para onde sai) -> pecas que servem. Mais de uma = variedade.
-ENCAIXE: dict[tuple[str, str], list[str]] = {
-    ("O", "L"): ["reta", "reta_rica"],
-    ("L", "O"): ["reta", "reta_rica"],
-    ("N", "S"): ["vertical", "vertical_rica"],
-    ("S", "N"): ["vertical", "vertical_rica"],
-    ("O", "S"): ["oeste_sul"],
-    ("S", "O"): ["oeste_sul"],
-    ("O", "N"): ["oeste_norte"],
-    ("N", "O"): ["oeste_norte"],
-    ("N", "L"): ["norte_leste"],
-    ("L", "N"): ["norte_leste"],
-    ("S", "L"): ["sul_leste"],
-    ("L", "S"): ["sul_leste"],
-}
-
-PASSO = {"N": (0, -1), "S": (0, 1), "L": (1, 0), "O": (-1, 0)}
-OPOSTO = {"N": "S", "S": "N", "L": "O", "O": "L"}
+GRAMA, MORRO, CAMINHO, PONTO, CASTELO, VOADOR = ".", "^", "#", "o", "C", "v"
 
 
-# --- 2. montagem por maquina ------------------------------------------------
+def vizinhos(x: int, y: int):
+    for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+        nx, ny = x + dx, y + dy
+        if 0 <= nx < LARG and 0 <= ny < ALT:
+            yield nx, ny
 
 
-def passeio(largura: int, altura: int, rng: random.Random) -> list[tuple[int, int]] | None:
-    """Passeio da borda oeste ate a borda leste, sem se cruzar."""
-    comeco = (0, rng.randrange(altura))
-    caminho = [comeco]
-    visitados = {comeco}
-    for _ in range(largura * altura * 4):
-        x, y = caminho[-1]
-        if x == largura - 1:
-            return caminho
-        # anda mais para leste que para os lados, senao vira novelo
-        opcoes = ["L", "L", "L", "N", "S"]
-        rng.shuffle(opcoes)
-        andou = False
-        for direcao in opcoes:
-            dx, dy = PASSO[direcao]
-            nx, ny = x + dx, y + dy
-            if not (0 <= nx < largura and 0 <= ny < altura):
-                continue
-            if (nx, ny) in visitados:
-                continue
-            caminho.append((nx, ny))
-            visitados.add((nx, ny))
-            andou = True
+# --- 1. terreno -------------------------------------------------------------
+
+
+def terreno(rng: random.Random) -> list[list[str]]:
+    """Morros em manchas. Sao eles que criam corredor estreito."""
+    g = [[GRAMA] * LARG for _ in range(ALT)]
+    cx, cy = LARG // 2, ALT // 2
+    for _ in range(rng.randint(7, 12)):
+        mx, my = rng.randrange(4, LARG - 4), rng.randrange(4, ALT - 4)
+        if abs(mx - cx) < 8 and abs(my - cy) < 7:
+            continue  # nao enterra o castelo
+        raio = rng.randint(2, 5)
+        for y in range(max(0, my - raio), min(ALT, my + raio + 1)):
+            for x in range(max(0, mx - raio), min(LARG, mx + raio + 1)):
+                if (x - mx) ** 2 + ((y - my) * 1.3) ** 2 <= raio * raio:
+                    g[y][x] = MORRO
+    return g
+
+
+# --- 2. frentes -------------------------------------------------------------
+
+
+def frentes(rng: random.Random, g: list[list[str]]) -> tuple[list, list]:
+    """Pontos de spawn na borda: alguns terrestres, outros so de voador."""
+    borda = []
+    for x in range(3, LARG - 3, 2):
+        borda += [(x, 0), (x, ALT - 1)]
+    for y in range(3, ALT - 3, 2):
+        borda += [(0, y), (LARG - 1, y)]
+    rng.shuffle(borda)
+
+    terrestres, aereos, usados = [], [], []
+
+    def longe_dos_outros(p, minimo=9):
+        return all(abs(p[0] - q[0]) + abs(p[1] - q[1]) >= minimo for q in usados)
+
+    for p in borda:
+        if len(terrestres) >= rng.randint(3, 5):
             break
-        if not andou:
-            return None  # empacou: quem chamou tenta outra semente
-    return None
+        if g[p[1]][p[0]] == GRAMA and longe_dos_outros(p):
+            terrestres.append(p)
+            usados.append(p)
+    for p in borda:
+        if len(aereos) >= rng.randint(1, 3):
+            break
+        if p not in terrestres and longe_dos_outros(p, 7):
+            aereos.append(p)
+            usados.append(p)
+    return terrestres, aereos
 
 
-def montar(largura: int, altura: int, rng: random.Random) -> tuple[list[list[str]], list] | None:
-    caminho = passeio(largura, altura, rng)
-    if caminho is None:
-        return None
-
-    escolhidas = [["campo"] * largura for _ in range(altura)]
-    for i, (x, y) in enumerate(caminho):
-        # de onde entrou
-        if i == 0:
-            entra = "O"
-        else:
-            ax, ay = caminho[i - 1]
-            entra = OPOSTO[direcao_entre((x, y), (ax, ay))]
-            entra = direcao_entre((x, y), (ax, ay))
-        # para onde sai
-        if i == len(caminho) - 1:
-            sai = "L"
-        else:
-            px, py = caminho[i + 1]
-            sai = direcao_entre((x, y), (px, py))
-        candidatas = ENCAIXE.get((entra, sai))
-        if not candidatas:
-            return None
-        escolhidas[y][x] = rng.choice(candidatas)
-    return escolhidas, caminho
+# --- 3. caminhos ------------------------------------------------------------
 
 
-def direcao_entre(de: tuple[int, int], para: tuple[int, int]) -> str:
-    dx, dy = para[0] - de[0], para[1] - de[1]
-    for nome, (px, py) in PASSO.items():
-        if (px, py) == (dx, dy):
-            return nome
-    raise ValueError(f"nao sao vizinhos: {de} {para}")
-
-
-def desenhar(escolhidas: list[list[str]]) -> list[list[str]]:
-    """Junta as pecas numa grade de celulas."""
-    altura, largura = len(escolhidas), len(escolhidas[0])
-    grade = [["."] * (largura * LADO) for _ in range(altura * LADO)]
-    for py in range(altura):
-        for px in range(largura):
-            peca = PECAS[escolhidas[py][px]]
-            for ly in range(LADO):
-                for lx in range(LADO):
-                    grade[py * LADO + ly][px * LADO + lx] = peca[ly][lx]
-    return grade
-
-
-# --- 3. validacao: reprova antes de entregar --------------------------------
-
-MIN_PONTOS = 14      # pontos de construcao ao alcance do caminho
-MIN_COMPRIMENTO = 40  # celulas de caminho
-MAX_COMPRIMENTO = 160
-ALCANCE = 2           # quao perto um ponto precisa estar do caminho para servir
-
-
-def validar(grade: list[list[str]]) -> tuple[bool, dict]:
-    altura, largura = len(grade), len(grade[0])
-    caminho = {(x, y) for y in range(altura) for x in range(largura) if grade[y][x] == "#"}
-
-    entradas = [(0, y) for y in range(altura) if grade[y][0] == "#"]
-    saidas = [(largura - 1, y) for y in range(altura) if grade[y][largura - 1] == "#"]
-
-    # o inimigo consegue ir da entrada ate a saida?
-    alcancadas: set[tuple[int, int]] = set()
-    fila = list(entradas)
-    alcancadas.update(fila)
+def campo_de_distancia(g: list[list[str]], alvo: tuple[int, int]) -> list[list[int]]:
+    """Quantos passos de cada celula livre ate o castelo, contornando morro."""
+    d = [[LONGE] * LARG for _ in range(ALT)]
+    d[alvo[1]][alvo[0]] = 0
+    fila = deque([alvo])
     while fila:
-        x, y = fila.pop()
-        for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-            vizinho = (x + dx, y + dy)
-            if vizinho in caminho and vizinho not in alcancadas:
-                alcancadas.add(vizinho)
-                fila.append(vizinho)
-    chega = bool(saidas) and any(s in alcancadas for s in saidas)
+        x, y = fila.popleft()
+        for nx, ny in vizinhos(x, y):
+            if g[ny][nx] != MORRO and d[ny][nx] == LONGE:
+                d[ny][nx] = d[y][x] + 1
+                fila.append((nx, ny))
+    return d
 
-    # quantos pontos de construcao ficam ao alcance do caminho?
-    uteis = 0
-    for y in range(altura):
-        for x in range(largura):
-            if grade[y][x] != "o":
+
+def cavar(g, d, origem, rng) -> list[tuple[int, int]] | None:
+    """Do spawn ate o castelo, sempre descendo o campo — com desempate ao acaso."""
+    if d[origem[1]][origem[0]] == LONGE:
+        return None
+    atual, trilha = origem, [origem]
+    while d[atual[1]][atual[0]] > 0:
+        x, y = atual
+        descem = [(nx, ny) for nx, ny in vizinhos(x, y) if d[ny][nx] < d[y][x]]
+        if not descem:
+            return None
+        # prefere continuar na mesma direcao: caminho fica menos serrilhado
+        if len(trilha) > 1:
+            ax, ay = trilha[-2]
+            reto = [p for p in descem if (p[0] - x, p[1] - y) == (x - ax, y - ay)]
+            escolhas = reto * 3 + descem if reto else descem
+        else:
+            escolhas = descem
+        atual = rng.choice(escolhas)
+        trilha.append(atual)
+    return trilha
+
+
+def engrossar(g, trilha, largura=1):
+    for x, y in trilha:
+        for dy in range(-largura, largura + 1):
+            for dx in range(-largura, largura + 1):
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < LARG and 0 <= ny < ALT and g[ny][nx] != CASTELO:
+                    g[ny][nx] = CAMINHO
+
+
+def pontos_de_construcao(g, rng, alcance=3):
+    """Terreno livre perto do caminho vira ponto de construcao."""
+    caminho = {(x, y) for y in range(ALT) for x in range(LARG) if g[y][x] == CAMINHO}
+    for y in range(1, ALT - 1, 2):
+        for x in range(1, LARG - 1, 2):
+            if g[y][x] != GRAMA:
                 continue
             perto = any(
                 (x + dx, y + dy) in caminho
-                for dx in range(-ALCANCE, ALCANCE + 1)
-                for dy in range(-ALCANCE, ALCANCE + 1)
+                for dx in range(-alcance, alcance + 1)
+                for dy in range(-alcance, alcance + 1)
             )
-            uteis += 1 if perto else 0
+            if perto and rng.random() < 0.72:
+                g[y][x] = PONTO
+
+
+def gerar(semente: int):
+    rng = random.Random(semente)
+    g = terreno(rng)
+    cx, cy = LARG // 2, ALT // 2
+    for y in range(cy - CASTELO_RAIO, cy + CASTELO_RAIO + 1):
+        for x in range(cx - CASTELO_RAIO, cx + CASTELO_RAIO + 1):
+            g[y][x] = CASTELO
+
+    terra, ar = frentes(rng, g)
+    d = campo_de_distancia(g, (cx, cy))
+    trilhas = []
+    for origem in terra:
+        t = cavar(g, d, origem, rng)
+        if t is None:
+            continue
+        trilhas.append(t)
+        engrossar(g, t)
+    for x, y in ar:
+        g[y][x] = VOADOR
+    pontos_de_construcao(g, rng)
+    return g, trilhas, terra, ar
+
+
+# --- 4. validacao -----------------------------------------------------------
+
+MIN_FRENTES = 3
+MIN_PONTOS_POR_FRENTE = 4
+MIN_COMPRIMENTO = 12
+
+
+def validar(g, trilhas, terra, ar) -> tuple[bool, dict]:
+    caminho = {(x, y) for y in range(ALT) for x in range(LARG) if g[y][x] == CAMINHO}
+    pontos = [(x, y) for y in range(ALT) for x in range(LARG) if g[y][x] == PONTO]
+
+    # cada frente tem pontos de construcao proprios ao alcance?
+    por_frente = []
+    for t in trilhas:
+        celulas = set(t)
+        perto = sum(
+            1 for (px, py) in pontos
+            if any(abs(px - tx) <= 3 and abs(py - ty) <= 3 for tx, ty in celulas)
+        )
+        por_frente.append(perto)
+
+    # as frentes sao distintas, ou viraram um corredor so?
+    partilha = 0.0
+    if len(trilhas) >= 2:
+        maior = 0.0
+        for i in range(len(trilhas)):
+            for j in range(i + 1, len(trilhas)):
+                a, b = set(trilhas[i]), set(trilhas[j])
+                maior = max(maior, len(a & b) / min(len(a), len(b)))
+        partilha = maior
 
     medidas = {
-        "tem_entrada": bool(entradas),
-        "tem_saida": bool(saidas),
-        "inimigo_chega_ao_fim": chega,
-        "comprimento_do_caminho": len(alcancadas),
-        "pontos_uteis": uteis,
+        "frentes_terrestres": len(trilhas),
+        "pontos_so_de_voador": len(ar),
+        "celulas_de_caminho": len(caminho),
+        "pontos_de_construcao": len(pontos),
+        "pontos_por_frente": por_frente,
+        "maior_trecho_partilhado": round(partilha, 2),
+        "menor_frente": min((len(t) for t in trilhas), default=0),
     }
     motivos = []
-    if not entradas:
-        motivos.append("sem entrada na borda oeste")
-    if not saidas:
-        motivos.append("sem saida na borda leste")
-    if not chega:
-        motivos.append("o caminho nao liga a entrada a saida")
-    if not (MIN_COMPRIMENTO <= len(alcancadas) <= MAX_COMPRIMENTO):
-        motivos.append(f"caminho de {len(alcancadas)} celulas fora da faixa {MIN_COMPRIMENTO}-{MAX_COMPRIMENTO}")
-    if uteis < MIN_PONTOS:
-        motivos.append(f"so {uteis} pontos de construcao uteis, minimo {MIN_PONTOS}")
+    if len(trilhas) < MIN_FRENTES:
+        motivos.append(f"so {len(trilhas)} frentes chegam ao castelo, minimo {MIN_FRENTES}")
+    if len(trilhas) != len(terra):
+        motivos.append(f"{len(terra) - len(trilhas)} frente(s) nao alcancam o castelo")
+    if por_frente and min(por_frente) < MIN_PONTOS_POR_FRENTE:
+        motivos.append(f"uma frente tem so {min(por_frente)} pontos de construcao")
+    if medidas["menor_frente"] < MIN_COMPRIMENTO:
+        motivos.append(f"frente curta demais: {medidas['menor_frente']} celulas")
+    if partilha > 0.75:
+        motivos.append(f"as frentes se fundem em um corredor so ({partilha:.0%} partilhado)")
+    if not ar:
+        motivos.append("nenhum ponto so de voador")
     medidas["motivos"] = motivos
     return (not motivos), medidas
 
@@ -279,44 +236,32 @@ def validar(grade: list[list[str]]) -> tuple[bool, dict]:
 # --- render -----------------------------------------------------------------
 
 CORES = {
-    ".": (74, 124, 89),    # grama
-    "#": (196, 164, 110),  # caminho de terra
-    "o": (110, 160, 200),  # ponto de construcao
+    GRAMA: (74, 124, 89),
+    MORRO: (58, 74, 64),
+    CAMINHO: (196, 164, 110),
+    PONTO: (110, 160, 200),
+    CASTELO: (232, 206, 122),
+    VOADOR: (206, 108, 140),
 }
-CELULA = 14
+CELULA = 13
 
 
-def render(grade: list[list[str]], caminho_png: Path, titulo: str) -> None:
+def render(g, caminho_png: Path, titulo: str) -> None:
     from PIL import Image, ImageDraw
 
-    altura, largura = len(grade), len(grade[0])
-    img = Image.new("RGB", (largura * CELULA, altura * CELULA + 26), (28, 34, 30))
+    img = Image.new("RGB", (LARG * CELULA, ALT * CELULA + 26), (26, 32, 28))
     d = ImageDraw.Draw(img)
-    for y in range(altura):
-        for x in range(largura):
-            cor = CORES[grade[y][x]]
+    for y in range(ALT):
+        for x in range(LARG):
+            c = g[y][x]
             x0, y0 = x * CELULA, y * CELULA + 26
-            d.rectangle([x0, y0, x0 + CELULA - 1, y0 + CELULA - 1], fill=cor)
-            if grade[y][x] == "o":
-                d.rectangle([x0 + 3, y0 + 3, x0 + CELULA - 4, y0 + CELULA - 4], outline=(230, 240, 255))
-    d.text((6, 7), titulo, fill=(225, 232, 226))
+            d.rectangle([x0, y0, x0 + CELULA - 1, y0 + CELULA - 1], fill=CORES[c])
+            if c == PONTO:
+                d.rectangle([x0 + 3, y0 + 3, x0 + CELULA - 4, y0 + CELULA - 4], outline=(235, 243, 255))
+            elif c == VOADOR:
+                d.ellipse([x0 + 2, y0 + 2, x0 + CELULA - 3, y0 + CELULA - 3], outline=(255, 225, 235))
+    d.text((6, 7), titulo, fill=(226, 233, 227))
     img.save(caminho_png)
-
-
-# --- principal --------------------------------------------------------------
-
-
-def gerar_um(semente: int, largura: int = 6, altura: int = 4):
-    rng = random.Random(semente)
-    for _ in range(200):  # tenta ate sair um montavel
-        montado = montar(largura, altura, rng)
-        if montado is None:
-            continue
-        escolhidas, _ = montado
-        grade = desenhar(escolhidas)
-        passou, medidas = validar(grade)
-        return grade, passou, medidas
-    return None, False, {"motivos": ["nao consegui montar"]}
 
 
 def main(argv: list[str]) -> int:
@@ -324,29 +269,27 @@ def main(argv: list[str]) -> int:
     primeira = int(argv[2]) if len(argv) > 2 else 1
     saida = Path(__file__).parent / "saida"
     saida.mkdir(exist_ok=True)
+    for antigo in saida.glob("mapa-*.png"):
+        antigo.unlink()
 
-    aprovados = reprovados = 0
-    print(f"{'semente':>8}  {'veredito':<9} {'caminho':>8} {'pontos':>7}  motivo")
-    print("-" * 72)
+    aprov = repro = 0
+    print(f"{'semente':>8}  {'veredito':<10} {'frentes':>8} {'voador':>7} {'pontos':>7} {'partilha':>9}  motivo")
+    print("-" * 92)
     for i in range(quantos):
-        semente = primeira + i
-        grade, passou, m = gerar_um(semente)
-        if grade is None:
-            print(f"{semente:>8}  {'FALHOU':<9} {'-':>8} {'-':>7}  nao montou")
-            reprovados += 1
-            continue
-        veredito = "APROVADO" if passou else "REPROVADO"
-        motivo = "" if passou else m["motivos"][0]
+        s = primeira + i
+        g, trilhas, terra, ar = gerar(s)
+        passou, m = validar(g, trilhas, terra, ar)
         print(
-            f"{semente:>8}  {veredito:<9} {m['comprimento_do_caminho']:>8} "
-            f"{m['pontos_uteis']:>7}  {motivo}"
+            f"{s:>8}  {'APROVADO' if passou else 'REPROVADO':<10} "
+            f"{m['frentes_terrestres']:>8} {m['pontos_so_de_voador']:>7} "
+            f"{m['pontos_de_construcao']:>7} {m['maior_trecho_partilhado']:>9}  "
+            f"{'' if passou else m['motivos'][0]}"
         )
-        render(grade, saida / f"mapa-{semente}.png", f"semente {semente} · {veredito}")
-        aprovados += 1 if passou else 0
-        reprovados += 0 if passou else 1
-
-    print("-" * 72)
-    print(f"{aprovados} aprovados · {reprovados} reprovados · imagens em {saida.relative_to(Path.cwd())}/")
+        render(g, saida / f"mapa-{s}.png", f"semente {s} · {'APROVADO' if passou else 'REPROVADO'}")
+        aprov += passou
+        repro += not passou
+    print("-" * 92)
+    print(f"{aprov} aprovados · {repro} reprovados")
     return 0
 
 
