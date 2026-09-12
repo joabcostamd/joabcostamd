@@ -89,28 +89,99 @@ move.
 
 ## 4. As mecânicas que FUNCIONARAM
 
-O **porquê** é o que se reaproveita; a mecânica em si pode nem servir.
+Levantamento completo dos dois jogos que o Joab quer como base. O **porquê** é o que se
+reaproveita; a mecânica em si pode nem servir.
 
-| mecânica | onde funcionou | por que funciona |
+### 4a. THRONEFALL — mecânica por mecânica
+
+| mecânica | como é | por que funciona |
 |---|---|---|
-| avatar no meio da ação | Orcs Must Die! | mata a passividade — o jogador age no segundo, não só entre ondas |
-| duas ferramentas obrigatórias | Orcs Must Die! | proíbe a estratégia única: tem que combinar, não otimizar um número |
-| perks com sinergia por run | Lone Tower | a build é a história da partida; duas runs não se parecem |
-| terreno revelado a cada onda | Repel the Rifts | transforma o mapa em decisão contínua em vez de cenário |
-| base que se move | Monsters are Coming! | tira o jogador da poltrona: a defesa vira problema espacial vivo |
-| sem aleatoriedade | Orcs Must Die! | derrota vira culpa do jogador, e culpa do jogador é o que ensina |
+| ⭐ **Pontos de construção fixos** | você só constrói em lugares já marcados no mapa | **a maior vitória de simplicidade do jogo.** Sem colocação livre não existe paralisia de escolha, nem layout ruim, nem tela poluída. O jogador entende em 5 segundos |
+| ⭐ **Dia e noite** | de dia constrói, de noite defende | ritmo que se ensina sozinho. Separa pensar de agir, e cada fase tem uma emoção própria |
+| **Castelo central** | é o coração e o alvo dos inimigos | **um objetivo só, sempre visível.** Melhorar o castelo também aumenta a vida e o dano do rei — uma melhoria, dois efeitos |
+| **Muralha** | barra o inimigo, que para para quebrar | transforma tempo em recurso. Melhorias dão vida e espinhos |
+| **Torre** | melhora duas vezes; no nível 3 você escolhe **1 entre 4** | a escolha final é onde as partidas passam a diferir |
+| ⭐ **Casa × Moinho** | casa dá ouro fixo toda manhã; moinho dá mais e **cresce com o tempo, se sobreviver** | risco contra recompensa em duas construções. Sem texto, sem tutorial |
+| **Quartel** | treina soldados que seguram o inimigo | posição vira decisão |
+| ⭐ **Mutadores** | você liga dificuldades extras (inimigo mais rápido, mais vida, mais spawn, sem torres) para ganhar mais experiência | **é a resposta a "não quero punir o jogador": ele escolhe o quanto sofre.** 70+ entre perks, armas e mutadores |
+| **Rei jogável** | você controla o rei e luta junto | mata a passividade sem precisar de exército animado — é **um** personagem, não trinta |
+
+### 4b. KINGDOM RUSH — mecânica por mecânica
+
+| mecânica | como é | por que funciona |
+|---|---|---|
+| ⭐ **4 famílias de torre com papel claro** | Arqueiro (dano físico à distância) · Mago (dano mágico em área) · Quartel (invoca soldados que bloqueiam) · Artilharia (explosão em área) | **pedra-papel-tesoura legível.** Cada família é boa contra um tipo de inimigo. O jogador entende sem ler nada |
+| ⭐ **Escolher 1 entre 2 no fim** | no nível 4 a torre vira uma de duas especializações | é onde a build de verdade nasce. Poucas peças, muitas combinações |
+| ⭐ **Bloqueadores** | o quartel põe soldados no caminho e o inimigo **para para lutar** | é o que faz a posição importar mais que o número. Sem isso, tower defense vira planilha |
+| **Duas magias com recarga** | Chuva de Fogo e Chamar Reforços | o botão de ação direta do jogador, sempre disponível |
+| **Herói que sobe de nível** | unidade forte, cura sozinha, ganha níveis | dá um ponto de atenção e uma sensação de crescimento |
+| **Melhorias permanentes por estrela** | 6 caminhos, efeito permanente entre fases | dá progresso mesmo na derrota |
+
+### 4c. O que copiamos, e de quem
+
+| do Thronefall | do Kingdom Rush |
+|---|---|
+| pontos de construção fixos | 4 famílias de torre com papel claro |
+| ciclo de construir e defender | escolher 1 entre 2 no fim da evolução |
+| economia com risco (casa × moinho) | bloqueadores que param o inimigo |
+| mutadores escolhidos pelo jogador | duas habilidades com recarga |
+| um personagem jogável, não um exército | — |
+
+### 4d. BLOONS TD 6 e outros — as ideias simples que faltavam
+
+| mecânica | onde | por que funciona |
+|---|---|---|
+| ⭐ **3 caminhos, só um vai até o fim** | Bloons TD 6 | cada torre tem 3 caminhos de melhoria, mas **só um deles pode chegar ao último nível**. Uma regra de uma frase que obriga a escolher, e faz builds diferentes com as mesmas peças. **Mais simples e mais profundo que o "1 entre 2" do Kingdom Rush** |
+| ⭐ **Inimigo com mania** | Bloons TD 6, consenso do gênero | escudo, cura, voo, blindagem. Cada mania obriga a usar uma torre diferente — é o pedra-papel-tesoura ficando visível sem texto |
+| ⭐ **Ouro: gastar agora ou render depois** | Bloons TD 6, Thronefall | *"o jogador equilibra defesa contra renda, segurança agora contra crescimento depois, certeza contra risco"*. É a decisão que se repete a partida inteira e nunca cansa |
+| **Fácil de entrar, difícil de dominar** | Bloons TD 6 | *"novato entra e começa a jogar na hora; veterano passa horas otimizando"*. É a régua de qualidade do gênero |
+| **Construir tem que parecer ativo** | consenso | *"construir parece ativo, sem clique passivo — só planejamento e ajuste rápido"* |
+
+### 4e. A RECEITA — torres do Kingdom Rush, mecânicas do Thronefall
+
+A mescla que o Joab propôs, e por que ela fecha: **as torres do Kingdom Rush resolvem variedade;
+as mecânicas do Thronefall resolvem simplicidade. Cada um conserta o defeito do outro.**
+
+| peça | de onde vem | a frase que explica |
+|---|---|---|
+| 4 famílias de torre | Kingdom Rush | *"cada torre é boa contra um tipo de inimigo"* |
+| 3 caminhos, só um até o fim | Bloons TD 6 | *"você escolhe um caminho para levar até o topo"* |
+| pontos de construção fixos | Thronefall | *"você só constrói nos lugares marcados"* |
+| dia e noite | Thronefall | *"de dia constrói, de noite defende"* |
+| bloqueadores | Kingdom Rush | *"seus soldados param o inimigo no caminho"* |
+| casa × moinho | Thronefall | *"casa dá ouro seguro; moinho dá mais, se sobreviver"* |
+| duas habilidades com recarga | Kingdom Rush | *"dois botões que você usa na hora certa"* |
+| mutadores | Thronefall | *"você liga a dificuldade que quiser, e ganha mais"* |
+| inimigo com mania | Bloons TD 6 | *"esse aí tem escudo — flecha não passa"* |
+| um personagem jogável | Thronefall | *"você luta junto com as suas torres"* |
+
+### 4f. O defeito que os TRÊS têm, e que nós vamos medir
+
+A lança domina o Thronefall. Os heróis fortes dominam o Kingdom Rush. O Accelerator domina o TDS.
+**É o mesmo defeito nos três jogos de referência: uma opção anula as outras.**
+
+É também o único que a gente consegue **provar que não tem**, com o simulador que já existe no
+`modelo-jogo`:
+
+- nenhuma torre aparece em **mais de 60%** das partidas vencedoras
+- nenhuma torre aparece em **menos de 10%**
+
+Roda em menos de 1 segundo, com a mesma semente dando sempre o mesmo resultado. **Nenhum dos
+três jogos de referência tinha essa prova.**
 
 ## 5. As mecânicas que FRACASSARAM
 
-A metade mais valiosa. Estas viram, quase de graça, a lista "o que NÃO tem" do `CONCEITO.md`.
+A metade mais valiosa. Estas viram a lista "o que NÃO tem" do `CONCEITO.md`.
 
 | mecânica | onde falhou | por que falhou |
 |---|---|---|
-| torre dominante no fim de jogo | Tower Defense Simulator | *"todas as opções de fim de jogo giram em torno de uma torre: Accelerator"* — mata a variedade |
-| pouca variedade de inimigo e torre | genérico, citado em várias análises | *"fica repetitivo muito rápido"* — a queixa nº 1 |
-| mapa único com objetivo repetido | genérico | *"um mapa só com objetivo repetido diminui muito a experiência"* |
-| meta de fazenda/mineração entre runs | Lone Tower (opinião do agente) | rouba o assunto do jogo; o jogador passa a jogar planilha |
-| progressão que exige tempo de jogo, não perícia | Tower Defense Simulator | força o jogador a moer em vez de aprender |
+| ⚠️ **uma opção domina todas** | **nos três**: a lança no Thronefall, os heróis fortes no Kingdom Rush, o Accelerator no TDS | *"a lança é boa demais para usar qualquer outra arma"*. É **o mesmo defeito nos três jogos de referência** |
+| armas corpo a corpo sem utilidade | Thronefall | *"o alcance da espada pesada é tão curto que o monstro te acerta no instante em que você chega perto"*. Dano não basta: falta atordoar, empurrar ou bloquear |
+| arma que não acerta voador | Thronefall (lança) | limitação escondida que o jogador só descobre perdendo |
+| dificuldade que depende de moer | Kingdom Rush tardio | *"tem que farmar experiência de novo e de novo"* — o jogo fica fácil por acúmulo, não por perícia |
+| herói virar o assunto | Kingdom Rush | *"o jogo é difícil a menos que você use os heróis mais fortes"*, e *"heróis deviam ser parte menor"* |
+| DLC como parede | Kingdom Rush no celular | *"sistema para fazer o jogador comprar muito DLC"* — crítica dura nas análises |
+| meta de fazenda entre partidas | Lone Tower | rouba o assunto do jogo: vira planilha |
 
 ## 6. A crítica repetida do gênero
 
