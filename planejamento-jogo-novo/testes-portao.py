@@ -101,6 +101,45 @@ def teste_palpite_bloqueia() -> None:
     shutil.rmtree(raiz)
 
 
+def teste_comentario_nao_conta() -> None:
+    comentado = plano(
+        ATE_FASE_2,
+        "\n<!-- exemplos de cabecalho:\n"
+        "### D-014 · B1 · Camera 🟢 👤\n"
+        "### D-015 · B1 · Pulo 🟡 🤖\n"
+        "-->\n",
+    )
+    raiz = montar({"CONCEITO.md": "# c", "docs/PLANO.md": comentado})
+    r = portao.conferir(raiz)
+    conferir("exemplo dentro de comentario nao vira decisao",
+             r["decisoes"] == {"abertas": 0, "propostas": 0, "fechadas": 0}, r["decisoes"])
+    conferir("comentario nao bloqueia o codigo", r["pode_codar_o_jogo"] is True, r["bloqueia_codigo"])
+    shutil.rmtree(raiz)
+
+    escondido = plano(ATE_FASE_2) + "\n<!-- TODO isso esta comentado -->\n"
+    raiz = montar({"CONCEITO.md": "# c", "docs/PLANO.md": escondido})
+    r = portao.conferir(raiz)
+    conferir("placeholder dentro de comentario nao vira buraco", r["buracos"] == [], r["buracos"])
+    shutil.rmtree(raiz)
+
+
+def teste_origem_obrigatoria() -> None:
+    orfa = plano(ATE_FASE_2, "\n### D-020 · B3 · Acao central 🟢\nValor: mirar e atirar\n")
+    raiz = montar({"CONCEITO.md": "# c", "docs/PLANO.md": orfa})
+    r = portao.conferir(raiz)
+    conferir("decisao 🟢 sem marca de origem vira aviso", len(r["sem_origem"]) == 1, r["sem_origem"])
+    conferir("decisao sem origem bloqueia o codigo", r["pode_codar_o_jogo"] is False)
+    conferir("o aviso pergunta quem decidiu", "quem decidiu" in r["sem_origem"][0], r["sem_origem"])
+    shutil.rmtree(raiz)
+
+    for marca in ("👤", "📏", "🤖"):
+        com = plano(ATE_FASE_2, f"\n### D-020 · B3 · Acao central 🟢 {marca}\nValor: mirar\n")
+        raiz = montar({"CONCEITO.md": "# c", "docs/PLANO.md": com})
+        r = portao.conferir(raiz)
+        conferir(f"origem {marca} satisfaz o portao", r["sem_origem"] == [], r["sem_origem"])
+        shutil.rmtree(raiz)
+
+
 def teste_contradicao() -> None:
     conceito = (
         "# Jogo\n\n## O que NAO tem\n\n"
@@ -164,6 +203,8 @@ for teste in (
     teste_fase_por_bloco,
     teste_nao_pula_fase,
     teste_palpite_bloqueia,
+    teste_comentario_nao_conta,
+    teste_origem_obrigatoria,
     teste_contradicao,
     teste_buraco,
     teste_sem_prova,

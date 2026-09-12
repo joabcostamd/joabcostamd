@@ -215,7 +215,12 @@ confira aqui.** É mais barato que descobrir em runtime.
 8. **Caminho de asset sai de `assets/CATALOGO.md`**, não de memória.
 9. **O kit `agent_verify.gd` é editado só em `ferramentas/`.** As cópias dentro dos projetos
    são plantadas por `testar-tudo.sh` — editar uma cópia faz as máquinas divergirem.
-10. **A régua e o coletor da auditoria também têm cópia plantada.** `AUDITORIA.md` da raiz e
+10. **A skill `novo-jogo` tem cópia plantada em dois lugares.** O canônico é
+   `planejamento-jogo-novo/`; as cópias vivem em `.claude/skills/novo-jogo/` (viaja por git) e
+   em `~/.claude/skills/novo-jogo/` (é o que faz `/novo-jogo` valer em **qualquer pasta**, fora
+   deste repositório). Saem de `bash ferramentas/plantar-novo-jogo.sh`, e o `testar-tudo.sh`
+   reprova se divergirem.
+11. **A régua e o coletor da auditoria também têm cópia plantada.** `AUDITORIA.md` da raiz e
    `ferramentas/auditar.sh` são os canônicos; as cópias em `.claude/skills/auditar-jogo/`
    existem para a skill funcionar fora deste repositório e saem de
    `bash ferramentas/plantar-skill.sh`. `./testar-tudo.sh` reprova se divergirem.

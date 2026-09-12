@@ -71,6 +71,33 @@ for PAR in "AUDITORIA.md:.claude/skills/auditar-jogo/AUDITORIA.md" "ferramentas/
 done
 
 echo
+echo "════════ copias da skill novo-jogo ════════"
+for N in BLOCOS.md PERGUNTAS.md portao-plano.py novo-plano.py; do
+  ORIG="planejamento-jogo-novo/$N"; COPIA=".claude/skills/novo-jogo/$N"
+  if cmp -s "$ORIG" "$COPIA"; then
+    echo "  $COPIA — igual ao canonico"
+  else
+    echo "  $COPIA — DIVERGIU de $ORIG · rode: bash ferramentas/plantar-novo-jogo.sh"
+    FALHOU=1
+  fi
+done
+if diff -rq planejamento-jogo-novo/modelos .claude/skills/novo-jogo/modelos >/dev/null 2>&1; then
+  echo "  .claude/skills/novo-jogo/modelos — igual ao canonico (11 modelos)"
+else
+  echo "  .claude/skills/novo-jogo/modelos — DIVERGIU · rode: bash ferramentas/plantar-novo-jogo.sh"
+  FALHOU=1
+fi
+
+echo
+echo "════════ portao do plano ════════"
+if python3 planejamento-jogo-novo/testes-portao.py >/tmp/testes-portao.log 2>&1; then
+  echo "  $(tail -1 /tmp/testes-portao.log)"
+else
+  echo "  TESTES DO PORTAO FALHARAM · veja /tmp/testes-portao.log"
+  FALHOU=1
+fi
+
+echo
 echo "════════ resumo ════════"
 echo -e "$RESUMO"
 echo
