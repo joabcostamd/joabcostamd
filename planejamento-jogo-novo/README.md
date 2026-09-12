@@ -11,6 +11,7 @@ A régua do **começo** de um jogo. A `AUDITORIA.md` da raiz é a régua do **fi
 | Arquivo | Para quê |
 |---|---|
 | `BLOCOS.md` | os 13 blocos de decisão, o grafo de dependência e as 5 fases |
+| `PERGUNTAS.md` | o banco de perguntas das fases 0 e 1 — 44, cada uma com recomendação |
 | `portao-plano.py` | diz se o jogo já pode virar código |
 | `testes-portao.py` | 24 testes do portão, rodam em menos de 1 s, sem Godot |
 
@@ -39,7 +40,7 @@ aceita · 🟡 palpite do agente que ninguém confirmou.
 
 ## Ainda falta construir
 
-- `PERGUNTAS.md` — o banco de perguntas, espelhando os 872 itens da `AUDITORIA.md`
+- `PERGUNTAS.md` da **fase 2 em diante** (B4 a B12) — a fase 0 e 1 já estão prontas
 - `generos/` — perfil por gênero, para marcar N/A automático
 - `modelos/` — os 11 documentos em branco
 - `tarefas.py` · `cartao.py` · `handoff.py` — os arquivos gerados a partir do plano
