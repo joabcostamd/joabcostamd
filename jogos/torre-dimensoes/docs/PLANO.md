@@ -156,6 +156,104 @@ aprender fazendo · ensino espalhado pelo jogo inteiro.
 explica o jogo em uma frase, ele é complexo demais"*. As 12 peças acima já passam nesse teste.
 **Trava:** o tutorial (B11) e as telas (B8).
 
+### D-010 · B6 · Quatro famílias de torre, três caminhos cada 🟢 👤
+
+**Valor:** flecha · magia · bloqueador · explosão. Cada uma com 3 caminhos de melhoria, e **só
+um caminho pode chegar ao topo** — nos outros dois a torre para no meio.
+**Motivo:** são exatamente os quatro papéis do Kingdom Rush, que cobrem as cinco manias de
+inimigo sem sobra. Dão 12 torres finais custando perto de 4 modelos, porque cada caminho é
+variação da mesma peça.
+**Trava:** o balanceamento (B4), a fábrica de assets (B12) e as telas de construção (B8).
+
+### D-011 · B7 · Quinze inimigos, cinco manias 🟢 👤
+
+**Valor:** 15 inimigos. Cinco manias: **escudo · voo · velocidade · cura · blindagem**.
+**Motivo:** cinco manias, uma resposta diferente para cada, e quinze corpos cabem numa família
+visual coerente para a IA gerar.
+**Trava:** o balanceamento (B4) e a fábrica de assets (B12).
+
+### D-012 · B7 · As manias só aparecem com mutador 🟢 👤
+
+**Valor:** o jogo base não tem mania nenhuma. Escudo, voo, velocidade, cura e blindagem só
+aparecem quando o jogador liga um mutador.
+
+**O pedido do Joab:** *"as manias só devem aparecer quando o jogador usa mutadores; em fases
+iniciais não podem deixar o jogo muito difícil"*.
+
+**O conflito que isso cria:** sem mania nenhuma no jogo base, **as quatro famílias de torre
+viram a mesma coisa**. Nada obriga o jogador a trocar de torre, ele acha a mais forte e usa só
+ela — que é exatamente o defeito medido no Thronefall, no Kingdom Rush e no TDS.
+
+**O risco que o agente levantou, e o Joab manteve a decisão assim mesmo:** sem mania no jogo
+base, nada obriga a trocar de torre — o jogador acha a mais forte e usa só ela. É o defeito
+medido no Thronefall (a lança), no Kingdom Rush (os heróis fortes) e no TDS (o Accelerator).
+
+**Como vamos saber se o risco virou problema, sem depender de opinião:** o simulador mede, com
+as três políticas de habilidade, **sem nenhum mutador ligado**:
+- nenhuma família de torre pode aparecer em mais de **60%** das partidas vencedoras
+- nenhuma pode aparecer em menos de **10%**
+
+Se o alerta disparar, esta decisão volta para a mesa com **número na mão**, não com palpite. A
+proposta que ficou guardada para esse caso era introduzir as manias aos poucos, mapa a mapa —
+regra 6 do *Plants vs Zombies*, espalhar o ensino:
+
+| mapa | entra | o jogador aprende |
+|---|---|---|
+| 1 | nenhuma | só construir e defender |
+| 2 | escudo | *"flecha não fura — preciso de magia"* |
+| 3 | voo | *"soldado não alcança"* |
+| 4 | velocidade | *"torre lenta não pega"* |
+| 5 | cura | *"tenho que matar aquele primeiro"* |
+| 6+ | blindagem e combinações | juntar tudo |
+
+**O que os mutadores fazem:** ligam as manias. *"Nesta partida, todo inimigo voa."* É onde a
+variedade de torre passa a importar, e é escolha do jogador — nunca imposição.
+
+**A vantagem que essa escolha traz, e que pesa a favor:** o começo do jogo fica realmente fácil
+de entender, que é a regra nº 1 contra o reembolso na Steam.
+
+**Trava:** o conteúdo dos mapas (B6), o tutorial (B11) e o balanceamento (B4).
+
+### D-013 · B6 · Quinze mapas, alguns viram DLC 🟢 👤
+
+**Valor:** quinze mapas planejados desde o começo. Parte entra no lançamento, parte fica como
+DLC futuro — a divisão é decidida no bloco de produto (B11).
+**Motivo:** planejar os quinze agora garante que a curva de manias (D-012) tenha espaço para
+crescer sem aperto, e que o DLC não seja remendo depois.
+**Trava:** a produção (B11) e a fábrica de assets (B12).
+
+### D-014 · B2 · A noite começa quando o jogador quiser 🟢 👤
+
+**Valor:** o jogador aperta para começar a noite quando estiver pronto. **Em dificuldade maior,
+o tempo de preparação é reduzido** — vira relógio.
+**Motivo:** é o modelo do Thronefall, e resolve ritmo sem punir quem pensa devagar. O relógio
+só aparece para quem pediu dificuldade.
+**Trava:** as telas (B8) e o balanceamento (B4).
+
+### D-015 · B6 · Mapas gerados: peça à mão, montagem por máquina 🟡 🤖
+
+> ⚠️ **Proposta do agente, ainda não confirmada.**
+
+**Valor proposto:** além dos quinze mapas à mão, um modo sem fim com mapas gerados.
+
+| passo | o quê |
+|---|---|
+| 1 | ~20 **peças de mapa desenhadas à mão** — curva, bifurcação, reta com pontos de construção, ponte, estreitamento |
+| 2 | o gerador **encaixa** só peças compatíveis (*Wave Function Collapse*) |
+| 3 | o **validador roda antes de entregar**: existe caminho? há pontos de construção ao alcance? comprimento na faixa? Falhou, gera outro |
+| 4 | **a semente é o mapa** — mesma semente, mesmo mapa, compartilhável |
+| 5 | a **dificuldade é medida** pelo simulador com as 3 políticas |
+
+**Motivo (medido, com fonte):** a pesquisa acadêmica mostra que posição aleatória de torre e
+caminho *"quase sempre gera fase impossível de vencer"*, e que validação reduz **73%** as fases
+injogáveis. O `kit-puzzle` deste repositório já é essa máquina: o mesmo algoritmo valida, gera,
+dá a dica e mede a dificuldade.
+
+**A separação que isso exige:** quinze mapas à mão = **a campanha**, que ensina e vende.
+Gerados = **modo sem fim**, que faz rejogar. São duas linhas de produção diferentes.
+
+**Trava:** o conteúdo (B6), a arquitetura (B9) e a produção (B11).
+
 ### D-004 · B0 · A leitura do tema dimensional 🔴
 
 **Valor:** <em aberto — 5 opções apresentadas, aguardando escolha>
