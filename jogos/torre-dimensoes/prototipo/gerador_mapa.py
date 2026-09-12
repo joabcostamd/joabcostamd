@@ -82,27 +82,39 @@ def mancha(m: Mapa, cx, cy, raio, nivel, rng):
                 m.nivel[y][x] = max(m.nivel[y][x], nivel)
 
 
-def relevo(m: Mapa, rng):
+# Cada dimensao puxa o relevo para um lado. So numeros — a roupa vem na maquete.
+PERFIL = {
+    "floresta":  {"platos": (3, 4), "raio": (5, 8), "rio": 0.65, "rio_larg": (2, 3)},
+    "montanha":  {"platos": (5, 7), "raio": (4, 6), "rio": 0.25, "rio_larg": (1, 2)},
+    "rio":       {"platos": (1, 2), "raio": (5, 7), "rio": 1.00, "rio_larg": (3, 5)},
+    "deserto":   {"platos": (2, 4), "raio": (6, 9), "rio": 0.00, "rio_larg": (1, 1)},
+    "vazio":     {"platos": (4, 6), "raio": (3, 6), "rio": 0.45, "rio_larg": (2, 4)},
+}
+
+
+def relevo(m: Mapa, rng, perfil=None):
+    pf = perfil or PERFIL["floresta"]
     cx, cy = CENTRO
     mancha(m, cx, cy, rng.randint(6, 8), 2, rng)          # plato do castelo
-    for _ in range(rng.randint(2, 4)):                     # platos medios em volta
+    for _ in range(rng.randint(*pf["platos"])):            # platos medios em volta
         ang = rng.uniform(0, 6.283)
         dist = rng.randint(11, 17)
         mx = int(cx + dist * 1.3 * __import__("math").cos(ang))
         my = int(cy + dist * __import__("math").sin(ang))
         if 5 < mx < LARG - 5 and 4 < my < ALT - 4:
-            mancha(m, mx, my, rng.randint(4, 7), 1, rng)
+            mancha(m, mx, my, rng.randint(*pf["raio"]), 1, rng)
     mancha(m, cx, cy, rng.randint(9, 11), max(1, 1), rng)  # saia media no castelo
     mancha(m, cx, cy, rng.randint(6, 8), 2, rng)           # redesenha o topo por cima
 
 
-def rio(m: Mapa, rng):
+def rio(m: Mapa, rng, perfil=None):
     """Um rio atravessando, com 2 a 4 pontes. Sao os estrangulamentos fortes."""
-    if rng.random() < 0.25:
+    pf = perfil or PERFIL["floresta"]
+    if rng.random() > pf["rio"]:
         return
     vertical = rng.random() < 0.5
     pos = rng.randrange(8, (ALT if vertical else LARG) - 8)
-    largura = rng.randint(2, 3)
+    largura = rng.randint(*pf["rio_larg"])
     for t in range(LARG if vertical else ALT):
         pos += rng.choice((-1, 0, 0, 1))
         for w in range(-largura, largura + 1):
@@ -223,11 +235,13 @@ def pontos(m: Mapa, rng, alcance=4):
                 m.exposto[y][x] = True
 
 
-def gerar(semente: int):
+def gerar(semente: int, bioma: str = "floresta"):
     rng = random.Random(semente)
+    pf = PERFIL.get(bioma, PERFIL["floresta"])
     m = Mapa()
-    relevo(m, rng)
-    rio(m, rng)
+    m.bioma = bioma
+    relevo(m, rng, pf)
+    rio(m, rng, pf)
     rampas(m, rng)
     cx, cy = CENTRO
     for y in range(cy - 2, cy + 3):

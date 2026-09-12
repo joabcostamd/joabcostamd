@@ -62,6 +62,52 @@ PONTO_LIVRE = (92, 148, 196)
 CEU = (150, 206, 232)
 
 
+# --- as dimensoes: mesma geometria, outra roupa -----------------------------
+# Prova da D-015: trocar o visual inteiro nao toca numa linha do layout.
+BIOMAS = {
+    "floresta": {
+        "nome": "FLORESTA",
+        "topo": {0: (104, 168, 92), 1: (124, 186, 100), 2: (146, 202, 112)},
+        "rocha": ((188, 168, 116), (146, 124, 82)),
+        "caminho": (214, 184, 126), "agua": (64, 146, 216), "linha": (126, 190, 238),
+        "ceu": (150, 206, 232), "deco": "arvore", "densidade": 0.11,
+        "copa": ((52, 118, 70), (66, 138, 82)),
+    },
+    "montanha": {
+        "nome": "MONTANHA",
+        "topo": {0: (118, 132, 118), 1: (158, 168, 158), 2: (232, 238, 240)},
+        "rocha": ((166, 170, 178), (108, 114, 124)),
+        "caminho": (186, 178, 162), "agua": (108, 170, 208), "linha": (176, 216, 240),
+        "ceu": (186, 206, 222), "deco": "pinheiro", "densidade": 0.07,
+        "copa": ((38, 82, 62), (48, 100, 74)),
+    },
+    "rio": {
+        "nome": "RIO",
+        "topo": {0: (96, 178, 108), 1: (118, 196, 118), 2: (142, 210, 130)},
+        "rocha": ((180, 172, 130), (136, 128, 92)),
+        "caminho": (208, 190, 138), "agua": (48, 154, 226), "linha": (140, 206, 244),
+        "ceu": (160, 214, 238), "deco": "junco", "densidade": 0.13,
+        "copa": ((64, 146, 90), (86, 168, 104)),
+    },
+    "deserto": {
+        "nome": "DESERTO",
+        "topo": {0: (214, 172, 116), 1: (226, 188, 134), 2: (238, 206, 156)},
+        "rocha": ((196, 124, 92), (150, 88, 66)),
+        "caminho": (236, 214, 172), "agua": (86, 176, 190), "linha": (150, 214, 222),
+        "ceu": (238, 204, 158), "deco": "cacto", "densidade": 0.06,
+        "copa": ((92, 140, 84), (108, 158, 96)),
+    },
+    "vazio": {
+        "nome": "O VAZIO",
+        "topo": {0: (68, 56, 104), 1: (88, 72, 130), 2: (112, 92, 158)},
+        "rocha": ((146, 120, 186), (92, 74, 126)),
+        "caminho": (168, 146, 206), "agua": (74, 208, 208), "linha": (150, 240, 238),
+        "ceu": (44, 36, 72), "deco": "cristal", "densidade": 0.10,
+        "copa": ((104, 240, 232), (146, 200, 250)),
+    },
+}
+
+
 def escurecer(c, f):
     return tuple(max(0, int(v * f)) for v in c)
 
@@ -81,17 +127,43 @@ def desenhar(d, base, z, topo, esq, dir_):
         d.polygon(p, fill=dir_)
 
 
-def arvore(d, x, y, z, rng):
-    """Cacho de formas de uma cor so, como nas telas."""
+def arvore(d, x, y, z, rng, B):
+    """A decoracao muda com a dimensao. A geometria por baixo e a mesma."""
     cx, cy = tela(x + 0.5, y + 0.5, z)
-    # sombra dura, projetada para a direita e para baixo
+    c1, c2 = B["copa"]
+    tipo = B["deco"]
     d.ellipse([cx - 5 + 13, cy + 2, cx + 9 + 13, cy + 9], fill=SOMBRA)
-    for i in range(4):
-        r = rng.uniform(4.5, 7)
-        ox = rng.uniform(-4, 4)
-        oy = rng.uniform(-16, -6)
-        cor = ARVORE_COPA if i % 2 else ARVORE_COPA2
-        d.ellipse([cx + ox - r, cy + oy - r * 0.85, cx + ox + r, cy + oy + r * 0.85], fill=cor)
+
+    if tipo == "arvore":
+        for i in range(4):
+            r = rng.uniform(4.5, 7)
+            ox, oy = rng.uniform(-4, 4), rng.uniform(-16, -6)
+            d.ellipse([cx + ox - r, cy + oy - r * .85, cx + ox + r, cy + oy + r * .85],
+                      fill=c1 if i % 2 else c2)
+    elif tipo == "pinheiro":
+        d.polygon([(cx - 1.5, cy), (cx + 1.5, cy), (cx + 1.5, cy - 6), (cx - 1.5, cy - 6)],
+                  fill=(96, 72, 54))
+        for i, (w, h) in enumerate(((7, 6), (5.5, 12), (4, 17))):
+            d.polygon([(cx - w, cy - h + 3), (cx, cy - h - 5), (cx + w, cy - h + 3)],
+                      fill=c1 if i % 2 else c2)
+    elif tipo == "junco":
+        for i in range(5):
+            ox = rng.uniform(-5, 5)
+            h = rng.uniform(7, 13)
+            d.line([(cx + ox, cy), (cx + ox + rng.uniform(-2, 2), cy - h)],
+                   fill=c1 if i % 2 else c2, width=2)
+    elif tipo == "cacto":
+        d.polygon([(cx - 2.5, cy), (cx + 2.5, cy), (cx + 2.5, cy - 14), (cx - 2.5, cy - 14)],
+                  fill=c1)
+        d.polygon([(cx + 2.5, cy - 8), (cx + 7, cy - 8), (cx + 7, cy - 13), (cx + 5, cy - 13),
+                   (cx + 5, cy - 10), (cx + 2.5, cy - 10)], fill=c2)
+    elif tipo == "cristal":
+        for i in range(3):
+            ox = rng.uniform(-4, 4)
+            h = rng.uniform(9, 18)
+            w = rng.uniform(2, 3.5)
+            d.polygon([(cx + ox - w, cy), (cx + ox, cy - h), (cx + ox + w, cy),
+                       (cx + ox, cy + 2)], fill=c1 if i % 2 else c2)
 
 
 def torre(d, x, y, z, tipo):
@@ -139,17 +211,18 @@ def inimigos(d, x, y, z, n, rng):
                    (cx - 1.8, cy + 1.5)], fill=escurecer(INIMIGO, 0.82))
 
 
-def render(semente: int, destino: Path):
+def render(semente: int, destino: Path, bioma: str = "floresta"):
     import random
     from PIL import Image, ImageDraw
 
-    m, trilhas, origens = L.gerar(semente)
+    B = BIOMAS[bioma]
+    m, trilhas, origens = L.gerar(semente, bioma)
     ok, med = L.validar(m, trilhas, origens)
     rng = random.Random(semente * 7919)
 
     larg = int(MARGEM_X * 2 + (L.LARG + L.ALT) * TW / 2)
     alt = int(MARGEM_Y + (L.LARG + L.ALT) * TH / 2 + 90)
-    img = Image.new("RGB", (larg, alt), CEU)
+    img = Image.new("RGB", (larg, alt), B["ceu"])
     d = ImageDraw.Draw(img)
 
     # tipos de torre espalhados pelos pontos, so para a maquete
@@ -167,23 +240,23 @@ def render(semente: int, destino: Path):
                 continue
             z = m.nivel[y][x]
             if m.agua[y][x] and not m.ponte[y][x]:
-                desenhar(d, (x, y), 0, AGUA, escurecer(AGUA, 0.8), escurecer(AGUA, 0.65))
+                desenhar(d, (x, y), 0, B["agua"], escurecer(B["agua"], .8), escurecer(B["agua"], .65))
                 if (x + y) % 4 == 0:
                     a, b = tela(x + 0.15, y + 0.5, 0), tela(x + 0.85, y + 0.5, 0)
-                    d.line([a, b], fill=AGUA_LINHA, width=2)
+                    d.line([a, b], fill=B["linha"], width=2)
                 continue
             if m.ponte[y][x]:
                 desenhar(d, (x, y), 0, PONTE, escurecer(PONTE, 0.78), escurecer(PONTE, 0.6))
                 continue
             if m.castelo[y][x]:
-                desenhar(d, (x, y), z, escurecer(TOPO[z], 1.04), LADO_ESQ, LADO_DIR)
+                desenhar(d, (x, y), z, escurecer(B["topo"][z], 1.04), B["rocha"][0], B["rocha"][1])
                 continue
             if m.caminho[y][x]:
-                topo, esq, dir_ = CAMINHO, CAMINHO_LADO, escurecer(CAMINHO_LADO, 0.78)
+                topo, esq, dir_ = B["caminho"], escurecer(B["caminho"], .8), escurecer(B["caminho"], .62)
             elif m.rampa[y][x]:
-                topo, esq, dir_ = RAMPA, LADO_ESQ, LADO_DIR
+                topo, esq, dir_ = escurecer(B["caminho"], 1.04), B["rocha"][0], B["rocha"][1]
             else:
-                topo, esq, dir_ = TOPO[z], LADO_ESQ, LADO_DIR
+                topo, esq, dir_ = B["topo"][z], B["rocha"][0], B["rocha"][1]
 
             # sombra dura do degrau acima, como nas telas do jogo
             if y > 0 and m.nivel[y - 1][x] > z:
@@ -197,8 +270,8 @@ def render(semente: int, destino: Path):
                 d.polygon([(px - 6, py), (px, py - 3), (px + 6, py), (px, py + 3)],
                           fill=None, outline=PONTO_LIVRE, width=2)
             elif (not m.caminho[y][x] and not m.rampa[y][x]
-                  and rng.random() < 0.09 and abs(x - cx_g) + abs(y - cy_g) > 9):
-                arvore(d, x, y, z, rng)
+                  and rng.random() < B["densidade"] and abs(x - cx_g) + abs(y - cy_g) > 9):
+                arvore(d, x, y, z, rng, B)
 
             if abs(x - cx_g) <= 0 and abs(y - cy_g) <= 0:
                 pass
@@ -212,7 +285,7 @@ def render(semente: int, destino: Path):
 
     # legenda
     d.rectangle([0, 0, larg, 34], fill=(28, 40, 36))
-    d.text((14, 12), f"TORRE ENTRE DIMENSOES · maquete · semente {semente} · "
+    d.text((14, 12), f"TORRE ENTRE DIMENSOES · {B['nome']} · semente {semente} · "
                      f"{med['frentes']} frentes · {med['pontos']} pontos de construcao · "
                      f"{'APROVADO' if ok else 'REPROVADO'}", fill=(228, 238, 230))
     img.save(destino)
@@ -220,14 +293,17 @@ def render(semente: int, destino: Path):
 
 
 def main(argv):
-    sementes = [int(a) for a in argv[1:]] or [3, 7, 10]
+    semente = int(argv[1]) if len(argv) > 1 else 3
     saida = AQUI / "saida"
     saida.mkdir(exist_ok=True)
-    for s in sementes:
-        ok, med = render(s, saida / f"maquete-{s}.png")
-        print(f"  semente {s:>3} · {med['frentes']} frentes · {med['pontos']} pontos · "
-              f"{'APROVADO' if ok else 'REPROVADO'}")
-    print(f"imagens em {saida}")
+    for antiga in saida.glob("dimensao-*.png"):
+        antiga.unlink()
+    print(f"MESMA SEMENTE ({semente}), CINCO DIMENSOES — so a roupa muda\n")
+    for bioma in BIOMAS:
+        ok, med = render(semente, saida / f"dimensao-{bioma}.png", bioma)
+        print(f"  {BIOMAS[bioma]['nome']:<10} {med['frentes']} frentes · "
+              f"{med['pontos']:>3} pontos · {'APROVADO' if ok else 'REPROVADO: ' + med['motivos'][0]}")
+    print(f"\nimagens em {saida}")
     return 0
 
 
