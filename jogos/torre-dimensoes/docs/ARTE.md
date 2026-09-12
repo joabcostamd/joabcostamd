@@ -22,6 +22,55 @@ Em 3D, renderizadas **dentro do Godot**: mesma cena, mesmo enquadramento, mesma 
 
 **Por que esta:** <motivo>
 
+## 1b. O que aprendi olhando o Thronefall de verdade
+
+O Joab mandou cinco telas do jogo em 2026-09-12. Registro aqui o que **eu vi**, não o que
+imaginei — é a referência mais confiável que este documento tem.
+
+### O terreno é platô em camadas, não morro espalhado
+
+Foi o meu erro maior. Não são colinas jogadas pelo mapa: é **relevo em degraus**.
+
+| o que é | como aparece |
+|---|---|
+| **platô** | área plana elevada, com **borda de penhasco vertical** |
+| **rampa** | o único jeito de subir ou descer entre dois platôs — é o corredor obrigatório |
+| **ponte** | passagem estreita sobre água ou abismo — o estrangulamento mais forte do jogo |
+| **castelo** | fica **em cima de um platô**, no meio do mapa |
+
+É o relevo que decide por onde o inimigo pode vir. A muralha que o jogador constrói **atravessa
+o estreitamento**, ela não é terreno.
+
+### A leitura antecipada
+
+Nas telas dá para ver **os inimigos parados em formação na borda**, agrupados, antes de
+atacar. O jogador vê de onde vem a próxima onda e tem tempo de se preparar. Isso não é
+enfeite — é a informação que torna a decisão possível.
+
+### A arte, ponto a ponto
+
+| elemento | como é |
+|---|---|
+| **superfície** | face chapada, **zero textura**. Nenhum pixel de detalhe em lugar nenhum |
+| **sombra** | dura, longa, quase preta. **É metade da leitura do relevo** — sem ela o platô some |
+| **paleta** | 4 a 5 cores muito saturadas, e **cada mapa tem a sua**: verde+azul na costa · areia+tijolo no deserto · rosa+ciano num · azul-noite noutro |
+| **árvore** | cacho de formas hexagonais de **uma cor só** — não tem tronco detalhado |
+| **água** | azul chapado com **linhas desenhadas por cima**, estilo traço de mão |
+| **rocha** | faces brancas e cinzas, silhueta angular, sem meio-tom |
+| **construção** | blocos simples com listras e degraus; fazenda é padrão listrado visto de cima |
+| **contorno** | escuro e sutil nas bordas, ajuda a separar peça de peça |
+| **câmera** | isométrica alta, quase o mapa inteiro na tela |
+
+### O que isso prova para o nosso projeto
+
+**Low-poly bem feito não é modelo pobre — é luz e sombra bem resolvidas.** Nenhuma daquelas
+telas tem textura. O que carrega a imagem é: silhueta limpa, cor saturada com função, e sombra
+dura. Os três são trabalho de **configuração**, não de desenho à mão — e é exatamente o que a
+geração por IA e o Godot fazem bem.
+
+**Consequência direta para o B12:** o contrato de asset não precisa de UV nem de textura. Precisa
+de silhueta boa, escala certa e material de cor chapada. Isso derruba muito o custo por peça.
+
 ## 2. A tese visual
 
 <a ideia que decide tudo, em duas linhas>

@@ -35,6 +35,32 @@ Cada um com o **papel mecânico**, não só o número.
 |---|---|---|
 | <nome> | <efeito> | <por que é interessante> |
 
+### Por que os pontos de construção são fixos — e não é só simplicidade
+
+Descoberta da pesquisa, na entrevista do criador do Thronefall:
+
+> *"Não deixar o jogador decidir o que construir e onde abriu possibilidades incríveis de level
+> design, porque dá para **forçar o jogador a construir em posições arriscadas** — o que gera
+> decisões muito mais interessantes. E isso impede automaticamente que ele construa três
+> muralhas em volta do ponto de spawn."*
+
+Duas consequências que valem ouro:
+
+1. **O ponto fixo é ferramenta de design, não limitação.** Colocar um ponto de construção numa
+   posição exposta é uma decisão do mapa, e obriga o jogador a escolher entre defender aquele
+   ponto ou abrir mão dele.
+2. **Mata o defeito clássico do maze TD por construção.** O jogador não consegue cercar o spawn
+   nem desenhar labirinto — o mapa não deixa. Sem precisar de regra extra nem de aviso.
+
+### O terreno é que define as frentes
+
+Dos mapas reais: *Durststein* tem áreas abertas com rampas e pontos altos para unidade de
+alcance; *Sturmklamm* tem corredores estreitos e caminhos subindo o morro onde fica o castelo,
+com **quatro pontes ao sul** sendo as quatro frentes terrestres.
+
+A regra que sai daí: **ponte e rampa são os estrangulamentos**, e o jogador decide se fortifica
+a ponte ou deixa o inimigo atravessar para um campo aberto onde as torres somam fogo.
+
 ### Regra de escopo
 
 Coisa nova só entra se **mudar uma decisão** que já existe. O que só aumenta um número é
