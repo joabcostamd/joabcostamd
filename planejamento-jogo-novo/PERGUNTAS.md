@@ -5,7 +5,7 @@
 > **Toda pergunta traz recomendação e explicação.** A pergunta ensina o que estamos
 > construindo — não é interrogatório. Regra do `PREFERENCIAS-DE-JOAB.md`.
 
-Versão 1 · 2026-09-12 · Blocos B0, B1, B2, B3 + identidade mínima · **44 perguntas**
+Versão 1 · 2026-09-12 · Blocos B0, B1, B2, B3 + pesquisa de mercado + identidade mínima · **53 perguntas**
 
 ---
 
@@ -41,15 +41,15 @@ entende, o conceito ainda está embaçado — e conceito embaçado vira escopo q
 **Recomendo** escrever com o verbo na frente: *"você ___ enquanto ___"*.
 → `CONCEITO.md` · protege A1 A3
 
-### P-B0-02 · Esse jogo já existe?
-**Tarefa minha, não sua.** Antes de qualquer decisão, eu busco na Steam e na web se alguém já
-lançou isso, com que nome, por quanto, e com que nota.
+### P-B0-02 · A pesquisa de mercado
+**Tarefa minha, não sua.** Assim que a frase (P-B0-01) e o gênero (P-B0-03) existirem, eu paro e
+faço a pesquisa inteira: o bloco **PM**, logo abaixo, com 9 perguntas.
 
-Vinte minutos aqui já pouparam meses em projeto dos outros. Se existir e for bom, a pergunta
-muda: o que o nosso faz melhor? Se existir e for ruim, ótimo — a reclamação dos jogadores vira
-a nossa lista de tarefas.
+Ela responde o que já existe, quanto vende, quais mecânicas do gênero **funcionaram**, quais
+**fracassaram**, e qual é a crítica repetida que o nosso jogo pode atacar.
 
-**Recomendo** sempre fazer, mesmo quando a ideia parece original.
+**Recomendo** nunca pular. Decisão de design que sai de intuição é a forma mais cara de errar —
+e a pesquisa é o único jeito barato de não ser mais um.
 → `PESQUISA.md` · protege A5 A6
 
 ### P-B0-03 · Qual gênero, declarado
@@ -150,6 +150,142 @@ bullet heaven comum e perde o motivo.
 
 **Recomendo** escolher um critério só, mensurável, e medir na prova de diversão do fim da fase 1.
 → `CONCEITO.md` · protege A11 A12
+
+---
+
+# PM · Pesquisa de mercado — 9 perguntas
+
+Fase 0, logo depois da P-B0-01 (a frase) e da P-B0-03 (o gênero). **Alimenta o resto do B0** —
+em especial a P-B0-06 (qual defeito o jogo conserta) e a P-B0-11 (o que o jogo não tem).
+
+> **Nada aqui sai da cabeça.** Toda afirmação tem fonte. Onde for opinião minha, está escrito
+> que é opinião minha. Decisão de design que sai de intuição é a forma mais cara de errar.
+
+**As regras deste bloco:**
+
+1. **Fonte por afirmação.** Número sem link não entra.
+2. **Toda referência termina em "conclusão para o nosso jogo"** — nunca vira resumo solto.
+3. **Pesquisa de fora sempre confrontada com medição nossa.** Quando as duas discordam, a nossa
+   ganha, e o contraponto fica escrito.
+4. **O trabalho é meu.** Você não precisa saber nada do mercado — eu pesquiso, trago organizado,
+   e você decide.
+
+### P-PM-01 · Esse jogo já existe?
+Busca na Steam e na web: alguém já lançou isso? Com que nome, por quanto, com que nota?
+
+Vinte minutos aqui já pouparam meses. Se existir e for bom, a pergunta muda para *"o que o nosso
+faz melhor?"*. Se existir e for ruim, melhor ainda: **a reclamação dos jogadores vira a nossa
+lista de tarefas.**
+
+**Recomendo** sempre fazer, mesmo quando a ideia parece original — principalmente quando parece.
+→ `PESQUISA.md` · protege A5 A6 A17
+
+### P-PM-02 · Os números do gênero
+Tamanho do mercado, quanto os jogos do gênero vendem, faixa de preço, e o quanto ele está
+saturado. Tudo com fonte e data.
+
+O padrão que quero é o que o seu `overclock` já tem: *"a Steam oficializou 'Bullet Heaven' como
+tag em 18/05/2026"* · *"Megabonk, solo dev, vendeu 1 milhão em duas semanas"* · *"pico de 117.336
+simultâneos"*.
+
+**A leitura que importa:** saturação não impede — impede **ser mais um**.
+
+**Recomendo** trazer pelo menos 5 números com fonte, incluindo um caso de sucesso recente de
+desenvolvedor solo. É a régua do que é possível.
+→ `PESQUISA.md` · protege A5 A9 BB1
+
+### P-PM-03 · De 3 a 5 referências, cada uma com três colunas
+Para cada jogo de referência:
+
+| coluna | o que vai nela |
+|---|---|
+| **o que copiar** | o que ele acertou e a gente pega sem pensar duas vezes |
+| **o que o público reclama** | tirado de análise negativa **real**, não de achismo |
+| **o que a gente corrige** | como o nosso jogo resolve aquela reclamação |
+
+**Recomendo** escolher referências **diferentes entre si**: uma que vendeu muito, uma que é
+elogiada pela sensação, uma que errou de forma instrutiva. Cinco jogos parecidos ensinam a mesma
+coisa cinco vezes.
+→ `PESQUISA.md` · protege A6
+
+### P-PM-04 · As mecânicas que FUNCIONARAM no gênero ⚠️
+Lista nomeada, com o jogo onde funcionou e **por que** funcionou.
+
+Não basta "tem baú". O que interessa é o mecanismo: *"baú com preço crescente — cada baú aberto
+encarece o próximo, então juntar ouro vira decisão de risco em vez de coleta automática"*.
+
+**Recomendo** de 5 a 10 mecânicas, cada uma com uma linha de **por quê**. O "por quê" é o que a
+gente reaproveita; a mecânica em si pode nem servir ao nosso jogo.
+
+Formato:
+
+```
+MECÂNICA        onde funcionou     por que funciona
+pausa entre     Brotato            devolve agência sem quebrar o contrato do gênero
+ondas
+baú com preço   Megabonk           transforma coleta automática em decisão de risco
+crescente
+```
+→ `PESQUISA.md` · `DESIGN.md` · protege G5 H3 I6
+
+### P-PM-05 · As mecânicas que FRACASSARAM ⚠️
+A outra metade, e a mais valiosa — porque ninguém escreve sobre ela.
+
+Mecânica que o gênero tentou e o público rejeitou, com o **motivo**. Exemplo do seu próprio
+estudo de Picross 3D: *"o Round 2 acrescentou duas cores de bloco. É engenhoso, mas dobra a
+carga de regra: o jogador passa a decidir 'fica ou sai' E 'de que cor'. Ganho de detalhe visual,
+custo de clareza."*
+
+**Recomendo** de 3 a 6, cada uma com o motivo do fracasso. Elas viram, quase de graça, a lista
+"o que o jogo NÃO tem" da P-B0-11.
+→ `PESQUISA.md` · `CONCEITO.md` · protege A8 A10
+
+### P-PM-06 · A crítica repetida do gênero
+As queixas que aparecem em **várias fontes independentes** sobre jogos daquele tipo. Não são
+bugs: são defeitos estruturais que o gênero carrega.
+
+No `overclock` foram quatro: falta de agência · build que nunca parece forte · vitória inevitável
+· level design fraco.
+
+**Recomendo** listar de 3 a 5 e **escolher uma** para atacar de frente. Atacar uma bem é
+diferenciação; atacar quatro pela metade é escopo.
+→ `PESQUISA.md` · `CONCEITO.md` · protege A5 G4
+
+### P-PM-07 · Preço, duração e conteúdo dos comparáveis
+Quanto custam, quantas horas entregam, quanto conteúdo têm. É daqui que sai o **nosso** preço e o
+**nosso** volume mínimo de conteúdo.
+
+Do `picross`: *"Picross Touch tem 366 fases; Picross Bonbon, 160. As 200 daqui ficam na faixa
+competitiva."* Isso é uma decisão de escopo tomada com número, não com vontade.
+
+**Recomendo** 3 comparáveis diretos com preço e volume. Sem isso, "quantas fases o jogo tem?"
+vira chute.
+→ `PESQUISA.md` · `PRODUCAO.md` · protege BB4 A14 J3
+
+### P-PM-08 · O contraponto medido ⚠️
+Toda afirmação técnica que vier de fora é conferida contra o que **nós** já medimos neste
+repositório. Quando discordam, a nossa medição ganha e o contraponto fica escrito.
+
+O caso que já aconteceu: a pesquisa dizia *"MultiMesh é o caminho para tudo"*; a medição da skill
+`nivel-3d` mostrou que **700 peças de cenário em MultiMesh saíram 15% mais lentas** que nós
+comuns. Regra que ficou: MultiMesh ganha para *muitos iguais e pequenos*, não para tudo.
+**Meça antes de converter.**
+
+**Recomendo** fazer sempre, e gravar o contraponto no `PESQUISA.md` — senão a próxima sessão
+repete o erro.
+→ `PESQUISA.md` · `ARMADILHAS.md` · protege AG1 AI5
+
+### P-PM-09 · Onde isso deixa o nosso jogo
+A conclusão. Uma seção curta que diz o que a pesquisa **mudou** na ideia original e qual é a
+próxima decisão grande.
+
+No `overclock` ela foi honesta assim: *"a pesquisa revelou uma segunda via, mais provada
+comercialmente — o Megabonk resolveu o mesmo problema com movimento 3D e vendeu 1,3 milhão. As
+duas não se excluem, mas não podem ser as duas o pilar principal."*
+
+**Recomendo** terminar sempre nomeando a decisão que a pesquisa destravou. Pesquisa que não muda
+nenhuma decisão foi leitura, não pesquisa.
+→ `PESQUISA.md` · `PLANO.md` · protege A4 A5
 
 ---
 

@@ -62,7 +62,7 @@ ordem, calculada a partir de quem depende de quem.
 
 | Fase | Blocos | Destranca | Tempo alvo |
 |---|---|---|---|
-| **0 · Faísca** | B0 + *"esse jogo já existe?"* | conversar a sério | 20 min |
+| **0 · Faísca** | B0 + **PM** (pesquisa de mercado) | conversar a sério | 40 min |
 | **1 · Fundação** | B1 B2 B3 + identidade mínima | 🎲 a prova de diversão · 🎨 a prova de asset | 1–2 h |
 | **2 · Corpo** | B4 B5 B6 B7 B8 B9 | **o jogo de verdade** | 3–5 h |
 | **3 · Pele** | B10 B12 | a arte, o som e a fábrica de assets | 2–3 h |
@@ -145,8 +145,30 @@ Saída em bloco delimitado, igual ao portão frio:
 
 ### B0 · Identidade
 Gênero · tema · dimensão (2D/3D) · plataforma alvo · modelo de negócio · ambição · ritmo de
-trabalho · nome (disponível, buscável, registrável) · **e a busca de 20 minutos: esse jogo já
-existe?**
+trabalho · nome (disponível, buscável, registrável) · o que o jogo **não** tem, com o motivo de
+cada recusa · e o critério que mata o projeto.
+
+### PM · Pesquisa de mercado ⚠️ *etapa obrigatória da fase 0*
+
+Roda entre a frase e o resto do B0, e alimenta tudo que vem depois. **Nada dela sai da cabeça:
+toda afirmação tem fonte, e opinião vem marcada como opinião.** O trabalho é do agente — o Joab
+não precisa saber nada do mercado.
+
+O `PESQUISA.md` só fecha com estas nove seções:
+
+| | |
+|---|---|
+| 1 | **Esse jogo já existe?** — Steam e web: nome, preço, nota |
+| 2 | **Os números do gênero** — tamanho, vendas, preço, saturação, com fonte e data |
+| 3 | **3 a 5 referências**, cada uma em três colunas: o que copiar · o que o público reclama (de análise negativa real) · o que a gente corrige |
+| 4 | ⚠️ **As mecânicas que FUNCIONARAM** — onde funcionou e **por quê**. O "por quê" é o que se reaproveita |
+| 5 | ⚠️ **As mecânicas que FRACASSARAM** — e o motivo. Viram quase de graça a lista "o que o jogo não tem" |
+| 6 | **A crítica repetida do gênero** — os defeitos estruturais que ele carrega. Escolher **uma** para atacar de frente |
+| 7 | **Preço, duração e conteúdo dos comparáveis** — daqui sai o nosso preço e o nosso volume mínimo |
+| 8 | ⚠️ **O contraponto medido** — pesquisa de fora conferida contra o que já medimos aqui. Quando discordam, a nossa medição ganha e o contraponto fica escrito |
+| 9 | **Onde isso deixa o nosso jogo** — a decisão que a pesquisa destravou. Pesquisa que não muda decisão nenhuma foi leitura, não pesquisa |
+
+Regra fixa: **toda referência termina em "conclusão para o nosso jogo"**, nunca em resumo solto.
 
 ### B1 · Espaço e movimento ⚠️ *a decisão mais cara de mudar depois*
 Câmera (fixa, isométrica, terceira pessoa, orbital) · perspectiva ou ortográfica · o jogador
