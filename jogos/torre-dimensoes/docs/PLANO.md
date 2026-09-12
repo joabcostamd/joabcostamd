@@ -319,6 +319,7 @@ Livre: nenhum jogo, nenhuma banda. Só uma empresa inglesa dormente, outro ramo.
 |---|---|---|
 | **Valorhold** | a fortaleza do valor — cavaleiro + feudo | **livre** |
 | **Lonespire** | a torre solitária — a última de pé | **livre** |
+| **Kingspire** | "a torre do rei" em uma palavra só | **livre em jogo** (existe servidor de Minecraft e empresa de curso) |
 | Lionkeep | o leão da heráldica + a fortaleza | livre |
 | Aegiskeep | *aegis* é o escudo divino — magia + fortaleza | livre |
 | Ruinguard · Valorhold · Lastrealm | guarda contra a ruína · o último reino | livres |
@@ -334,6 +335,7 @@ Livre: nenhum jogo, nenhuma banda. Só uma empresa inglesa dormente, outro ramo.
 | ~~Emberthrone~~ | Ember Throne Online, MMORPG na Steam |
 | ~~Crownward~~ | Crownwarden na Steam — construir reino e segurar cerco, quase o nosso jogo |
 | ~~Runekeep~~ | RuneKeeper na Steam + servidor Runekeep |
+| ~~Kings Tower~~ | **King's Tower** já existe na Steam — e é jogo de defender torre. Perto dele ainda: King Towers, TOWER KING, The King of Tower Defense, e meia dúzia de clones no celular |
 
 **Falta:** o Joab escolher. Enquanto estiver 🟡 o nome não entra em `project.godot`, em arte,
 nem em nome de pasta.
