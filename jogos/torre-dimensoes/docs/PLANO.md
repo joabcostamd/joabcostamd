@@ -279,6 +279,42 @@ Gerados = **modo sem fim**, que faz rejogar. São duas linhas de produção dife
 **Motivo:** —
 **Trava:** a ação central (B3), o conteúdo (B6), a apresentação (B10) e a fábrica de assets (B12).
 
+### D-016 · B1 · Onde o castelo fica no mapa 🟢 👤
+
+**Valor:** quatro arranjos, sorteados por mapa — **meio**, **embaixo da tela**, **no canto** e
+**escada** (o terreno sobe em degraus e o castelo fica no alto da tela).
+
+**Motivo:** o Joab pediu os dois últimos por nome. E eles mudam o jogo, não só a foto: com o
+castelo embaixo, o inimigo desce em cima do jogador e a defesa fica comprimida; na escada, cada
+degrau só tem 3 rampas, então a subida inteira é um funil — o inimigo passa por todos, um atrás
+do outro.
+
+**Como a escada funciona:** a câmera é isométrica, então "alto da tela" é `x+y` pequeno. O corte
+dos degraus acompanha `x+y`; na tela os andares saem empilhados, como arquibancada.
+
+**O que isso obrigou a consertar:** inimigo só nasce na parte baixa do mapa e a pelo menos 18
+passos do castelo; quando o castelo está num canto, o espaçamento das entradas afrouxa até caber
+3 frentes; ponte agora também vence um degrau (o rio afunda o leito).
+
+**Medido:** aprovação em 40 sementes — meio 39, escada 36, embaixo 36, canto 32. O gerador
+anda na semente seguinte quando uma reprova, então isso nunca chega ao jogador.
+
+**Trava:** o conteúdo (B6) e a apresentação (B10).
+
+### D-017 · B0 · O nome do jogo 🟡 🤖
+
+**Valor proposto:** **Veilspire** — *veil* é o véu fino entre as dimensões, *spire* é a torre.
+Uma palavra, duas sílabas fortes, livre na Steam e na busca em setembro de 2026.
+
+**Alternativas verificadas:** *Lastspire* (livre, mas "last" já está gasto em jogo de defesa) ·
+*Fendra* (de "fenda", livre, fácil em português, mas não diz que é torre).
+**Descartados por já existirem:** tudo com *Rift* (Riftfall, Rift Riff, The Riftbreaker,
+The Rift Tower Defense), *Hollowspire*, *Nighthold*, *Dawnhold*, *Witchspire*.
+
+**Falta:** o Joab escolher. Enquanto estiver 🟡 o nome não entra em `project.godot`, em arte,
+nem em nome de pasta.
+**Trava:** a identidade visual (B10) e a página da loja (B11).
+
 <!-- Copie o bloco acima para cada decisão nova. Exemplos de cabeçalho válido:
 ### D-014 · B1 · Câmera do jogo 🟢 👤
 ### D-015 · B1 · O jogador pula 🟡 🤖
