@@ -211,12 +211,12 @@ def inimigos(d, x, y, z, n, rng):
                    (cx - 1.8, cy + 1.5)], fill=escurecer(INIMIGO, 0.82))
 
 
-def render(semente: int, destino: Path, bioma: str = "floresta"):
+def render(semente: int, destino: Path, bioma: str = "floresta", arranjo: str = "centro"):
     import random
     from PIL import Image, ImageDraw
 
     B = BIOMAS[bioma]
-    m, trilhas, origens = L.gerar(semente, bioma)
+    m, trilhas, origens = L.gerar(semente, bioma, arranjo)
     ok, med = L.validar(m, trilhas, origens)
     rng = random.Random(semente * 7919)
 
@@ -230,7 +230,7 @@ def render(semente: int, destino: Path, bioma: str = "floresta"):
     pontos = [(x, y) for y in range(L.ALT) for x in range(L.LARG) if m.ponto[y][x]]
     com_torre = {p: tipos[(p[0] * 3 + p[1]) % 4] for i, p in enumerate(pontos) if i % 3 == 0}
 
-    cx_g, cy_g = L.CENTRO
+    cx_g, cy_g = m.castelo_pos
 
     # pintor: do fundo para a frente
     for soma in range(L.LARG + L.ALT):
@@ -285,24 +285,47 @@ def render(semente: int, destino: Path, bioma: str = "floresta"):
 
     # legenda
     d.rectangle([0, 0, larg, 34], fill=(28, 40, 36))
-    d.text((14, 12), f"TORRE ENTRE DIMENSOES · {B['nome']} · semente {semente} · "
+    d.text((14, 12), f"{B['nome']} · {L.ARRANJOS[arranjo]['rotulo']} · semente {semente} · "
                      f"{med['frentes']} frentes · {med['pontos']} pontos de construcao · "
                      f"{'APROVADO' if ok else 'REPROVADO'}", fill=(228, 238, 230))
     img.save(destino)
     return ok, med
 
 
+def primeira_boa(bioma, arranjo, comeco=1, limite=60):
+    """Anda nas sementes ate uma passar no validador. E o que o jogo vai fazer."""
+    for s in range(comeco, comeco + limite):
+        m, t, o = L.gerar(s, bioma, arranjo)
+        if L.validar(m, t, o)[0]:
+            return s
+    return comeco
+
+
 def main(argv):
-    semente = int(argv[1]) if len(argv) > 1 else 3
+    alvo = argv[1] if len(argv) > 1 else "dimensoes"
     saida = AQUI / "saida"
     saida.mkdir(exist_ok=True)
-    for antiga in saida.glob("dimensao-*.png"):
-        antiga.unlink()
-    print(f"MESMA SEMENTE ({semente}), CINCO DIMENSOES — so a roupa muda\n")
-    for bioma in BIOMAS:
-        ok, med = render(semente, saida / f"dimensao-{bioma}.png", bioma)
-        print(f"  {BIOMAS[bioma]['nome']:<10} {med['frentes']} frentes · "
-              f"{med['pontos']:>3} pontos · {'APROVADO' if ok else 'REPROVADO: ' + med['motivos'][0]}")
+
+    if alvo == "arranjos":                       # onde o castelo fica
+        for antiga in saida.glob("arranjo-*.png"):
+            antiga.unlink()
+        print("MESMO BIOMA, QUATRO LUGARES PARA O CASTELO\n")
+        for arranjo in L.ARRANJOS:
+            s = primeira_boa("floresta", arranjo)
+            ok, med = render(s, saida / f"arranjo-{arranjo}.png", "floresta", arranjo)
+            print(f"  {L.ARRANJOS[arranjo]['rotulo']:<28} semente {s:>2} · "
+                  f"{med['frentes']} frentes · {med['pontos']:>3} pontos · "
+                  f"{'APROVADO' if ok else 'REPROVADO: ' + med['motivos'][0]}")
+    else:                                        # mesma semente, cinco dimensoes
+        semente = int(argv[2]) if len(argv) > 2 else 3
+        for antiga in saida.glob("dimensao-*.png"):
+            antiga.unlink()
+        print(f"MESMA SEMENTE ({semente}), CINCO DIMENSOES — so a roupa muda\n")
+        for bioma in BIOMAS:
+            ok, med = render(semente, saida / f"dimensao-{bioma}.png", bioma)
+            print(f"  {BIOMAS[bioma]['nome']:<10} {med['frentes']} frentes · "
+                  f"{med['pontos']:>3} pontos · "
+                  f"{'APROVADO' if ok else 'REPROVADO: ' + med['motivos'][0]}")
     print(f"\nimagens em {saida}")
     return 0
 

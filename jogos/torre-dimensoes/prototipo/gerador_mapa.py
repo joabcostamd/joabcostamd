@@ -25,12 +25,25 @@ from __future__ import annotations
 
 import random
 import sys
+import math
 from collections import deque
 from pathlib import Path
 
 LARG, ALT = 53, 39
 LONGE = 10**9
 CENTRO = (LARG // 2, ALT // 2)
+
+# Onde o castelo fica e que forma o terreno toma. So numeros.
+ARRANJOS = {
+    "centro": {"pos": (0.50, 0.50), "forma": "platos",
+               "rotulo": "castelo no meio"},
+    "sul":    {"pos": (0.72, 0.74), "forma": "platos",
+               "rotulo": "castelo embaixo da tela"},
+    "escada": {"pos": (0.22, 0.24), "forma": "terracos",
+               "rotulo": "escada, castelo la em cima"},
+    "canto":  {"pos": (0.22, 0.76), "forma": "platos",
+               "rotulo": "castelo no canto"},
+}
 
 
 class Mapa:
@@ -59,7 +72,9 @@ class Mapa:
         salto = abs(self.nivel[ny][nx] - self.nivel[y][x])
         if salto == 0:
             return True
-        if salto == 1 and (self.rampa[y][x] or self.rampa[ny][nx]):
+        passagem = (self.rampa[y][x] or self.rampa[ny][nx]
+                    or self.ponte[y][x] or self.ponte[ny][nx])
+        if salto == 1 and passagem:
             return True
         return False  # penhasco
 
@@ -92,19 +107,66 @@ PERFIL = {
 }
 
 
-def relevo(m: Mapa, rng, perfil=None):
+def relevo(m: Mapa, rng, perfil=None, alvo=None):
     pf = perfil or PERFIL["floresta"]
-    cx, cy = CENTRO
+    cx, cy = alvo or CENTRO
     mancha(m, cx, cy, rng.randint(6, 8), 2, rng)          # plato do castelo
     for _ in range(rng.randint(*pf["platos"])):            # platos medios em volta
         ang = rng.uniform(0, 6.283)
         dist = rng.randint(11, 17)
-        mx = int(cx + dist * 1.3 * __import__("math").cos(ang))
-        my = int(cy + dist * __import__("math").sin(ang))
+        mx = int(cx + dist * 1.3 * math.cos(ang))
+        my = int(cy + dist * math.sin(ang))
         if 5 < mx < LARG - 5 and 4 < my < ALT - 4:
             mancha(m, mx, my, rng.randint(*pf["raio"]), 1, rng)
     mancha(m, cx, cy, rng.randint(9, 11), max(1, 1), rng)  # saia media no castelo
     mancha(m, cx, cy, rng.randint(6, 8), 2, rng)           # redesenha o topo por cima
+
+
+def terracos(m: Mapa, rng, alvo, faixas=3):
+    """Escada: o terreno sobe em degraus ate o castelo no alto da TELA.
+
+    A camera e isometrica, entao o que fica no alto da tela e x+y pequeno.
+    Por isso o corte dos degraus acompanha x+y — assim, na tela, os andares
+    saem empilhados um em cima do outro, como uma arquibancada.
+
+    O unico jeito de subir e a rampa de cada degrau. Quem vem la de baixo
+    sobe todos eles, um atras do outro.
+    """
+    cx, cy = alvo
+    smax = LARG + ALT - 2
+    fases = [rng.uniform(0, 6.283) for _ in range(faixas - 1)]
+    for y in range(ALT):
+        for x in range(LARG):
+            s_cel = x + y
+            nivel = 0
+            for i in range(faixas - 1, 0, -1):
+                base = smax * ((faixas - i) / faixas)   # nivel alto = x+y pequeno
+                ondula = math.sin((x - y) * 0.11 + fases[i - 1]) * 3.2
+                if s_cel < base + ondula:
+                    nivel = i
+                    break
+            m.nivel[y][x] = nivel
+    mancha(m, cx, cy, 7, faixas - 1, rng)         # o topo do castelo, arredondado
+
+
+def rampas_terraco(m: Mapa, rng, faixas=3):
+    """Tres rampas por degrau, espalhadas. Fora delas o degrau e penhasco."""
+    for alvo in range(faixas - 1, 0, -1):
+        bordas = [(x, y) for y in range(2, ALT - 2) for x in range(2, LARG - 2)
+                  if m.nivel[y][x] == alvo and not m.agua[y][x]
+                  and any(m.nivel[ny][nx] == alvo - 1 for nx, ny in m.vizinhos(x, y))]
+        rng.shuffle(bordas)
+        postas = []
+        for (x, y) in bordas:
+            if len(postas) >= 3:
+                break
+            if any(abs(x - px) + abs(y - py) < 14 for px, py in postas):
+                continue
+            for dy in range(-2, 3):
+                for dx in range(-2, 3):
+                    if m.dentro(x + dx, y + dy) and not m.agua[y + dy][x + dx]:
+                        m.rampa[y + dy][x + dx] = True
+            postas.append((x, y))
 
 
 def rio(m: Mapa, rng, perfil=None):
@@ -178,16 +240,35 @@ def campo(m: Mapa, alvo) -> list[list[int]]:
     return d
 
 
-def frentes(m: Mapa, d, rng):
+def frentes(m: Mapa, d, rng, minimo_passos=18):
+    """De onde o inimigo entra. Tres regras, nessa ordem:
+
+    1. nasce na parte BAIXA do mapa (nivel 0) — ninguem aparece no topo do plato
+    2. fica a pelo menos `minimo_passos` de caminhada do castelo, senao a frente
+       nasce colada e nao da tempo de defender
+    3. as entradas ficam espalhadas; se o castelo esta num canto e nao cabe
+       espalhar tanto, aperta o espacamento ate conseguir 3 frentes
+    """
     borda = [(x, y) for y in range(ALT) for x in range(LARG)
              if (x in (0, LARG - 1) or y in (0, ALT - 1)) and d[y][x] < LONGE]
+    baixa = [p for p in borda if m.nivel[p[1]][p[0]] == 0]
+    if len(baixa) >= 12:
+        borda = baixa
+    longe = [p for p in borda if d[p[1]][p[0]] >= minimo_passos]
+    if len(longe) >= 8:
+        borda = longe
     rng.shuffle(borda)
+    quantas = rng.randint(3, 5)
     escolhidas = []
-    for p in borda:
-        if len(escolhidas) >= rng.randint(3, 5):
+    for espaco in (16, 13, 10, 7):
+        escolhidas = []
+        for p in borda:
+            if len(escolhidas) >= quantas:
+                break
+            if all(abs(p[0] - q[0]) + abs(p[1] - q[1]) >= espaco for q in escolhidas):
+                escolhidas.append(p)
+        if len(escolhidas) >= 3:
             break
-        if all(abs(p[0] - q[0]) + abs(p[1] - q[1]) >= 16 for q in escolhidas):
-            escolhidas.append(p)
     return escolhidas
 
 
@@ -219,7 +300,7 @@ def pintar(m: Mapa, trilha):
                         m.caminho[y + dy][x + dx] = True
 
 
-def pontos(m: Mapa, rng, alcance=4):
+def pontos(m: Mapa, rng, alcance=4, alvo=None):
     """Ponto de construcao perto do caminho. Alguns EXPOSTOS de proposito."""
     trilha = {(x, y) for y in range(ALT) for x in range(LARG) if m.caminho[y][x]}
     for y in range(1, ALT - 1, 2):
@@ -231,25 +312,37 @@ def pontos(m: Mapa, rng, alcance=4):
                 continue
             m.ponto[y][x] = True
             # exposto: colado no caminho e longe do castelo
-            if dist <= 2 and abs(x - CENTRO[0]) + abs(y - CENTRO[1]) > 14:
+            ax, ay = alvo or CENTRO
+            if dist <= 2 and abs(x - ax) + abs(y - ay) > 14:
                 m.exposto[y][x] = True
 
 
-def gerar(semente: int, bioma: str = "floresta"):
+def gerar(semente: int, bioma: str = "floresta", arranjo: str = "centro"):
     rng = random.Random(semente)
     pf = PERFIL.get(bioma, PERFIL["floresta"])
+    ar = ARRANJOS.get(arranjo, ARRANJOS["centro"])
     m = Mapa()
-    m.bioma = bioma
-    relevo(m, rng, pf)
+    m.bioma, m.arranjo = bioma, arranjo
+    cx = max(6, min(LARG - 7, int(LARG * ar["pos"][0])))
+    cy = max(5, min(ALT - 6, int(ALT * ar["pos"][1])))
+    m.castelo_pos = (cx, cy)
+
+    escada = ar["forma"] == "terracos"
+    if escada:
+        terracos(m, rng, (cx, cy))
+    else:
+        relevo(m, rng, pf, (cx, cy))
     rio(m, rng, pf)
-    rampas(m, rng)
-    cx, cy = CENTRO
+    if escada:
+        rampas_terraco(m, rng)
+    else:
+        rampas(m, rng)
     for y in range(cy - 2, cy + 3):
         for x in range(cx - 3, cx + 4):
             m.castelo[y][x] = True
             m.agua[y][x] = False
 
-    d = campo(m, CENTRO)
+    d = campo(m, (cx, cy))
     origens = frentes(m, d, rng)
     trilhas = []
     for o in origens:
@@ -257,7 +350,7 @@ def gerar(semente: int, bioma: str = "floresta"):
         if t:
             trilhas.append(t)
             pintar(m, t)
-    pontos(m, rng)
+    pontos(m, rng, alvo=(cx, cy))
     return m, trilhas, origens
 
 
