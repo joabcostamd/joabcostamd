@@ -9,7 +9,7 @@ Data de abertura: <AAAA-MM-DD>
 
 ## Emendas ao plano
 
-### <AAAA-MM-DD> · <o que mudou>
+### <data> · <o que mudou>
 
 **Decisão afetada:** D-<nnn>
 **Era:** <o valor anterior>
@@ -21,7 +21,7 @@ Data de abertura: <AAAA-MM-DD>
 
 Diferente de emenda: aqui a gente **construiu e descobriu que estava errado**.
 
-### <AAAA-MM-DD> · D-<nnn>
+### <data> · D-<nnn>
 
 **A evidência:** <o que a medição ou o playtest mostrou>
 **O que fica no lugar:** <a nova decisão>

@@ -101,6 +101,28 @@ def teste_palpite_bloqueia() -> None:
     shutil.rmtree(raiz)
 
 
+def teste_modelo_nao_vira_entrada_real() -> None:
+    """Data de exemplo dentro do modelo nao pode virar entrada de verdade.
+
+    Foi um defeito real: o novo-plano.py trocava <AAAA-MM-DD> em TODO lugar,
+    inclusive dentro dos blocos de exemplo, e o exemplo passava a parecer uma
+    emenda registrada de verdade.
+    """
+    modelos = AQUI / "modelos"
+    if not modelos.is_dir():
+        conferir("pasta de modelos existe", False, str(modelos))
+        return
+    for modelo in sorted(modelos.glob("*.md")):
+        linhas = modelo.read_text(encoding="utf-8").splitlines()
+        # so a area de cabecalho (5 primeiras linhas) pode usar a marca de data real
+        fora = [n for n, l in enumerate(linhas[5:], 6) if "<AAAA-MM-DD>" in l]
+        conferir(
+            f"{modelo.name} nao usa a marca de data fora do cabecalho",
+            fora == [],
+            f"linhas {fora}",
+        )
+
+
 def teste_comentario_nao_conta() -> None:
     comentado = plano(
         ATE_FASE_2,
@@ -203,6 +225,7 @@ for teste in (
     teste_fase_por_bloco,
     teste_nao_pula_fase,
     teste_palpite_bloqueia,
+    teste_modelo_nao_vira_entrada_real,
     teste_comentario_nao_conta,
     teste_origem_obrigatoria,
     teste_contradicao,
