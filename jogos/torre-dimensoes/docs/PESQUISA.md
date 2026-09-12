@@ -137,6 +137,21 @@ reaproveita; a mecânica em si pode nem servir.
 | **Fácil de entrar, difícil de dominar** | Bloons TD 6 | *"novato entra e começa a jogar na hora; veterano passa horas otimizando"*. É a régua de qualidade do gênero |
 | **Construir tem que parecer ativo** | consenso | *"construir parece ativo, sem clique passivo — só planejamento e ajuste rápido"* |
 
+### 4d-bis. ISLE OF ARROWS e LEGION TD 2 — as duas últimas peças
+
+| mecânica | onde | por que funciona |
+|---|---|---|
+| ⭐ **Sorteio controlado** | Isle of Arrows | o que você recebe é aleatório, **mas você tem garantia**: a cada X peças sempre vem pelo menos uma torre, um caminho e uma construção. *"Imita a sorte do jogo de tabuleiro sem nunca te ferrar."* É a resposta exata a "cada partida é outra" **sem** ser punitivo |
+| ⭐⭐ **A última linha é você** | Legion TD 2 | o que passa pelas defesas **não tira vida direto** — vai encontrar o rei, que pode matar os retardatários. Só se o rei morrer você perde. Deixa o jogo muito menos cruel **e dá motivo mecânico para o personagem jogável existir** |
+| **Pular a peça pagando** | Isle of Arrows | não gostou do que veio? paga e troca. Válvula de escape de uma frase, mata a frustração do sorteio ruim |
+| **Bônus de vizinhança** | Isle of Arrows | torre colada em certa construção fica mais forte. Faz o lugar importar, não só a peça |
+| ❌ mandar tropa no adversário | Legion TD 2 | é PvP e dobra a carga de regra — **recusado** |
+| ❌ construir exército em vez de torre | Legion TD 2 | vira outro gênero — **recusado** |
+
+> **A descoberta que mais muda o projeto:** *"a última linha é você"*. Ela resolve três coisas de
+> uma vez — dá razão mecânica para o personagem jogável, tira a crueldade de perder vida a cada
+> vazamento, e cria o momento de tensão que faz a noite valer a pena.
+
 ### 4e. A RECEITA — torres do Kingdom Rush, mecânicas do Thronefall
 
 A mescla que o Joab propôs, e por que ela fecha: **as torres do Kingdom Rush resolvem variedade;
