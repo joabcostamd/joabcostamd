@@ -152,6 +152,31 @@ reaproveita; a mecânica em si pode nem servir.
 > uma vez — dá razão mecânica para o personagem jogável, tira a crueldade de perder vida a cada
 > vazamento, e cria o momento de tensão que faz a noite valer a pena.
 
+### 4d-ter. ORCS MUST DIE e PLANTS VS ZOMBIES — o antídoto e o manual de ensino
+
+| mecânica | onde | por que funciona |
+|---|---|---|
+| ⭐⭐ **Repetir a mesma peça rende menos** | Orcs Must Die | *"quando o inimigo está pegando fogo, outra armadilha de fogo só reinicia o cronômetro — empilhar a mesma armadilha é ineficiente"*. **É o antídoto, por construção, ao defeito que os três jogos de referência têm**: a mistura rende mais que a repetição, então nenhuma peça pode dominar |
+| ⭐ **O dinheiro volta ao matar** | Orcs Must Die | você gasta na armadilha e recebe de volta matando. A economia vira **laço**, não orçamento — e o jogador sente que cada gasto trabalha para ele |
+| **Funil** | Orcs Must Die | juntar os inimigos num ponto onde as defesas se somam. O jogador descobre sozinho e se sente esperto |
+
+### 4g. As 6 regras de ensino — Plants vs Zombies
+
+Não são mecânicas: é **o manual contra o reembolso**. Vêm da palestra do George Fan, que fez a
+mãe dele terminar o jogo inteiro.
+
+| # | regra |
+|---|---|
+| 1 | **Não existe tela de tutorial.** O ensino é misturado ao jogo |
+| 2 | **Faça o jogador executar a ação uma vez.** *"Quando ele vê o resultado, isso costuma bastar"* |
+| 3 | **Imagem, não texto.** Cada peça mostra a própria função pela aparência |
+| 4 | **Aviso que some.** Se o jogador já entendeu, nenhuma seta e nenhuma mensagem aparecem |
+| 5 | **Aprender fazendo**, nunca lendo |
+| 6 | **Espalhe o ensino** pelo jogo inteiro. O jogador não precisa entender tudo no minuto 1 |
+
+> Junto com a régua já registrada — *"se você não explica o jogo em uma frase, ele é complexo
+> demais"* — estas seis regras são o que impede a devolução na Steam.
+
 ### 4e. A RECEITA — torres do Kingdom Rush, mecânicas do Thronefall
 
 A mescla que o Joab propôs, e por que ela fecha: **as torres do Kingdom Rush resolvem variedade;
