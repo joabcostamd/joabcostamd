@@ -230,11 +230,30 @@ o tempo de preparação é reduzido** — vira relógio.
 só aparece para quem pediu dificuldade.
 **Trava:** as telas (B8) e o balanceamento (B4).
 
-### D-015 · B6 · Mapas gerados: peça à mão, montagem por máquina 🟡 🤖
+### D-015 · B6 · Mapa tem duas camadas: layout e mundo 3D 🟢 👤
 
-> ⚠️ **Proposta do agente, ainda não confirmada.**
+> ⚠️ **A imagem que o Joab viu é ESBOÇO, não o jogo.** A grade colorida é o esqueleto lógico.
+> Em cima dela ainda tem que nascer o mundo 3D inteiro, como no Thronefall.
 
-**Valor proposto:** além dos quinze mapas à mão, um modo sem fim com mapas gerados.
+**Valor:** o mapa é **duas camadas separadas**, e nunca se misturam.
+
+| camada | o que é | onde vive |
+|---|---|---|
+| **layout** | a grade: nível de cada célula, penhasco, rampa, ponte, caminho, ponto de construção, frentes | dado puro, gerado e **testável sem abrir o Godot** |
+| **mundo 3D** | malha do terreno com penhasco real, árvore em cacho, água com as linhas desenhadas, construção, sombra dura, luz direcional, câmera isométrica alta | montado **a partir** do layout, na máquina local |
+
+**Motivo:** é a regra 2 do `CLAUDE.md` aplicada ao mapa — a lógica é `static func` pura e a
+apresentação só desenha. O layout dá para gerar, validar e simular **na nuvem, sem editor**. O
+mundo 3D é trabalho local, com o MCP e o olho.
+
+**A consequência que mais importa:** trocar o visual inteiro do jogo não toca no layout, e
+mudar a regra do layout não quebra a arte. São duas linhas de produção independentes.
+
+**O que ainda falta decidir (vira D-0xx quando chegarmos no B10 e no B12):** como cada peça do
+layout vira geometria — o penhasco é malha esculpida ou bloco empilhado? a árvore é instância
+em MultiMesh? a água é shader ou malha? — e o contrato de asset de cada família.
+
+**Valor do modo sem fim:** além dos quinze mapas à mão, os gerados viram modo sem fim.
 
 | passo | o quê |
 |---|---|

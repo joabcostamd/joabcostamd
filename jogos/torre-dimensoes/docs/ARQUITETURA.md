@@ -18,6 +18,35 @@ Regra pura (testável, sem nó, `static func`) × apresentação (desenha e cham
 
 Se um comportamento não dá para testar sem abrir o jogo, ele está no arquivo errado.
 
+## 1b. O mapa em duas camadas ⚠️
+
+A separação mais importante do projeto. **O layout é dado; o mundo 3D é desenho.**
+
+```
+LAYOUT  (dado puro)                    MUNDO 3D  (apresentação)
+grade de células                  →    malha de terreno com penhasco
+  nível 0/1/2                          degrau de verdade, com sombra dura
+  penhasco · rampa · ponte        →    rampa esculpida, ponte de madeira
+  caminho                         →    trilha de terra sobre a grama
+  ponto de construção             →    marcação no chão, e a peça que o
+                                       jogador põe em cima
+  frente de inimigo               →    portal, ponte, ou boca de caverna
+  água                            →    plano azul com as linhas desenhadas
+```
+
+| | layout | mundo 3D |
+|---|---|---|
+| roda na nuvem? | ✅ sim, sem editor | ❌ não, é local |
+| dá para testar? | ✅ é `static func` pura | só por screenshot e olho |
+| quem valida | `portao-plano.py` e o simulador | `godot-visual-check` na máquina do Joab |
+| trocar o visual inteiro | **não toca no layout** | é aqui que muda |
+| mudar a regra do mapa | é aqui que muda | **não quebra a arte** |
+
+> **A imagem que o gerador produz hoje é esboço.** Grade colorida serve para provar que a
+> lógica funciona, não para mostrar como o jogo vai ficar. O jogo de verdade nasce quando o
+> mundo 3D for montado em cima — terreno, árvore, água, construção, sombra, luz e câmera —
+> como no Thronefall.
+
 ## 2. Contrato de dados ⚠️
 
 Decidido **antes** do código. Mudar depois é migração.
