@@ -303,13 +303,31 @@ anda na semente seguinte quando uma reprova, então isso nunca chega ao jogador.
 
 ### D-017 · B0 · O nome do jogo 🟡 🤖
 
-**Valor proposto:** **Veilspire** — *veil* é o véu fino entre as dimensões, *spire* é a torre.
-Uma palavra, duas sílabas fortes, livre na Steam e na busca em setembro de 2026.
+**Valor proposto:** **Wardfall** — *ward* é a barreira que protege (e quem você protege),
+*fall* é ela cair. O nome diz a tensão do jogo inteiro em uma palavra. E rima de estrutura com
+**Thronefall**, que é a nossa referência mais próxima — quem gosta de lá acha a gente.
 
-**Alternativas verificadas:** *Lastspire* (livre, mas "last" já está gasto em jogo de defesa) ·
-*Fendra* (de "fenda", livre, fácil em português, mas não diz que é torre).
-**Descartados por já existirem:** tudo com *Rift* (Riftfall, Rift Riff, The Riftbreaker,
-The Rift Tower Defense), *Hollowspire*, *Nighthold*, *Dawnhold*, *Witchspire*.
+**Por que não o Veilspire (a proposta anterior):** livre em jogo, mas existe uma **banda**
+chamada Veilspire no Spotify, Apple Music e YouTube. O primeiro resultado de busca seria música,
+não o jogo. E a palavra cai em duas famílias lotadas: *veil* (Veilfall: True Strength — que tem
+literalmente o nosso tema — VEIL, Beyond The Veil, Dragon Age: The Veilguard) e *spire*
+(Slay the Spire, Spirefall, Hollowspire, Witchspire, Devil Spire Falls).
+
+**Vinte nomes checados, um por um (setembro de 2026):**
+
+| Nome | Situação |
+|---|---|
+| **Wardfall** | **livre em tudo** — só uma imobiliária inglesa, outro ramo |
+| Keepfall · Skyfold · Wanewatch | livres, mas não dizem o que o jogo é |
+| Duskrend · Spirewake · Hollowmarch | livres, mas na sombra de Hollow Knight / Slay the Spire / DUSK |
+| Veilspire · Lastspire | livres em jogo; banda usa Veilspire, e "last" está gasto |
+| Fendra · Kaldera · Bastia | livres; fáceis em português, mas perto de Caldera e Bastion |
+| ~~Everkeep~~ | torre gigante do Final Fantasy XIV (Dawntrail) + app |
+| ~~Lastward~~ | RPG "Last Ward" + Tokyo LastWard + lastward.com |
+| ~~Farkeep~~ | jogo tipo Zelda, com site próprio |
+| ~~Sundermark~~ | RTS onde você constrói um Keep e segura nós de ley — quase o nosso jogo |
+| ~~Veilfall~~ | Veilfall: True Strength, e com o **nosso** tema (o véu rasgando) |
+| ~~Thornwake~~ · ~~Aetherhold~~ · ~~Loomgate~~ | em uso como jogo ou como lugar dentro de jogo |
 
 **Falta:** o Joab escolher. Enquanto estiver 🟡 o nome não entra em `project.godot`, em arte,
 nem em nome de pasta.
