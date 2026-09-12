@@ -303,31 +303,37 @@ anda na semente seguinte quando uma reprova, então isso nunca chega ao jogador.
 
 ### D-017 · B0 · O nome do jogo 🟡 🤖
 
-**Valor proposto:** **Wardfall** — *ward* é a barreira que protege (e quem você protege),
-*fall* é ela cair. O nome diz a tensão do jogo inteiro em uma palavra. E rima de estrutura com
-**Thronefall**, que é a nossa referência mais próxima — quem gosta de lá acha a gente.
+**O que o Joab pediu:** nome de **saga** — última torre de pé, coroa, reinado, cavaleiro,
+feudo, magia. Aventura épica, não nome técnico.
 
-**Por que não o Veilspire (a proposta anterior):** livre em jogo, mas existe uma **banda**
-chamada Veilspire no Spotify, Apple Music e YouTube. O primeiro resultado de busca seria música,
-não o jogo. E a palavra cai em duas famílias lotadas: *veil* (Veilfall: True Strength — que tem
-literalmente o nosso tema — VEIL, Beyond The Veil, Dragon Age: The Veilguard) e *spire*
-(Slay the Spire, Spirefall, Hollowspire, Witchspire, Devil Spire Falls).
+**Valor proposto:** **Valorhold** — *valor* é a coragem do cavaleiro (e é palavra que
+brasileiro lê de primeira), *hold* é a fortaleza, o feudo que se segura. "A fortaleza do valor."
+Livre: nenhum jogo, nenhuma banda. Só uma empresa inglesa dormente, outro ramo.
 
-**Vinte nomes checados, um por um (setembro de 2026):**
+**Segundo lugar:** **Lonespire** — "a torre solitária", que é literalmente a imagem de
+*última torre de pé*. Mais poético, menos feudal. Livre em jogo.
 
-| Nome | Situação |
+**Trinta e dois nomes checados (setembro de 2026). Os que sobraram:**
+
+| Nome | O que diz | Situação |
+|---|---|---|
+| **Valorhold** | a fortaleza do valor — cavaleiro + feudo | **livre** |
+| **Lonespire** | a torre solitária — a última de pé | **livre** |
+| Lionkeep | o leão da heráldica + a fortaleza | livre |
+| Aegiskeep | *aegis* é o escudo divino — magia + fortaleza | livre |
+| Ruinguard · Valorhold · Lastrealm | guarda contra a ruína · o último reino | livres |
+| Wardfall · Keepfall · Lastspire | a barreira que cai · a última torre | livres, mas secos |
+
+**Caídos nesta leva, com o motivo:**
+
+| Nome | Por quê |
 |---|---|
-| **Wardfall** | **livre em tudo** — só uma imobiliária inglesa, outro ramo |
-| Keepfall · Skyfold · Wanewatch | livres, mas não dizem o que o jogo é |
-| Duskrend · Spirewake · Hollowmarch | livres, mas na sombra de Hollow Knight / Slay the Spire / DUSK |
-| Veilspire · Lastspire | livres em jogo; banda usa Veilspire, e "last" está gasto |
-| Fendra · Kaldera · Bastia | livres; fáceis em português, mas perto de Caldera e Bastion |
-| ~~Everkeep~~ | torre gigante do Final Fantasy XIV (Dawntrail) + app |
-| ~~Lastward~~ | RPG "Last Ward" + Tokyo LastWard + lastward.com |
-| ~~Farkeep~~ | jogo tipo Zelda, com site próprio |
-| ~~Sundermark~~ | RTS onde você constrói um Keep e segura nós de ley — quase o nosso jogo |
-| ~~Veilfall~~ | Veilfall: True Strength, e com o **nosso** tema (o véu rasgando) |
-| ~~Thornwake~~ · ~~Aetherhold~~ · ~~Loomgate~~ | em uso como jogo ou como lugar dentro de jogo |
+| ~~Oathkeep~~ | **"Oath Keepers" é milícia de extrema-direita dos EUA (6 de janeiro)** |
+| ~~Kingsward~~ | The Kingsward, RPG na Steam (2026) |
+| ~~Wardenfall~~ | jogo de estratégia com site próprio |
+| ~~Emberthrone~~ | Ember Throne Online, MMORPG na Steam |
+| ~~Crownward~~ | Crownwarden na Steam — construir reino e segurar cerco, quase o nosso jogo |
+| ~~Runekeep~~ | RuneKeeper na Steam + servidor Runekeep |
 
 **Falta:** o Joab escolher. Enquanto estiver 🟡 o nome não entra em `project.godot`, em arte,
 nem em nome de pasta.
