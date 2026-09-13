@@ -1,4 +1,4 @@
-# Torre entre Dimensões — glossário
+# Kingspire — glossário
 
 Data: 2026-09-12
 

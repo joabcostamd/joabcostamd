@@ -1,4 +1,4 @@
-# Torre entre Dimensões — mapa de decisões
+# Kingspire — mapa de decisões
 
 Data: 2026-09-12 · Régua de planejamento: v1
 **Fase: planejamento. Nenhuma linha de gameplay antes deste documento fechar a fase 2.**
@@ -301,7 +301,7 @@ anda na semente seguinte quando uma reprova, então isso nunca chega ao jogador.
 
 **Trava:** o conteúdo (B6) e a apresentação (B10).
 
-### D-017 · B0 · O nome do jogo 🟡 🤖
+### D-017 · B0 · O nome do jogo 🟢 👤
 
 **A descoberta que vale mais que qualquer nome:** *King's alguma-coisa* é o espaço mais
 esgotado do gênero inteiro. Kings Tower, Kings Guard, Kings Legacy, Kings Defender, The Last
@@ -312,12 +312,21 @@ Kingspire, Kingsmark, Kingsvigil, Crownspire.
 **O que o Joab pediu:** nome de **saga** — última torre de pé, coroa, reinado, cavaleiro,
 feudo, magia. Aventura épica, não nome técnico.
 
+**Valor:** **KINGSPIRE** — *king* + *spire*, "a torre do rei". Uma palavra, memorável, e o
+único jeito livre de dizer exatamente o que o Joab queria dizer com "Kings Tower".
+
+**Motivo:** o Joab escolheu, e é o que ele já tinha na cabeça. Livre: nenhum jogo usa. Existe um
+servidor de Minecraft e uma empresa de curso na Índia — ramos diferentes, sem conflito.
+
+**Risco aceito e registrado:** *spire* é família movimentada na busca (Slay the Spire,
+Spirefall, Hollowspire, Witchspire). "Kingspire" é distinto o bastante, mas a página da loja vai
+precisar de arte forte para se separar delas. Isso vira tarefa de B10.
+
+**Descartado — com o motivo, para ninguém repropor:**
+
 **Valor proposto:** **Valorhold** — *valor* é a coragem do cavaleiro (e é palavra que
 brasileiro lê de primeira), *hold* é a fortaleza, o feudo que se segura. "A fortaleza do valor."
 Livre: nenhum jogo, nenhuma banda. Só uma empresa inglesa dormente, outro ramo.
-
-**Segundo lugar:** **Lonespire** — "a torre solitária", que é literalmente a imagem de
-*última torre de pé*. Mais poético, menos feudal. Livre em jogo.
 
 **Trinta e dois nomes checados (setembro de 2026). Os que sobraram:**
 
@@ -350,9 +359,7 @@ Livre: nenhum jogo, nenhuma banda. Só uma empresa inglesa dormente, outro ramo.
 | ~~Kings Defender~~ | Kings Defender: Tower Defense, na App Store **e** no Google Play |
 | ~~The Last King~~ | The Last King (Steam, 82% positivo) + The Last King Prologue + The Last King's Archer |
 
-**Falta:** o Joab escolher. Enquanto estiver 🟡 o nome não entra em `project.godot`, em arte,
-nem em nome de pasta.
-**Trava:** a identidade visual (B10) e a página da loja (B11).
+**Destrava:** a identidade visual (B10) e a página da loja (B11) podem começar.
 
 <!-- Copie o bloco acima para cada decisão nova. Exemplos de cabeçalho válido:
 ### D-014 · B1 · Câmera do jogo 🟢 👤

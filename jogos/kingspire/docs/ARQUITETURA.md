@@ -1,4 +1,4 @@
-# Torre entre Dimensões — arquitetura e dados
+# Kingspire — arquitetura e dados
 
 Data: 2026-09-12
 

@@ -1,4 +1,4 @@
-# Torre entre Dimensões — conceito
+# Kingspire — conceito
 
 Data: 2026-09-12
 Gênero: <gênero> · Ambientação: <tema> · Alvo: <plataforma>

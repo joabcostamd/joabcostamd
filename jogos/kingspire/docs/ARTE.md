@@ -1,4 +1,4 @@
-# Torre entre Dimensões — direção de arte
+# Kingspire — direção de arte
 
 Data: 2026-09-12
 

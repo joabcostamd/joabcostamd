@@ -1,4 +1,4 @@
-# Torre entre Dimensões — telas e fluxo
+# Kingspire — telas e fluxo
 
 Data: 2026-09-12
 

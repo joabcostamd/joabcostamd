@@ -1,4 +1,4 @@
-# Torre entre Dimensões — direção sonora
+# Kingspire — direção sonora
 
 Data: 2026-09-12
 

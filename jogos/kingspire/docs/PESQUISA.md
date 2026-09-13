@@ -1,4 +1,4 @@
-# Torre entre Dimensões — pesquisa de mercado
+# Kingspire — pesquisa de mercado
 
 Data da pesquisa: 2026-09-12 · Fase: planejamento · Régua v1
 

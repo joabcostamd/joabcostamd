@@ -1,4 +1,4 @@
-# Torre entre Dimensões — documento de design
+# Kingspire — documento de design
 
 Data: 2026-09-12 · Leia antes: `../CONCEITO.md` (o que é e o que recusa) · `ARTE.md` (o visual)
 Este documento é o **como**.

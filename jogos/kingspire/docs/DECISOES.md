@@ -1,4 +1,4 @@
-# Torre entre Dimensões — decisões e armadilhas da produção
+# Kingspire — decisões e armadilhas da produção
 
 Data de abertura: 2026-09-12
 

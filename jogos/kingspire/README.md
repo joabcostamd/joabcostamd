@@ -1,4 +1,4 @@
-# Torre entre Dimensões
+# Kingspire
 
 **Fase: planejamento.** Nenhuma linha de GDScript antes do plano fechar a fase 2.
 
@@ -9,5 +9,5 @@
 | a pesquisa | [`docs/PESQUISA.md`](docs/PESQUISA.md) |
 
 ```bash
-python3 planejamento-jogo-novo/portao-plano.py jogos/torre-dimensoes
+python3 planejamento-jogo-novo/portao-plano.py jogos/kingspire
 ```
