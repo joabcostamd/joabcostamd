@@ -18,13 +18,11 @@ Jogos completos em **Godot 4.7**, com verificação automatizada, balanceamento 
 ![Godot](https://img.shields.io/badge/Godot-4.7-478CBF?logo=godot-engine&logoColor=white)
 ![GDScript](https://img.shields.io/badge/GDScript-2.0-478CBF?logo=godot-engine&logoColor=white)
 ![CI](https://img.shields.io/badge/CI-GitHub_Actions-2088FF?logo=githubactions&logoColor=white)
-![Status](https://img.shields.io/badge/Portão-verde-success)
 
 | Projeto | O que é |
 |---|---|
 | **Picross "Revelar"** | 400 fases, 21 idiomas, conquistas e galeria |
 | **Kit Puzzle** | Sokoban com gerador e solucionador por semente |
-| **Modelo de jogo** | Esqueleto que faz um jogo novo nascer pronto: portão de verificação, save mesclável entre máquinas, tradução pt/en/es e Monte Carlo de balanceamento |
 
 O método: **conceito antes de código**, lógica em funções puras testáveis, número de balanceamento
 que sai de simulação — nunca de intuição — e um portão frio que reprova cena quebrada, script que
@@ -80,7 +78,7 @@ Servidor MCP para criação musical — produção de áudio via linguagem natur
 
 ## 📫 Contato & Links
 
-- 📱 **Registro de Plantões** — [github.com/joabcostamd/app-registro-de-plant-es](https://github.com/joabcostamd/app-registro-de-plant-es)
+- 📱 **Registro de Plantões** — [github.com/joabcostamd/app-registro-plantoes](https://github.com/joabcostamd/app-registro-plantoes)
 - 🌐 **GitHub** — [github.com/joabcostamd](https://github.com/joabcostamd)
 
 ---
