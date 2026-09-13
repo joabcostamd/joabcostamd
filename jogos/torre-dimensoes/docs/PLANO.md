@@ -303,6 +303,12 @@ anda na semente seguinte quando uma reprova, então isso nunca chega ao jogador.
 
 ### D-017 · B0 · O nome do jogo 🟡 🤖
 
+**A descoberta que vale mais que qualquer nome:** *King's alguma-coisa* é o espaço mais
+esgotado do gênero inteiro. Kings Tower, Kings Guard, Kings Legacy, Kings Defender, The Last
+King — **os cinco estão ocupados**, e três deles são tower defense. O padrão "King + palavra de
+defesa, separadas" está cheio. O que continua livre é **fundir as duas em uma palavra só**:
+Kingspire, Kingsmark, Kingsvigil, Crownspire.
+
 **O que o Joab pediu:** nome de **saga** — última torre de pé, coroa, reinado, cavaleiro,
 feudo, magia. Aventura épica, não nome técnico.
 
@@ -320,6 +326,9 @@ Livre: nenhum jogo, nenhuma banda. Só uma empresa inglesa dormente, outro ramo.
 | **Valorhold** | a fortaleza do valor — cavaleiro + feudo | **livre** |
 | **Lonespire** | a torre solitária — a última de pé | **livre** |
 | **Kingspire** | "a torre do rei" em uma palavra só | **livre em jogo** (existe servidor de Minecraft e empresa de curso) |
+| **Crownspire** | "a torre da coroa" | **livre** |
+| **Kingsmark** | "a marca do rei" — o brasão no escudo | **livre** |
+| **Kingsvigil** | "a vigília do rei" — a noite acordado esperando | **livre** |
 | Lionkeep | o leão da heráldica + a fortaleza | livre |
 | Aegiskeep | *aegis* é o escudo divino — magia + fortaleza | livre |
 | Ruinguard · Valorhold · Lastrealm | guarda contra a ruína · o último reino | livres |
@@ -336,6 +345,10 @@ Livre: nenhum jogo, nenhuma banda. Só uma empresa inglesa dormente, outro ramo.
 | ~~Crownward~~ | Crownwarden na Steam — construir reino e segurar cerco, quase o nosso jogo |
 | ~~Runekeep~~ | RuneKeeper na Steam + servidor Runekeep |
 | ~~Kings Tower~~ | **King's Tower** já existe na Steam — e é jogo de defender torre. Perto dele ainda: King Towers, TOWER KING, The King of Tower Defense, e meia dúzia de clones no celular |
+| ~~Kings Legacy~~ | King's Legacy: A Crown Divided (Steam) + King's Legacy (Big Fish) |
+| ~~Kings Guard~~ | **quatro** na Steam: King's Guard, The king's guard, **King's Guard TD** (tower defense) e Kingsguard (constrói de dia, defende de noite — o loop do Thronefall) |
+| ~~Kings Defender~~ | Kings Defender: Tower Defense, na App Store **e** no Google Play |
+| ~~The Last King~~ | The Last King (Steam, 82% positivo) + The Last King Prologue + The Last King's Archer |
 
 **Falta:** o Joab escolher. Enquanto estiver 🟡 o nome não entra em `project.godot`, em arte,
 nem em nome de pasta.
