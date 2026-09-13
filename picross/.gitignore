@@ -1,6 +1,0 @@
-.godot/
-.verify/
-
-# gerado pelo importador a partir do .csv — muda a cada import
-*.translation
-!teste.*.translation
