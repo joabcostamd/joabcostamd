@@ -1,9 +1,0 @@
-.godot/
-.verify/
-export_presets.cfg.local
-.godot/export_credentials.cfg
-build/
-*.tmp
-
-# gerado pelo importador a partir do .csv — muda a cada import
-*.translation
