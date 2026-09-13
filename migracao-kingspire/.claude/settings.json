@@ -1,0 +1,30 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh\"",
+            "timeout": 180
+          }
+        ]
+      }
+    ]
+  },
+  "env": {
+    "GODOT_VERSAO": "4.7.2-stable"
+  },
+  "permissions": {
+    "allow": [
+      "Bash(./testar.sh)",
+      "Bash(godot --headless:*)",
+      "Bash(python3 prototipo/:*)",
+      "Bash(python3 planejamento/:*)",
+      "Bash(.claude/scripts/preparar-ambiente.sh)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)"
+    ]
+  }
+}

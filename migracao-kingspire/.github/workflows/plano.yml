@@ -1,0 +1,17 @@
+name: portao
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  portao:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Portao do plano, testes e gerador de mapa
+        run: ./testar.sh
