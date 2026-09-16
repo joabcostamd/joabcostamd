@@ -9,6 +9,7 @@ Cada projeto mora no **seu próprio repositório**. Este aqui é só o perfil.
 | **Registro de Plantões** | App Flutter para trabalhadores de plantão — 69 features, CLT completa | Completo |
 | **Assistente Oftalmológico** | Ferramenta com IA para apoio em diagnóstico e conduta | Em desenvolvimento |
 | **MCP Ableton 12** | Servidor MCP para produção musical por linguagem natural | Em desenvolvimento |
+| **MedPilot** | Ecossistema de apps médicos, um por especialidade — a fôrma, os contratos de conteúdo e o portão que reprova afirmação sem fonte | Em desenvolvimento |
 
 O método, que vale para todos: **conceito antes de código**, lógica em funções puras
 testáveis, número de balanceamento que sai de simulação — nunca de intuição — e um portão
