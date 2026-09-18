@@ -7,6 +7,7 @@ Cada projeto mora no **seu próprio repositório**. Este aqui é só o perfil.
 | **Picross "Revelar"** | 400 fases, 21 idiomas, conquistas e galeria | Completo |
 | **Kit Puzzle** | Sokoban com gerador e solucionador por semente | Completo |
 | **Registro de Plantões** | App Flutter para trabalhadores de plantão — 69 features, CLT completa | Completo |
+| **Royal Deck** | Jogo de cartas roguelike em mesa 3D: um ilusionista, um baralho e cinco mesas com os mesmos amuletos (Godot 4.7, PC e celular). Especificação mestra fechada em `game-royal-deck` | Em desenvolvimento |
 | **Assistente Oftalmológico** | Ferramenta com IA para apoio em diagnóstico e conduta | Em desenvolvimento |
 | **MCP Ableton 12** | Servidor MCP para produção musical por linguagem natural | Em desenvolvimento |
 
