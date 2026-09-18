@@ -78,7 +78,6 @@ Servidor MCP para criação musical — produção de áudio via linguagem natur
 
 ## 📫 Contato & Links
 
-- 📱 **Registro de Plantões** — [github.com/joabcostamd/app-registro-plantoes](https://github.com/joabcostamd/app-registro-plantoes)
 - 🌐 **GitHub** — [github.com/joabcostamd](https://github.com/joabcostamd)
 
 ---
