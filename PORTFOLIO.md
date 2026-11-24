@@ -8,6 +8,7 @@ Cada projeto mora no **seu próprio repositório**. Este aqui é só o perfil.
 | **Kit Puzzle** | Sokoban com gerador e solucionador por semente | Completo |
 | **Registro de Plantões** | App Flutter para trabalhadores de plantão — 69 features, CLT completa | Completo |
 | **Assistente Oftalmológico** | Ferramenta com IA para apoio em diagnóstico e conduta | Em desenvolvimento |
+| **Business** | App de finanças pessoais e profissionais — especificação completa, design auditado e código de referência testado | Em desenvolvimento |
 | **MCP Ableton 12** | Servidor MCP para produção musical por linguagem natural | Em desenvolvimento |
 
 O método, que vale para todos: **conceito antes de código**, lógica em funções puras
